@@ -45,10 +45,23 @@ async def on_guild_join(guild: discord.Guild):
     hw = client.get_user(715545167649570977)
     logchannel = client.get_channel(704197974577643550)
 
-    embed = discord.Embed(title="Greetings", description="Thanks for adding HotWired in this server , **HotWired** is a multi purpose discord bot that has Moderation commands , Fun commands , Music commands and many more!. The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **>>help** ", color=0x2f3136)
+    embed = discord.Embed(
+        title="Greetings",
+        description="Thanks for adding HotWired in this server, "
+                    "**HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!. "
+                    "The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **>>help** ",
+        color=0x2f3136
+    )
 
-    embed.add_field(name="General information", value="**► __Bot Id__**: 715545167649570977 \n**► __Developer__** : **TheOriginalDude#0585** \n**► __Prefix__** : >> ")
-    embed.add_field(name="**Links**", value="**► [Support Server](https://discord.gg/CgH6Sj6)**\n**► [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** ")
+    embed.add_field(
+        name="General information",
+        value="**► __Bot Id__**: 715545167649570977 \n"
+              "**► __Developer__** : **TheOriginalDude#0585** \n**► __Prefix__** : >> "
+    )
+    embed.add_field(
+        name="**Links**",
+        value="**► [Support Server](https://discord.gg/CgH6Sj6)**\n"
+              "**► [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** ")
 
     embed.set_thumbnail(url=hw.avatar_url)
 
@@ -57,7 +70,8 @@ async def on_guild_join(guild: discord.Guild):
     except:
         pass
 
-    await logchannel.send(f"The bot has been added to **{guild.name}** , We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
+    await logchannel.send(f"The bot has been added to **{guild.name}** , "
+                          "We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
 
 # @client.event
 # async def on_command_error(ctx, error):

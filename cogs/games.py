@@ -8,7 +8,7 @@ class Games(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    #Commands
+    # Commands
     @commands.command()
     async def roll(self, ctx, min_limit=1, max_limit=10):
         """

@@ -24,7 +24,9 @@ class Commands(commands.Cog):
         """
         Invite link for Bot
         """
-        await ctx.send('Invite Me to Your server ! **THE INVITE LINK IS** : https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot')
+        await ctx.send(
+            'Invite Me to Your server ! **THE INVITE LINK IS** : '
+            'https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot')
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):
