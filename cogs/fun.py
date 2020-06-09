@@ -96,7 +96,7 @@ class Fun(commands.Cog):
         if isinstance(error, commands.BadArgument):
             embed = error_embed("You Can get a Cookie Every **2 Hours Once**", "❌ERROR")
             await ctx.send(embed=embed)
-# kiss, hug, pat => commands to be added
+# TODO: kiss, hug, pat => commands to be added
 # cuddle hug insult kiss lick nom pat poke slap stare highfive bite greet punch handholding tickle kill hold pats wave boop
 
 

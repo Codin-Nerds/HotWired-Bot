@@ -60,7 +60,7 @@ async def _process_mozilla_doc(ctx, url):
 
 
 async def html_ref(ctx, text):
-    """Displays informations on an HTML tag"""
+    """Displays information on an HTML tag"""
 
     text = text.strip('<>`')
 
@@ -80,7 +80,7 @@ async def html_ref(ctx, text):
 
 
 async def _http_ref(part, ctx, text):
-    """Displays informations about HTTP protocol"""
+    """Displays information about HTTP protocol"""
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
@@ -180,7 +180,7 @@ async def sql_ref(ctx, text):
 
 
 async def haskell_ref(ctx, text):
-    """Displays informations on given Haskell topic"""
+    """Displays information on given Haskell topic"""
 
     text = text.strip('`')
 

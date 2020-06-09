@@ -85,7 +85,7 @@ class Coding(commands.Cog):
                       for command-line-options, compiler-flags and arguments you may
                       add a line starting with this argument, and after a space add
                       your options, flags or args.
-                      stats option displays more informations on execution consumption
+                      stats option displays more information on execution consumption
                       wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
                       <code> may be normal code, but also an attached file,
                       or a link from [hastebin](https://hastebin.com) or [Github gist](https://gist.github.com)
