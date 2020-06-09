@@ -40,6 +40,7 @@ async def python_doc(ctx, text: str):
 
             await ctx.send(embed=emb)
 
+
 async def _cppreference(language, ctx, text: str):
     """Search something on cppreference"""
 
@@ -81,6 +82,7 @@ async def _cppreference(language, ctx, text: str):
 
 c_doc = partial(_cppreference, 'C')
 cpp_doc = partial(_cppreference, 'C++')
+
 
 async def haskell_doc(ctx, text: str):
     """Search something on wiki.haskell.org"""
