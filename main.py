@@ -10,21 +10,21 @@ TOKEN = os.environ.get('TOKEN')
 client = commands.Bot(commands.when_mentioned_or('>>'), owner_id=688275913535914014)
 
 status = [
-  "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",
-  "▶Check out My Creator\'s Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-  "Ping me using >>help",
-  "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
-  "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+    "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",
+    "▶Check out My Creator\'s Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+    "Ping me using >>help",
+    "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
 ]
 
 async def change_status():
-  await client.wait_until_ready()
-  msgs = cycle(status)
+    await client.wait_until_ready()
+    msgs = cycle(status)
 
-  while not client.is_closed():
-    current_status = next(msgs)
-    await client.change_presence(activity=discord.Game(name=current_status))
-    await asyncio.sleep(10800)
+    while not client.is_closed():
+        current_status = next(msgs)
+        await client.change_presence(activity=discord.Game(name=current_status))
+        await asyncio.sleep(10800)
 
 @client.event
 async def on_ready():
@@ -33,7 +33,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-  pass
+    pass
 
 @client.event
 async def on_guild_join(guild : discord.Guild):

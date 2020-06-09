@@ -80,8 +80,7 @@ class Coding(commands.Cog):
         'python': _doc.python_doc
     }
 
-    @commands.command(
-help='''run <language> [--wrapped] [--stats] <code>
+    @commands.command(help='''run <language> [--wrapped] [--stats] <code>
 for command-line-options, compiler-flags and arguments you may
 add a line starting with this argument, and after a space add
 your options, flags or args.
@@ -96,8 +95,7 @@ If the output exceeds 40 lines or Discord max message length, it will be put
 in a new hastebin and the link will be returned.
 When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
 Useful to hide your syntax fails or when you forgot to print the result.''',
-brief='Execute code in a given programming language'
-        )
+brief='Execute code in a given programming language')
     async def run(self, ctx, language, *, code=''):
         """Execute code in a given programming language"""
         # Powered by tio.run

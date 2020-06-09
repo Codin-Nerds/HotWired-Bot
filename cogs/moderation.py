@@ -14,74 +14,74 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason="No specific reason"):
-      """
-      Kick a User
-      """
-      embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
-      embed1.add_field(name="Type", value="Kick")
-      embed1.add_field(name="Reason", value=reason)
-      embed1.set_thumbnail(url=member.avatar_url)
-      embed1.set_author(name=member.name, url=member.avatar_url)
-      embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
+        """
+        Kick a User
+        """
+        embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
+        embed1.add_field(name="Type", value="Kick")
+        embed1.add_field(name="Reason", value=reason)
+        embed1.set_thumbnail(url=member.avatar_url)
+        embed1.set_author(name=member.name, url=member.avatar_url)
+        embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
 
 
-      await ctx.send(embed=embed1)
-      await member.send(embed=embed1)
-      await member.kick(reason=reason)
+        await ctx.send(embed=embed1)
+        await member.send(embed=embed1)
+        await member.kick(reason=reason)
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason="No Reason Stated."):
-      """
-      ban a User
-      """
+        """
+        ban a User
+        """
 
-      embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
-      embed1.add_field(name="Type", value="Ban")
-      embed1.add_field(name="Reason", value=reason)
-      embed1.set_thumbnail(url=member.avatar_url)
-      embed1.set_author(name=member.name, url=member.avatar_url)
-      embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
+        embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
+        embed1.add_field(name="Type", value="Ban")
+        embed1.add_field(name="Reason", value=reason)
+        embed1.set_thumbnail(url=member.avatar_url)
+        embed1.set_author(name=member.name, url=member.avatar_url)
+        embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
 
-      await ctx.send(embed=embed1)
-      await member.send(embed=embed1)
-      await member.ban(reason=reason)
+        await ctx.send(embed=embed1)
+        await member.send(embed=embed1)
+        await member.ban(reason=reason)
 
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def unban(ctx, *, member):
-      """
-      Unban a User
-      """
-      banned_users = await ctx.guild.bans()
-      member_name, member_discriminator = member.split('#')
+        """
+        Unban a User
+        """
+        banned_users = await ctx.guild.bans()
+        member_name, member_discriminator = member.split('#')
 
-      for ban_entry in banned_users:
-          user = ban_entry.user
+        for ban_entry in banned_users:
+            user = ban_entry.user
 
-          if(user.name, user.discriminator) == (member_name, member_discriminator):
-            await ctx.guild.unban(user)
-            await ctx.send(f'Unbanned **{user.name}#{user.discriminator}**')
-            return
+            if(user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                await ctx.send(f'Unbanned **{user.name}#{user.discriminator}**')
+                return
 
     @commands.command()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount : int):
-      """
-      Clear specified number of messages
-      """
+        """
+        Clear specified number of messages
+        """
 
-      if amount is not None:
-          await ctx.channel.purge(limit=amount+1)
-          await ctx.send('**Messages cleared** ' + ctx.message.author.mention)
-          await asyncio.sleep(2.5)
-          await ctx.channel.purge(limit=1)
-      else:
-          await ctx.send('please specify the number of messages to clear')
+        if amount is not None:
+            await ctx.channel.purge(limit=amount+1)
+            await ctx.send('**Messages cleared** ' + ctx.message.author.mention)
+            await asyncio.sleep(2.5)
+            await ctx.channel.purge(limit=1)
+        else:
+            await ctx.send('please specify the number of messages to clear')
 
 
     @commands.command()
