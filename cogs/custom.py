@@ -46,7 +46,7 @@ class Custom(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['thank', 'ty'])
-    async def thanks(self, ctx, member : discord.Member, *, reason = None):
+    async def thanks(self, ctx, member : discord.Member, *, reason=None):
         """
         Thank a User
         """

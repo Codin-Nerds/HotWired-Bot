@@ -113,5 +113,6 @@ class Moderation(commands.Cog):
         dm_embed.set_footer(text=f"Promotion Command.")
         await member.send(embed=dm_embed)
 
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
