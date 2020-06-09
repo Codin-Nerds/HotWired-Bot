@@ -1,0 +1,5 @@
+pip install -U discord.py
+pip install requests
+pip install psutil
+pip install gputil
+pip install -U python-dotenv
