@@ -37,5 +37,6 @@ class Custom(commands.Cog):
         else:
             traceback.print_exc()
 
+
 def setup(client):
     client.add_cog(Custom(client))
