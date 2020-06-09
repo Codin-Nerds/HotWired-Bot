@@ -3,18 +3,20 @@ def octToDecimal(n):
     dec_value = 0
     base = 1
 
-    temp = num;
+    temp = num
     while (temp):
         last_digit = temp % 10
         temp = int(temp / 10)
-        dec_value += last_digit * base;
+        dec_value += last_digit * base
 
-        base = base * 8;
+        base = base * 8
 
-    return dec_value;
+    return dec_value
+
 
 def check(string):
     return all(c in string.hexdigits for c in string)
+
 
 def octop(num1, num2, op):
     if check(str(num1)) and check(str(num2)):
