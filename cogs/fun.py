@@ -76,7 +76,7 @@ class Fun(commands.Cog):
                 img_url = "https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif"
                 embed.set_image(url=img_url)
                 await ctx.send(embed=embed)
-            else :
+            else:
                 embed = info(f"{member.mention} is a Lucky Guy! You got a **Huge Cookie**! from {ctx.author.mention}\n**You got +10 points!**", ctx.me, "Cookie Giver!")
                 img_url = "https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif"
                 embed.set_image(url=img_url)
@@ -85,7 +85,7 @@ class Fun(commands.Cog):
             if ctx.author == member:
                 embed = info(f"You got a Cookie! {member.mention} ➡ :cookie: :cookie: :cookie: \n**You got +{num} points!**", ctx.me, "Cookie Giver!")
                 await ctx.send(embed=embed)
-            else :
+            else:
                 embed = info(f"{member.mention} got a cookie from {ctx.author.mention}➡ :cookie: :cookie: :cookie: \n**You got +{num} points!**", ctx.me, "Cookie Giver!")
                 await ctx.send(embed=embed)
 

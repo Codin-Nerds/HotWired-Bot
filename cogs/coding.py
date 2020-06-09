@@ -265,7 +265,6 @@ brief='Execute code in a given programming language')
         else:
             await returned.delete()
 
-
     @commands.command(aliases=['ref'])
     @typing
     async def reference(self, ctx, language, *, query: str):
@@ -338,7 +337,7 @@ brief='Execute code in a given programming language')
 
         if siteName[0].islower() or not siteName in dir(se):
             await ctx.send(f"{siteName} does not appear to be in the StackExchange network."
-                " Check the case and the spelling.")
+                           " Check the case and the spelling.")
 
         site = se.Site(getattr(se, siteName), self.bot.config['SE_KEY'])
         site.impose_throttling = True

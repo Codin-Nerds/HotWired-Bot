@@ -68,7 +68,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount : int):
+    async def clear(self, ctx, amount: int):
         """
         Clear specified number of messages
         """

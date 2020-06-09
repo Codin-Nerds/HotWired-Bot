@@ -314,7 +314,7 @@ class Sudo(commands.Cog):
                     gpu_total_memory, gpu_temperature, gpu_uuid
             ))
 
-        await ctx.send(tabulate(list_gpus, headers=("name", "load", "free memory", "used memory", "total memory","temperature", "uuid")))
+        await ctx.send(tabulate(list_gpus, headers=("name", "load", "free memory", "used memory", "total memory", "temperature", "uuid")))
 
         await ctx.send("**" + "="*41 + "**")
 

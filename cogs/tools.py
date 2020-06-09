@@ -44,7 +44,7 @@ class Tools(commands.Cog):
         emb = discord.Embed(title="Binary conversions")
         index = units.index(unit)
 
-        for i,u in enumerate(units):
+        for i, u in enumerate(units):
             result = round(value / 2**((i-index)*10), 14)
             emb.add_field(name=u, value=result)
 
@@ -74,7 +74,7 @@ class Tools(commands.Cog):
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def encode(self, ctx, *, text : str):
+    async def encode(self, ctx, *, text: str):
         """Convert a String to binary"""
         message_bytes = text.encode('ascii')
         base64_bytes = base64.b64encode(message_bytes)
@@ -86,7 +86,7 @@ class Tools(commands.Cog):
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def decode(self, ctx, *, text : str):
+    async def decode(self, ctx, *, text: str):
         """Convert a binary to String"""
         base64_bytes = text.encode('ascii')
         message_bytes = base64.b64decode(base64_bytes)
@@ -102,7 +102,7 @@ class Tools(commands.Cog):
         pass
 
     @commands.command()
-    async def calc(self, ctx, *, equation : str):
+    async def calc(self, ctx, *, equation: str):
         """Calculate an equation"""
         res = get_math_results(equation)
         if res.lower() == "invalid equation":
@@ -121,7 +121,7 @@ class Tools(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['wq', 'wolframquestion', 'wquestion'])
-    async def ask_question(self, ctx, conversation_mode="true", *, question : str):
+    async def ask_question(self, ctx, conversation_mode="true", *, question: str):
         """Ask the answer of an question"""
         data = get_wolfram_data(question, conversation_mode)
 
