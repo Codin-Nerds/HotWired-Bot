@@ -119,7 +119,7 @@ brief='Execute code in a given programming language')
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i) # remove following whitespace character
+                code.pop(i)  # remove following whitespace character
 
         code = ''.join(code)
 
@@ -204,7 +204,7 @@ brief='Execute code in a given programming language')
 
             if lang in self.bot.default:
                 lang = self.bot.default[lang]
-            if not lang in self.bot.languages:
+            if lang not in self.bot.languages:
                 matches = '\n'.join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` not available."
@@ -335,7 +335,7 @@ brief='Execute code in a given programming language')
     async def stack(self, ctx, siteName, *, query: str):
         """Queries given StackExchange website and gives you top results. siteName is case-sensitive."""
 
-        if siteName[0].islower() or not siteName in dir(se):
+        if siteName[0].islower() or siteName not in dir(se):
             await ctx.send(f"{siteName} does not appear to be in the StackExchange network."
                            " Check the case and the spelling.")
 
@@ -377,7 +377,7 @@ brief='Execute code in a given programming language')
                 description='View them on [tio.run](https://tio.run/#), or in [JSON format](https://tio.run/languages.json)')
             return await ctx.send(embed=emb)
 
-        if not group in choices:
+        if group not in choices:
             emb = discord.Embed(title="Available listed commands", description=f"`languages`, `{'`, `'.join(choices)}`")
             return await ctx.send(embed=emb)
 

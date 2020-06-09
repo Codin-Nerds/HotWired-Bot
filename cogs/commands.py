@@ -86,7 +86,7 @@ class Commands(commands.Cog):
         def randomString(stringLength=8):
             letters = string.ascii_lowercase
             return ''.join(random.choice(letters) for i in range(stringLength))
-        if text == None:
+        if text is None:
             num = random.randint(4, 16)
             for i in range(times):
                 await ctx.send(randomString(num))

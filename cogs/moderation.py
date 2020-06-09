@@ -81,7 +81,6 @@ class Moderation(commands.Cog):
         else:
             await ctx.send('please specify the number of messages to clear')
 
-
     @commands.command()
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_permissions(manage_roles=True, manage_messages=True)

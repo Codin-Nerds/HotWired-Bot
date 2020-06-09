@@ -65,7 +65,7 @@ class Fun(commands.Cog):
         """
         Give a User a cookie
         """
-        if member == None:
+        if member is None:
             member = ctx.author
 
         num = random.randint(1, 4)
