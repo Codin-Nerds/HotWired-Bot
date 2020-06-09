@@ -24,6 +24,7 @@ from discord.utils import escape_mentions
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+
 class Coding(commands.Cog):
     """To test code and check docs"""
 
@@ -382,7 +383,7 @@ brief='Execute code in a given programming language')
             return await ctx.send(embed=emb)
 
         availables = choices[group]
-        description=f"`{'`, `'.join([*availables])}`"
+        description = f"`{'`, `'.join([*availables])}`"
         emb = discord.Embed(title=f"Available for {group}: {len(availables)}", description=description)
         await ctx.send(embed=emb)
 

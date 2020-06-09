@@ -217,7 +217,6 @@ class Sudo(commands.Cog):
             ctr += 1
             await ctx.send(embed=embed)
 
-
         # get IO statistics since boot
         disk_io = psutil.disk_io_counters()
 
@@ -318,6 +317,7 @@ class Sudo(commands.Cog):
         await ctx.send(tabulate(list_gpus, headers=("name", "load", "free memory", "used memory", "total memory","temperature", "uuid")))
 
         await ctx.send("**" + "="*41 + "**")
+
 
 def setup(client):
     client.add_cog(Sudo(client))

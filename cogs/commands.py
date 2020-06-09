@@ -102,7 +102,6 @@ class Commands(commands.Cog):
         """Create an embed"""
         await ctx.send(msg)
 
-
     @commands.command(hidden=True)
     async def load(self, ctx, *, extension):
         """Loads a cog"""
@@ -129,6 +128,7 @@ class Commands(commands.Cog):
         """Restart The bot"""
         await self.bot.logout()
         os.system("python main.py")
+
 
 def setup(client):
     client.add_cog(Commands(client))

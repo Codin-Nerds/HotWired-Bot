@@ -24,7 +24,6 @@ class Moderation(commands.Cog):
         embed1.set_author(name=member.name, url=member.avatar_url)
         embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
 
-
         await ctx.send(embed=embed1)
         await member.send(embed=embed1)
         await member.kick(reason=reason)
@@ -47,7 +46,6 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed1)
         await member.send(embed=embed1)
         await member.ban(reason=reason)
-
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)

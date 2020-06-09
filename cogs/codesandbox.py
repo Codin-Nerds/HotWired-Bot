@@ -68,5 +68,6 @@ class CodeSandbox(commands.Cog):
                     self._last_result = ret
                     await ctx.send(f'```py\n{value}{ret}\n```')
 
+
 def setup(client):
     client.add_cog(CodeSandbox(client))

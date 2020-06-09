@@ -17,6 +17,7 @@ status = [
     "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
 ]
 
+
 async def change_status():
     await client.wait_until_ready()
     msgs = cycle(status)
@@ -26,14 +27,17 @@ async def change_status():
         await client.change_presence(activity=discord.Game(name=current_status))
         await asyncio.sleep(10800)
 
+
 @client.event
 async def on_ready():
     print('Bot is Ready.')
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
+
 @client.event
 async def on_message(message):
     pass
+
 
 @client.event
 async def on_guild_join(guild : discord.Guild):
@@ -88,7 +92,8 @@ def SetupBot(bot):
 
     bot.run(TOKEN)
 
+
 client.loop.create_task(change_status())
 
 if __name__ == "__main__":
-  SetupBot(client)
+    SetupBot(client)

@@ -10,5 +10,6 @@ class Infog(commands.Cog):
     async def infog(self, ctx):
         await ctx.send("Info gathered")
 
+
 def setup(client):
     client.add_cog(Infog(client))

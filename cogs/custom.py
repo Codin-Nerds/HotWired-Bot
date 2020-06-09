@@ -34,7 +34,6 @@ class Custom(commands.Cog):
 
         await ctx.send(f'If you have any problems with the bot or if you have any suggestions/feedback be sure to join the support server using this link : https://discord.gg/CgH6Sj6')
 
-
     @commands.command(aliases=['asking'])
     async def howtoask(self, ctx):
         """

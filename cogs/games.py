@@ -20,7 +20,6 @@ class Games(commands.Cog):
         else:
             await ctx.send('Please specify numbers with difference of **at least 2**')
 
-
     @commands.command(aliases=['8ball'])
     async def ball8(self, ctx, *, question):
         """
@@ -62,6 +61,7 @@ class Games(commands.Cog):
             answer = random.choice(responses)
 
         await ctx.send(f'Question : {question}\nAnswer : {answer}')
+
 
 def setup(client):
     client.add_cog(Games(client))
