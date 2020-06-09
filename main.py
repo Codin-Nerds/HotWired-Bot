@@ -3,7 +3,6 @@ import os
 from itertools import cycle
 
 import discord
-from cogs.utils.embedHandler import error_embed  # custom packages
 from discord.ext import commands  # discordpy packages
 
 TOKEN = os.environ.get('TOKEN')
