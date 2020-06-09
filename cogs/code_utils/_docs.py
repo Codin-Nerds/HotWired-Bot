@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 
 async def python_doc(ctx, text: str):
-    """Filters python.org results based on your query"""
+    """Filters python.org results based on your query."""
 
     text = text.strip('`')
 
@@ -42,7 +42,7 @@ async def python_doc(ctx, text: str):
 
 
 async def _cppreference(language, ctx, text: str):
-    """Search something on cppreference"""
+    """Search something on cppreference."""
 
     text = text.strip('`')
 
@@ -85,7 +85,7 @@ cpp_doc = partial(_cppreference, 'C++')
 
 
 async def haskell_doc(ctx, text: str):
-    """Search something on wiki.haskell.org"""
+    """Search something on wiki.haskell.org."""
 
     text = text.strip('`')
 

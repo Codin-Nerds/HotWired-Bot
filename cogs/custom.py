@@ -28,18 +28,14 @@ class Custom(commands.Cog):
 
     @commands.command(name='support')
     async def support(self, ctx):
-        """
-        Get an invite link to the bots support server.
-        """
+        """Get an invite link to the bots support server."""
 
         await ctx.send('If you have any problems with the bot or if you have any suggestions/feedback'
                        'be sure to join the support server using this link : https://discord.gg/CgH6Sj6')
 
     @commands.command(aliases=['asking'])
-    async def howtoask(self, ctx):
-        """
-        How to ask a Question
-        """
+    async def howtoask(self, ctx):.
+        """How to ask a Question"""
         embed = info(
             "**1 ❯** Pick the appropriate channel\n"
             "**2 ❯** Post your question mentioning all the details\n"
@@ -54,9 +50,7 @@ class Custom(commands.Cog):
 
     @commands.command(aliases=['thank', 'ty'])
     async def thanks(self, ctx, member: discord.Member, *, reason=None):
-        """
-        Thank a User
-        """
+        """Thank a User."""
         if ctx.author == member:
             embed = error_embed(f"{ctx.author.mention} **You Cannot Thank Yourself!**", "WARNING!")
             await ctx.send(embed=embed)
@@ -73,9 +67,7 @@ class Custom(commands.Cog):
 
     @commands.command()
     async def covid(self, ctx, *, country=None):
-        """
-        Get the Covid19 Data
-        """
+        """Get the Covid19 Data."""
         if country is None:
             await ctx.send("**GLOBAL DATA**")
             await ctx.send(f"New Confirmed : {get_covid_data()['NewConfirmed']}")

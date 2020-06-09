@@ -21,18 +21,14 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-        """
-        Invite link for Bot
-        """
+        """Invite link for Bot."""
         await ctx.send(
             'Invite Me to Your server ! **THE INVITE LINK IS** : '
             'https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot')
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):
-        """
-        Get information about the server.
-        """
+        """Get information about the server."""
 
         embed = discord.Embed(colour=discord.Color.gold())
         embed.title = f"{ctx.guild.name}'s stats and information."
@@ -61,6 +57,7 @@ class Commands(commands.Cog):
     async def userinfo(self, ctx, *, member: discord.Member = None):
         """
         Get information about you, or a specified member.
+
         `member`: The member to get information from. Can be a Mention, Name or ID.
         """
 
@@ -101,12 +98,12 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=['cembed', 'emb', 'new'])
     async def create(self, ctx, *, msg):
-        """Create an embed"""
+        """Create an embed."""
         await ctx.send(msg)
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, extension):
-        """Loads a cog"""
+        """Loads a cog."""
         try:
             self.bot.load_extension(f'cogs.{extension}')
         except Exception:
@@ -127,7 +124,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     async def restart(self, ctx):
-        """Restart The bot"""
+        """Restart The bot."""
         await self.bot.logout()
         os.system("python main.py")
 

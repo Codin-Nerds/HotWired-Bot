@@ -15,7 +15,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def ascii(self, ctx, *, text: str):
-        """Convert a String to ascii"""
+        """Convert a String to ascii."""
         emb = discord.Embed(title="Unicode convert", description=' '.join([str(ord(letter)) for letter in text]))
         emb.set_footer(text=f'Invoked by {str(ctx.message.author)}')
 
@@ -23,7 +23,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def unascii(self, ctx, *, text: str):
-        """Convert ascii to String"""
+        """Convert ascii to String."""
         try:
             codes = [chr(int(i)) for i in text.split(' ')]
             emb = discord.Embed(title="Unicode convert", description=''.join(codes))
@@ -34,7 +34,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def byteconvert(self, ctx, value: int, unit='Mio'):
-        """Convert into Bytes"""
+        """Convert into Bytes."""
         units = ('o', 'Kio', 'Mio', 'Gio', 'Tio', 'Pio', 'Eio', 'Zio', 'Yio')
         unit = unit.capitalize()
 
@@ -52,7 +52,7 @@ class Tools(commands.Cog):
 
     @commands.command(name='hash')
     async def _hash(self, ctx, algorithm, *, text: str):
-        """Hash a String"""
+        """Hash a String."""
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
@@ -75,7 +75,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def encode(self, ctx, *, text: str):
-        """Convert a String to binary"""
+        """Convert a String to binary."""
         message_bytes = text.encode('ascii')
         base64_bytes = base64.b64encode(message_bytes)
         base64_message = base64_bytes.decode('ascii')
@@ -87,7 +87,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def decode(self, ctx, *, text: str):
-        """Convert a binary to String"""
+        """Convert a binary to String."""
         base64_bytes = text.encode('ascii')
         message_bytes = base64.b64decode(base64_bytes)
         message = message_bytes.decode('ascii')
@@ -103,7 +103,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def calc(self, ctx, *, equation: str):
-        """Calculate an equation"""
+        """Calculate an equation."""
         res = get_math_results(equation)
         if res.lower() == "invalid equation":
             emb = discord.Embed(title="ERROR!", description="❌ Invalid Equation Specified", color=discord.Color.red())
@@ -122,7 +122,7 @@ class Tools(commands.Cog):
 
     @commands.command(aliases=['wq', 'wolframquestion', 'wquestion'])
     async def ask_question(self, ctx, conversation_mode="true", *, question: str):
-        """Ask the answer of an question"""
+        """Ask the answer of an question."""
         data = get_wolfram_data(question, conversation_mode)
 
         embed = discord.Embed(title="Question Results")

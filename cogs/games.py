@@ -11,9 +11,7 @@ class Games(commands.Cog):
     # Commands
     @commands.command()
     async def roll(self, ctx, min_limit=1, max_limit=10):
-        """
-        Roll a random number
-        """
+        """Roll a random number."""
         if max_limit - min_limit > 2:
             number = random.randint(min_limit, max_limit)
             await ctx.send('The random number is ' + str(number))
@@ -22,9 +20,7 @@ class Games(commands.Cog):
 
     @commands.command(aliases=['8ball'])
     async def ball8(self, ctx, *, question):
-        """
-        Play 8ball
-        """
+        """Play 8ball."""
         yes_responses = [
                 "Yes - definitely.",
                 "You may rely on it.",

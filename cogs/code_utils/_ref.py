@@ -34,10 +34,7 @@ def markdownify(html):
 
 
 async def _process_mozilla_doc(ctx, url):
-    """
-    From a given url from developers.mozilla.org, processes format,
-    returns tag formatted content
-    """
+    """Get tag formatted content from given url from developers.mozilla.org."""
 
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
@@ -60,7 +57,7 @@ async def _process_mozilla_doc(ctx, url):
 
 
 async def html_ref(ctx, text):
-    """Displays information on an HTML tag"""
+    """Displays information on an HTML tag."""
 
     text = text.strip('<>`')
 
@@ -80,7 +77,7 @@ async def html_ref(ctx, text):
 
 
 async def _http_ref(part, ctx, text):
-    """Displays information about HTTP protocol"""
+    """Displays information about HTTP protocol."""
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
@@ -103,7 +100,7 @@ csp_directives = partial(_http_ref, 'Headers/Content-Security-Policy')
 
 
 async def _git_main_ref(part, ctx, text):
-    """Displays a git help page"""
+    """Displays a git help page."""
 
     text = text.strip('`')
 
@@ -144,7 +141,7 @@ git_tutorial_ref = partial(_git_main_ref, '')
 
 
 async def sql_ref(ctx, text):
-    """Displays reference on an SQL statement"""
+    """Displays reference on an SQL statement."""
 
     text = text.strip('`').lower()
     if text in ('check', 'unique', 'not null'):
@@ -180,7 +177,7 @@ async def sql_ref(ctx, text):
 
 
 async def haskell_ref(ctx, text):
-    """Displays information on given Haskell topic"""
+    """Displays information on given Haskell topic."""
 
     text = text.strip('`')
 
@@ -199,14 +196,12 @@ async def haskell_ref(ctx, text):
             soup = BeautifulSoup(await response.text(), 'lxml').find('div', id='content')
 
             title = soup.find('h1', id='firstHeading').string
-            description = '\n'.join(
-                [
-                    markdownify(p) for p in soup.find_all(
-                        lambda x: x.name in ['p', 'li'] and
-                        tuple(x.parents)[1].name not in ('td', 'li'), limit=6
-                    )
-                ]
-            )[:2048]
+            description = '\n'.join([
+                markdownify(p) for p in soup.find_all(
+                    lambda x: x.name in ['p', 'li'] and
+                    tuple(x.parents)[1].name not in ('td', 'li'), limit=6
+                )
+            ])[:2048]
 
             emb = discord.Embed(title=title, description=description, url=url)
             emb.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")

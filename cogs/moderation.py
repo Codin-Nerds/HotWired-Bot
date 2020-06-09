@@ -14,9 +14,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason="No specific reason"):
-        """
-        Kick a User
-        """
+        """Kick a User."""
         embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed1.add_field(name="Type", value="Kick")
         embed1.add_field(name="Reason", value=reason)
@@ -32,9 +30,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason="No Reason Stated."):
-        """
-        ban a User
-        """
+        """Ban a User."""
 
         embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed1.add_field(name="Type", value="Ban")
@@ -51,9 +47,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def unban(ctx, *, member):
-        """
-        Unban a User
-        """
+        """Unban a User."""
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')
 
@@ -69,9 +63,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int):
-        """
-        Clear specified number of messages
-        """
+        """Clear specified number of messages."""
 
         if amount is not None:
             await ctx.channel.purge(limit=amount+1)
@@ -85,9 +77,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_permissions(manage_roles=True, manage_messages=True)
     async def promote(self, ctx, member: discord.Member, role: discord.Role):
-        """
-        Promote member to role.
-        """
+        """Promote member to role."""
         if role >= ctx.author.top_role:
             await ctx.send(embed=failure("Role needs to be below you in hierarchy."))
             return

@@ -11,9 +11,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def slap(self, ctx, member: discord.Member):
-        """
-        Slap a User
-        """
+        """Slap a User."""
         if ctx.author == member:
             embed = info(f"{member.mention} slapped him/her self LMAO", ctx.me, "Slap in The Face!")
             img_url = "https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
@@ -25,9 +23,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def punch(self, ctx, member: discord.Member):
-        """
-        Punch a User
-        """
+        """Punch a User."""
         img_links = [
             'https://media.giphy.com/media/13HXKG2HGN8aPK/giphy.gif',
             'https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif'
@@ -43,18 +39,14 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def shoot(self, ctx, member: discord.Member):
-        """
-        Shoot a User
-        """
+        """Shoot a User."""
         embed = info(f"{member.mention} shot by {ctx.author.mention}  :gun: :boom:", ctx.me, "Boom! Bam! He's Dead!")
         embed.set_image(url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["table", "flip"])
     async def throw(self, ctx):
-        """
-        Throw the table
-        """
+        """Throw the table."""
         embed = info(f"{ctx.author.mention} :boom:", ctx.me, "Table Throw!")
         embed.set_image(url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif")
         await ctx.send(embed=embed)
@@ -62,9 +54,7 @@ class Fun(commands.Cog):
     @commands.command(aliases=['cookies', 'cook'])
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def cookie(self, ctx, member: discord.Member = None):
-        """
-        Give a User a cookie
-        """
+        """Give a User a cookie."""
         if member is None:
             member = ctx.author
 

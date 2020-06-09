@@ -26,13 +26,13 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Coding(commands.Cog):
-    """To test code and check docs"""
+    """To test code and check docs."""
 
     def __init__(self, bot):
         self.bot = bot
 
     def get_content(self, tag):
-        """Returns content between two h2 tags"""
+        """Returns content between two h2 tags."""
 
         bssiblings = tag.next_siblings
         siblings = []
@@ -99,7 +99,7 @@ class Coding(commands.Cog):
                       Useful to hide your syntax fails or when you forgot to print the result.''',
                       brief='Execute code in a given programming language')
     async def run(self, ctx, language, *, code=''):
-        """Execute code in a given programming language"""
+        """Execute code in a given programming language."""
         # Powered by tio.run
 
         options = {
@@ -269,7 +269,7 @@ class Coding(commands.Cog):
     @commands.command(aliases=['ref'])
     @typing
     async def reference(self, ctx, language, *, query: str):
-        """Returns element reference from given language"""
+        """Returns element reference from given language."""
 
         lang = language.strip('`')
 
@@ -281,7 +281,7 @@ class Coding(commands.Cog):
     @commands.command(aliases=['doc'])
     @typing
     async def documentation(self, ctx, language, *, query: str):
-        """Returns element reference from given language"""
+        """Returns element reference from given language."""
 
         lang = language.strip('`')
 
@@ -293,7 +293,7 @@ class Coding(commands.Cog):
     @commands.command()
     @typing
     async def man(self, ctx, *, page: str):
-        """Returns the manual's page for a (mostly Debian) linux command"""
+        """Returns the manual's page for a (mostly Debian) linux command."""
 
         base_url = f'https://man.cx/{page}'
         url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
@@ -364,7 +364,7 @@ class Coding(commands.Cog):
 
     @commands.command()
     async def list(self, ctx, *, group=None):
-        """Lists available choices for other commands"""
+        """Lists available choices for other commands."""
 
         choices = {
             "documentations": self.documented,
