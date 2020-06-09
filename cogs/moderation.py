@@ -110,7 +110,7 @@ class Moderation(commands.Cog):
             "Congratulations!"
         )
 
-        dm_embed.set_footer(text=f"Promotion Command.")
+        dm_embed.set_footer(text="Promotion Command.")
         await member.send(embed=dm_embed)
 
 

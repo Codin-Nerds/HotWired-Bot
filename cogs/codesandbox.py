@@ -14,7 +14,7 @@ class CodeSandbox(commands.Cog):
 
     @commands.command()
     async def code(self, ctx):
-        await ctx.send(f'code working!')
+        await ctx.send('code working!')
 
     def _clean_code(self, code):
         if code.startswith('```') and code.endswith('```'):

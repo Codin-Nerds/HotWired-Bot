@@ -126,7 +126,7 @@ class Sudo(commands.Cog):
         • Current Frequency: **{cpufreq.current:.2f}Mhz**
         """
 
-        cpu_usage = f"• CPU Usage Per Core:"
+        cpu_usage = "• CPU Usage Per Core:"
 
         for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
             cpu_usage += f"\n\t• Core **{i + 1}** : **{percentage}%**"

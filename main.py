@@ -48,7 +48,7 @@ async def on_guild_join(guild : discord.Guild):
     embed = discord.Embed(title="Greetings" ,description="Thanks for adding HotWired in this server , **HotWired** is a multi purpose discord bot that has Moderation commands , Fun commands , Music commands and many more!. The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **>>help** " , color=0x2f3136)
 
     embed.add_field(name="General information",value="**► __Bot Id__**: 715545167649570977 \n**► __Developer__** : **TheOriginalDude#0585** \n**► __Prefix__** : >> ")
-    embed.add_field(name="**Links**",value=f"**► [Support Server](https://discord.gg/CgH6Sj6)**\n**► [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** ")
+    embed.add_field(name="**Links**",value="**► [Support Server](https://discord.gg/CgH6Sj6)**\n**► [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** ")
 
     embed.set_thumbnail(url=hw.avatar_url)
 
