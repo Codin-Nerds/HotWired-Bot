@@ -1,11 +1,11 @@
-import hashlib
 import base64
-
-from utils.mathscrape import get_math_results
-from utils.wolframscrape import get_wolfram_data
+import hashlib
 
 import discord
 from discord.ext import commands
+from utils.mathscrape import get_math_results
+from utils.wolframscrape import get_wolfram_data
+
 
 class Tools(commands.Cog):
 
@@ -112,12 +112,12 @@ class Tools(commands.Cog):
         emb.set_footer(text=f'Invoked by {str(ctx.message.author)}')
 
         await ctx.send(embed=emb)
-      else:        
+      else:
         embed = discord.Embed(title="Equation Results")
 
         embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
         embed.add_field(name="**❯❯ Result**", value=res, inline=False)
-        
+
         embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
 
         await ctx.send(embed=embed)
@@ -131,7 +131,7 @@ class Tools(commands.Cog):
 
       embed.add_field(name="**❯❯ Question**", value=question, inline=False)
       embed.add_field(name="**❯❯ Result**", value=data, inline=False)
-      
+
       embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
 
       await ctx.send(embed=embed)

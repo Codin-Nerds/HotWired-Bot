@@ -1,8 +1,9 @@
-import discord
-from discord.ext import commands
 import asyncio
 
+import discord
 from cogs.utils.embedHandler import failure, info, success
+from discord.ext import commands
+
 
 class Moderation(commands.Cog):
 
@@ -22,7 +23,7 @@ class Moderation(commands.Cog):
       embed1.set_thumbnail(url=member.avatar_url)
       embed1.set_author(name=member.name, url=member.avatar_url)
       embed1.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
-      
+
 
       await ctx.send(embed=embed1)
       await member.send(embed=embed1)
@@ -35,7 +36,7 @@ class Moderation(commands.Cog):
       """
       ban a User
       """
-      
+
       embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
       embed1.add_field(name="Type", value="Ban")
       embed1.add_field(name="Reason", value=reason)

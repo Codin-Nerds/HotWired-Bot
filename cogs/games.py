@@ -1,6 +1,8 @@
+import random
+
 import discord
 from discord.ext import commands
-import random
+
 
 class Games(commands.Cog):
 
@@ -49,19 +51,18 @@ class Games(commands.Cog):
         "Outlook not so good.",
         "Very doubtful."
       ]
-    
+
     def is_lucky():
       no = random.randint(1, 3)
       if no == 1:
         return True
-      
+
     if is_lucky():
       answer = random.choice(yes_responses)
     else:
       answer = random.choice(responses)
-      
+
     await ctx.send(f'Question : {question}\nAnswer : {answer}')
- 
+
 def setup(client):
   client.add_cog(Games(client))
-

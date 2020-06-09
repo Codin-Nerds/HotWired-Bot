@@ -1,15 +1,14 @@
-import discord
-from discord.ext import commands
-
-from cogs.utils.embedHandler import info, error_embed
-
+import datetime
 import time
+
+import discord
+from cogs.utils.embedHandler import error_embed, info
+from discord.ext import commands
 from utils.covidscrape import get_covid_data
 
-import datetime
 
 class Custom(commands.Cog):
-  
+
   def __init__(self, client):
     self.client = client
 
@@ -17,7 +16,7 @@ class Custom(commands.Cog):
   @commands.command()
   async def hello(self, ctx):
     await ctx.send(f'Hey there Buddy!')
-  
+
   @commands.command()
   @commands.has_permissions(manage_messages=True)
   async def ping(self, ctx):
@@ -27,7 +26,7 @@ class Custom(commands.Cog):
     end = time.perf_counter()
     duration = (end - start) * 1000
     await message.edit(embed=info(f":ping_pong: {duration:.2f}ms", ctx.me, "Pong!"))
-    
+
   @commands.command(name='support')
   async def support(self, ctx):
     """
@@ -80,7 +79,7 @@ class Custom(commands.Cog):
       await ctx.send(f"Total Deaths : {get_covid_data()['TotalDeaths']}")
       await ctx.send(f"New Recovered : {get_covid_data()['NewRecovered']}")
       await ctx.send(f"Total Recovered : {get_covid_data()['TotalRecovered']}")
-    
+
     else:
       data = get_covid_data(country)
       if data == False:

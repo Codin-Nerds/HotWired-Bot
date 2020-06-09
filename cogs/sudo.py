@@ -1,11 +1,13 @@
-import discord
-from discord.ext import commands
-
-import platform
-import psutil
-import GPUtil
-from tabulate import tabulate
 import datetime
+import platform
+
+import psutil
+
+import discord
+import GPUtil
+from discord.ext import commands
+from tabulate import tabulate
+
 
 class Sudo(commands.Cog):
     def __init__(self, client):
@@ -48,11 +50,11 @@ class Sudo(commands.Cog):
                     • CPU Usage: **{cpuUsage:.2f}%**
                     • Uptime: **{self.getUptime()}**
                     • Threads: {self.process.num_threads()}
-                """     
+                """
       system = f"""• Python: **{platform.python_version()} with {implementation}**
                   • discord.py: **{discord.__version__}**
                 """
-      
+
       embed = discord.Embed(title="BOT STATISTICS", color=discord.Color.red())
 
       embed.add_field(name="**❯❯ General**", value=general, inline=True)
@@ -63,7 +65,7 @@ class Sudo(commands.Cog):
       embed.set_footer(text=f"MIT License - {self.client.user.name}, {datetime.datetime.utcnow().year}. Made by TheOriginalDude#0585.")
 
       await ctx.send(embed=embed)
-  
+
     @sudo.command(aliases=['sinfo'])
     async def sysinfo(self, ctx):
       uname = platform.uname()
@@ -75,7 +77,7 @@ class Sudo(commands.Cog):
 
       version = f"""• Release: **{uname.release}**
                     • Version: **{uname.version}**
-                """     
+                """
       hardware = f"""
                   • Machine: **{uname.machine}**
                   • Processor: **{uname.processor}**
@@ -95,7 +97,7 @@ class Sudo(commands.Cog):
     async def bootinfo(self, ctx):
       boot_time_timestamp = psutil.boot_time()
       bt = datetime.datetime.fromtimestamp(boot_time_timestamp)
-      
+
       boot = f"""
                   • Boot Date: **{bt.year}/{bt.month}/{bt.day}**
                   • Boot Time: **{bt.hour}:{bt.minute}:{bt.second}**
@@ -150,10 +152,10 @@ class Sudo(commands.Cog):
             if bytes < factor:
               return f"{bytes:.2f}{unit}{suffix}"
             bytes /= factor
-      
+
       # get the memory details
       svmem = psutil.virtual_memory()
-      
+
       # get the swap memory details (if exists)
       swap = psutil.swap_memory()
 
@@ -188,7 +190,7 @@ class Sudo(commands.Cog):
             if bytes < factor:
               return f"{bytes:.2f}{unit}{suffix}"
             bytes /= factor
-      
+
       ctr = 1
       # get all disk partitions
       partitions = psutil.disk_partitions()
@@ -198,7 +200,7 @@ class Sudo(commands.Cog):
           diskinfo += f"\n**Device: {partition.device}**"
           diskinfo += f"\n• Mountpoint: **{partition.mountpoint}**"
           diskinfo += f"\n• File system type: **{partition.fstype}**"
-          
+
           try:
               partition_usage = psutil.disk_usage(partition.mountpoint)
 
@@ -215,7 +217,7 @@ class Sudo(commands.Cog):
           ctr += 1
           await ctx.send(embed=embed)
 
-      
+
       # get IO statistics since boot
       disk_io = psutil.disk_io_counters()
 
@@ -243,7 +245,7 @@ class Sudo(commands.Cog):
             bytes /= factor
 
       net_interfaces = ""
-      
+
       # get all network interfaces (virtual and physical)
       if_addrs = psutil.net_if_addrs()
       for interface_name, interface_addresses in if_addrs.items():
@@ -254,12 +256,12 @@ class Sudo(commands.Cog):
                   net_interfaces += f"\n• IP Address: **{address.address}**"
                   net_interfaces += f"\n• Netmask: **{address.netmask}"
                   net_interfaces += f"\n• Broadcast IP: **{address.broadcast}**\n"
-              
+
               elif str(address.family) == 'AddressFamily.AF_PACKET':
                   net_interfaces += f"\n• MAC Address: **{address.address}**"
                   net_interfaces += f"\n• Netmask: **{address.netmask}**"
                   net_interfaces += f"\n• Broadcast MAC: **{address.broadcast}**\n"
-      
+
       # get IO statistics since boot
       net_io = psutil.net_io_counters()
 
@@ -284,26 +286,26 @@ class Sudo(commands.Cog):
       gpus = GPUtil.getGPUs()
 
       list_gpus = []
-      
+
       for gpu in gpus:
           # get the GPU id
           gpu_id = gpu.id
-          
+
           # name of GPU
           gpu_name = f"({gpu_id}){gpu.name}"
-          
+
           # get % percentage of GPU usage of that GPU
           gpu_load = f"{gpu.load*100}%"
-          
+
           # get free memory in MB format
           gpu_free_memory = f"{gpu.memoryFree}MB"
-          
+
           # get used memory
           gpu_used_memory = f"{gpu.memoryUsed}MB"
-          
+
           # get total memory
           gpu_total_memory = f"{gpu.memoryTotal}MB"
-          
+
           # get GPU temperature in Celsius
           gpu_temperature = f"{gpu.temperature} °C"
 

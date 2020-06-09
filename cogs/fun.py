@@ -1,9 +1,8 @@
-import discord
-from discord.ext import commands
-
-from cogs.utils.embedHandler import info, error_embed
-
 import random
+
+import discord
+from cogs.utils.embedHandler import error_embed, info
+from discord.ext import commands
 
 
 class Fun(commands.Cog):

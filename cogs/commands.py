@@ -1,14 +1,15 @@
+import asyncio
+import datetime
+import os
+import platform
+import random
+import string
+import sys
+import traceback
+
 import discord
 from discord.ext import commands
 
-import platform
-import sys
-import asyncio
-import string
-import random
-import os
-import traceback
-import datetime
 
 class Commands(commands.Cog):
     def __init__(self, client):
@@ -52,7 +53,7 @@ class Commands(commands.Cog):
 
         embed.set_footer(text=f'ID: {ctx.guild.id}')
 
-        return await ctx.send(embed=embed) 
+        return await ctx.send(embed=embed)
 
     @commands.command(name='userinfo', aliases=['user'])
     async def userinfo(self, ctx, *, member: discord.Member = None):
@@ -78,7 +79,7 @@ class Commands(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url_as(format='png'))
         embed.set_footer(text=f'ID: {member.id}')
 
-        return await ctx.send(embed=embed) 
+        return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
     async def spam(self, ctx, times=100000, text=None):
