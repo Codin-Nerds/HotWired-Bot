@@ -26,14 +26,31 @@ class Sudo(commands.Cog):
 
     def is_owner(ctx):
       return ctx.author.id == 688275913535914014
+    
+    async def check(ctx):
+      if ctx.author.id not in [688275913535914014]:
+        embed = discord.Embed(
+          description="Hey Mortal! Learn to make your own Sandwich!", 
+          color=discord.Color.gold()
+        )
+        await ctx.send(embed=embed)
+        
+      else:
+        return True   
+          
 
     @commands.group(hidden=True)
-    @commands.check(is_owner)
+    @commands.check(check)
     async def sudo(self, ctx):
       if ctx.invoked_subcommand is None:
-        await ctx.send('Invalid sudo command passed...')
+        embed = discord.Embed(
+          description="Invalid sudo Command Passed!", 
+          color=discord.Color.red()
+        )
+        await ctx.send(embed=embed)
 
     @sudo.command()
+    @commands.check(check)
     async def stats(self, ctx):
       ramUsage = self.process.memory_full_info().uss / 1024**2
       cpuUsage = self.process.cpu_percent() / psutil.cpu_count()
@@ -49,7 +66,8 @@ class Sudo(commands.Cog):
                     • Uptime: **{self.getUptime()}**
                     • Threads: {self.process.num_threads()}
                 """     
-      system = f"""• Python: **{platform.python_version()} with {implementation}**
+      system = f"""
+                  • Python: **{platform.python_version()} with {implementation}**
                   • discord.py: **{discord.__version__}**
                 """
       
@@ -65,6 +83,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
   
     @sudo.command(aliases=['sinfo'])
+    @commands.check(check)
     async def sysinfo(self, ctx):
       uname = platform.uname()
 
@@ -73,7 +92,8 @@ class Sudo(commands.Cog):
                     • Node Name: **{uname.node}**
                 """
 
-      version = f"""• Release: **{uname.release}**
+      version = f"""
+                    • Release: **{uname.release}**
                     • Version: **{uname.version}**
                 """     
       hardware = f"""
@@ -92,6 +112,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command(aliases=['binfo'])
+    @commands.check(check)
     async def bootinfo(self, ctx):
       boot_time_timestamp = psutil.boot_time()
       bt = datetime.datetime.fromtimestamp(boot_time_timestamp)
@@ -110,6 +131,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command(aliases=['cinfo'])
+    @commands.check(check)
     async def cpuinfo(self, ctx):
       cpufreq = psutil.cpu_freq()
 
@@ -142,6 +164,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command(aliases=['memusg', 'meminfo', 'minfo', 'memusage'])
+    @commands.check(check)
     async def memoryinfo(self, ctx):
 
       def get_size(bytes, suffix="B"):
@@ -180,6 +203,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command(aliases=['dusage', 'dusg', 'dinfo'])
+    @commands.check(check)
     async def diskusage(self, ctx):
 
       def get_size(bytes, suffix="B"):
@@ -233,6 +257,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command()
+    @commands.check(check)
     async def netstat(self, ctx):
 
       def get_size(bytes, suffix="B"):
@@ -278,6 +303,7 @@ class Sudo(commands.Cog):
       await ctx.send(embed=embed)
 
     @sudo.command()
+    @commands.check(check)
     async def gpuinfo(self, ctx):
 
       await ctx.send("**" + "="*15 + "GPU Details" + "="*15 + "**")

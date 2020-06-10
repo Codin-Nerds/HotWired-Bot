@@ -4,7 +4,6 @@ from discord.ext import commands
 from cogs.utils.embedHandler import info, error_embed
 
 import time
-from utils.covidscrape import get_covid_data
 
 import datetime
 
@@ -27,15 +26,6 @@ class Custom(commands.Cog):
     end = time.perf_counter()
     duration = (end - start) * 1000
     await message.edit(embed=info(f":ping_pong: {duration:.2f}ms", ctx.me, "Pong!"))
-    
-  @commands.command(name='support')
-  async def support(self, ctx):
-    """
-    Get an invite link to the bots support server.
-    """
-
-    await ctx.send(f'If you have any problems with the bot or if you have any suggestions/feedback be sure to join the support server using this link : https://discord.gg/CgH6Sj6')
-
 
   @commands.command(aliases=['asking'])
   async def howtoask(self, ctx):
@@ -66,33 +56,6 @@ class Custom(commands.Cog):
         img_url = "https://media.giphy.com/media/osjgQPWRx3cac/giphy.gif"
         embed.set_image(url=img_url)
       await ctx.send(embed=embed)
-
-  @commands.command()
-  async def covid(self, ctx, *, country=None):
-    """
-    Get the Covid19 Data
-    """
-    if country == None:
-      await ctx.send(f"**GLOBAL DATA**")
-      await ctx.send(f"New Confirmed : {get_covid_data()['NewConfirmed']}")
-      await ctx.send(f"Total Confirmed : {get_covid_data()['TotalConfirmed']}")
-      await ctx.send(f"New Deaths : {get_covid_data()['NewDeaths']}")
-      await ctx.send(f"Total Deaths : {get_covid_data()['TotalDeaths']}")
-      await ctx.send(f"New Recovered : {get_covid_data()['NewRecovered']}")
-      await ctx.send(f"Total Recovered : {get_covid_data()['TotalRecovered']}")
-    
-    else:
-      data = get_covid_data(country)
-      if data == False:
-        await ctx.send('**Invalid Country**')
-      else:
-        await ctx.send(f"**Country : {data['Country']}**")
-        await ctx.send(f"New Confirmed : {data['NewConfirmed']}")
-        await ctx.send(f"Total Confirmed : {data['TotalConfirmed']}")
-        await ctx.send(f"New Deaths : {data['NewDeaths']}")
-        await ctx.send(f"Total Deaths : {data['TotalDeaths']}")
-        await ctx.send(f"New Recovered : {data['NewRecovered']}")
-        await ctx.send(f"Total Recovered : {data['TotalRecovered']}")
 
 def setup(client):
   client.add_cog(Custom(client))

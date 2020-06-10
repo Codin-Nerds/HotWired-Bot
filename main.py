@@ -2,12 +2,13 @@ import discord
 from discord.ext import commands # discordpy packages
 
 from cogs.utils.embedHandler import error_embed # custom packages
+import setup
 
 import asyncio
 from itertools import cycle
 import os
 
-TOKEN = os.environ.get('TOKEN')
+TOKEN = setup.BOT_TOKEN
 
 client = commands.Bot(commands.when_mentioned_or('>>'), owner_id=688275913535914014)
 
@@ -78,6 +79,7 @@ async def on_guild_join(guild : discord.Guild):
 
 def SetupBot(bot):
     bot.load_extension("cogs.codesandbox")
+    bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.custom")
     bot.load_extension("cogs.events")
@@ -85,7 +87,9 @@ def SetupBot(bot):
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.moderation")
+    bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
+    bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
 
     bot.run(TOKEN)

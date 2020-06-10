@@ -1,3 +1,4 @@
+from .code_utils import _doc
 import asyncio
 import os
 import re
@@ -17,10 +18,11 @@ from discord.ext.commands.cooldowns import BucketType
 from discord.utils import escape_mentions
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import _ref, _doc
-from _used import typing, get_raw, paste
+from .code_utils import _ref
+from .code_utils import _doc
+from .code_utils._used import typing, get_raw, paste
 # from _tio import Tio, TioRequest
-from _tio import Tio
+from.code_utils._tio import Tio
 
 class Coding(commands.Cog):
     """To test code and check docs"""
