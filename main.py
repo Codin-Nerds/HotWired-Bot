@@ -103,6 +103,7 @@ def SetupBot(bot):
     bot.load_extension("cogs.moderation")
     bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.tools")
+    bot.load_extension("cogs.converters")
 
     bot.run(TOKEN)
 
