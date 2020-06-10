@@ -25,7 +25,7 @@ class Tools(commands.Cog):
 
 	@commands.command()
 	async def unascii(self, ctx, *, text: str):
-		"""Convert ascii to String"""
+		"""Convert ascii to String."""
 		try:
 			codes = [chr(int(i)) for i in text.split(' ')]
 			emb = discord.Embed(
