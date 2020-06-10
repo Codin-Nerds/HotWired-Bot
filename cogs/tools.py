@@ -13,7 +13,7 @@ class Tools(commands.Cog):
 
 	@commands.command()
 	async def ascii(self, ctx, *, text: str):
-		"""Convert a String to ascii"""
+		"""Convert a String to ascii."""
 
 		emb = discord.Embed(
 			title="Unicode convert",
