@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import traceback
 
+import setup
+
 class Custom(commands.Cog):
   
   def __init__(self, client):
@@ -13,7 +15,7 @@ class Custom(commands.Cog):
         return
 
     if message.content.lower().startswith("help"):
-        await message.channel.send("Hey! Why don't you run the help command with `>>help`")
+        await message.channel.send(f"Hey! Why don't you run the help command with `{setup.COMMAND_PREFIX}help`")
 
     await self.client.process_commands(message)
 
