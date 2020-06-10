@@ -104,7 +104,7 @@ class Fun(commands.Cog):
 
         await ctx.send(embed=embed)
 
-# kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite greet
+# TODO: kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite greet
 # punch handholding tickle kill hold pats wave boop
 
 def setup(bot):
