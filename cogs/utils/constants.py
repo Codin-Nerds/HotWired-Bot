@@ -14,6 +14,8 @@ invite_link = "https://discord.com/api/oauth2/authorize?client_id=71554516764957
 admin_invite_link = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=8" \
 					"&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
 
+COMMAND_PREFIX = ">>"
+
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
 class Infraction(Enum):

@@ -1,7 +1,17 @@
-cogs/__pycache__/
+# Python cache
+__pycache__/
+
+# Tests cache
+.pytest_cache/
+
+# Vscode settings
+.vscode/
+
+# Ignore enviromental vars (contains private information)
 .env
+
+# Ignore enviromental vars in Py File(contains private information)
 setup.py
-utils/__pycache__
-cogs/utils/__pycache__
-cogs/code_utils/__pycache__
+
+# Ignore intellij Files
 .idea

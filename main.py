@@ -2,13 +2,14 @@ import discord
 from discord.ext import commands
 
 from cogs.utils.embedHandler import error_embed
+from cogs.utils import constants
 import setup
 
 import asyncio
 from itertools import cycle
 
 TOKEN = setup.BOT_TOKEN
-PREFIX = setup.COMMAND_PREFIX
+PREFIX = constants.COMMAND_PREFIX
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=688275913535914014)
 
@@ -49,7 +50,7 @@ async def on_guild_join(guild : discord.Guild):
 		description="Thanks for adding HotWired in this server , "
 					"**HotWired** is a multi purpose discord bot that has Moderation commands , "
 					"Fun commands , Music commands and many more!. The bot is still in dev so you can expect more commands "
-					"and features.To get a list of commands , please use **>>help** " ,
+					f"and features.To get a list of commands , please use **{PREFIX}help** " ,
 		color = 0x2f3136
 	)
 
