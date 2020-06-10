@@ -111,7 +111,7 @@ class Tools(commands.Cog):
 
 	@commands.command()
 	async def decode(self, ctx, *, text: str):
-		"""Convert a binary to String"""
+		"""Convert a binary to String."""
 		base64_bytes = text.encode('ascii')
 		message_bytes = base64.b64decode(base64_bytes)
 		message = message_bytes.decode('ascii')
