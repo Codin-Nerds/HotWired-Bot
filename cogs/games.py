@@ -57,38 +57,39 @@ class Games(commands.Cog):
             answer = random.choice(responses)
 
         await ctx.send(f'Question : {question}\nAnswer : {answer}')
-    @commands.command(aliases=["snake and ladder"])
-  async def snake_ladder(self, ctx, p1 : discord.Memeber, p2 : discord.Member):
-    player = ""
-    player = "p1"
-    point = {'p1' = 0, 'p2' = 0}
-    snakes = [1, 7, 11, 26, 32, 38, 45, 53, 68, 75, 88, 99]
-    ladders = [2, 5, 9, 17, 29, 35, 48, 57, 72, 80, 93]
-    await ctx.send("**===================Snake and Ladders=================**")
-    await ctx.send('Ready?')
-    
-    while True:
-      dice = random.randint(0, 6)
-      point[turn] += dice
-      if point in snakes:
-        if point[player] < 20:
-          reduction = random.randint(1, 6)
-        else:
-          reduction = random.randint(1, 20)
-
-        point[player] -= reduction
-      if point[player] == 0:
-        loser = player
-        await ctx.send(f'**{turn} Lost** :frowning:')
-        break
-      if point[player] == 100:
-        winner = player
-        await ctx.send(f'**{turn} Won!** :partying_face:')
-      if player == "p1":
-        player = "p2"
-      else:
-        player = 'p1'
   
+    @commands.command(aliases=["snake and ladder"])
+    async def snake_ladder(self, ctx, p1 : discord.Memeber, p2 : discord.Member):
+        player = ""
+        player = "p1"
+        point = {'p1' = 0, 'p2' = 0}
+        snakes = [1, 7, 11, 26, 32, 38, 45, 53, 68, 75, 88, 99]
+        ladders = [2, 5, 9, 17, 29, 35, 48, 57, 72, 80, 93]
+        await ctx.send("**===================Snake and Ladders=================**")
+        await ctx.send('Ready?')
+
+        while True:
+          dice = random.randint(0, 6)
+          point[turn] += dice
+          if point in snakes:
+            if point[player] < 20:
+              reduction = random.randint(1, 6)
+            else:
+              reduction = random.randint(1, 20)
+
+            point[player] -= reduction
+          if point[player] == 0:
+            loser = player
+            await ctx.send(f'**{turn} Lost** :frowning:')
+            break
+          if point[player] == 100:
+            winner = player
+            await ctx.send(f'**{turn} Won!** :partying_face:')
+          if player == "p1":
+            player = "p2"
+          else:
+            player = 'p1'
+
 
 
 def setup(client):
