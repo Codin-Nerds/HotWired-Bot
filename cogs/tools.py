@@ -47,7 +47,7 @@ class Tools(commands.Cog):
 
 	@commands.command()
 	async def byteconvert(self, ctx, value: int, unit='Mio'):
-		"""Convert into Bytes"""
+		"""Convert into Bytes."""
 		units = ('o', 'Kio', 'Mio', 'Gio', 'Tio', 'Pio', 'Eio', 'Zio', 'Yio')
 		unit = unit.capitalize()
 
