@@ -65,10 +65,7 @@ async def on_guild_join(guild: discord.Guild):
 
     embed.set_thumbnail(url=hw.avatar_url)
 
-    try:
-        await guild.system_channel.send(embed=embed)
-    except:
-        pass
+    await guild.system_channel.send(embed=embed)
 
     await logchannel.send(f"The bot has been added to **{guild.name}** , "
                           "We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
