@@ -6,7 +6,6 @@ import urllib.parse
 from hashlib import algorithms_available as algorithms
 from io import BytesIO
 
-# from pytio import Tio, TioRequest
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 
@@ -15,7 +14,6 @@ import _ref
 import aiohttp
 import discord
 import stackexchange as se
-# from _tio import Tio, TioRequest
 from _tio import Tio
 from _used import get_raw, paste, typing
 from discord.ext import commands

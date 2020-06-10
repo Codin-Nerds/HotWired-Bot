@@ -1,26 +1,15 @@
 import re
 import urllib.parse
 from functools import partial
-# import sys
+
+from bs4 import BeautifulSoup
 
 import aiohttp
 import discord
-from bs4 import BeautifulSoup
-# from bs4.element import NavigableString
 from markdownify import MarkdownConverter
-
-# import cogs.code_utils._used
 
 
 class DocMarkdownConverter(MarkdownConverter):
-    # def convert_code(self, el, text):
-    #     """Undo `markdownify`s underscore escaping."""
-    #     print(el)
-    #     print(el.strings)
-    #     print(text)
-
-    #     return f"`{text}`".replace('\\', '')
-
     def convert_pre(self, el, text):
         """Wrap any codeblocks in `py` for syntax highlighting."""
 
@@ -44,10 +33,6 @@ async def _process_mozilla_doc(ctx, url):
                 return await ctx.send(f'An error occurred (status code: {response.status}). Retry later.')
 
             body = BeautifulSoup(await response.text(), 'lxml').find('body')
-
-    # if body.get('class')[0] == 'error':
-    #     # 404
-    #     return await ctx.send(f'No results for `{text}`')
 
     # First tag not empty
     contents = body.find(id='wikiArticle').find(lambda x: x.name == 'p' and x.text)
