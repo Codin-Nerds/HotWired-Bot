@@ -43,6 +43,7 @@ class Sudo(Cog):
     @check(is_owner)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
+
         if ctx.invoked_subcommand is None:
             await ctx.send('Invalid sudo command passed...')
 

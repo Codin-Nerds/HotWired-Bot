@@ -66,7 +66,9 @@ class Tools(Cog):
             result = round(value / 2**((i-index)*10), 14)
             embed.add_field(name=u, value=result)
 
-        await ctx.send(embed=embed)
+            embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
+
+            await ctx.send(embed=embed)
 
     @command(name="hash")
     async def _hash(self, ctx: Context, algorithm, *, text: str) -> None:

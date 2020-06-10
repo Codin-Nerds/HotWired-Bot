@@ -1,6 +1,5 @@
 import urllib.parse
 from functools import partial
-from string import ascii_uppercase
 
 import aiohttp
 import discord
@@ -8,12 +7,11 @@ from bs4 import BeautifulSoup
 
 
 async def python_doc(ctx, text: str):
-    """Filters python.org results based on your query"""
+    """Filters python.org results based on your query."""
 
     text = text.strip('`')
 
     url = "https://docs.python.org/3/genindex-all.html"
-    alphabet = '_' + ascii_uppercase
 
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
@@ -40,8 +38,9 @@ async def python_doc(ctx, text: str):
 
             await ctx.send(embed=emb)
 
+
 async def _cppreference(language, ctx, text: str):
-    """Search something on cppreference"""
+    """Search something on cppreference."""
 
     text = text.strip('`')
 
@@ -82,8 +81,9 @@ async def _cppreference(language, ctx, text: str):
 c_doc = partial(_cppreference, 'C')
 cpp_doc = partial(_cppreference, 'C++')
 
+
 async def haskell_doc(ctx, text: str):
-    """Search something on wiki.haskell.org"""
+    """Search something on wiki.haskell.org."""
 
     text = text.strip('`')
 

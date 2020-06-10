@@ -50,6 +50,7 @@ def failure(message: str) -> Embed:
 
     return simple_embed(message, "Failure", Color.red())
 
+
 def error_embed(message: str, title: str = "Error") -> Embed:
 
     return simple_embed(message, title, Color.red())
@@ -63,7 +64,7 @@ def authored(message: str, *, author: Union[Member, User]) -> Embed:
 
 
 def thumbnail(message: str, member: Union[Member, User], title: str = None) -> Embed:
-    
+
     embed = Embed(title=title, description=message, color=get_top_role_color(member, fallback_color=Color.green()))
     embed.set_thumbnail(url=str(member.avatar_url))
     return embed

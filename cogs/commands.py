@@ -1,14 +1,15 @@
+import asyncio
+import datetime
+import os
+import platform
+import random
+import string
+import sys
+import traceback
+
 import discord
 from discord.ext import commands
 
-import platform
-import sys
-import asyncio
-import string
-import random
-import os
-import traceback
-import datetime
 
 class Commands(commands.Cog):
     def __init__(self, client):
@@ -20,16 +21,14 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-      """
-      Invite link for Bot
-      """
-      await ctx.send('Invite Me to Your server ! **THE INVITE LINK IS** : https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot')
+        """Invite link for Bot."""
+        await ctx.send(
+            'Invite Me to Your server ! **THE INVITE LINK IS** : '
+            'https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot')
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):
-        """
-        Get information about the server.
-        """
+        """Get information about the server."""
 
         embed = discord.Embed(colour=discord.Color.gold())
         embed.title = f"{ctx.guild.name}'s stats and information."
@@ -52,12 +51,13 @@ class Commands(commands.Cog):
 
         embed.set_footer(text=f'ID: {ctx.guild.id}')
 
-        return await ctx.send(embed=embed) 
+        return await ctx.send(embed=embed)
 
     @commands.command(name='userinfo', aliases=['user'])
     async def userinfo(self, ctx, *, member: discord.Member = None):
         """
         Get information about you, or a specified member.
+
         `member`: The member to get information from. Can be a Mention, Name or ID.
         """
 
@@ -78,33 +78,32 @@ class Commands(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url_as(format='png'))
         embed.set_footer(text=f'ID: {member.id}')
 
-        return await ctx.send(embed=embed) 
+        return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
     async def spam(self, ctx, times=100000, text=None):
-      def randomString(stringLength=8):
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(stringLength))
-      if text == None:
-        num = random.randint(4, 16)
-        for i in range(times):
-          await ctx.send(randomString(num))
-          await asyncio.sleep(1)
-      else:
-        num = random.randint(4, 16)
-        for i in range(times):
-          await ctx.send(text)
-          await asyncio.sleep(1)
+        def randomString(stringLength=8):
+            letters = string.ascii_lowercase
+            return ''.join(random.choice(letters) for i in range(stringLength))
+        if text is None:
+            num = random.randint(4, 16)
+            for i in range(times):
+                await ctx.send(randomString(num))
+                await asyncio.sleep(1)
+        else:
+            num = random.randint(4, 16)
+            for i in range(times):
+                await ctx.send(text)
+                await asyncio.sleep(1)
 
     @commands.command(aliases=['cembed', 'emb', 'new'])
     async def create(self, ctx, *, msg):
-      """Create an embed"""
-      await ctx.send(msg)
-
+        """Create an embed."""
+        await ctx.send(msg)
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, extension):
-        """Loads a cog"""
+        """Loads a cog."""
         try:
             self.bot.load_extension(f'cogs.{extension}')
         except Exception:
@@ -125,9 +124,10 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     async def restart(self, ctx):
-      """Restart The bot"""
-      await self.bot.logout()
-      os.system("python main.py")
+        """Restart The bot."""
+        await self.bot.logout()
+        os.system("python main.py")
+
 
 def setup(client):
     client.add_cog(Commands(client))

@@ -1,10 +1,10 @@
-import json
 import zlib
 from functools import partial
 
 import aiohttp
 
 to_bytes = partial(bytes, encoding='utf-8')
+
 
 def _to_tio_string(couple):
     name, obj = couple[0], couple[1]
@@ -45,4 +45,4 @@ class Tio:
 
                 data = await res.read()
                 data = data.decode('utf-8')
-                return data.replace(data[:16], '') # remove token
+                return data.replace(data[:16], '')  # remove token

@@ -1,26 +1,15 @@
 import re
 import urllib.parse
 from functools import partial
-# import sys
+
+from bs4 import BeautifulSoup
 
 import aiohttp
 import discord
-from bs4 import BeautifulSoup
-# from bs4.element import NavigableString
 from markdownify import MarkdownConverter
-
-# import cogs.code_utils._used
 
 
 class DocMarkdownConverter(MarkdownConverter):
-    # def convert_code(self, el, text):
-    #     """Undo `markdownify`s underscore escaping."""
-    #     print(el)
-    #     print(el.strings)
-    #     print(text)
-
-    #     return f"`{text}`".replace('\\', '')
-
     def convert_pre(self, el, text):
         """Wrap any codeblocks in `py` for syntax highlighting."""
 
@@ -34,23 +23,16 @@ def markdownify(html):
 
 
 async def _process_mozilla_doc(ctx, url):
-    """
-    From a given url from developers.mozilla.org, processes format,
-    returns tag formatted content
-    """
+    """Get tag formatted content from given url from developers.mozilla.org."""
 
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
             if response.status == 404:
-                return await ctx.send(f'No results')
+                return await ctx.send('No results')
             if response.status != 200:
                 return await ctx.send(f'An error occurred (status code: {response.status}). Retry later.')
 
             body = BeautifulSoup(await response.text(), 'lxml').find('body')
-
-    # if body.get('class')[0] == 'error':
-    #     # 404
-    #     return await ctx.send(f'No results for `{text}`')
 
     # First tag not empty
     contents = body.find(id='wikiArticle').find(lambda x: x.name == 'p' and x.text)
@@ -58,8 +40,9 @@ async def _process_mozilla_doc(ctx, url):
 
     return result
 
+
 async def html_ref(ctx, text):
-    """Displays informations on an HTML tag"""
+    """Displays information on an HTML tag."""
 
     text = text.strip('<>`')
 
@@ -77,8 +60,9 @@ async def html_ref(ctx, text):
 
     await ctx.send(embed=emb)
 
+
 async def _http_ref(part, ctx, text):
-    """Displays informations about HTTP protocol"""
+    """Displays information about HTTP protocol."""
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
@@ -99,8 +83,9 @@ http_methods = partial(_http_ref, 'Methods')
 http_status = partial(_http_ref, 'Status')
 csp_directives = partial(_http_ref, 'Headers/Content-Security-Policy')
 
+
 async def _git_main_ref(part, ctx, text):
-    """Displays a git help page"""
+    """Displays a git help page."""
 
     text = text.strip('`')
 
@@ -119,7 +104,7 @@ async def _git_main_ref(part, ctx, text):
                 return await ctx.send(f'An error occurred (status code: {response.status}). Retry later.')
             if str(response.url) == 'https://git-scm.com/docs':
                 # Website redirects to home page
-                return await ctx.send(f'No results')
+                return await ctx.send('No results')
 
             soup = BeautifulSoup(await response.text(), 'lxml')
             sectors = soup.find_all('div', {'class': 'sect1'}, limit=3)
@@ -139,11 +124,13 @@ async def _git_main_ref(part, ctx, text):
 git_ref = partial(_git_main_ref, 'git-')
 git_tutorial_ref = partial(_git_main_ref, '')
 
+
 async def sql_ref(ctx, text):
-    """Displays reference on an SQL statement"""
+    """Displays reference on an SQL statement."""
 
     text = text.strip('`').lower()
-    if text in ('check', 'unique', 'not null'): text += ' constraint'
+    if text in ('check', 'unique', 'not null'):
+        text += ' constraint'
     text = re.sub(' ', '-', text)
 
     base_url = f"http://www.sqltutorial.org/sql-{text}/"
@@ -160,7 +147,8 @@ async def sql_ref(ctx, text):
 
             ps = []
             for tag in tuple(intro.next_siblings):
-                if tag.name == 'h2' and tag.text.startswith('SQL '): break
+                if tag.name == 'h2' and tag.text.startswith('SQL '):
+                    break
                 if tag.name == 'p':
                     ps.append(tag)
 
@@ -172,8 +160,9 @@ async def sql_ref(ctx, text):
 
             await ctx.send(embed=emb)
 
+
 async def haskell_ref(ctx, text):
-    """Displays informations on given Haskell topic"""
+    """Displays information on given Haskell topic."""
 
     text = text.strip('`')
 
@@ -192,7 +181,12 @@ async def haskell_ref(ctx, text):
             soup = BeautifulSoup(await response.text(), 'lxml').find('div', id='content')
 
             title = soup.find('h1', id='firstHeading').string
-            description = '\n'.join([markdownify(p) for p in  soup.find_all(lambda x: x.name in ['p', 'li'] and tuple(x.parents)[1].name not in ('td', 'li'), limit=6)])[:2048]
+            description = '\n'.join([
+                markdownify(p) for p in soup.find_all(
+                    lambda x: x.name in ['p', 'li'] and
+                    tuple(x.parents)[1].name not in ('td', 'li'), limit=6
+                )
+            ])[:2048]
 
             emb = discord.Embed(title=title, description=description, url=url)
             emb.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")

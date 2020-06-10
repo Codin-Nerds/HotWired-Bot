@@ -7,6 +7,7 @@ ig_url = "https://instagram.com/the.codin.hole/"
 github_repo_link = "https://github.com/janaSunrise"
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
+
 class Infraction(Enum):
     warning = Color.gold()
     kick = Color.gold()
