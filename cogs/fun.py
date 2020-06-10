@@ -37,7 +37,6 @@ class Fun(commands.Cog):
       if ctx.author == member:
           embed = info(f"{member.mention} punched him/her self LMAO", ctx.me, "Punch in The Face!")
           img_url = random.choice(img_links)
-
       else:
           embed = info(f"{member.mention} got punched in the face by: {ctx.author.mention}!", ctx.me, "Punch In The Face!")
           img_url = random.choice(img_links)
