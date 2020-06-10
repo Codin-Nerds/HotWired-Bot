@@ -1,4 +1,3 @@
-import json
 import zlib
 from functools import partial
 
