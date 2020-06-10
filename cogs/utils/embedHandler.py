@@ -50,6 +50,7 @@ def failure(message: str) -> Embed:
 
     return simple_embed(message, "Failure", Color.red())
 
+
 def error_embed(message: str, title: str = "Error") -> Embed:
 
     return simple_embed(message, title, Color.red())

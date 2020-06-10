@@ -1,15 +1,17 @@
-import discord
-from discord.ext import commands
-
-from cogs.utils.embedHandler import error_embed
-from cogs.utils import constants
-import setup
-
 import asyncio
+import textwrap
 from itertools import cycle
+
+import discord
+import setup
+from cogs.utils import constants
+# from cogs.utils.embedHandler import error_embed
+from discord.ext import commands
 
 TOKEN = setup.BOT_TOKEN
 PREFIX = constants.COMMAND_PREFIX
+SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
+INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=688275913535914014)
 
@@ -21,6 +23,7 @@ status = [
     "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
 ]
 
+
 async def change_status():
     await client.wait_until_ready()
     msgs = cycle(status)
@@ -30,52 +33,60 @@ async def change_status():
         await client.change_presence(activity=discord.Game(name=current_status))
         await asyncio.sleep(10800)
 
+
 @client.event
 async def on_ready():
     print('Bot is Ready.')
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
+
 @client.event
 async def on_message(message):
     pass
 
+
 @client.event
-async def on_guild_join(guild : discord.Guild):
+async def on_guild_join(guild: discord.Guild):
 
     hw = client.get_user(715545167649570977)
     logchannel = client.get_channel(704197974577643550)
 
     embed = discord.Embed(
-        title = "Greetings" ,
-        description="Thanks for adding HotWired in this server , "
-                    "**HotWired** is a multi purpose discord bot that has Moderation commands , "
-                    "Fun commands , Music commands and many more!. The bot is still in dev so you can expect more commands "
-                    f"and features.To get a list of commands , please use **{PREFIX}help** " ,
-        color = 0x2f3136
+        title="Greetings",
+        description=textwrap.dedent(f"""
+            Thanks for adding HotWired in this server,
+            **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
+            The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
+        """),
+        color=0x2f3136
     )
 
-    embed.add_field(name="General information",
-                    value="**► __Bot Id__**: 715545167649570977 "
-                          "\n**► __Developer__** : **TheOriginalDude#0585** "
-                          f"\n**► __Prefix__** : {PREFIX} "
-                    )
+    embed.add_field(
+        name="General information",
+        value=textwrap.dedent(f"""
+                              **► __Bot Id__**: 715545167649570977
+                              **► __Developer__**: **TheOriginalDude#0585**
+                              **► __Prefix__**: {PREFIX}
+        """)
+    )
+    embed.add_field(
+        name="**Links**",
+        value=textwrap.dedent(f"""
+                              **►** [Support Server]({SUPPORT_SERVER})
+                              **►** [Invite link]({INVITE})
+        """)
+    )
 
-    embed.add_field(name="**Links**",
-                    value = f"**►** [Support Server](https://discord.gg/CgH6Sj6)"
-                            f"\n**►** [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** "
-                    )
-
-    embed.set_thumbnail(url = hw.avatar_url)
+    embed.set_thumbnail(url=hw.avatar_url)
 
     try:
-        await guild.system_channel.send(embed = embed)
-
+        await guild.system_channel.send(embed=embed)
     except:
         pass
 
     await logchannel.send(
         f"The bot has been added to **{guild.name}** , "
-        f"We've reached our **{len(client.guilds)}th** server! :champagne_glass: "
+        f"We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
     )
 
 # @client.event
@@ -93,8 +104,10 @@ async def on_guild_join(guild : discord.Guild):
 #     await ctx.send(embed=embed)
 
 #   if isinstance(error, commands.BotMissingPermissions):
-#     embed = error_embed("The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR")
-#     await ctx.send(embed=embed)
+#    embed = error_embed(
+#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
+#    )
+#    await ctx.send(embed=embed)
 
 
 def SetupBot(bot):
@@ -113,6 +126,7 @@ def SetupBot(bot):
     bot.load_extension("cogs.tools")
 
     bot.run(TOKEN)
+
 
 client.loop.create_task(change_status())
 

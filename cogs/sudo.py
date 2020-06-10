@@ -1,11 +1,12 @@
-import discord
-from discord.ext import commands
-
-import platform
-import psutil
-import GPUtil
-from tabulate import tabulate
 import datetime
+import platform
+
+import psutil
+
+import discord
+import GPUtil
+from discord.ext import commands
+from tabulate import tabulate
 
 
 class Sudo(commands.Cog):
@@ -149,7 +150,7 @@ class Sudo(commands.Cog):
                   • Current Frequency: **{cpufreq.current:.2f}Mhz**
                 """
 
-        cpu_usage = f"• CPU Usage Per Core:"
+        cpu_usage = "• CPU Usage Per Core:"
 
         for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
             cpu_usage += f"\n\t• Core **{i + 1}** : **{percentage}%**"

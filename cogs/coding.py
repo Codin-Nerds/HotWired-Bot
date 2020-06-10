@@ -1,37 +1,38 @@
-from .code_utils import _doc
 import asyncio
 import os
 import re
 import sys
 import urllib.parse
-from io import BytesIO
 from hashlib import algorithms_available as algorithms
+from io import BytesIO
+
+from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 
 import aiohttp
 import discord
 import stackexchange as se
-# from pytio import Tio, TioRequest
-from bs4 import BeautifulSoup
-from bs4.element import NavigableString
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 from discord.utils import escape_mentions
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from .code_utils import _ref
-from .code_utils import _doc
-from .code_utils._used import typing, get_raw, paste
-# from _tio import Tio, TioRequest
+from .code_utils import _doc, _ref
+from .code_utils._used import get_raw, paste, typing
+
 from.code_utils._tio import Tio
 
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
 class Coding(commands.Cog):
-    """To test code and check docs"""
+    """To test code and check docs."""
 
     def __init__(self, bot):
         self.bot = bot
 
     def get_content(self, tag):
-        """Returns content between two h2 tags"""
+        """Returns content between two h2 tags."""
 
         bssiblings = tag.next_siblings
         siblings = []
@@ -82,24 +83,25 @@ class Coding(commands.Cog):
 
     @commands.command(
         help='''run <language> [--wrapped] [--stats] <code>
-for command-line-options, compiler-flags and arguments you may
-add a line starting with this argument, and after a space add
-your options, flags or args.
-stats option displays more informations on execution consumption
-wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
-<code> may be normal code, but also an attached file, or a link from [hastebin](https://hastebin.com) or [Github gist](https://gist.github.com)
-If you use a link, your command must end with this syntax:
-`link=<link>` (no space around `=`)
-for instance : `do run python link=https://hastebin.com/resopedahe.py`
-The link may be the raw version, and with/without the file extension
-If the output exceeds 40 lines or Discord max message length, it will be put
-in a new hastebin and the link will be returned.
-When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
-Useful to hide your syntax fails or when you forgot to print the result.''',
+        for command-line-options, compiler-flags and arguments you may
+        add a line starting with this argument, and after a space add
+        your options, flags or args.
+        stats option displays more information on execution consumption
+        wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
+        <code> may be normal code, but also an attached file,
+        or a link from [hastebin](https://hastebin.com) or [Github gist](https://gist.github.com)
+        If you use a link, your command must end with this syntax:
+        `link=<link>` (no space around `=`)
+        for instance : `do run python link=https://hastebin.com/resopedahe.py`
+        The link may be the raw version, and with/without the file extension
+        If the output exceeds 40 lines or Discord max message length, it will be put
+        in a new hastebin and the link will be returned.
+        When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
+        Useful to hide your syntax fails or when you forgot to print the result.''',
         brief='Execute code in a given programming language'
     )
     async def run(self, ctx, language, *, code=''):
-        """Execute code in a given programming language"""
+        """Execute code in a given programming language."""
         # Powered by tio.run
 
         options = {
@@ -120,7 +122,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i) # remove following whitespace character
+                code.pop(i)  # remove following whitespace character
 
         code = ''.join(code)
 
@@ -205,7 +207,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
 
             if lang in self.bot.default:
                 lang = self.bot.default[lang]
-            if not lang in self.bot.languages:
+            if lang not in self.bot.languages:
                 matches = '\n'.join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` not available."
@@ -266,11 +268,10 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
         else:
             await returned.delete()
 
-
     @commands.command(aliases=['ref'])
     @typing
     async def reference(self, ctx, language, *, query: str):
-        """Returns element reference from given language"""
+        """Returns element reference from given language."""
 
         lang = language.strip('`')
 
@@ -282,7 +283,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
     @commands.command(aliases=['doc'])
     @typing
     async def documentation(self, ctx, language, *, query: str):
-        """Returns element reference from given language"""
+        """Returns element reference from given language."""
 
         lang = language.strip('`')
 
@@ -294,7 +295,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
     @commands.command()
     @typing
     async def man(self, ctx, *, page: str):
-        """Returns the manual's page for a (mostly Debian) linux command"""
+        """Returns the manual's page for a (mostly Debian) linux command."""
 
         base_url = f'https://man.cx/{page}'
         url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
@@ -337,7 +338,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
     async def stack(self, ctx, siteName, *, query: str):
         """Queries given StackExchange website and gives you top results. siteName is case-sensitive."""
 
-        if siteName[0].islower() or not siteName in dir(se):
+        if siteName[0].islower() or siteName not in dir(se):
             await ctx.send(f"{siteName} does not appear to be in the StackExchange network."
                            " Check the case and the spelling.")
 
@@ -365,7 +366,7 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
 
     @commands.command()
     async def list(self, ctx, *, group=None):
-        """Lists available choices for other commands"""
+        """Lists available choices for other commands."""
 
         choices = {
             "documentations": self.documented,
@@ -376,15 +377,15 @@ Useful to hide your syntax fails or when you forgot to print the result.''',
 
         if group == 'languages':
             emb = discord.Embed(title=f"Available for {group}: {len(self.bot.languages)}",
-                                description=f'View them on [tio.run](https://tio.run/#), or in [JSON format](https://tio.run/languages.json)')
+                                description='View them on [tio.run](https://tio.run/#), or in [JSON format](https://tio.run/languages.json)')
             return await ctx.send(embed=emb)
 
-        if not group in choices:
+        if group not in choices:
             emb = discord.Embed(title="Available listed commands", description=f"`languages`, `{'`, `'.join(choices)}`")
             return await ctx.send(embed=emb)
 
         availables = choices[group]
-        description=f"`{'`, `'.join([*availables])}`"
+        description = f"`{'`, `'.join([*availables])}`"
         emb = discord.Embed(title=f"Available for {group}: {len(availables)}", description=description)
         await ctx.send(embed=emb)
 

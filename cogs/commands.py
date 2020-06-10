@@ -1,14 +1,15 @@
+import asyncio
+import datetime
+import os
+import platform
+import random
+import string
+import sys
+import traceback
+
 import discord
 from discord.ext import commands
 
-import platform
-import sys
-import asyncio
-import string
-import random
-import os
-import traceback
-import datetime
 
 class Commands(commands.Cog):
     def __init__(self, client):
@@ -20,9 +21,7 @@ class Commands(commands.Cog):
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):
-        """
-        Get information about the server.
-        """
+        """Get information about the server."""
 
         embed = discord.Embed(colour=discord.Color.gold())
         embed.title = f"{ctx.guild.name}'s stats and information."
@@ -51,6 +50,7 @@ class Commands(commands.Cog):
     async def userinfo(self, ctx, *, member: discord.Member = None):
         """
         Get information about you, or a specified member.
+
         `member`: The member to get information from. Can be a Mention, Name or ID.
         """
 
@@ -78,7 +78,7 @@ class Commands(commands.Cog):
         def randomString(stringLength=8):
             letters = string.ascii_lowercase
             return ''.join(random.choice(letters) for i in range(stringLength))
-        if text == None:
+        if text is None:
             num = random.randint(4, 16)
             for i in range(times):
                 await ctx.send(randomString(num))
@@ -91,13 +91,12 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=['cembed', 'emb', 'new'])
     async def create(self, ctx, *, msg):
-        """Create an embed"""
+        """Create an embed."""
         await ctx.send(msg)
-
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, extension):
-        """Loads a cog"""
+        """Loads a cog."""
         try:
             self.bot.load_extension(f'cogs.{extension}')
         except Exception:
@@ -118,9 +117,10 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     async def restart(self, ctx):
-        """Restart The bot"""
+        """Restart The bot."""
         await self.bot.logout()
         os.system("python main.py")
+
 
 def setup(client):
     client.add_cog(Commands(client))

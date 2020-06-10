@@ -1,9 +1,10 @@
-import discord
-from discord.ext import commands
 import io
 import textwrap
 import traceback
 from contextlib import redirect_stdout
+
+from discord.ext import commands
+
 
 class CodeSandbox(commands.Cog):
 
@@ -13,7 +14,7 @@ class CodeSandbox(commands.Cog):
 
     @commands.command()
     async def code(self, ctx):
-        await ctx.send(f'code working!')
+        await ctx.send('code working!')
 
     def _clean_code(self, code):
         if code.startswith('```') and code.endswith('```'):
@@ -66,6 +67,7 @@ class CodeSandbox(commands.Cog):
                 else:
                     self._last_result = ret
                     await ctx.send(f'```py\n{value}{ret}\n```')
+
 
 def setup(client):
     client.add_cog(CodeSandbox(client))

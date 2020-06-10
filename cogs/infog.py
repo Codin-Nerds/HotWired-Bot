@@ -1,5 +1,5 @@
-import discord
 from discord.ext import commands
+
 
 class Infog(commands.Cog):
 
@@ -9,6 +9,7 @@ class Infog(commands.Cog):
     @commands.command()
     async def infog(self, ctx):
         await ctx.send("Info gathered")
+
 
 def setup(client):
     client.add_cog(Infog(client))
