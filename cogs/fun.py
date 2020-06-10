@@ -18,7 +18,6 @@ class Fun(commands.Cog):
       if ctx.author == member:
           embed = info(f"{member.mention} slapped him/her self LMAO", ctx.me, "Slap in The Face!")
           img_url = "https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
-
       else:
           embed = info(f"{member.mention} got slapped in the face by: {ctx.author.mention}!", ctx.me, "Slap In The Face!")
           img_url = "https://media.giphy.com/media/Ql5voX2wAVUYw/giphy.gif"
