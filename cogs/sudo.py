@@ -55,9 +55,9 @@ class Sudo(Cog):
         implementation = platform.python_implementation()
 
         general = textwrap.dedent(f"""
-                                  • Servers: **{len(self.client.guilds)}**
-                                  • Commands: **{len(self.client.commands)}**
-                                  • members: **{len(set(self.client.get_all_members()))}**
+                                  • Servers: **{len(self.bot.guilds)}**
+                                  • Commands: **{len(self.bot.commands)}**
+                                  • members: **{len(set(self.bot.get_all_members()))}**
         """)
         process = textwrap.dedent(f"""
                                   • Memory Usage: **{ram_usage:.2f}MiB**
@@ -74,8 +74,8 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ General**", value=general, inline=True)
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
         embed.add_field(name="**❯❯ Process**", value=process, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s Stats", icon_url=self.client.user.avatar_url)
-        embed.set_footer(text=f"MIT License - {self.client.user.name}, {datetime.datetime.utcnow().year}. Made by TheOriginalDude#0585.")
+        embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)
+        embed.set_footer(text=f"MIT License - {self.bot.user.name}, {datetime.datetime.utcnow().year}. Made by TheOriginalDude#0585.")
 
         await ctx.send(embed=embed)
 
@@ -101,7 +101,7 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
         embed.add_field(name="**❯❯ Hardware**", value=hardware, inline=True)
         embed.add_field(name="**❯❯ Version**", value=version, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s System Data", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
@@ -118,7 +118,7 @@ class Sudo(Cog):
 
         embed = Embed(title="BOT BOOT INFO", color=Color.red())
         embed.add_field(name="**❯❯ Boot**", value=boot, inline=True)
-        embed.set_author(name=f"{self.client.user.name}'s Boot Data", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s Boot Data", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
@@ -147,7 +147,7 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ Cores**", value=cores, inline=False)
         embed.add_field(name="**❯❯ Frequency**", value=frequency, inline=False)
         embed.add_field(name="**❯❯ CPU Usage**", value=cpu_usage, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s CPU Info", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s CPU Info", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
@@ -175,7 +175,7 @@ class Sudo(Cog):
         embed = Embed(title="BOT MEMORY INFO", color=Color.red())
         embed.add_field(name="**❯❯ Virtual Memory**", value=virtual_memory, inline=False)
         embed.add_field(name="**❯❯ Swap Memory**", value=swap_memory, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s Memory Info", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s Memory Info", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
@@ -220,7 +220,7 @@ class Sudo(Cog):
         """)
 
         embed.add_field(name="**❯❯ Disk IO Stats**", value=diskio_stats, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s Disk Info", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s Disk Info", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
@@ -260,7 +260,7 @@ class Sudo(Cog):
         embed = Embed(title="BOT NET STATS", color=Color.red())
         embed.add_field(name="**❯❯ Net Interface Stats**", value=net_interfaces, inline=False)
         embed.add_field(name="**❯❯ Net IO Stats**", value=netio_stats, inline=False)
-        embed.set_author(name=f"{self.client.user.name}'s Network Info", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"{self.bot.user.name}'s Network Info", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
