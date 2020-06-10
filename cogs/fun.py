@@ -87,7 +87,6 @@ class Fun(commands.Cog):
           embed.set_image(url=img_url)
 
           await ctx.send(embed=embed)
-
       else:
         if ctx.author == member:
           embed = info(f"You got a Cookie! {member.mention} ➡ :cookie: :cookie: :cookie: \n**You got +{num} points!**", ctx.me, "Cookie Giver!")
