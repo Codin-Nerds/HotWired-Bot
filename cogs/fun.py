@@ -1,16 +1,19 @@
 import random
 
 import discord
+from discord.ext import Bot
+from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
+                                  command, cooldown)
+
 from cogs.utils.embedHandler import error_embed, info
-from discord.ext import commands
 
 
-class Fun(commands.Cog):
-    def __init__(self, bot):
+class Fun(Cog):
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.command()
-    async def slap(self, ctx, member: discord.Member):
+    @command()
+    async def slap(self, ctx: Context, member: discord.Member) -> None:
         """Slap a User."""
         if ctx.author == member:
             embed = info(f"{member.mention} slapped him/her self LMAO", ctx.me, "Slap in The Face!")
@@ -21,8 +24,8 @@ class Fun(commands.Cog):
         embed.set_image(url=img_url)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def punch(self, ctx, member: discord.Member):
+    @command()
+    async def punch(self, ctx: Context, member: discord.Member) -> None:
         """Punch a User."""
         img_links = [
             'https://media.giphy.com/media/13HXKG2HGN8aPK/giphy.gif',
@@ -37,23 +40,23 @@ class Fun(commands.Cog):
         embed.set_image(url=img_url)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def shoot(self, ctx, member: discord.Member):
+    @command()
+    async def shoot(self, ctx: Context, member: discord.Member) -> None:
         """Shoot a User."""
         embed = info(f"{member.mention} shot by {ctx.author.mention}  :gun: :boom:", ctx.me, "Boom! Bam! He's Dead!")
         embed.set_image(url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["table", "flip"])
-    async def throw(self, ctx):
+    @command(aliases=["table", "flip"])
+    async def throw(self, ctx: Context) -> None:
         """Throw the table."""
         embed = info(f"{ctx.author.mention} :boom:", ctx.me, "Table Throw!")
         embed.set_image(url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['cookies', 'cook'])
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def cookie(self, ctx, member: discord.Member = None):
+    @command(aliases=['cookies', 'cook'])
+    @cooldown(1, 30, BucketType.user)
+    async def cookie(self, ctx: Context, member: discord.Member = None) -> None:
         """Give a User a cookie."""
         if member is None:
             member = ctx.author
@@ -82,13 +85,14 @@ class Fun(commands.Cog):
                 await ctx.send(embed=embed)
 
     @cookie.error
-    async def cookie_error(self, ctx, error):
-        if isinstance(error, commands.BadArgument):
-            embed = error_embed("You Can get a Cookie Every **2 Hours Once**", "❌ERROR")
+    async def cookie_error(self, ctx: Context, error: Exception) -> None:
+        if isinstance(error, BadArgument):
+            embed = error_embed("You Can get a Cookie **Once Every 2 Hours**", "❌ERROR")
             await ctx.send(embed=embed)
+
 # TODO: kiss, hug, pat => commands to be added
 # cuddle hug insult kiss lick nom pat poke slap stare highfive bite greet punch handholding tickle kill hold pats wave boop
 
 
-def setup(bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Fun(bot))
