@@ -2,6 +2,13 @@ import asyncio
 import discord
 from discord.ext.commands import Paginator as CommandPaginator
 
+FIRST_EMOJI = "\u23EE"   # [:track_previous:]
+LEFT_EMOJI = "\u2B05"    # [:arrow_left:]
+RIGHT_EMOJI = "\u27A1"   # [:arrow_right:]
+LAST_EMOJI = "\u23ED"    # [:track_next:]
+PAGE_NUM_EMOJI = ":1234: "
+STOP_EMOJI = ":stop_button: "
+INFO_EMOJI = ":information_source: "
 
 class CannotPaginate(Exception):
     pass
@@ -49,13 +56,13 @@ class Pages:
         self.paginating = len(entries) > per_page
         self.show_entry_count = show_entry_count
         self.reaction_emojis = [
-            ('\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}', self.first_page),
-            ('\N{BLACK LEFT-POINTING TRIANGLE}', self.previous_page),
-            ('\N{BLACK RIGHT-POINTING TRIANGLE}', self.next_page),
-            ('\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}', self.last_page),
-            ('\N{INPUT SYMBOL FOR NUMBERS}', self.numbered_page),
-            ('\N{BLACK SQUARE FOR STOP}', self.stop_pages),
-            ('\N{INFORMATION SOURCE}', self.show_help),
+            (f'{FIRST_EMOJI}', self.first_page),
+            (f'{LEFT_EMOJI}', self.previous_page),
+            (f'{RIGHT_EMOJI}', self.next_page),
+            (f'{LAST_EMOJI}', self.last_page),
+            (f'{PAGE_NUM_EMOJI}', self.numbered_page),
+            (f'{STOP_EMOJI}', self.stop_pages),
+            (f'{INFO_EMOJI}', self.show_help),
         ]
 
         if ctx.guild is not None:
