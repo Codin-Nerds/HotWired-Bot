@@ -1,17 +1,20 @@
 import traceback
 
 import discord
-from discord.ext import commands
+from discord.ext import Bot
+from discrod.ext.commands import Cog
 
 
-class Custom(commands.Cog):
+class Custom(Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot: Bot) -> None:
+        bot.bot = bot
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.id == self.client.user.id:
+    @Cog.listener()
+    async def on_message(self, message: str) -> None:
+
+        # Ignore bot messages
+        if message.author == self.bot.user:
             return
 
         if message.content.lower().startswith("help"):
@@ -19,8 +22,8 @@ class Custom(commands.Cog):
 
         await self.client.process_commands(message)
 
-    @commands.Cog.listener()
-    async def on_error(self, event, *args, **kwargs):
+    @Cog.listener()
+    async def on_error(self, event, *args, **kwargs) -> None:
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
             async with self.session.post('https://www.hastebin.com/documents', data=error_message) as resp:
@@ -38,5 +41,5 @@ class Custom(commands.Cog):
             traceback.print_exc()
 
 
-def setup(client):
-    client.add_cog(Custom(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Custom(bot))
