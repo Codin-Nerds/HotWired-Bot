@@ -1,5 +1,6 @@
 import random
 
+from discord import Embed, Color
 from discord.ext import Bot
 from discord.ext.commands import Cog, command, Context
 
@@ -41,9 +42,19 @@ class Games(Cog):
         """Roll a random number."""
         if max_limit - min_limit > 2:
             number = random.randint(min_limit, max_limit)
-            await ctx.send('The random number is ' + str(number))
+            embed = Embed(
+                title="Random Roll",
+                color=Color.blue(),
+                description=f"The random number is: {number}"
+            )
+            await ctx.send(embed=embed)
         else:
-            await ctx.send('Please specify numbers with difference of **at least 2**')
+            embed = Embed(
+                title="Random Roll",
+                color=Color.red(),
+                description="Please specify numbers with difference of **at least 2**"
+            )
+            await ctx.send(embed=embed)
 
     @command(aliases=['8ball'])
     async def ball8(self, ctx: Context, *, question: str) -> None:
@@ -57,7 +68,12 @@ class Games(Cog):
         elif reply_type == 3:
             answer = random.choice(UNSURE_BALL8_RESPONSES)
 
-        await ctx.send(f"Question: {question}\nAnswer: {answer}")
+        embed = Embed(
+            title="Magic 8-ball",
+            color=Color.blurple(),
+        )
+        embed.add_field(name="Question", value=question)
+        embed.add_field(name="Answer", value=answer)
 
 
 def setup(bot: Bot):
