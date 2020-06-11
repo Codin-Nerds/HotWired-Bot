@@ -12,17 +12,32 @@ class Custom(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self.dev_mode = constants.DEV_MODE
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == self.client.user.id:
-            return
-
         if message.author.bot:  # make sure the bot doesn't respond to other bots
             return
 
         await self.client.process_commands(message)
+
+    @commands.Cog.listener()
+    async def on_error(self, event, *args, **kwargs):
+        error_message = f"```py\n{traceback.format_exc()}\n```"
+        if len(error_message) > 2000:
+            async with self.session.post('https://www.hastebin.com/documents', data=error_message) as resp:
+                error_message = 'https://www.hastebin.com/' + (await resp.json())['key']
+
+        em = discord.Embed(
+            color=discord.Color.red(),
+            description=error_message,
+            title=event
+        )
+
+        if not constants.DEV_MODE:
+            # await self.error_hook.send(embed=em)
+            await self.client.send_message(embed=em)
+        else:
+            traceback.print_exc()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
@@ -34,8 +49,8 @@ class Custom(commands.Cog):
             title="Greetings",
             description=textwrap.dedent(f"""
                 Thanks for adding HotWired in this server,
-                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands 
-                and many more!. 
+                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, 
+                Music commands and many more!. 
                 The bot is still in dev so you can expect more commands and features.To get a list of commands , 
                 please use **{PREFIX}help** 
             """),
@@ -53,9 +68,8 @@ class Custom(commands.Cog):
         embed.add_field(
             name="**Links**",
             value=textwrap.dedent(f"""
-                                  **►** [Support Server]({constants.SUPPORT_SERVER})
+                                  **►** [Support Server]({constants.discord_server})
                                   **►** [Invite link]({constants.invite_link})
-                                  **►** [Substitute Invite link]({constants.admin_invite_link})
             """)
         )
 
@@ -68,37 +82,16 @@ class Custom(commands.Cog):
 
         await logchannel.send(
             f"The bot has been added to **{guild.name}** , "
-            f"We've reached our **{len(self.client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
+            f"We've reached our **{len(self.client.guilds)}th** server! :champagne_glass: "
         )
-
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         logchannel = self.client.get_channel(704197974577643550)
 
         await logchannel.send(
-            f"The bot has been Removed From **{guild.name}** ! It Sucks! :sob: :sneezing_face: "
+            f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: "
         )
-
-
-    @commands.Cog.listener()
-    async def on_error(self, event, *args, **kwargs):
-        error_message = f"```\n{traceback.format_exc()}\n```"
-        if len(error_message) > 2000:
-            async with self.session.post('https://www.hastebin.com/documents', data=error_message) as resp:
-                error_message = 'https://www.hastebin.com/' + (await resp.json())['key']
-
-        em = discord.Embed(
-            color=discord.Color.red(),
-            description=error_message,
-            title=event
-        )
-
-        if not self.dev_mode:
-            # await self.error_hook.send(embed=em)
-            await self.client.send_message(embed=em)
-        else:
-            traceback.print_exc()
 
 
 def setup(client):

@@ -3,6 +3,7 @@ from itertools import cycle
 
 import discord
 import setup
+
 from cogs.utils import constants
 # from cogs.utils.embedHandler import error_embed
 from discord.ext import commands

@@ -1,10 +1,8 @@
 import asyncio
 import datetime
 import os
-import platform
 import random
 import string
-import sys
 import traceback
 
 import discord
@@ -15,7 +13,7 @@ class Commands(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='serverinfo', aliases=['server'])
+    @commands.command(aliases=['server'])
     async def serverinfo(self, ctx):
         """Get information about the server."""
 
@@ -42,7 +40,7 @@ class Commands(commands.Cog):
 
         return await ctx.send(embed=embed)
 
-    @commands.command(name='userinfo', aliases=['user'])
+    @commands.command(aliases=['user'])
     async def userinfo(self, ctx, *, member: discord.Member = None):
         """
         Get information about you, or a specified member.
@@ -94,7 +92,7 @@ class Commands(commands.Cog):
     async def load(self, ctx, *, extension):
         """Loads a cog."""
         try:
-            self.bot.load_extension(f'cogs.{extension}')
+            self.client.load_extension(f'cogs.{extension}')
         except Exception:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
@@ -104,8 +102,8 @@ class Commands(commands.Cog):
     async def _reload(self, ctx, *, extension):
         """Reloads a module."""
         try:
-            self.bot.unload_extension(f'cogs.{extension}')
-            self.bot.load_extension(f'cogs.{extension}')
+            self.client.unload_extension(f'cogs.{extension}')
+            self.client.load_extension(f'cogs.{extension}')
         except Exception:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
@@ -114,7 +112,7 @@ class Commands(commands.Cog):
     @commands.command(hidden=True)
     async def restart(self, ctx):
         """Restart The bot."""
-        await self.bot.logout()
+        await self.client.logout()
         os.system("python main.py")
 
 
