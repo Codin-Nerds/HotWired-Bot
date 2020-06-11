@@ -14,10 +14,6 @@ from discord.ext import commands
 class Commands(commands.Cog):
     def __init__(self, client):
         self.client = client
-        try:
-            self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
-        except IndexError:
-            self.dev_mode = True
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):

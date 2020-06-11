@@ -12,7 +12,7 @@ class Custom(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self.dev_mode = True
+        self.dev_mode = constants.DEV_MODE
 
     @commands.Cog.listener()
     async def on_message(self, message):
