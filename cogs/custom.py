@@ -4,7 +4,7 @@ import discord
 from discord.ext import Bot
 
 from cogs.utils.embedHandler import error_embed, info
-from discrod.ext.commands import Cog, command, has_permissions, Context
+from discord.ext.commands import Cog, command, has_permissions, Context
 
 
 class Custom(Cog):

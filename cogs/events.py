@@ -2,8 +2,8 @@ import traceback
 
 from discord.ext import Bot
 
-from discrod import Color, Embed, Message
-from discrod.ext.commands import Cog
+from discord import Color, Embed, Message
+from discord.ext.commands import Cog
 
 
 class Custom(Cog):

@@ -15,7 +15,7 @@ class Moderation(Cog):
     @command()
     @bot_has_permissions(kick_members=True)
     @has_permissions(kick_members=True)
-    async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "N/A") -> None:
+    async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "No reason.") -> None:
         """Kick a User."""
         embed = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed.add_field(name="Type", value="Kick")
