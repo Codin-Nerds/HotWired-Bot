@@ -50,11 +50,11 @@ class Games(Cog):
         """Play 8ball."""
         reply_type = random.randint(1, 3)
 
-        if reply_type == 1:  # Positive reply
+        if reply_type == 1:
             answer = random.choice(POSITIVE_BALL8_RESPONSES)
-        elif reply_type == 2:  # Negative reply
+        elif reply_type == 2:
             answer = random.choice(NEGATIVE_BALL8_RESPONSES)
-        elif reply_type == 3:  # Unsure reply
+        elif reply_type == 3:
             answer = random.choice(UNSURE_BALL8_RESPONSES)
 
         await ctx.send(f"Question: {question}\nAnswer: {answer}")
