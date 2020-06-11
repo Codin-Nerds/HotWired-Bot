@@ -36,7 +36,6 @@ class Games(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    # Commands
     @command()
     async def roll(self, ctx: Context, min_limit: int = 1, max_limit: int = 10) -> None:
         """Roll a random number."""
