@@ -7,6 +7,7 @@ from cogs.utils.paginator import Pages
 
 class UrbanDictionaryPages(Pages):
     BRACKETED = re.compile(r'(\[(.+?)\])')
+
     def __init__(self, ctx, data):
         super().__init__(ctx, entries=data, per_page=1)
 
@@ -30,15 +31,8 @@ class UrbanDictionaryPages(Pages):
             title = entry['word']
 
         self.embed = e = discord.Embed(colour=0xE86222, title=title, url=entry['permalink'])
-        e.set_footer(text=f'by {entry["author"]}')
+        e.set_footer(text=f'Author : {entry["author"]}')
         e.description = self.cleanup_definition(entry['definition'])
-
-        try:
-            up, down = entry['thumbs_up'], entry['thumbs_down']
-        except KeyError:
-            pass
-        else:
-            e.add_field(name='Votes', value=f'\N{THUMBS UP SIGN} {up} \N{THUMBS DOWN SIGN} {down}', inline=False)
 
         try:
             date = discord.utils.parse_time(entry['written_on'][0:-1])
