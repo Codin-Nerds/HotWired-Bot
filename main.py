@@ -11,7 +11,7 @@ from discord.ext import commands
 TOKEN = setup.BOT_TOKEN
 PREFIX = constants.COMMAND_PREFIX
 
-client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=688275913535914014)
+client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=constants.owner_id)
 
 status = [
     "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",

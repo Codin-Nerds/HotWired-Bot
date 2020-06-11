@@ -4,6 +4,10 @@ from discord import Color
 
 DEV_MODE = True
 
+owner_id = 688275913535914014
+hotwired_id = 715545167649570977
+log_channel = 704197974577643550
+
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
 

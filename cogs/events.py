@@ -42,8 +42,8 @@ class Custom(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
 
-        hw = self.client.get_user(715545167649570977)
-        logchannel = self.client.get_channel(704197974577643550)
+        hw = self.client.get_user(constants.hotwired_id)
+        logchannel = self.client.get_channel(constants.log_channel)
 
         embed = discord.Embed(
             title="Greetings",
@@ -60,7 +60,7 @@ class Custom(commands.Cog):
         embed.add_field(
             name="General information",
             value=textwrap.dedent(f"""
-                                  **► __Bot Id__**: 715545167649570977
+                                  f**► __Bot Id__**: {constants.hotwired_id}
                                   **► __Developer__**: **TheOriginalDude#0585**
                                   **► __Prefix__**: {PREFIX}
             """)
@@ -87,7 +87,7 @@ class Custom(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
-        logchannel = self.client.get_channel(704197974577643550)
+        logchannel = self.client.get_channel(constants.log_channel)
 
         await logchannel.send(
             f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: "
