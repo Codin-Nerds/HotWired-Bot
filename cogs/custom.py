@@ -1,32 +1,34 @@
 import time
 
 import discord
+from discord.ext import Bot
+
 from cogs.utils.embedHandler import error_embed, info
-from discord.ext import commands
+from discrod.ext.commands import Cog, command, has_permissions, Context
 
 
-class Custom(commands.Cog):
+class Custom(Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
 
-    # Commands
-    @commands.command()
-    async def hello(self, ctx):
+    @command()
+    async def hello(self, ctx: Context) -> None:
+        """Greet a User."""
         await ctx.send('Hey there Buddy!')
 
-    @commands.command()
-    @commands.has_permissions(manage_messages=True)
-    async def ping(self, ctx):
+    @command()
+    @has_permissions(manage_messages=True)
+    async def ping(self, ctx: Context) -> None:
         """Shows bot ping."""
         start = time.perf_counter()
         message = await ctx.send(embed=info("Pong!", ctx.me))
         end = time.perf_counter()
-        duration = (end - start) * 1000
-        await message.edit(embed=info(f":ping_pong: {duration:.2f}ms", ctx.me, "Pong!"))
+        duration = round((end - start) * 1000, 2)
+        await message.edit(embed=info(f":ping_pong: Pong! ({duration}ms)", ctx.me))
 
-    @commands.command(aliases=['asking'])
-    async def howtoask(self, ctx):
+    @command(aliases=['asking'])
+    async def howtoask(self, ctx: Context) -> None:
         """How to ask a Question."""
         embed = info(
             "**1 ❯** Pick the appropriate channel\n"
@@ -40,8 +42,8 @@ class Custom(commands.Cog):
         await ctx.send('**A S K I N G   A   Q U E S T I O N ❓**')
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['thank', 'ty'])
-    async def thanks(self, ctx, member: discord.Member, *, reason=None):
+    @command(aliases=['thank', 'ty'])
+    async def thanks(self, ctx: Context, member: discord.Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
             embed = error_embed(f"{ctx.author.mention} **You Cannot Thank Yourself!**", "WARNING!")
@@ -58,5 +60,7 @@ class Custom(commands.Cog):
             await ctx.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(Custom(client))
+def setup(bot: Bot):
+    bot.add_cog(Custom(bot))
+
+# TODO: Custom is a bad name for a cog, this should be renamed
