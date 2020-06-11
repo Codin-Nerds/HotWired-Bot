@@ -7,7 +7,7 @@ import psutil
 from discord import Embed, Color, __version__ as discord_version
 import GPUtil
 from discord.ext import Bot
-from discord.ext.commands import Context, group, check, Cog
+from discord.ext.commands import Context, group, Cog
 
 
 class Sudo(Cog):
@@ -36,21 +36,20 @@ class Sudo(Cog):
         else:
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
-    def is_owner(ctx: Context) -> bool:
-        return ctx.author.id == 688275913535914014
-
     @group(hidden=True)
-    @check(is_owner)
-    async def sudo(self, ctx: Context) -> None:
+    async def sudo(self, ctx) -> None:
         """Administrative information."""
-
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid sudo command passed...')
+            embed = Embed(
+                description="Invalid sudo Command Passed!",
+                color=Color.red()
+            )
+            await ctx.send(embed=embed)
 
     @sudo.command()
     async def stats(self, ctx: Context) -> None:
         """Show full bot stats."""
-        ram_usage = self.process.memory_full_info().uss / 1024**2
+        ram_usage = self.process.memory_full_info().uss / 1024 ** 2
         cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
         implementation = platform.python_implementation()
 
@@ -283,6 +282,13 @@ class Sudo(Cog):
             embed.add_field(name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False)
 
         await ctx.send(embed=embed)
+
+    def cog_check(self, ctx: Context) -> bool:
+        """Only allow owner to invoke the commands in this cog."""
+        if ctx.author.id not in [688275913535914014]:
+            return False
+        else:
+            return True
 
 
 def setup(bot: Bot) -> None:

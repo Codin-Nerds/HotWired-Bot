@@ -9,16 +9,18 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 
-import _doc
-import _ref
 import aiohttp
 import discord
 import stackexchange as se
-from _tio import Tio
-from _used import get_raw, paste, typing
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 from discord.utils import escape_mentions
+
+from .code_utils import _doc, _ref
+from .code_utils._used import get_raw, paste, typing
+
+from.code_utils._tio import Tio
+
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
