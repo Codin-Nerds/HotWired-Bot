@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from utils.mathscrape import get_math_results
 from utils.wolframscrape import get_wolfram_data
+from .urbandict_utils.urbandictpages import UrbanDictionaryPages
 
 
 class Study(commands.Cog):
@@ -51,6 +52,26 @@ class Study(commands.Cog):
         embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
 
         await ctx.send(embed=embed)
+
+    @commands.command(name='urban')
+    async def _urban(self, ctx, *, word):
+        """Searches urban dictionary."""
+
+        url = 'http://api.urbandictionary.com/v0/define'
+        async with ctx.session.get(url, params={'term': word}) as resp:
+            if resp.status != 200:
+                return await ctx.send(f'An error occurred: {resp.status} {resp.reason}')
+
+            js = await resp.json()
+            data = js.get('list', [])
+            if not data:
+                return await ctx.send('No results found, sorry.')
+
+        try:
+            pages = UrbanDictionaryPages(ctx, data)
+            await pages.paginate()
+        except Exception as e:
+            await ctx.send(e)
 
 
 def setup(client):
