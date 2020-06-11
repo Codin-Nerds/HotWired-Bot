@@ -1,7 +1,8 @@
 import traceback
 
-import discord
 from discord.ext import Bot
+
+from discrod import Color, Embed, Message
 from discrod.ext.commands import Cog
 
 
@@ -11,10 +12,9 @@ class Custom(Cog):
         bot.bot = bot
 
     @Cog.listener()
-    async def on_message(self, message: str) -> None:
-
-        # Ignore bot messages
-        if message.author == self.bot.user:
+    async def on_message(self, message: Message) -> None:
+        # Check that the message is not from bot account
+        if message.author.bot:
             return
 
         if message.content.lower().startswith("help"):
@@ -29,8 +29,8 @@ class Custom(Cog):
             async with self.session.post('https://www.hastebin.com/documents', data=error_message) as resp:
                 error_message = 'https://www.hastebin.com/' + (await resp.json())['key']
 
-        em = discord.Embed(
-            color=discord.Color.red(),
+        em = Embed(
+            color=Color.red(),
             description=error_message,
             title=event
         )
