@@ -21,7 +21,6 @@ class CodeSandbox(commands.Cog):
             return '\n'.join(code.split('\n')[1:-1])
         return code.strip('`\n')
 
-    # TODO : try to restrict to verified users only.
     @commands.is_owner()
     @commands.command(name='eval', hidden=True)
     async def _eval(self, ctx, *, code: str):
@@ -41,20 +40,20 @@ class CodeSandbox(commands.Cog):
         buffer = io.StringIO()
 
         # function placeholder
-        to_compile = f'async def code():\n{textwrap.indent(code, " ")}'
+        to_compile = f'async def foo():\n{textwrap.indent(code, " ")}'
 
         try:
             exec(to_compile, env)
         except Exception as e:
-            return await ctx.send(f'```python\n{e.__class__.__name__}: {e}\n``')
+            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n``')
 
-        code = env['code']
+        foo = env['foo']
         try:
             with redirect_stdout(buffer):
-                ret = await code()
+                ret = await foo()
         except Exception:
             value = buffer.getvalue()
-            await ctx.send(f'```python\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             value = buffer.getvalue()
             try:
@@ -64,10 +63,10 @@ class CodeSandbox(commands.Cog):
 
             if ret is None:
                 if value is not None:
-                    await ctx.send(f'```python\n{value}\n```')
+                    await ctx.send(f'```py\n{value}\n```')
                 else:
                     self._last_result = ret
-                    await ctx.send(f'```python\n{value}{ret}\n```')
+                    await ctx.send(f'```py\n{value}{ret}\n```')
 
 
 def setup(client):
