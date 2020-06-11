@@ -56,13 +56,13 @@ class Pages:
         self.paginating = len(entries) > per_page
         self.show_entry_count = show_entry_count
         self.reaction_emojis = [
-            (f'{FIRST_EMOJI}', self.first_page),
-            (f'{LEFT_EMOJI}', self.previous_page),
-            (f'{RIGHT_EMOJI}', self.next_page),
-            (f'{LAST_EMOJI}', self.last_page),
-            (f'{PAGE_NUM_EMOJI}', self.numbered_page),
-            (f'{STOP_EMOJI}', self.stop_pages),
-            (f'{INFO_EMOJI}', self.show_help),
+            (FIRST_EMOJI}, self.first_page),
+            (LEFT_EMOJI}, self.previous_page),
+            (RIGHT_EMOJI, self.next_page),
+            (LAST_EMOJI, self.last_page),
+            (PAGE_NUM_EMOJI, self.numbered_page),
+            ({STOP_EMOJI, self.stop_pages),
+            ({INFO_EMOJI, self.show_help),
         ]
 
         if ctx.guild is not None:
