@@ -8,7 +8,7 @@ from discord.ext.commands import Cog, Context, command
 
 
 class Converters(Cog):
-
+    """This is a Cog for converting and encoding strings."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
