@@ -1,18 +1,24 @@
 import asyncio
-import os
+import textwrap
 from itertools import cycle
 
 import discord
-from discord.ext import commands  # discordpy packages
+import setup
+from cogs.utils import constants
+# from cogs.utils.embedHandler import error_embed
+from discord.ext import commands
 
-TOKEN = os.environ.get('TOKEN')
+TOKEN = setup.BOT_TOKEN
+PREFIX = constants.COMMAND_PREFIX
+SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
+INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
-client = commands.Bot(commands.when_mentioned_or('>>'), owner_id=688275913535914014)
+client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=688275913535914014)
 
 status = [
     "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",
     "▶Check out My Creator\'s Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-    "Ping me using >>help",
+    f"Ping me using {PREFIX}help",
     "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
     "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
 ]
@@ -47,21 +53,29 @@ async def on_guild_join(guild: discord.Guild):
 
     embed = discord.Embed(
         title="Greetings",
-        description="Thanks for adding HotWired in this server, "
-                    "**HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!. "
-                    "The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **>>help** ",
+        description=textwrap.dedent(f"""
+            Thanks for adding HotWired in this server,
+            **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
+            The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
+        """),
         color=0x2f3136
     )
 
     embed.add_field(
         name="General information",
-        value="**► __Bot Id__**: 715545167649570977 \n"
-              "**► __Developer__** : **TheOriginalDude#0585** \n**► __Prefix__** : >> "
+        value=textwrap.dedent(f"""
+                              **► __Bot Id__**: 715545167649570977
+                              **► __Developer__**: **TheOriginalDude#0585**
+                              **► __Prefix__**: {PREFIX}
+        """)
     )
     embed.add_field(
         name="**Links**",
-        value="**► [Support Server](https://discord.gg/CgH6Sj6)**\n"
-              "**► [Invite link](https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot)** ")
+        value=textwrap.dedent(f"""
+                              **►** [Support Server]({SUPPORT_SERVER})
+                              **►** [Invite link]({INVITE})
+        """)
+    )
 
     embed.set_thumbnail(url=hw.avatar_url)
 
@@ -70,13 +84,15 @@ async def on_guild_join(guild: discord.Guild):
     except:
         pass
 
-    await logchannel.send(f"The bot has been added to **{guild.name}** , "
-                          "We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
+    await logchannel.send(
+        f"The bot has been added to **{guild.name}** , "
+        f"We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
+    )
 
 # @client.event
 # async def on_command_error(ctx, error):
 #   if isinstance(error, commands.MissingRequiredArgument):
-#     embed = error_embed("Please pass in All Required Arguments. for more help on that command,use__ **>>help {ctx.command.name}**", "❌ERROR")
+#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
 #     await ctx.send(embed=embed)
 
 #   if isinstance(error, commands.CommandNotFound):
@@ -88,12 +104,15 @@ async def on_guild_join(guild: discord.Guild):
 #     await ctx.send(embed=embed)
 
 #   if isinstance(error, commands.BotMissingPermissions):
-#     embed = error_embed("The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR")
-#     await ctx.send(embed=embed)
+#    embed = error_embed(
+#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
+#    )
+#    await ctx.send(embed=embed)
 
 
 def SetupBot(bot):
     bot.load_extension("cogs.codesandbox")
+    bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.custom")
     bot.load_extension("cogs.events")
@@ -101,7 +120,9 @@ def SetupBot(bot):
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.moderation")
+    bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
+    bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
 
     bot.run(TOKEN)

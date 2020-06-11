@@ -58,5 +58,6 @@ class Games(commands.Cog):
 
         await ctx.send(f'Question : {question}\nAnswer : {answer}')
 
+
 def setup(client):
     client.add_cog(Games(client))

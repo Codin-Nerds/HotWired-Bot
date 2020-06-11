@@ -1,6 +1,7 @@
 import requests
+import setup
 
-APPID = "E75JHH-HAUP4AYJTT"
+APPID = setup.WOLFRAM_APPID
 
 
 def get_wolfram_data(question, conversation_mode="false", units="metric"):
