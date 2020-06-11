@@ -9,6 +9,8 @@ from cogs.utils.embedHandler import error_embed, info
 
 
 class Fun(Cog):
+    """This is a cog for simple fun commands."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -47,7 +49,7 @@ class Fun(Cog):
         embed.set_image(url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
         await ctx.send(embed=embed)
 
-    @command(aliases=["table", "flip"])
+    @command(aliases=["table", "flip", "tableflip"])
     async def throw(self, ctx: Context) -> None:
         """Throw the table."""
         embed = info(f"{ctx.author.mention} :boom:", ctx.me, "Table Throw!")
