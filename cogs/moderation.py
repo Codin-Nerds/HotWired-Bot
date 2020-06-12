@@ -26,7 +26,6 @@ async def resolve_member(guild, member_id):
             raise MemberNotFound()
     return member
 
-# Moderation Main Class
 # TODO : Clean everything up
 class Moderation(commands.Cog):
 
