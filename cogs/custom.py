@@ -31,6 +31,7 @@ class Custom(commands.Cog):
     async def vote(self, ctx: commands.Context, title: str, *options: str) -> None:
         """
         Build a quick voting poll with matching reactions with the provided options.
+        
         A maximum of 20 options can be provided, as Discord supports a max of 20
         reactions on a single message.
         """
