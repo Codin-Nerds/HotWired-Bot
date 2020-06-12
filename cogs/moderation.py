@@ -1,7 +1,8 @@
 import asyncio
+import textwrap
 
 import discord
-from cogs.utils.embedHandler import failure, info, success
+from discord import Color, Embed
 from discord.ext import Bot
 from discord.ext.commands import (Cog, Context, bot_has_permissions, command,
                                   has_permissions)
@@ -17,7 +18,10 @@ class Moderation(Cog):
     @has_permissions(kick_members=True)
     async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "No reason.") -> None:
         """Kick a User."""
-        embed = discord.Embed(title="Infraction information", color=discord.Color.red())
+        embed = discord.Embed(
+            title="Infraction information",
+            color=discord.Color.red()
+        )
         embed.add_field(name="Type", value="Kick")
         embed.add_field(name="Reason", value=reason)
         embed.set_thumbnail(url=member.avatar_url)
@@ -33,7 +37,10 @@ class Moderation(Cog):
     @has_permissions(ban_members=True)
     async def ban(self, ctx: Context, member: discord.Member, *, reason: str = "No Reason Stated.") -> None:
         """Ban a User."""
-        embed = discord.Embed(title="Infraction information", color=discord.Color.red())
+        embed = discord.Embed(
+            title="Infraction information",
+            color=discord.Color.red()
+        )
         embed.add_field(name="Type", value="Ban")
         embed.add_field(name="Reason", value=reason)
         embed.set_thumbnail(url=member.avatar_url)
@@ -71,6 +78,8 @@ class Moderation(Cog):
         # TODO: Check if this condition is necessary
         if amount is not None:
             await ctx.channel.purge(limit=amount+1)
+            # TODO: This message might be getting in the way,
+            # purpose of cleaning is to remove messages, not add more of them
             await ctx.send('**Messages cleared** ' + ctx.message.author.mention)
             await asyncio.sleep(2.5)
             await ctx.channel.purge(limit=1)
@@ -84,27 +93,43 @@ class Moderation(Cog):
         """Promote member to role."""
         # TODO: A custom check can handle this
         if role >= ctx.author.top_role:
-            await ctx.send(embed=failure("Role needs to be below you in hierarchy."))
+            embed = Embed(
+                title="Error",
+                description="Role needs to be below you in hierarchy.",
+                color=Color.red()
+            )
+            await ctx.send(embed=embed)
             return
         if role in member.roles:
-            await ctx.send(embed=failure(f"{member.mention} already has role {role.mention}!"))
+            embed = Embed(
+                title="Error",
+                description=f"{member.mention} already had role {role.mention}!",
+                color=Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         await member.add_roles(role)
 
-        await ctx.send(embed=success(f"{member.mention} is promoted to {role.mention}", ctx.me), delete_after=5)
-
-        dm_embed = info(
-            (
-                f"You are now promoted to role **{role.name}** in our community.\n"
-                "`'With great power comes great responsibility'`\n"
-                "Be active and keep the community safe."
-            ),
-            ctx.me,
-            "Congratulations!"
+        embed = Embed(
+            title="Promotion!",
+            description=f"{member.mention} has been promoted to {role.mention}!",
+            color=Color.green()
         )
+        await ctx.send(embed=embed, delete_after=5)
 
-        dm_embed.set_footer(text="Promotion Command.")
+        dm_embed = Embed(
+            title="Congratulations!",
+            description=textwrap.dedent(
+                f"""
+                You have been promoted to **{role.name}** in our community.
+                `'With great power comes great responsibility'`
+                Be active and keep the community safe
+                """
+            ),
+            color=Color.green()
+        )
+        await dm_embed.set_footer(text=f"Server: {ctx.guild.name}")
         await member.send(embed=dm_embed)
 
 
