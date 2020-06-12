@@ -34,7 +34,6 @@ class Custom(commands.Cog):
         )
 
         if not constants.DEV_MODE:
-            # await self.error_hook.send(embed=em)
             await self.client.send_message(embed=em)
         else:
             traceback.print_exc()
