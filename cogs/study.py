@@ -60,7 +60,7 @@ class Study(commands.Cog):
         url = 'http://api.urbandictionary.com/v0/define'
         async with ctx.session.get(url, params={'term': word}) as resp:
             if resp.status != 200:
-                return await ctx.send(f'An error occurred: {resp.status} {resp.reason}')
+                return await ctx.send(f'An error occurred: {resp.status} {resp.reason}.')
 
             js = await resp.json()
             data = js.get('list', [])
