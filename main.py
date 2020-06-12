@@ -118,7 +118,7 @@ def SetupBot(bot):
     bot.load_extension("cogs.events")
     bot.load_extension("cogs.fun")
     bot.load_extension("cogs.games")
-    bot.load_extension("cogs.infog")
+    bot.load_extension("cogs.hacking")
     bot.load_extension("cogs.moderation")
     bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
