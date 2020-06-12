@@ -23,7 +23,7 @@ async def resolve_member(guild, member_id):
         try:
             member = await guild.fetch_member(member_id)
         except discord.NotFound:
-            raise MemberNotFound() from None
+            raise MemberNotFound()
     return member
 
 # Moderation Main Class
