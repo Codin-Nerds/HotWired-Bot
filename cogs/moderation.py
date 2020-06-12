@@ -98,7 +98,9 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def multiban(self, ctx, members: commands.Greedy[MemberID], *, reason: ActionReason = None):
-        """Bans multiple members from the server.
+        """
+        Bans multiple members from the server.
+        
         This only works through banning via ID.
         In order for this to work, the bot must have Ban Member permissions.
         To use this command you must have Ban Members permission.
