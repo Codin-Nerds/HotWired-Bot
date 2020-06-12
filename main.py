@@ -5,7 +5,6 @@ from itertools import cycle
 import discord
 import setup
 from cogs.utils import constants
-# from cogs.utils.embedHandler import error_embed
 from discord.ext import commands
 
 TOKEN = setup.BOT_TOKEN
@@ -85,26 +84,6 @@ async def on_guild_join(guild: discord.Guild):
         f"The bot has been added to **{guild.name}** , "
         f"We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
     )
-
-# @client.event
-# async def on_command_error(ctx, error):
-#   if isinstance(error, commands.MissingRequiredArgument):
-#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.CommandNotFound):
-#     embed = error_embed("Command Not Found!", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.MissingPermissions):
-#     embed = error_embed("You don't have Enough permissions to Execute this command!", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.BotMissingPermissions):
-#    embed = error_embed(
-#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
-#    )
-#    await ctx.send(embed=embed)
 
 
 def SetupBot(bot):
