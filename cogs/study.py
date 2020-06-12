@@ -53,8 +53,8 @@ class Study(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='urban')
-    async def _urban(self, ctx, *, word):
+    @commands.command(aliases=['dict'])
+    async def urban(self, ctx, *, word):
         """Searches urban dictionary."""
 
         url = 'http://api.urbandictionary.com/v0/define'
