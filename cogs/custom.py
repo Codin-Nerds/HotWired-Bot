@@ -2,8 +2,9 @@ import time
 
 import discord
 from discord.ext import Bot
+import textwrap
 
-from cogs.utils.embedHandler import error_embed, info
+from discord import Embed, Color
 from discord.ext.commands import Cog, command, has_permissions, Context
 
 
@@ -22,20 +23,35 @@ class Custom(Cog):
     async def ping(self, ctx: Context) -> None:
         """Shows bot ping."""
         start = time.perf_counter()
-        message = await ctx.send(embed=info("Pong!", ctx.me))
+        embed = Embed(
+            title="Info",
+            description="Pong!",
+            color=Color.blurple()
+        )
+        message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
-        await message.edit(embed=info(f":ping_pong: Pong! ({duration}ms)", ctx.me))
+        embed = Embed(
+            title="Info",
+            description=f":ping_pong: Pong! ({duration}ms)",
+            color=Color.blurple()
+        )
+        await message.edit(embed=embed)
 
     @command(aliases=['asking'])
     async def howtoask(self, ctx: Context) -> None:
         """How to ask a Question."""
-        embed = info(
-            "**1 ❯** Pick the appropriate channel\n"
-            "**2 ❯** Post your question mentioning all the details\n"
-            "**3 ❯** Ping the appropriate helper role or someone for your question\n"
-            "**4 ❯** Patiently wait for a helper to respond\n",
-            ctx.me, "How To Ask a Question?"
+        embed = Embed(
+            title="How To Ask a Question?",
+            description=textwrap.dedent(
+                """
+                **1 ❯** Pick the appropriate channel
+                **2 ❯** Post your question mentioning all the details
+                **3 ❯** Ping the appropriate helper role or someone for your question
+                **4 ❯** Patiently wait for a helper to respond
+                """
+            ),
+            color=Color.blurple()
         )
         img_url = "https://media.giphy.com/media/3ojqPGJAHWqC1VQPDk/giphy.gif"
         embed.set_image(url=img_url)
@@ -46,17 +62,24 @@ class Custom(Cog):
     async def thanks(self, ctx: Context, member: discord.Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
-            embed = error_embed(f"{ctx.author.mention} **You Cannot Thank Yourself!**", "WARNING!")
+            embed = Embed(
+                title="WARNING",
+                description=f"{ctx.author.mention} **You Cannot Thank Yourself!**",
+                color=Color.orange()
+            )
             await ctx.send(embed=embed)
         else:
-            if reason is not None:
-                embed = info(f"{member.mention} was Thanked By {ctx.author.mention} \n**MESSAGE** : {reason}", ctx.me, "THANKS")
-                img_url = "https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif"
-                embed.set_image(url=img_url)
-            else:
-                embed = info(f"{member.mention} was Thanked By {ctx.author.mention} !", ctx.me, "THANKS")
-                img_url = "https://media.giphy.com/media/osjgQPWRx3cac/giphy.gif"
-                embed.set_image(url=img_url)
+            embed = Embed(
+                title="THANKS",
+                description=textwrap.dedent(
+                    f"""
+                    {member.mention} was thanked by {ctx.author.mention}!
+                    {'**MESSAGE**:' + reason if reason else ''}
+                    """
+                ),
+                color=Color.blurple()
+            )
+            embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
 
 
