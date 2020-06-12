@@ -42,7 +42,7 @@ class Custom(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
 
-        hw = self.client.get_user(self.client.user.id)
+        hw = self.client.user
         logchannel = self.client.get_channel(constants.log_channel)
 
         embed = discord.Embed(
