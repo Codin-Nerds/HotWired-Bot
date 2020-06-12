@@ -42,7 +42,7 @@ class Custom(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
 
-        hw = self.client.get_user(constants.hotwired_id)
+        hw = self.client.get_user(self.client.user.id)
         logchannel = self.client.get_channel(constants.log_channel)
 
         embed = discord.Embed(
@@ -60,7 +60,7 @@ class Custom(commands.Cog):
         embed.add_field(
             name="General information",
             value=textwrap.dedent(f"""
-                                  f**► __Bot Id__**: {constants.hotwired_id}
+                                  f**► __Bot Id__**: {self.client.user.id}
                                   **► __Developer__**: **TheOriginalDude#0585**
                                   **► __Prefix__**: {PREFIX}
             """)
