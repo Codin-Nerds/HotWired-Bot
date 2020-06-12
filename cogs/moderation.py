@@ -111,7 +111,7 @@ class Moderation(commands.Cog):
 
         total_members = len(members)
         if total_members == 0:
-            return await ctx.send('Missing members to ban.')
+            return await ctx.send('No members to ban.')
 
         confirm = await ctx.prompt(f'This will ban **{plural(total_members):member}**. Are you sure?', reacquire=False)
         if not confirm:
