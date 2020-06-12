@@ -4,10 +4,101 @@ import discord
 from cogs.utils.embedHandler import error_embed, info
 from discord.ext import commands
 
+from assets.context import Command, argument, example, usage_info
+from cogs.utils import misc, parser
+
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    async def dab(self, ctx, user: discord.User):
+        embed = discord.Embed(color=discord.Color.orange())
+        embed.set_author(name=f"{ctx.author.mention} subtly, yet epically dabs on {user.mention}")
+        embed.set_image(url="https://media.giphy.com/media/A4R8sdUG7G9TG/giphy.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def default(self, ctx, user: discord.User):
+        embed = discord.Embed(color=discord.Color.orange())
+        embed.set_author(name=f"{ctx.author.mention} epically defaults on {user.mention}")
+        embed.set_image(url="https://media.tenor.com/images/4f71b921b09bfb195c0295116aa4e8dc/tenor.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["catfacts"], cls=Command,
+                      description="Get a random fact about cats!",
+                      syntax=None,
+                      examples=[argument("", "Returns a interesting fact about cats")])
+    async def catfact(self, ctx):
+        link = "https://catfact.ninja/fact?max_length=300/"
+
+        fact = await self.aiohttp_request(link, headers=None)
+        fact = json.loads(fact)
+        embed = discord.Embed(title="Cat Facts", color=misc.random_color(),
+                              description=fact["fact"])
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["dogfacts"], cls=Command,
+                      description="Get a random fact about dogs!",
+                      syntax=None,
+                      examples=[argument(None, "Returns a interesting fact about dogs")])
+    async def dogfact(self, ctx):
+        link = "http://dog-api.kinduff.com/api/facts?numbers=1"
+        fact = await self.aiohttp_request(link, headers=None)
+        fact = json.loads(fact)
+        embed = discord.Embed(title="Dog Facts", color=misc.random_color(),
+                              description=fact["facts"][0])
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["dogpic", "dog"], cls=Command,
+                      description="Get a random picture of a dog",
+                      syntax=None, examples=[argument("", "Get a cute picture of a dog")])
+    async def dogpics(self, ctx):
+        link = "https://dog.ceo/api/breeds/image/random/Fetch"
+        picture_data = await self.aiohttp_request(link, headers=None)
+        picture_data = json.loads(picture_data)
+
+        embed = discord.Embed(title="Here's a picture of a dog!", color=misc.random_color())
+        embed.set_image(url=picture_data["message"][0])
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["catpic", "cat"], cls=Command,
+                      description="Get a random picture of a cat!",
+                      syntax=None, examples=[argument("", "Get a cute picture of a cat")])
+    async def catpics(self, ctx):
+        link = "https://api.thecatapi.com/v1/images/search?format=json?size=med"
+        picture_data = await self.aiohttp_request(link, headers=None)
+        picture_data = json.loads(picture_data)
+
+        embed = discord.Embed(title="Here's a picture of a cat!", color=misc.random_color())
+        embed.set_image(url=picture_data[0]["url"])
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["choose", "choice"], cls=Command,
+                      description="Chooses a random item out of a list for you!",
+                      syntax=[(True, "List of items")],
+                      usage_information=[usage_info("", "List of items must be separated by commas or spaces")],
+                      examples=[example("1,2,3,4", "Returns a random selection like 2")])
+    async def random(self, ctx, *, message):
+        """Chooses a random item out of a list for you!
+        [prefix]random_picker [Required: list of items]
+        list of items must be separated by commas or spaces
+        Example
+         • `!random_picker 1,2,3,4` Returns a random selection like 2
+        """
+        if not message:
+            return await ctx.send("I can't exactly select a random item when "
+                                  "I don't have any items to begin with!")
+
+        message = re.split(", |,| ", message)
+        if len(message) == 1:
+            return await ctx.send("I'm gonna be needing more than one item to make a choice lol")
+        choice = random.choice(message)
+        if not choice:
+            return await ctx.send("Huh odd looks like I got a empty message out of that. Perhaps try spaces this time?")
+
+        await ctx.send(choice)
 
     @commands.command()
     async def slap(self, ctx, member: discord.Member):

@@ -102,6 +102,7 @@ def infraction_embed(
 ) -> Embed:
 
     embed = Embed(title="**Infraction information**", color=infraction_type.value)
+    # TODO : Change the server name below to Dynamic name
     embed.set_author(name="The Codin' Hole", icon_url=ctx.me.avatar_url)
 
     embed.add_field(name="**Member**", value=f"{infracted_member}", inline=False)
@@ -115,7 +116,6 @@ def get_top_role_color(member: Union[Member, User], *, fallback_color) -> Color:
     try:
         color = member.top_role.color
     except AttributeError:
-        # Fix for DMs
         return fallback_color
 
     if color == Color.default():
