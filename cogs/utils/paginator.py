@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from discord.ext.commands import Paginator as CommandPaginator
+from discord.ext import commands
 
 FIRST_EMOJI = "\u23EE"   # [:track_previous:]
 LEFT_EMOJI = "\u2B05"    # [:arrow_left:]
@@ -40,8 +41,9 @@ class Pages:
     permissions: discord.Permissions
         Our permissions for the channel.
     """
+    import typing as t
 
-    def __init__(self, ctx, *, entries, per_page=12, show_entry_count=True):
+    def __init__(self, ctx: commands.Context, entries: t.List[str], per_page: int = 12, show_entry_count: bool = True) -> None:
         self.bot = ctx.bot
         self.entries = entries
         self.message = ctx.message
@@ -56,8 +58,8 @@ class Pages:
         self.paginating = len(entries) > per_page
         self.show_entry_count = show_entry_count
         self.reaction_emojis = [
-            (FIRST_EMOJI}, self.first_page),
-            (LEFT_EMOJI}, self.previous_page),
+            (FIRST_EMOJI, self.first_page),
+            (LEFT_EMOJI, self.previous_page),
             (RIGHT_EMOJI, self.next_page),
             (LAST_EMOJI, self.last_page),
             (PAGE_NUM_EMOJI, self.numbered_page),
@@ -70,11 +72,13 @@ class Pages:
         else:
             self.permissions = self.channel.permissions_for(ctx.bot.user)
 
+        if not self.permissions.send_messages:
+            raise CannotPaginate('Bot cannot send messages.')
+
         if not self.permissions.embed_links:
             raise CannotPaginate('Bot does not have embed links permission.')
 
-        if not self.permissions.send_messages:
-            raise CannotPaginate('Bot cannot send messages.')
+
 
         if self.paginating:
             # verify we can actually use the pagination session
