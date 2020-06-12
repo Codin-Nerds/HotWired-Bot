@@ -5,26 +5,28 @@ from cogs.utils.embedHandler import failure, info, success
 import discord
 from discord.ext import commands
 
-# Converters
 
 def can_execute_action(ctx, user, target):
     return user.id == ctx.bot.owner_id or \
            user == ctx.guild.owner or \
            user.top_role > target.top_role
 
+
 class MemberNotFound(Exception):
     pass
 
+
 async def resolve_member(guild, member_id):
-    member = guild.get_member(member_id)
-    if member is None:
+    user = guild.get_member(member_id)
+    if user is None:
         if guild.chunked:
             raise MemberNotFound()
         try:
-            member = await guild.fetch_member(member_id)
+            user = await guild.fetch_member(member_id)
         except discord.NotFound:
             raise MemberNotFound()
-    return member
+    return user
+
 
 # TODO : Clean everything up
 class Moderation(commands.Cog):
@@ -74,24 +76,23 @@ class Moderation(commands.Cog):
                 raise commands.BadArgument(f'Reason is too long ({len(argument)}/{reason_max})')
             return ret
 
-
     class MemberID(commands.Converter):
         async def convert(self, ctx, argument):
             try:
-                m = await commands.MemberConverter().convert(ctx, argument)
+                member = await commands.MemberConverter().convert(ctx, argument)
             except commands.BadArgument:
                 try:
                     member_id = int(argument, base=10)
-                    m = await resolve_member(ctx.guild, member_id)
+                    member = await resolve_member(ctx.guild, member_id)
                 except ValueError:
                     raise commands.BadArgument(f"{argument} is not a valid member or member ID.") from None
                 except MemberNotFound:
                     # hackban case
                     return type('_Hackban', (), {'id': member_id, '__str__': lambda s: f'Member ID {s.id}'})()
 
-            if not can_execute_action(ctx, ctx.author, m):
+            if not can_execute_action(ctx, ctx.author, member):
                 raise commands.BadArgument('You cannot do this action on this user due to role hierarchy.')
-            return m
+            return member
 
     @commands.command()
     @commands.guild_only()
@@ -137,7 +138,7 @@ class Moderation(commands.Cog):
         for ban_entry in banned_users:
             user = ban_entry.user
 
-            if(user.name, user.discriminator) == (member_name, member_discriminator):
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
                 await ctx.guild.unban(user)
                 await ctx.send(f'Unbanned **{user.name}#{user.discriminator}**')
                 return
@@ -149,7 +150,7 @@ class Moderation(commands.Cog):
         """Clear specified number of messages."""
 
         if amount is not None:
-            await ctx.channel.purge(limit=amount+1)
+            await ctx.channel.purge(limit=amount + 1)
             await ctx.send('**Messages cleared** ' + ctx.message.author.mention)
             await asyncio.sleep(2.5)
             await ctx.channel.purge(limit=1)
