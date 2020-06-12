@@ -140,7 +140,7 @@ class Tools(commands.Cog):
 
     @commands.command()
     async def charinfo(self, ctx, *, characters: str):
-        """Shows you information about a number of characters. Only up to 25 characters at a time."""
+        """Shows you information about up to 25 characters."""
         def to_string(c):
             digit = f'{ord(c):x}'
             name = unicodedata.name(c, 'Name not found.')
