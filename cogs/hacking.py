@@ -9,6 +9,7 @@ class Hacking(commands.Cog):
 
     @commands.command()
     async def iplookup(self, ctx, ipaddr):
+        """Lookup the Data Of anyone Using IP Address."""
         data = get_loc_data(ipaddr)
 
         if isinstance(data, dict):
