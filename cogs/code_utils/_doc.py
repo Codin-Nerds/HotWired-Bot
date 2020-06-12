@@ -3,10 +3,12 @@ from functools import partial
 
 import aiohttp
 import discord
+from discord.ext.commands import Context
 from bs4 import BeautifulSoup
+from typing import Literal
 
 
-async def python_doc(ctx, text: str):
+async def python_doc(ctx, text: str) -> None:
     """Filters python.org results based on your query."""
 
     text = text.strip('`')
@@ -16,7 +18,7 @@ async def python_doc(ctx, text: str):
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
-                return await ctx.send('An error occurred (status code: {response.status}). Retry later.')
+                return await ctx.send(f'An error occurred (status code: {response.status}). Retry later.')
 
             soup = BeautifulSoup(str(await response.text()), 'lxml')
 
@@ -32,14 +34,15 @@ async def python_doc(ctx, text: str):
 
             content = [f"[{a.string}](https://docs.python.org/3/{a.get('href')})" for a in links]
 
-            emb = discord.Embed(title="Python 3 docs")
-            emb.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/240px-Python-logo-notext.svg.png')
-            emb.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
+            embed = discord.Embed(title="Python 3 docs")
+            python_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/240px-Python-logo-notext.svg.png'
+            embed.set_thumbnail(url=python_logo)
+            embed.add_field(name=f'Results for `{text}`:', value='\n'.join(content), inline=False)
 
-            await ctx.send(embed=emb)
+            await ctx.send(embed=embed)
 
 
-async def _cppreference(language, ctx, text: str):
+async def cppreference(language: Literal['C', 'CPP'], ctx: Context, text: str) -> None:
     """Search something on cppreference."""
 
     text = text.strip('`')
@@ -62,7 +65,7 @@ async def _cppreference(language, ctx, text: str):
             if language == 'C':
                 wanted = 'w/c/'
                 url = 'https://wikiprogramming.org/wp-content/uploads/2015/05/c-logo-150x150.png'
-            else:
+            elif language == 'CPP':
                 wanted = 'w/cpp/'
                 url = 'https://isocpp.org/files/img/cpp_logo.png'
 
@@ -72,17 +75,17 @@ async def _cppreference(language, ctx, text: str):
                     break
 
             content = [f"[{a.string}](https://en.cppreference.com/{a.get('href')})" for a in links]
-            emb = discord.Embed(title=f"{language} docs")
-            emb.set_thumbnail(url=url)
-            emb.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
+            embed = discord.Embed(title=f"{language} docs")
+            embed.set_thumbnail(url=url)
+            embed.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
 
-            await ctx.send(embed=emb)
+            await ctx.send(embed=embed)
 
-c_doc = partial(_cppreference, 'C')
-cpp_doc = partial(_cppreference, 'C++')
+c_doc = partial(cppreference, 'C')
+cpp_doc = partial(cppreference, 'C++')
 
 
-async def haskell_doc(ctx, text: str):
+async def haskell_doc(ctx: Context, text: str) -> None:
     """Search something on wiki.haskell.org."""
 
     text = text.strip('`')
@@ -105,14 +108,14 @@ async def haskell_doc(ctx, text: str):
             # Page_title_matches is first
             ul = results.find('ul', 'mw-search-results')
 
-            emb = discord.Embed(title='Haskell docs')
-            emb.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")
+            embed = discord.Embed(title='Haskell docs')
+            embed.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")
 
             content = []
             for li in ul.find_all('li', limit=10):
                 a = li.find('div', class_='mw-search-result-heading').find('a')
                 content.append(f"[{a.get('title')}](https://wiki.haskell.org{a.get('href')})")
 
-            emb.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
+            embed.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
 
-            await ctx.send(embed=emb)
+            await ctx.send(embed=embed)
