@@ -3,30 +3,27 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
-from discord.ext import commands
+from discord.ext import Bot
+from discord.ext.commands import Cog, is_owner, command, Context
 
 
-class CodeSandbox(commands.Cog):
+class CodeSandbox(Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
         self._last_eval_result = None
 
-    @commands.command()
-    async def code(self, ctx):
-        await ctx.send('code working!')
-
-    def _clean_code(self, code):
+    def _clean_code(self, code: str) -> None:
         if code.startswith('```') and code.endswith('```'):
             return '\n'.join(code.split('\n')[1:-1])
         return code.strip('`\n')
 
-    @commands.is_owner()
-    @commands.command(name='eval', hidden=True)
-    async def _eval(self, ctx, *, code: str):
-
+    @is_owner()  # TODO: Change this to use custom check
+    @command(name='eval', hidden=True)
+    async def _eval(self, ctx: Context, *, code: str) -> None:
+        """Evaluate the passed code."""
         env = {
-            'bot': self.client,
+            'bot': self.bot,
             'ctx': ctx,
             'guild': ctx.guild,
             'channel': ctx.channel,
@@ -43,7 +40,7 @@ class CodeSandbox(commands.Cog):
         to_compile = f'async def foo():\n{textwrap.indent(code, " ")}'
 
         try:
-            exec(to_compile, env)
+            exec(to_compile, env)  # TODO: Very unsafe
         except Exception as e:
             return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n``')
 
@@ -56,12 +53,9 @@ class CodeSandbox(commands.Cog):
             await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             value = buffer.getvalue()
-            try:
-                await ctx.message.add_reaction('\N{INCOMING ENVELOPE}')
-            except Exception:
-                pass
+            await ctx.message.add_reaction('\N{INCOMING ENVELOPE}')
 
-            if ret is None:
+            if not ret:
                 if value is not None:
                     await ctx.send(f'```py\n{value}\n```')
                 else:
@@ -69,5 +63,5 @@ class CodeSandbox(commands.Cog):
                     await ctx.send(f'```py\n{value}{ret}\n```')
 
 
-def setup(client):
-    client.add_cog(CodeSandbox(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(CodeSandbox(bot))
