@@ -1,13 +1,248 @@
 import random
 
-import discord
 from cogs.utils.embedHandler import error_embed, info
-from discord.ext import commands
+import urllib
+from cogs.utils.errors import *
+from .utils.plainreq import get_req
+from .endpoints.endpoints import nekos
 
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.user_agent = {"User-Agent": "HotWired"}
+        self.dadjoke = {
+            "User-Agent": "HotWired",
+            "Accept": "text/plain",
+        }
+
+    @commands.command()
+    async def cat(self, ctx):
+        """Random cat images. Awww, so cute! Powered by random.cat"""
+        async with self.bot.session.get(
+                "https://aws.random.cat/meow", headers=self.user_agent
+        ) as r:
+            if r.status == 200:
+                js = await r.json()
+                em = discord.Embed(name="random.cat", colour=0x690E8)
+                em.set_image(url=js["file"])
+                await ctx.send(embed=em)
+            else:
+                raise ServiceError(
+                    f"could not fetch cute cat" " :( (http {r.status})"
+                )
+
+    @commands.command()
+    async def httpcat(self, ctx, http_id: int):
+        """http.cat images - ^httpcat <http code>"""
+        codes = [
+            100,
+            101,
+            200,
+            201,
+            202,
+            204,
+            206,
+            207,
+            300,
+            301,
+            302,
+            303,
+            304,
+            305,
+            307,
+            400,
+            401,
+            402,
+            403,
+            404,
+            405,
+            406,
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414,
+            416,
+            417,
+            418,
+            420,
+            421,
+            422,
+            423,
+            424,
+            425,
+            426,
+            429,
+            444,
+            450,
+            451,
+            500,
+            502,
+            503,
+            504,
+            506,
+            507,
+            508,
+            509,
+            511,
+            599,
+        ]
+        if http_id in codes:
+            httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
+            httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
+            await ctx.send(embed=httpcat_em)
+        else:
+            raise commands.BadArgument("Specified HTTP code invalid")
+
+    @commands.command()
+    async def dog(self, ctx):
+        """Random doggos just because!"""
+
+        def decide_source():
+            n = random.random()
+            if n < 0.5:
+                return "https://random.dog/woof"
+            elif n > 0.5:
+                return "https://dog.ceo/api/breeds/image/random"
+
+        async with self.bot.session.get(
+                decide_source(), headers=self.user_agent
+        ) as shibe_get:
+            if shibe_get.status == 200:
+                if shibe_get.host == "random.dog":
+                    shibe_img = await shibe_get.text()
+                    shibe_url = "https://random.dog/" + shibe_img
+                elif shibe_get.host == "dog.ceo":
+                    shibe_img = await shibe_get.json()
+                    shibe_url = shibe_img["message"]
+
+                if ".mp4" in shibe_url:
+                    await ctx.send("video: " + shibe_url)
+                else:
+                    shibe_em = discord.Embed(colour=0x690E8)
+                    shibe_em.set_image(url=shibe_url)
+                    await ctx.send(embed=shibe_em)
+            else:
+                raise ServiceError(
+                    f"could not fetch pupper :(" " (http {shibe_get.status})"
+                )
+
+    @commands.command()
+    async def lizard(self, ctx):
+        """Shows a random lizard picture"""
+        async with self.bot.session.get(
+                "https://nekos.life/api/lizard", headers=self.user_agent
+        ) as lizr:
+            if lizr.status == 200:
+                img = await lizr.json()
+                liz_em = discord.Embed(colour=0x690E8)
+                liz_em.set_image(url=img["url"])
+                await ctx.send(embed=liz_em)
+            else:
+                raise ServiceError(
+                    f"something went boom" " (http {lizr.status})"
+                )
+
+    @commands.command()
+    async def why(self, ctx):
+        """Why _____?"""
+        async with self.bot.session.get(
+                "https://nekos.life/api/why", headers=self.user_agent
+        ) as why:
+            if why.status == 200:
+                why_js = await why.json()
+                why_em = discord.Embed(
+                    title=f"{ctx.author.name} wonders...",
+                    description=why_js["why"],
+                    colour=0x690E8,
+                )
+                await ctx.send(embed=why_em)
+            else:
+                raise ServiceError(
+                    f"something went boom " "(http {why.status})"
+                )
+
+    @commands.command(aliases=["rhash", "robothash", "rh", "rohash"])
+    async def robohash(self, ctx, *, meme: str):
+        """text => robot image thing"""
+        try:
+            e = discord.Embed(colour=0x690E8)
+            meme = urllib.parse.quote_plus(meme)
+            e.set_image(url=f"https://robohash.org/{meme}.png")
+            await ctx.send(embed=e)
+        except Exception as e:
+            raise ServiceError(f"something broke: {e!s}")
+
+    async def get_answer(self, ans: str):
+        if ans == "yes":
+            return "Yes."
+        elif ans == "no":
+            return "NOPE"
+        elif ans == "maybe":
+            return "maaaaaaybe?"
+        else:
+            raise commands.BadArgument("internal error: invalid answer lmaoo")
+
+    @commands.command(aliases=["shouldi", "ask"])
+    async def yesno(self, ctx, *, question: str):
+        """Why not make your decisions with a bot?"""
+        async with ctx.bot.session.get(
+                "https://yesno.wtf/api", headers=self.user_agent
+        ) as meme:
+            if meme.status == 200:
+                mj = await meme.json()
+                ans = await self.get_answer(mj["answer"])
+                em = discord.Embed(
+                    title=ans,
+                    description="And the answer to" f" {question} is this",
+                    colour=0x690E8,
+                )
+                em.set_image(url=mj["image"])
+                await ctx.send(embed=em)
+            else:
+                raise ServiceError(f"oof (http {meme.status})")
+
+    @commands.command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
+    async def joke(self, ctx):
+        """Dad joke simulator 3017, basically"""
+        async with ctx.bot.session.get(
+                "https://icanhazdadjoke.com", headers=self.dadjoke
+        ) as jok:
+            if jok.status == 200:
+                res = await jok.text()
+                res = res.encode("utf-8").decode("utf-8")
+                await ctx.send(f"`{res}`")
+            else:
+                raise ServiceError(f"rip dad (http {jok.status})")
+
+    @commands.command(aliases=["bofh", "techproblem"])
+    async def excuse(self, ctx):
+        """Bastard Operator from Hell excuses.
+        Source: http://pages.cs.wisc.edu/~ballard/bofh
+        """
+        async with self.bot.session.get(
+                "http://pages.cs.wisc.edu" "/~ballard/bofh/excuses"
+        ) as r:
+            data = await r.text()
+            lines = data.split("\n")
+            line = random.choice(lines)
+            await ctx.send(f"`{line}`")
+
+    @commands.command()
+    async def neko(self, ctx):
+        """Shows a neko"""
+        async with get_req(ctx.bot.session, nekos["sfw"]) as neko:
+            if neko.status == 200:
+                img = await neko.json()
+                neko_em = discord.Embed(colour=0x690E8)
+                neko_em.set_image(url=img["neko"])
+                await ctx.send(embed=neko_em)
+            else:
+                raise ServiceError(f"ERROR CODE: {neko.status})")
+
 
     @commands.command()
     async def slap(self, ctx, member: discord.Member):

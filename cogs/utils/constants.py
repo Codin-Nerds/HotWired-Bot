@@ -2,6 +2,8 @@ from enum import Enum
 
 from discord import Color
 
+owner_id = 688275913535914014
+
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
 
