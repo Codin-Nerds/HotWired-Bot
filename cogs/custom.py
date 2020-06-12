@@ -15,7 +15,7 @@ class Custom(commands.Cog):
     # Commands
     @commands.command()
     async def hello(self, ctx):
-        await ctx.send(f'Hey there Buddy! My Creator is {constants.creator}')
+        await ctx.send(f'Hey there Buddy! How\'s it Going?')
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
