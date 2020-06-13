@@ -6,6 +6,7 @@ games_names_short = ["hm"]
 game_names = ["hangman"]
 randwords = list()
 
+
 class Variables:
     EXTRA = ""
     DEADLINE = 600 * 2
@@ -29,7 +30,7 @@ class Variables:
         's': '🇸', 't': '🇹',
         'u': '🇺', 'v': '🇻', 'w': '🇼', 'x': '🇽', 'y': '🇾', 'z': '🇿'}  # letter: emoji
 
-    NUMBERS = ["0️⃣","1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
+    NUMBERS = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
 
     REACTIONS_CONNECT4 = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
 
@@ -104,12 +105,14 @@ class Variables:
                 " |  / \ \n" \
                 "_|_ _ _"
 
-    hangmen = [HANGMAN0, HANGMAN1, HANGMAN2, HANGMAN3, HANGMAN4, HANGMAN5, HANGMAN6, HANGMAN7, HANGMAN8, HANGMAN9, HANGMAN10]
+    hangmen = [HANGMAN0, HANGMAN1, HANGMAN2, HANGMAN3, HANGMAN4, HANGMAN5, HANGMAN6, HANGMAN7, HANGMAN8, HANGMAN9,
+               HANGMAN10]
 
     HMRULES = "Try to guess the hidden word.\n" \
               "There are only lowercase letters in the word.\n" \
               "Press the indicated reactions on the message to make your move.\n" \
               "Press " + STOP_EMOJI + " to close the game.\n"
+
 
 def on_startup():
     global randwords
@@ -118,16 +121,19 @@ def on_startup():
         randwords = f.readlines()
     f.close()
 
+
 def getRandomWord():
     global randwords
     num_lines = sum(1 for line in open('data/10k_words.txt'))
     return randwords[random.randint(0, num_lines)].rstrip()
+
 
 def get_next_midnight_stamp():
     datenow = datetime.date.today() + datetime.timedelta(days=1)
     unix_next = datetime.datetime(datenow.year, datenow.month, datenow.day, 0)
     unixtime = time.mktime(unix_next.timetuple())
     return unixtime
+
 
 def increment_game(game):
     Variables.amtPlayedGames[game] = int(Variables.amtPlayedGames[game]) + 1
