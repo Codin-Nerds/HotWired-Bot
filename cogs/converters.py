@@ -17,10 +17,12 @@ class Converters(Cog):
     async def _ascii(self, ctx: Context, *, text: str) -> None:
         """Convert a string to ascii."""
         ascii_text = " ".join(str(ord(letter)) for letter in text)
-        description = textwrap.dedent(f"""
-                                      • **Text:** `{text}`
-                                      • **ASCII:** `{ascii_text}`
-        """)
+        description = textwrap.dedent(
+            f"""
+            • **Text:** `{text}`
+            • **ASCII:** `{ascii_text}`
+            """
+        )
         embed = Embed(title="ASCII Convertor", description=description)
         embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
@@ -31,11 +33,12 @@ class Converters(Cog):
         """Convert ascii to string."""
         try:
             text = "".join(chr(int(i)) for i in ascii_text.split(" "))
-            description = textwrap.dedent(f"""
-                                          • **ASCII:** `{ascii_text}`
-                                          • **Text:** `{text}`
-
-            """)
+            description = textwrap.dedent(
+                f"""
+                • **ASCII:** `{ascii_text}`
+                • **Text:** `{text}`
+                """
+            )
             embed = Embed(title="ASCII Convertor", description=description)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
@@ -86,10 +89,12 @@ class Converters(Cog):
         except AttributeError:
             hash_object = hashlib.new(algo, text.encode("utf-8"))
 
-        description = textwrap.dedent(f"""
-                                      • **Text:** `{text}`
-                                      • **Hashed:** `{hash_object.hexdigest()}`
-        """)
+        description = textwrap.dedent(
+            f"""
+            • **Text:** `{text}`
+            • **Hashed:** `{hash_object.hexdigest()}`
+            """
+        )
 
         embed = Embed(title=f"{algorithm} hash", description=description)
         embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")

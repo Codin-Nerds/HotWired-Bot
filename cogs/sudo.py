@@ -53,21 +53,27 @@ class Sudo(Cog):
         cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
         implementation = platform.python_implementation()
 
-        general = textwrap.dedent(f"""
-                                  • Servers: **{len(self.bot.guilds)}**
-                                  • Commands: **{len(self.bot.commands)}**
-                                  • members: **{len(set(self.bot.get_all_members()))}**
-        """)
-        process = textwrap.dedent(f"""
-                                  • Memory Usage: **{ram_usage:.2f}MiB**
-                                  • CPU Usage: **{cpu_usage:.2f}%**
-                                  • Uptime: **{self.get_uptime()}**
-                                  • Threads: {self.process.num_threads()}
-        """)
-        system = textwrap.dedent(f"""
-                                 • Python: **{platform.python_version()} with {implementation}**
-                                 • discord.py: **{discord_version}**
-        """)
+        general = textwrap.dedent(
+            f"""
+            • Servers: **{len(self.bot.guilds)}**
+            • Commands: **{len(self.bot.commands)}**
+            • members: **{len(set(self.bot.get_all_members()))}**
+            """
+        )
+        process = textwrap.dedent(
+            f"""
+            • Memory Usage: **{ram_usage:.2f}MiB**
+            • CPU Usage: **{cpu_usage:.2f}%**
+            • Uptime: **{self.get_uptime()}**
+            • Threads: {self.process.num_threads()}
+            """
+        )
+        system = textwrap.dedent(
+            f"""
+            • Python: **{platform.python_version()} with {implementation}**
+            • discord.py: **{discord_version}**
+            """
+        )
 
         embed = Embed(title="BOT STATISTICS", color=Color.red())
         embed.add_field(name="**❯❯ General**", value=general, inline=True)
@@ -83,18 +89,24 @@ class Sudo(Cog):
         """Get system information (show info about the server this bot runs on)."""
         uname = platform.uname()
 
-        system = textwrap.dedent(f"""
-                                 • System: **{uname.system}**
-                                 • Node Name: **{uname.node}**
-        """)
-        version = textwrap.dedent(f"""
-                                  • Release: **{uname.release}**
-                                  • Version: **{uname.version}**
-        """)
-        hardware = textwrap.dedent(f"""
-                                   • Machine: **{uname.machine}**
-                                   • Processor: **{uname.processor}**
-        """)
+        system = textwrap.dedent(
+            f"""
+            • System: **{uname.system}**
+            • Node Name: **{uname.node}**
+            """
+        )
+        version = textwrap.dedent(
+            f"""
+            • Release: **{uname.release}**
+            • Version: **{uname.version}**
+            """
+        )
+        hardware = textwrap.dedent(
+            f"""
+            • Machine: **{uname.machine}**
+            • Processor: **{uname.processor}**
+            """
+        )
 
         embed = Embed(title="BOT SYSTEM INFO", color=Color.red())
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
@@ -110,10 +122,12 @@ class Sudo(Cog):
         boot_time_timestamp = psutil.boot_time()
         bt = datetime.datetime.fromtimestamp(boot_time_timestamp)
 
-        boot = textwrap.dedent(f"""
-                               • Boot Date: **{bt.year}/{bt.month}/{bt.day}**
-                               • Boot Time: **{bt.hour}:{bt.minute}:{bt.second}**
-        """)
+        boot = textwrap.dedent(
+            f"""
+            • Boot Date: **{bt.year}/{bt.month}/{bt.day}**
+            • Boot Time: **{bt.hour}:{bt.minute}:{bt.second}**
+            """
+        )
 
         embed = Embed(title="BOT BOOT INFO", color=Color.red())
         embed.add_field(name="**❯❯ Boot**", value=boot, inline=True)
@@ -126,15 +140,19 @@ class Sudo(Cog):
         """Get detailed processor info."""
         cpufreq = psutil.cpu_freq()
 
-        cores = textwrap.dedent(f"""
-                                • Physical cores: **{psutil.cpu_count(logical=False)}**
-                                • Total cores: **{psutil.cpu_count(logical=True)}**
-        """)
-        frequency = textwrap.dedent(f"""
-                                    • Max Frequency: **{cpufreq.max:.2f}Mhz**
-                                    • Min Frequency: **{cpufreq.min:.2f}Mhz**
-                                    • Current Frequency: **{cpufreq.current:.2f}Mhz**
-        """)
+        cores = textwrap.dedent(
+            f"""
+            • Physical cores: **{psutil.cpu_count(logical=False)}**
+            • Total cores: **{psutil.cpu_count(logical=True)}**
+            """
+        )
+        frequency = textwrap.dedent(
+            f"""
+            • Max Frequency: **{cpufreq.max:.2f}Mhz**
+            • Min Frequency: **{cpufreq.min:.2f}Mhz**
+            • Current Frequency: **{cpufreq.current:.2f}Mhz**
+            """
+        )
 
         cpu_usage = "• CPU Usage Per Core:"
         for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
@@ -158,18 +176,22 @@ class Sudo(Cog):
         # get the swap memory details (if exists)
         swap = psutil.swap_memory()
 
-        virtual_memory = textwrap.dedent(f"""
-                                         • Total: **{self.get_size(svmem.total)}**
-                                         • Available: **{self.get_size(svmem.available)}**
-                                         • Used: **{self.get_size(svmem.used)}**
-                                         • Percentage: **{svmem.percent}%**
-        """)
-        swap_memory = textwrap.dedent(f"""
-                                      • Total: **{self.get_size(swap.total)}**
-                                      • Free: **{self.get_size(swap.free)}**
-                                      • Used: **{self.get_size(swap.used)}**
-                                      • Percentage: **{swap.percent}%**
-        """)
+        virtual_memory = textwrap.dedent(
+            f"""
+            • Total: **{self.get_size(svmem.total)}**
+            • Available: **{self.get_size(svmem.available)}**
+            • Used: **{self.get_size(svmem.used)}**
+            • Percentage: **{svmem.percent}%**
+            """
+        )
+        swap_memory = textwrap.dedent(
+            f"""
+            • Total: **{self.get_size(swap.total)}**
+            • Free: **{self.get_size(swap.free)}**
+            • Used: **{self.get_size(swap.used)}**
+            • Percentage: **{swap.percent}%**
+            """
+        )
 
         embed = Embed(title="BOT MEMORY INFO", color=Color.red())
         embed.add_field(name="**❯❯ Virtual Memory**", value=virtual_memory, inline=False)
@@ -185,22 +207,26 @@ class Sudo(Cog):
 
         partitions = []
         for partition in psutil.disk_partitions():
-            diskinfo = textwrap.dedent(f"""
-                                       **Device: {partition.device}**
-                                       • Mountpoint: **{partition.mountpoint}**
-                                       • File system type: **{partition.fstype}**
-            """)
+            diskinfo = textwrap.dedent(
+                f"""
+                **Device: {partition.device}**
+                • Mountpoint: **{partition.mountpoint}**
+                • File system type: **{partition.fstype}**
+                """
+            )
 
             try:
                 partition_usage = psutil.disk_usage(partition.mountpoint)
 
-                diskinfo += textwrap.dedent(f"""
-                                            **❯❯ Disk Stats:**
-                                                • Total Size: **{self.get_size(partition_usage.total)}**
-                                                • Used: **{self.get_size(partition_usage.used)}**
-                                                • Free: **{self.get_size(partition_usage.free)}**
-                                                • Percentage: **{partition_usage.percent}%**
-                """)
+                diskinfo += textwrap.dedent(
+                    f"""
+                    **❯❯ Disk Stats:**
+                        • Total Size: **{self.get_size(partition_usage.total)}**
+                        • Used: **{self.get_size(partition_usage.used)}**
+                        • Free: **{self.get_size(partition_usage.free)}**
+                        • Percentage: **{partition_usage.percent}%**
+                    """
+                )
             except PermissionError:
                 diskinfo += "**❯❯ Disk Stats: N/A (Insufficient Permissions)**"
 
@@ -213,10 +239,12 @@ class Sudo(Cog):
         # get IO statistics since boot
         disk_io = psutil.disk_io_counters()
 
-        diskio_stats = textwrap.dedent(f"""
-                                       • Total read: **{self.get_size(disk_io.read_bytes)}**
-                                       • Total write: **{self.get_size(disk_io.write_bytes)}**
-        """)
+        diskio_stats = textwrap.dedent(
+            f"""
+            • Total read: **{self.get_size(disk_io.read_bytes)}**
+            • Total write: **{self.get_size(disk_io.write_bytes)}**
+            """
+        )
 
         embed.add_field(name="**❯❯ Disk IO Stats**", value=diskio_stats, inline=False)
         embed.set_author(name=f"{self.bot.user.name}'s Disk Info", icon_url=self.bot.user.avatar_url)
@@ -235,26 +263,32 @@ class Sudo(Cog):
                 net_interfaces += f"\n**Interface: {interface_name}**"
 
                 if str(address.family) == 'AddressFamily.AF_INET':
-                    net_interfaces += textwrap.dedent(f"""
-                                                      • IP Address: **{address.address}**
-                                                      • Netmask: **{address.netmask}
-                                                      • Broadcast IP: **{address.broadcast}**\n
-                    """)
+                    net_interfaces += textwrap.dedent(
+                        f"""
+                        • IP Address: **{address.address}**
+                        • Netmask: **{address.netmask}
+                        • Broadcast IP: **{address.broadcast}**\n
+                        """
+                    )
 
                 elif str(address.family) == 'AddressFamily.AF_PACKET':
-                    net_interfaces += textwrap.dedent(f"""
-                                                      • MAC Address: **{address.address}**
-                                                      • Netmask: **{address.netmask}**
-                                                      • Broadcast MAC: **{address.broadcast}**\n
-                    """)
+                    net_interfaces += textwrap.dedent(
+                        f"""
+                        • MAC Address: **{address.address}**
+                        • Netmask: **{address.netmask}**
+                        • Broadcast MAC: **{address.broadcast}**\n
+                        """
+                    )
 
         # get IO statistics since boot
         net_io = psutil.net_io_counters()
 
-        netio_stats = textwrap.dedent(f"""
-                                      • Total Bytes Sent: **{self.get_size(net_io.bytes_sent)}**
-                                      • Total Bytes Received: **{self.get_size(net_io.bytes_recv)}**
-        """)
+        netio_stats = textwrap.dedent(
+            f"""
+            • Total Bytes Sent: **{self.get_size(net_io.bytes_sent)}**
+            • Total Bytes Received: **{self.get_size(net_io.bytes_recv)}**
+            """
+        )
 
         embed = Embed(title="BOT NET STATS", color=Color.red())
         embed.add_field(name="**❯❯ Net Interface Stats**", value=net_interfaces, inline=False)
@@ -269,16 +303,18 @@ class Sudo(Cog):
         embed = Embed(title="BOT GPU INFO", color=Color.red())
 
         for gpu in GPUtil.getGPUs():
-            gpu_details = textwrap.dedent(f"""
-                                          • Load: {gpu.load*100}%
-                                          • Temperature: {gpu.temperature} °C
+            gpu_details = textwrap.dedent(
+                f"""
+                • Load: {gpu.load*100}%
+                • Temperature: {gpu.temperature} °C
 
-                                          • Free Memory: {gpu.memoryFree}MB
-                                          • Used Memory: {gpu.memoryUsed}MB
-                                          • Total Memory: {gpu.memoryTotal}MB
+                • Free Memory: {gpu.memoryFree}MB
+                • Used Memory: {gpu.memoryUsed}MB
+                • Total Memory: {gpu.memoryTotal}MB
 
-                                          • UUID: {gpu.uuid}
-            """)
+                • UUID: {gpu.uuid}
+                """
+            )
             embed.add_field(name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False)
 
         await ctx.send(embed=embed)
