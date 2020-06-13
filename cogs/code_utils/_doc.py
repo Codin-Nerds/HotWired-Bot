@@ -65,7 +65,7 @@ async def cppreference(language: Literal['C', 'C++'], ctx: Context, text: str) -
             if language == 'C':
                 wanted = 'w/c/'
                 url = 'https://wikiprogramming.org/wp-content/uploads/2015/05/c-logo-150x150.png'
-            elif language == 'CPP':
+            elif language == 'C++':
                 wanted = 'w/cpp/'
                 url = 'https://isocpp.org/files/img/cpp_logo.png'
 
