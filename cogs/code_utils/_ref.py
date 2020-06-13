@@ -5,26 +5,18 @@ from functools import partial
 from bs4 import BeautifulSoup
 
 import aiohttp
-import discord
+from discord import Message, Embed
+from discord.ext.commands import Context
 from markdownify import MarkdownConverter
+import typing as t
 
 
-class DocMarkdownConverter(MarkdownConverter):
-    def convert_pre(self, el, text):
-        """Wrap any codeblocks in `py` for syntax highlighting."""
-
-        code = ''.join(el.strings)
-
-        return f"```py\n{code}```"
+def markdownify(html: str) -> str:
+    return MarkdownConverter(bullets='•').convert(html)
 
 
-def markdownify(html):
-    return DocMarkdownConverter(bullets='•').convert(html)
-
-
-async def _process_mozilla_doc(ctx, url):
+async def _process_mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
     """Get tag formatted content from given url from developers.mozilla.org."""
-
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
             if response.status == 404:
@@ -41,42 +33,40 @@ async def _process_mozilla_doc(ctx, url):
     return result
 
 
-async def html_ref(ctx, text):
+async def html_ref(ctx: Context, text: str) -> None:
     """Displays information on an HTML tag."""
-
     text = text.strip('<>`')
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{text}"
     url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
 
     output = await _process_mozilla_doc(ctx, url)
-    if type(output) != str:
+    if not isinstance(output, str):
         # Error message already sent
         return
 
-    emb = discord.Embed(title=text, description=output, url=url)
-    emb.set_author(name='HTML5 Reference')
-    emb.set_thumbnail(url="https://www.w3.org/html/logo/badge/html5-badge-h-solo.png")
+    embed = Embed(title=text, description=output, url=url)
+    embed.set_author(name='HTML5 Reference')
+    embed.set_thumbnail(url="https://www.w3.org/html/logo/badge/html5-badge-h-solo.png")
 
-    await ctx.send(embed=emb)
+    await ctx.send(embed=embed)
 
 
-async def _http_ref(part, ctx, text):
+async def _http_ref(part: str, ctx: Context, text: str) -> None:
     """Displays information about HTTP protocol."""
-
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=';/?:@&=$,><-[]')
 
     output = await _process_mozilla_doc(ctx, url)
-    if type(output) != str:
+    if not isinstance(output, str):
         # Error message already sent
         return
 
-    emb = discord.Embed(title=text, description=output, url=url)
-    emb.set_author(name='HTTP protocol')
-    emb.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/HTTP_logo.svg/1280px-HTTP_logo.svg.png')
+    embed = Embed(title=text, description=output, url=url)
+    embed.set_author(name='HTTP protocol')
+    embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/HTTP_logo.svg/1280px-HTTP_logo.svg.png')
 
-    await ctx.send(embed=emb)
+    await ctx.send(embed=embed)
 
 http_headers = partial(_http_ref, 'Headers')
 http_methods = partial(_http_ref, 'Methods')
@@ -84,9 +74,8 @@ http_status = partial(_http_ref, 'Status')
 csp_directives = partial(_http_ref, 'Headers/Content-Security-Policy')
 
 
-async def _git_main_ref(part, ctx, text):
+async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
     """Displays a git help page."""
-
     text = text.strip('`')
 
     if part and text == 'git':
@@ -111,23 +100,22 @@ async def _git_main_ref(part, ctx, text):
 
             title = sectors[0].find('p').text
 
-            emb = discord.Embed(title=title, url=url)
-            emb.set_author(name='Git reference')
-            emb.set_thumbnail(url='https://git-scm.com/images/logo@2x.png')
+            embed = Embed(title=title, url=url)
+            embed.set_author(name='Git reference')
+            embed.set_thumbnail(url='https://git-scm.com/images/logo@2x.png')
 
             for tag in sectors[1:]:
                 content = '\n'.join([markdownify(p) for p in tag.find_all(lambda x: x.name in ['p', 'pre'])])
-                emb.add_field(name=tag.find('h2').text, value=content[:1024])
+                embed.add_field(name=tag.find('h2').text, value=content[:1024])
 
-            await ctx.send(embed=emb)
+            return await ctx.send(embed=embed)
 
 git_ref = partial(_git_main_ref, 'git-')
 git_tutorial_ref = partial(_git_main_ref, '')
 
 
-async def sql_ref(ctx, text):
+async def sql_ref(ctx: Context, text: str) -> Message:
     """Displays reference on an SQL statement."""
-
     text = text.strip('`').lower()
     if text in ('check', 'unique', 'not null'):
         text += ' constraint'
@@ -154,14 +142,14 @@ async def sql_ref(ctx, text):
 
             description = '\n'.join([markdownify(p) for p in ps])[:2048]
 
-            emb = discord.Embed(title=title, url=url, description=description)
-            emb.set_author(name='SQL Reference')
-            emb.set_thumbnail(url='https://users.soe.ucsc.edu/~kunqian/logos/sql-logo.png')
+            embed = Embed(title=title, url=url, description=description)
+            embed.set_author(name='SQL Reference')
+            embed.set_thumbnail(url='https://users.soe.ucsc.edu/~kunqian/logos/sql-logo.png')
 
-            await ctx.send(embed=emb)
+            return await ctx.send(embed=embed)
 
 
-async def haskell_ref(ctx, text):
+async def haskell_ref(ctx: Context, text: str) -> Message:
     """Displays information on given Haskell topic."""
 
     text = text.strip('`')
@@ -188,7 +176,7 @@ async def haskell_ref(ctx, text):
                 )
             ])[:2048]
 
-            emb = discord.Embed(title=title, description=description, url=url)
-            emb.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")
+            embed = Embed(title=title, description=description, url=url)
+            embed.set_thumbnail(url="https://wiki.haskell.org/wikiupload/thumb/4/4a/HaskellLogoStyPreview-1.png/120px-HaskellLogoStyPreview-1.png")
 
-            await ctx.send(embed=emb)
+            return await ctx.send(embed=embed)
