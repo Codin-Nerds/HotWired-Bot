@@ -14,6 +14,7 @@ Try this bot Today!
 
 Features
 -------
+
 * Perfect Event management
 * Perfect Moderation for Your server
 * No Paid Options, Everything for Free!
@@ -34,6 +35,7 @@ Features
 
 Support
 -------
-The Bot Creator Team has **24x7** Support for the Bot, 
-Just join The Server and give your valuable suggestion, 
+
+The Bot Creator Team has **24x7** Support for the Bot,
+Just join The Server and give your valuable suggestion,
 feedback or the Complaint, We will Look Into it ASAP!
