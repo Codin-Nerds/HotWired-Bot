@@ -12,6 +12,7 @@ class Emotes(commands.Cog):
         self.client = client
 
     async def send_error(self, ctx: commands.Context, error: str) -> None:
+        """Sends the Error of Any functions as an Embed."""
         help_message = 'Type `{constants.COMMAND_PREFIX}help` for further assistance'
         embed = discord.Embed(colour=discord.Colour.red())
         embed.add_field(name=f'Error: {error}', value=help_message)
@@ -19,6 +20,7 @@ class Emotes(commands.Cog):
 
     @commands.command(aliases=['addemote', 'emotehow'])
     async def emote_add_help(self, ctx: commands.Context) -> None:
+        """Shows help on how to add emotes."""
         add_emote = (
             'Adds a twitch emote to the server\n\n'
             '**Usage:**\n'
@@ -51,6 +53,7 @@ class Emotes(commands.Cog):
 
     @commands.command()
     async def add_emote(self, ctx: commands.Context, *, content: str) -> None:
+        """Adding Emotes."""
         server = ctx.message.guild
 
         try:
@@ -71,6 +74,7 @@ class Emotes(commands.Cog):
 
     @commands.command()
     async def emote(self, ctx: commands.Context, *, content: str) -> None:
+        """Using the Emotes."""
         server = ctx.message.guild
         names = content.split(',')
 
