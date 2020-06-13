@@ -23,7 +23,7 @@ status = [
 ]
 
 
-async def change_status():
+async def change_status() -> None:
     await client.wait_until_ready()
     msgs = cycle(status)
 
@@ -34,46 +34,47 @@ async def change_status():
 
 
 @client.event
-async def on_ready():
+async def on_ready() -> None:
     print('Bot is Ready.')
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
 
 @client.event
-async def on_message(message):
-    pass
-
-
-@client.event
-async def on_guild_join(guild: discord.Guild):
+async def on_guild_join(guild: discord.Guild) -> None:
 
     hw = client.get_user(715545167649570977)
     logchannel = client.get_channel(704197974577643550)
 
     embed = discord.Embed(
         title="Greetings",
-        description=textwrap.dedent(f"""
+        description=textwrap.dedent(
+            f"""
             Thanks for adding HotWired in this server,
             **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
             The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
-        """),
+            """
+        ),
         color=0x2f3136
     )
 
     embed.add_field(
         name="General information",
-        value=textwrap.dedent(f"""
-                              **► __Bot Id__**: 715545167649570977
-                              **► __Developer__**: **TheOriginalDude#0585**
-                              **► __Prefix__**: {PREFIX}
-        """)
+        value=textwrap.dedent(
+            f"""
+            **► __Bot Id__**: 715545167649570977
+            **► __Developer__**: **TheOriginalDude#0585**
+            **► __Prefix__**: {PREFIX}
+            """
+        )
     )
     embed.add_field(
         name="**Links**",
-        value=textwrap.dedent(f"""
-                              **►** [Support Server]({SUPPORT_SERVER})
-                              **►** [Invite link]({INVITE})
-        """)
+        value=textwrap.dedent(
+            f"""
+            **►** [Support Server]({SUPPORT_SERVER})
+            **►** [Invite link]({INVITE})
+            """
+        )
     )
 
     embed.set_thumbnail(url=hw.avatar_url)
@@ -86,7 +87,7 @@ async def on_guild_join(guild: discord.Guild):
     )
 
 
-def SetupBot(bot):
+def setup_bot(bot) -> None:
     bot.load_extension("cogs.codesandbox")
     bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
@@ -108,4 +109,4 @@ def SetupBot(bot):
 client.loop.create_task(change_status())
 
 if __name__ == "__main__":
-    SetupBot(client)
+    setup_bot(client)
