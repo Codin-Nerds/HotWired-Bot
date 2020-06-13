@@ -1,12 +1,9 @@
 import asyncio
 import datetime
 import os
-import platform
 import random
 import string
-import sys
 import traceback
-
 import discord
 from discord.ext import commands
 
@@ -14,10 +11,6 @@ from discord.ext import commands
 class Commands(commands.Cog):
     def __init__(self, client):
         self.client = client
-        try:
-            self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
-        except IndexError:
-            self.dev_mode = True
 
     @commands.command(name='serverinfo', aliases=['server'])
     async def serverinfo(self, ctx):
@@ -88,11 +81,6 @@ class Commands(commands.Cog):
             for i in range(times):
                 await ctx.send(text)
                 await asyncio.sleep(1)
-
-    @commands.command(aliases=['cembed', 'emb', 'new'])
-    async def create(self, ctx, *, msg):
-        """Create an embed."""
-        await ctx.send(msg)
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, extension):
