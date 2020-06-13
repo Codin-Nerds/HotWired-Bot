@@ -29,7 +29,7 @@ class Embeds(Cog):
         self.embeds[ctx.author].description = description
         await ctx.send("Embeds description updated.")
 
-    @embed_group.command()
+    @embed_group.command(aliases=['add_description'])
     async def append_description(self, ctx: Context, *, description: str):
         """Add text into Description of the Embed."""
         self.embeds[ctx.author].description += description
