@@ -42,7 +42,7 @@ async def python_doc(ctx, text: str) -> None:
             await ctx.send(embed=embed)
 
 
-async def cppreference(language: Literal['C', 'CPP'], ctx: Context, text: str) -> None:
+async def cppreference(language: Literal['C', 'C++'], ctx: Context, text: str) -> None:
     """Search something on cppreference."""
 
     text = text.strip('`')
