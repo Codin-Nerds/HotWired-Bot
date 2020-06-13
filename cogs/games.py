@@ -33,7 +33,6 @@ UNSURE_BALL8_RESPONSES = [
 
 
 class Games(Cog):
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -42,21 +41,13 @@ class Games(Cog):
         """Roll a random number."""
         if max_limit - min_limit > 2:
             number = random.randint(min_limit, max_limit)
-            embed = Embed(
-                title="Random Roll",
-                color=Color.blue(),
-                description=f"The random number is: {number}"
-            )
+            embed = Embed(title="Random Roll", color=Color.blue(), description=f"The random number is: {number}",)
             await ctx.send(embed=embed)
         else:
-            embed = Embed(
-                title="Random Roll",
-                color=Color.red(),
-                description="Please specify numbers with difference of **at least 2**"
-            )
+            embed = Embed(title="Random Roll", color=Color.red(), description="Please specify numbers with difference of **at least 2**",)
             await ctx.send(embed=embed)
 
-    @command(aliases=['8ball'])
+    @command(aliases=["8ball"])
     async def ball8(self, ctx: Context, *, question: str) -> None:
         """Play 8ball."""
         reply_type = random.randint(1, 3)
@@ -68,10 +59,7 @@ class Games(Cog):
         elif reply_type == 3:
             answer = random.choice(UNSURE_BALL8_RESPONSES)
 
-        embed = Embed(
-            title="Magic 8-ball",
-            color=Color.blurple(),
-        )
+        embed = Embed(title="Magic 8-ball", color=Color.blurple(),)
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
 

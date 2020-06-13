@@ -20,12 +20,10 @@ class Study(commands.Cog):
         res = get_math_results(equation)
 
         if res.lower() == "invalid equation":
-            emb = discord.Embed(
-                title="ERROR!", description="❌ Invalid Equation Specified, Please Recheck the Equation",
-                color=discord.Color.red())
-            emb.set_footer(text=f'Invoked by {str(ctx.message.author)}')
+            embed = discord.Embed(title="ERROR!", description="❌ Invalid Equation Specified, Please Recheck the Equation", color=discord.Color.red(),)
+            embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
-            await ctx.send(embed=emb)
+            await ctx.send(embed=embed)
 
         else:
             embed = discord.Embed(title="Equation Results")
@@ -33,11 +31,11 @@ class Study(commands.Cog):
             embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=res, inline=False)
 
-            embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
+            embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=['wq', 'wolframquestion', 'wquestion'])
+    @commands.command(aliases=["wq", "wolframquestion", "wquestion"])
     async def ask_question(self, ctx, conversation_mode="true", *, question: str):
         """Ask the answer of an question"""
 
@@ -48,7 +46,7 @@ class Study(commands.Cog):
         embed.add_field(name="**❯❯ Question**", value=question, inline=False)
         embed.add_field(name="**❯❯ Result**", value=data, inline=False)
 
-        embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
+        embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
         await ctx.send(embed=embed)
 

@@ -15,16 +15,15 @@ class Support(commands.Cog):
         """
         embed = discord.Embed(
             title="Inviting me to your Server?",
-            description=f"❯❯ [Invite Link]({constants.invite_link})"
-                        f"\n❯❯ [Secondary Invite Link]({constants.admin_invite_link})",
-            color=discord.Color.dark_green()
+            description=f"❯❯ [Invite Link]({constants.invite_link})" f"\n❯❯ [Secondary Invite Link]({constants.admin_invite_link})",
+            color=discord.Color.dark_green(),
         )
 
         embed.set_thumbnail(url=self.client.user.avatar_url)
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='support')
+    @commands.command(name="support")
     async def support(self, ctx):
         """
         Get an invite link to the bots support server.
@@ -32,10 +31,10 @@ class Support(commands.Cog):
         embed = discord.Embed(
             title="Need Support? OR Want to give Feedback?",
             description="If you have any **problems with the bot** or "
-                        "if you have any **suggestions/feedback** be sure to join the Support Server!"
-                        f"❯❯ [Support Server]({constants.discord_server})"
-                        f"❯❯ [Invite Link]({constants.invite_link})",
-            color=discord.Color.dark_green()
+            "if you have any **suggestions/feedback** be sure to join the Support Server!"
+            f"❯❯ [Support Server]({constants.discord_server})"
+            f"❯❯ [Invite Link]({constants.invite_link})",
+            color=discord.Color.dark_green(),
         )
 
         embed.set_thumbnail(url=self.client.user.avatar_url)

@@ -11,16 +11,16 @@ def hexop(num1, num2, op):
         num1 = hexToDecimal(str(num1))
         num2 = hexToDecimal(str(num2))
 
-        if op == '+':
+        if op == "+":
             return hex(num1 + num2)
-        elif op == '-':
+        elif op == "-":
             return hex(num1 - num2)
-        elif op == '*':
+        elif op == "*":
             return hex(num1 * num2)
-        elif op == '/':
+        elif op == "/":
             try:
                 return hex(num1 / num2)
             except ZeroDivisionError:
-                print('Not Divisible by zero')
+                print("Not Divisible by zero")
         else:
             return "Invalid hexadecimal Number"

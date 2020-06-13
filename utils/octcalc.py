@@ -4,7 +4,7 @@ def octToDecimal(n):
     base = 1
 
     temp = num
-    while (temp):
+    while temp:
         last_digit = temp % 10
         temp = int(temp / 10)
         dec_value += last_digit * base
@@ -23,16 +23,16 @@ def octop(num1, num2, op):
         num1 = octToDecimal(str(num1))
         num2 = octToDecimal(str(num2))
 
-        if op == '+':
+        if op == "+":
             return oct(num1 + num2)
-        elif op == '-':
+        elif op == "-":
             return oct(num1 - num2)
-        elif op == '*':
+        elif op == "*":
             return oct(num1 * num2)
-        elif op == '/':
+        elif op == "/":
             try:
                 return oct(num1 / num2)
             except ZeroDivisionError:
-                print('Not Divisible by zero')
+                print("Not Divisible by zero")
         else:
             return "Invalid Octal Number"

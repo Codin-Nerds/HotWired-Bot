@@ -9,36 +9,27 @@ from discord.ext.commands import Cog, command, has_permissions, Context
 
 
 class Custom(Cog):
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @command()
     async def hello(self, ctx: Context) -> None:
         """Greet a User."""
-        await ctx.send('Hey there Buddy!')
+        await ctx.send("Hey there Buddy!")
 
     @command()
     @has_permissions(manage_messages=True)
     async def ping(self, ctx: Context) -> None:
         """Shows bot ping."""
         start = time.perf_counter()
-        embed = Embed(
-            title="Info",
-            description="Pong!",
-            color=Color.blurple()
-        )
+        embed = Embed(title="Info", description="Pong!", color=Color.blurple())
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
-        embed = Embed(
-            title="Info",
-            description=f":ping_pong: Pong! ({duration}ms)",
-            color=Color.blurple()
-        )
+        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
         await message.edit(embed=embed)
 
-    @command(aliases=['asking'])
+    @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
         """How to ask a Question."""
         embed = Embed(
@@ -51,22 +42,18 @@ class Custom(Cog):
                 **4 ❯** Patiently wait for a helper to respond
                 """
             ),
-            color=Color.blurple()
+            color=Color.blurple(),
         )
         img_url = "https://media.giphy.com/media/3ojqPGJAHWqC1VQPDk/giphy.gif"
         embed.set_image(url=img_url)
-        await ctx.send('**A S K I N G   A   Q U E S T I O N ❓**')
+        await ctx.send("**A S K I N G   A   Q U E S T I O N ❓**")
         await ctx.send(embed=embed)
 
-    @command(aliases=['thank', 'ty'])
+    @command(aliases=["thank", "ty"])
     async def thanks(self, ctx: Context, member: discord.Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
-            embed = Embed(
-                title="WARNING",
-                description=f"{ctx.author.mention} **You Cannot Thank Yourself!**",
-                color=Color.orange()
-            )
+            embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
         else:
             embed = Embed(
@@ -77,7 +64,7 @@ class Custom(Cog):
                     {'**MESSAGE**:' + reason if reason else ''}
                     """
                 ),
-                color=Color.blurple()
+                color=Color.blurple(),
             )
             embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
@@ -85,5 +72,6 @@ class Custom(Cog):
 
 def setup(bot: Bot):
     bot.add_cog(Custom(bot))
+
 
 # TODO: Custom is a bad name for a cog, this should be renamed

@@ -8,7 +8,6 @@ from utils.wolframscrape import get_wolfram_data
 
 
 class Tools(Cog):
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
@@ -18,7 +17,7 @@ class Tools(Cog):
         """Calculate an equation."""
         res = get_math_results(equation)
         if res.lower() == "invalid equation":
-            embed = Embed(title="ERROR!", description="❌ Invalid Equation Specified", color=Color.red())
+            embed = Embed(title="ERROR!", description="❌ Invalid Equation Specified", color=Color.red(),)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
             await ctx.send(embed=embed)

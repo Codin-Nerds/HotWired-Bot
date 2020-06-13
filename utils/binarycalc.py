@@ -8,9 +8,9 @@ def binaryToDecimal(n):
 
 def check(string):
     p = set(string)
-    s = {'0', '1'}
+    s = {"0", "1"}
 
-    if s == p or p == {'0'} or p == {'1'}:
+    if s == p or p == {"0"} or p == {"1"}:
         return True
 
     else:
@@ -22,16 +22,16 @@ def binaryop(num1, num2, op):
         num1 = binaryToDecimal(str(num1))
         num2 = binaryToDecimal(str(num2))
 
-        if op == '+':
+        if op == "+":
             return decimalToBinary(num1 + num2)
-        elif op == '-':
+        elif op == "-":
             return decimalToBinary(num1 - num2)
-        elif op == '*':
+        elif op == "*":
             return decimalToBinary(num1 * num2)
-        elif op == '/':
+        elif op == "/":
             try:
                 return decimalToBinary(num1 / num2)
             except ZeroDivisionError:
-                print('Not Divisible by zero')
+                print("Not Divisible by zero")
         else:
             return "Invalid Binary Number"

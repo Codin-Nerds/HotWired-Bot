@@ -3,8 +3,8 @@ import requests
 
 def get_math_results(equation):
 
-    params = {'expr': equation}
-    url = 'http://api.mathjs.org/v4/'
+    params = {"expr": equation}
+    url = "http://api.mathjs.org/v4/"
     r = requests.get(url, params=params)
 
     if r.status_code == 200:

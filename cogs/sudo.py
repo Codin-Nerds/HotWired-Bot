@@ -12,6 +12,7 @@ from discord.ext.commands import Context, group, Cog
 
 class Sudo(Cog):
     """This cog provides administrative stats about server and bot itself."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.process = psutil.Process()
@@ -40,10 +41,7 @@ class Sudo(Cog):
     async def sudo(self, ctx) -> None:
         """Administrative information."""
         if ctx.invoked_subcommand is None:
-            embed = Embed(
-                description="Invalid sudo Command Passed!",
-                color=Color.red()
-            )
+            embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
             await ctx.send(embed=embed)
 
     @sudo.command()
@@ -84,7 +82,7 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=['sinfo'])
+    @sudo.command(aliases=["sinfo"])
     async def sysinfo(self, ctx: Context) -> None:
         """Get system information (show info about the server this bot runs on)."""
         uname = platform.uname()
@@ -112,11 +110,13 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
         embed.add_field(name="**❯❯ Hardware**", value=hardware, inline=True)
         embed.add_field(name="**❯❯ Version**", value=version, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=['binfo'])
+    @sudo.command(aliases=["binfo"])
     async def bootinfo(self, ctx: Context) -> None:
         """Show boot times."""
         boot_time_timestamp = psutil.boot_time()
@@ -135,7 +135,7 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=['cinfo'])
+    @sudo.command(aliases=["cinfo"])
     async def cpuinfo(self, ctx: Context) -> None:
         """Get detailed processor info."""
         cpufreq = psutil.cpu_freq()
@@ -168,7 +168,7 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=['memusg', 'meminfo', 'minfo', 'memusage'])
+    @sudo.command(aliases=["memusg", "meminfo", "minfo", "memusage"])
     async def memoryinfo(self, ctx: Context) -> None:
         """Show detailed RAM info."""
         # get the memory details
@@ -196,11 +196,13 @@ class Sudo(Cog):
         embed = Embed(title="BOT MEMORY INFO", color=Color.red())
         embed.add_field(name="**❯❯ Virtual Memory**", value=virtual_memory, inline=False)
         embed.add_field(name="**❯❯ Swap Memory**", value=swap_memory, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s Memory Info", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Memory Info", icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=['dusage', 'dusg', 'dinfo'])
+    @sudo.command(aliases=["dusage", "dusg", "dinfo"])
     async def diskusage(self, ctx: Context) -> None:
         """Show detailed info about disk usage."""
         embed = Embed(title="BOT DISK STATS", color=Color.red())
@@ -262,7 +264,7 @@ class Sudo(Cog):
             for address in interface_addresses:
                 net_interfaces += f"\n**Interface: {interface_name}**"
 
-                if str(address.family) == 'AddressFamily.AF_INET':
+                if str(address.family) == "AddressFamily.AF_INET":
                     net_interfaces += textwrap.dedent(
                         f"""
                         • IP Address: **{address.address}**
@@ -271,7 +273,7 @@ class Sudo(Cog):
                         """
                     )
 
-                elif str(address.family) == 'AddressFamily.AF_PACKET':
+                elif str(address.family) == "AddressFamily.AF_PACKET":
                     net_interfaces += textwrap.dedent(
                         f"""
                         • MAC Address: **{address.address}**
@@ -293,7 +295,9 @@ class Sudo(Cog):
         embed = Embed(title="BOT NET STATS", color=Color.red())
         embed.add_field(name="**❯❯ Net Interface Stats**", value=net_interfaces, inline=False)
         embed.add_field(name="**❯❯ Net IO Stats**", value=netio_stats, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s Network Info", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Network Info", icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
@@ -315,7 +319,9 @@ class Sudo(Cog):
                 • UUID: {gpu.uuid}
                 """
             )
-            embed.add_field(name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False)
+            embed.add_field(
+                name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False,
+            )
 
         await ctx.send(embed=embed)
 

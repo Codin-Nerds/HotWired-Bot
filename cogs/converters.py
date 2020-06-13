@@ -9,6 +9,7 @@ from discord.ext.commands import Cog, Context, command
 
 class Converters(Cog):
     """This is a Cog for converting and encoding strings."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
@@ -64,10 +65,10 @@ class Converters(Cog):
         index = units.index(unit)
 
         for i, u in enumerate(units):
-            result = round(value / 2**((i-index)*10), 14)
+            result = round(value / 2 ** ((i - index) * 10), 14)
             embed.add_field(name=u, value=result)
 
-            embed.set_footer(text=f'Invoked by {str(ctx.message.author)}')
+            embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
             await ctx.send(embed=embed)
 

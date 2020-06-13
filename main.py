@@ -15,8 +15,8 @@ INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&
 client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=688275913535914014)
 
 status = [
-    "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator\'s Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+    "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+    "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
     f"Ping me using {PREFIX}help",
     "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
     "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
@@ -35,7 +35,7 @@ async def change_status() -> None:
 
 @client.event
 async def on_ready() -> None:
-    print('Bot is Ready.')
+    print("Bot is Ready.")
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
 
@@ -54,7 +54,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
             The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
             """
         ),
-        color=0x2f3136
+        color=0x2F3136,
     )
 
     embed.add_field(
@@ -65,7 +65,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
             **► __Developer__**: **TheOriginalDude#0585**
             **► __Prefix__**: {PREFIX}
             """
-        )
+        ),
     )
     embed.add_field(
         name="**Links**",
@@ -74,7 +74,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
             **►** [Support Server]({SUPPORT_SERVER})
             **►** [Invite link]({INVITE})
             """
-        )
+        ),
     )
 
     embed.set_thumbnail(url=hw.avatar_url)

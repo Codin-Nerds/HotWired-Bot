@@ -3,7 +3,6 @@ from discord.ext.commands import Cog, command, Context
 
 
 class Infog(Cog):
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
