@@ -64,13 +64,13 @@ class Games(commands.Cog):
     async def hangman(self, ctx):
         def display_hangman(tries):
             stages = [  # final state: head, torso, both arms, and both legs
-                r"""
+                """
                    --------
                    |      |
                    |      O
-                   |     \ | /
-                   |       |
-                   |     /   \
+                   |     \\|/
+                   |      |
+                   |     / \\
                    -
                 """,
                 # head, torso, both arms, and one leg
