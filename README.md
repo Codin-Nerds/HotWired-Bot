@@ -2,6 +2,9 @@
 HotWired - Discord Bot
 =======================
 
+[![mit](https://img.shields.io/badge/Licensed%20under-MIT-red.svg?style=flat-square)](./LICENSE)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python%203.8-ffde57.svg?longCache=true&style=flat-square&colorB=ffdf68&logo=python&logoColor=88889e)](https://www.python.org/)
+[![made-with-discord.py](https://img.shields.io/badge/Using-discord.py-ffde57.svg?longCache=true&style=flat-square&colorB=4584b6&logo=discord&logoColor=7289DA)](https://github.com/Rapptz/discord.py)
 [![Discord](https://img.shields.io/static/v1?label=The%20Codin'%20Hole&logo=discord&message=%3E200%20members&color=%237289DA&logoColor=white)](https://discord.gg/vP26dCy)
 
 This bot is a Heavy Coded Yet lightWeight, reliable, smooth, automatic worker
