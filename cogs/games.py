@@ -156,7 +156,8 @@ class Games(commands.Cog):
             await ctx.send("\n")
 
             while not guessed and tries > 0:
-                input = await self.client.wait_for("Please guess a letter or word: ", check=check)
+                await ctx.send("Please guess a letter or word: ")
+                input = await self.client.wait_for('message', check=check)
                 guess = input.upper()
                 if len(guess) == 1 and guess.isalpha():
                     if guess in guessed_letters:
