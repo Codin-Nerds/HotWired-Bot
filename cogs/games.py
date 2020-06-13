@@ -136,69 +136,62 @@ class Games(commands.Cog):
             ]
             return stages[tries]
 
-        def get_word():
-            word = random.choice(word_list)
-            return word.upper()
-
         def check(m):
             return m.author == ctx.author and m.channel == ctx.channel
 
-        def play(word):
-            word_completion = "_" * len(word)
-            guessed = False
-            guessed_letters = []
-            guessed_words = []
-            tries = 6
+        word = random.choice(word_list).upper()
+        word_completion = "_" * len(word)
+        guessed = False
+        guessed_letters = []
+        guessed_words = []
+        tries = 6
 
-            await ctx.send("Let's play Hangman!")
+        await ctx.send("Let's play Hangman!")
+        await ctx.send(display_hangman(tries))
+        await ctx.send(word_completion)
+        await ctx.send("\n")
+
+        while not guessed and tries > 0:
+            await ctx.send("Please guess a letter or word: ")
+            input = await self.client.wait_for('message', check=check)
+            guess = input.upper()
+            if len(guess) == 1 and guess.isalpha():
+                if guess in guessed_letters:
+                    await ctx.send(f"You already guessed the letter {guess}")
+                elif guess not in word:
+                    await ctx.send(f"{guess} is not in the word.")
+                    tries -= 1
+                    guessed_letters.append(guess)
+                else:
+                    await ctx.send(f"Good job, {guess} is in the word!")
+                    guessed_letters.append(guess)
+                    word_as_list = list(word_completion)
+                    indices = [i for i, letter in enumerate(word) if letter == guess]
+
+                    for index in indices:
+                        word_as_list[index] = guess
+                    word_completion = "".join(word_as_list)
+                    if "_" not in word_completion:
+                        guessed = True
+            elif len(guess) == len(word) and guess.isalpha():
+                if guess in guessed_words:
+                    await ctx.send(f"You already guessed the word {guess}")
+                elif guess != word:
+                    await ctx.send(f"{guess} is not the word.")
+                    tries -= 1
+                    guessed_words.append(guess)
+                else:
+                    guessed = True
+                    word_completion = word
+            else:
+                await ctx.send("Not a valid guess.")
             await ctx.send(display_hangman(tries))
             await ctx.send(word_completion)
             await ctx.send("\n")
-
-            while not guessed and tries > 0:
-                await ctx.send("Please guess a letter or word: ")
-                input = await self.client.wait_for('message', check=check)
-                guess = input.upper()
-                if len(guess) == 1 and guess.isalpha():
-                    if guess in guessed_letters:
-                        await ctx.send(f"You already guessed the letter {guess}")
-                    elif guess not in word:
-                        await ctx.send(f"{guess} is not in the word.")
-                        tries -= 1
-                        guessed_letters.append(guess)
-                    else:
-                        await ctx.send(f"Good job, {guess} is in the word!")
-                        guessed_letters.append(guess)
-                        word_as_list = list(word_completion)
-                        indices = [i for i, letter in enumerate(word) if letter == guess]
-
-                        for index in indices:
-                            word_as_list[index] = guess
-                        word_completion = "".join(word_as_list)
-                        if "_" not in word_completion:
-                            guessed = True
-                elif len(guess) == len(word) and guess.isalpha():
-                    if guess in guessed_words:
-                        await ctx.send(f"You already guessed the word {guess}")
-                    elif guess != word:
-                        await ctx.send(f"{guess} is not the word.")
-                        tries -= 1
-                        guessed_words.append(guess)
-                    else:
-                        guessed = True
-                        word_completion = word
-                else:
-                    await ctx.send("Not a valid guess.")
-                await ctx.send(display_hangman(tries))
-                await ctx.send(word_completion)
-                await ctx.send("\n")
-            if guessed:
-                await ctx.send("Congrats, you guessed the word! You win!")
-            else:
-                await ctx.send(f"Sorry, you ran out of tries. The word was {word}. Maybe next time!")
-
-        word = get_word()
-        play(word)
+        if guessed:
+            await ctx.send("Congrats, you guessed the word! You win!")
+        else:
+            await ctx.send(f"Sorry, you ran out of tries. The word was {word}. Maybe next time!")
 
 
 def setup(client):
