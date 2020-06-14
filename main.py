@@ -1,4 +1,5 @@
 import asyncio
+import os
 import textwrap
 from itertools import cycle
 
@@ -6,10 +7,9 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-import setup
 from cogs.utils import constants
 
-TOKEN = setup.BOT_TOKEN
+TOKEN = os.environ["BOT_TOKEN"]
 PREFIX = constants.COMMAND_PREFIX
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"

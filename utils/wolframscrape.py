@@ -1,7 +1,7 @@
 import requests
-import setup
+import os
 
-APPID = setup.WOLFRAM_APPID
+APPID = os.environ["WOLFRAM_APPID"]
 
 
 def get_wolfram_data(question: str, conversation_mode: str = "false", units: str = "metric") -> str:
