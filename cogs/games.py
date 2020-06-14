@@ -64,5 +64,5 @@ class Games(Cog):
         embed.add_field(name="Answer", value=answer)
 
 
-def setup(bot: Bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Games(bot))

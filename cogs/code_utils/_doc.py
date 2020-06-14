@@ -8,11 +8,9 @@ from bs4 import BeautifulSoup
 from typing import Literal
 
 
-async def python_doc(ctx, text: str) -> None:
+async def python_doc(ctx: Context, text: str) -> None:
     """Filters python.org results based on your query."""
-
     text = text.strip("`")
-
     url = "https://docs.python.org/3/genindex-all.html"
 
     async with aiohttp.ClientSession() as client_session:
@@ -22,7 +20,7 @@ async def python_doc(ctx, text: str) -> None:
 
             soup = BeautifulSoup(str(await response.text()), "lxml")
 
-            def soup_match(tag):
+            def soup_match(tag: str) -> bool:
                 return all(string in tag.text for string in text.strip().split()) and tag.name == "li"
 
             elements = soup.find_all(soup_match, limit=10)

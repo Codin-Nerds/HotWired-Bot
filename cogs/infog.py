@@ -11,5 +11,5 @@ class Infog(Cog):
         await ctx.send("Info gathered")
 
 
-def setup(bot: Bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Infog(bot))

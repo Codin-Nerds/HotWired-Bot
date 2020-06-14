@@ -32,19 +32,17 @@ class Tools(Cog):
             await ctx.send(embed=embed)
 
     @command(aliases=["wq", "wolframquestion", "wquestion"])
-    async def ask_question(self, ctx: Context, conversation_mode="true", *, question: str) -> None:
+    async def ask_question(self, ctx: Context, conversation_mode: str = "true", *, question: str) -> None:
         """Ask the answer of an question."""
         data = get_wolfram_data(question, conversation_mode)
 
         embed = Embed(title="Question Results")
-
         embed.add_field(name="**❯❯ Question**", value=question, inline=False)
         embed.add_field(name="**❯❯ Result**", value=data, inline=False)
-
         embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
         await ctx.send(embed=embed)
 
 
-def setup(bot: Bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Tools(bot))

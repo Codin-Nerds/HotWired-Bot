@@ -73,7 +73,7 @@ class Converters(Cog):
             await ctx.send(embed=embed)
 
     @command(name="hash")
-    async def _hash(self, ctx: Context, algorithm, *, text: str) -> None:
+    async def _hash(self, ctx: Context, algorithm: str, *, text: str) -> None:
         """Hash a string using specified algorithm."""
         algo = algorithm.lower()
 
@@ -127,5 +127,5 @@ class Converters(Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot: Bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Converters(bot))

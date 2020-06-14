@@ -4,7 +4,7 @@ import setup
 APPID = setup.WOLFRAM_APPID
 
 
-def get_wolfram_data(question, conversation_mode="false", units="metric"):
+def get_wolfram_data(question: str, conversation_mode: str = "false", units: str = "metric") -> str:
     if conversation_mode.lower() == "yes" or conversation_mode.lower() == "true":
         params = {"appid": APPID, "i": question, "units": units}
         url = "http://api.wolframalpha.com/v1/conversation.jsp"

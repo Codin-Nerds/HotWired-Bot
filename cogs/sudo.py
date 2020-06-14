@@ -18,7 +18,7 @@ class Sudo(Cog):
         self.process = psutil.Process()
         self.startTime = datetime.datetime.utcnow()
 
-    def get_size(_bytes, suffix="B") -> str:
+    def get_size(_bytes: int, suffix: str = "B") -> str:
         """Convert sizes."""
         factor = 1024
         for unit in ["", "K", "M", "G", "T", "P"]:
@@ -38,7 +38,7 @@ class Sudo(Cog):
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
     @group(hidden=True)
-    async def sudo(self, ctx) -> None:
+    async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
         if ctx.invoked_subcommand is None:
             embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())

@@ -22,7 +22,7 @@ class Custom(Cog):
         await self.client.process_commands(message)
 
     @Cog.listener()
-    async def on_error(self, event, *args, **kwargs) -> None:
+    async def on_error(self, event: str, *args, **kwargs) -> None:
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
             async with self.session.post("https://www.hastebin.com/documents", data=error_message) as resp:

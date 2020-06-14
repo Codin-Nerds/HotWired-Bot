@@ -70,7 +70,7 @@ class Custom(Cog):
             await ctx.send(embed=embed)
 
 
-def setup(bot: Bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(Custom(bot))
 
 

@@ -6,7 +6,7 @@ import aiohttp
 to_bytes = partial(bytes, encoding="utf-8")
 
 
-def _to_tio_string(couple) -> bytes:
+def _to_tio_string(couple: list) -> bytes:
     name, obj = couple[0], couple[1]
     if not obj:
         return b""

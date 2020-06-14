@@ -1,8 +1,8 @@
 import functools
+from typing import Coroutine
 
 import aiohttp
-from discord.ext.commands import Context, BadArgument
-from typing import Coroutine
+from discord.ext.commands import BadArgument, Context
 
 
 def get_raw(link: str) -> str:
@@ -55,7 +55,7 @@ def typing(func: Coroutine) -> Coroutine:
     """Keep typing until `func` is complete."""
 
     @functools.wraps(func)
-    async def wrapped(*args, **kwargs):
+    async def wrapped(*args, **kwargs) -> Coroutine:
         context = args[0] if isinstance(args[0], Context) else args[1]
         async with context.typing():
             await func(*args, **kwargs)

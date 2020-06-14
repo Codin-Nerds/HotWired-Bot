@@ -5,7 +5,7 @@ from itertools import cycle
 import discord
 import setup
 from cogs.utils import constants
-from discord.ext import commands
+from discord.ext import commands, Bot
 
 TOKEN = setup.BOT_TOKEN
 PREFIX = constants.COMMAND_PREFIX
@@ -87,7 +87,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
     )
 
 
-def setup_bot(bot) -> None:
+def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.codesandbox")
     bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
