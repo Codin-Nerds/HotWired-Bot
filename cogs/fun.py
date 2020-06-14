@@ -3,15 +3,7 @@ import textwrap
 
 import discord
 from discord import Color, Embed
-from discord.ext import Bot
-from discord.ext.commands import (
-    BadArgument,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown,
-)
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown
 
 
 class Fun(Cog):

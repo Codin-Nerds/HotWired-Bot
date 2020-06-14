@@ -1,11 +1,8 @@
+import textwrap
 import time
 
-import discord
-from discord.ext import Bot
-import textwrap
-
-from discord import Embed, Color
-from discord.ext.commands import Cog, command, has_permissions, Context
+from discord import Color, Embed, Member
+from discord.ext.commands import Bot, Cog, Context, command, has_permissions
 
 
 class Custom(Cog):
@@ -50,7 +47,7 @@ class Custom(Cog):
         await ctx.send(embed=embed)
 
     @command(aliases=["thank", "ty"])
-    async def thanks(self, ctx: Context, member: discord.Member, *, reason: str = None) -> None:
+    async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
             embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)

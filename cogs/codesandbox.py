@@ -3,8 +3,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
-from discord.ext import Bot
-from discord.ext.commands import Cog, is_owner, command, Context
+from discord.ext.commands import Bot, Cog, Context, command, is_owner
 
 
 class CodeSandbox(Cog):

@@ -3,9 +3,11 @@ import textwrap
 from itertools import cycle
 
 import discord
+from discord.ext import commands
+from discord.ext.commands import Bot
+
 import setup
 from cogs.utils import constants
-from discord.ext import commands, Bot
 
 TOKEN = setup.BOT_TOKEN
 PREFIX = constants.COMMAND_PREFIX
@@ -97,7 +99,6 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.moderation")
-    bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")

@@ -1,8 +1,8 @@
 import hashlib
 
 from discord import Color, Embed
-from discord.ext import Bot
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Bot, Cog, Context, command
+
 from utils.mathscrape import get_math_results
 from utils.wolframscrape import get_wolfram_data
 
@@ -16,6 +16,7 @@ class Tools(Cog):
     async def calc(self, ctx: Context, *, equation: str) -> None:
         """Calculate an equation."""
         res = get_math_results(equation)
+
         if res.lower() == "invalid equation":
             embed = Embed(title="ERROR!", description="❌ Invalid Equation Specified", color=Color.red(),)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
@@ -23,10 +24,8 @@ class Tools(Cog):
             await ctx.send(embed=embed)
         else:
             embed = Embed(title="Equation Results")
-
             embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=res, inline=False)
-
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
             await ctx.send(embed=embed)

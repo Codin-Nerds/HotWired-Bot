@@ -3,8 +3,8 @@ import textwrap
 
 import discord
 from discord import Color, Embed
-from discord.ext import Bot
 from discord.ext.commands import (
+    Bot,
     Cog,
     Context,
     bot_has_permissions,

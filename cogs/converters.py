@@ -3,8 +3,7 @@ import hashlib
 import textwrap
 
 from discord import Embed
-from discord.ext import Bot
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Bot, Cog, Context, command
 
 
 class Converters(Cog):

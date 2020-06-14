@@ -7,8 +7,7 @@ import traceback
 import typing as t
 
 from discord import Color, Embed, Member
-from discord.ext import Bot
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Bot, Cog, Context, command
 
 
 class Commands(Cog):

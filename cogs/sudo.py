@@ -2,12 +2,11 @@ import datetime
 import platform
 import textwrap
 
-import psutil
-
-from discord import Embed, Color, __version__ as discord_version
 import GPUtil
-from discord.ext import Bot
-from discord.ext.commands import Context, group, Cog
+import psutil
+from discord import Color, Embed
+from discord import __version__ as discord_version
+from discord.ext.commands import Bot, Cog, Context, group
 
 
 class Sudo(Cog):

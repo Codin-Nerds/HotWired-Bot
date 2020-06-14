@@ -1,8 +1,7 @@
 import random
 
-from discord import Embed, Color
-from discord.ext import Bot
-from discord.ext.commands import Cog, command, Context
+from discord import Color, Embed
+from discord.ext.commands import Bot, Cog, Context, command
 
 POSITIVE_BALL8_RESPONSES = [
     "Yes - definitely.",
