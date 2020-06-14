@@ -26,3 +26,4 @@ python_version = "3.8"
 [scripts]
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+autoformat = "black ."
