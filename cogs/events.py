@@ -6,7 +6,7 @@ from discord.ext.commands import Bot, Cog
 
 class Custom(Cog):
     def __init__(self, bot: Bot) -> None:
-        bot.bot = bot
+        self.bot = bot
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -17,7 +17,7 @@ class Custom(Cog):
         if message.content.lower().startswith("help"):
             await message.channel.send("Hey! Why don't you run the help command with `>>help`")
 
-        await self.client.process_commands(message)
+        await self.bot.process_commands(message)
 
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:

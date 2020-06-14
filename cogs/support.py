@@ -16,7 +16,7 @@ class Support(Cog):
             description=f"❯❯ [Invite Link]({constants.invite_link})" f"\n❯❯ [Secondary Invite Link]({constants.admin_invite_link})",
             color=Color.dark_green(),
         )
-        embed.set_thumbnail(url=self.client.user.avatar_url)
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
     @command(name="support")
@@ -30,7 +30,7 @@ class Support(Cog):
             f"❯❯ [Invite Link]({constants.invite_link})",
             color=Color.dark_green(),
         )
-        embed.set_thumbnail(url=self.client.user.avatar_url)
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
 
