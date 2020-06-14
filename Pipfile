@@ -16,7 +16,15 @@ stackexchange = "==0.5.0"
 tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 flake8 = "*"
+<<<<<<< HEAD
 free-proxy = "*"
+=======
+pre-commit = "*"
+>>>>>>> aaabd1a83bded9a7248ed56a27e3dfbfc08a0f7b
 
 [requires]
-python_version = "3.8.3"
+python_version = "3.8"
+
+[scripts]
+lint = "pre-commit run --all-files"
+precommit = "pre-commit install"
