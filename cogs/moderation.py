@@ -43,7 +43,7 @@ async def resolve_member(self, guild: discord.Guild, member_id: int) -> discord.
 
 # TODO : Clean everything up
 class Moderation(Cog):
-    def __init__(self, client: discord.Bot):
+    def __init__(self, client: discord.Bot) -> None:
         self.client = client
 
     @command()
