@@ -40,6 +40,7 @@ async def on_ready() -> None:
     print("Bot is Ready.")
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
+
 @client.event
 async def on_message(message: str) -> None:
     pass
