@@ -18,7 +18,7 @@ class MemberNotFound(Exception):
     pass
 
 
-async def resolve_member(guild: discord.Guild, member_id: int):
+async def resolve_member(self, guild: discord.Guild, member_id: int):
     user = guild.get_member(member_id)
     if user is None:
         if guild.chunked:
