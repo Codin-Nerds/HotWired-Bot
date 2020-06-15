@@ -1,7 +1,9 @@
+import textwrap
 import typing as t
 from collections import defaultdict
 
-from discord import Embed, Member
+from discord import Color, Embed, Member
+from discord.errors import HTTPException
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
 
 
@@ -167,7 +169,22 @@ class Embeds(Cog):
     @embed_group.command()
     async def preview(self, ctx: Context) -> None:
         """Take a look at the Embed before you post it"""
-        await ctx.send(embed=self.embeds[ctx.author])
+        try:
+            await ctx.send(embed=self.embeds[ctx.author])
+        except HTTPException as e:
+            embed = Embed(
+                description=textwrap.dedent(
+                    f"""
+                    You're embed is causing an error (code: `{e.code}`):
+                    ```{e.response.status}: {e.response.reason}```
+                    With message:
+                    ```{e.text}```
+
+                    """
+                ),
+                color=Color.red(),
+            )
+            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
 
     def cog_check(self, ctx: Context) -> bool:
         """
