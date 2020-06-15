@@ -1,12 +1,14 @@
 import asyncio
 from collections import Counter
 from cogs.utils.embedHandler import failure, info, success
+import typing as t
+from .utils.formats import plural
 
 import discord
 from discord.ext import commands
 
 
-def can_execute_action(ctx, user, target):
+def can_execute_action(ctx: commands.Context, user: discord.User, target: discord.User) -> bool:
     return user.id == ctx.bot.owner_id or \
            user == ctx.guild.owner or \
            user.top_role > target.top_role
@@ -16,7 +18,7 @@ class MemberNotFound(Exception):
     pass
 
 
-async def resolve_member(guild, member_id):
+async def resolve_member(guild: discord.Guild, member_id: int):
     user = guild.get_member(member_id)
     if user is None:
         if guild.chunked:
@@ -31,13 +33,13 @@ async def resolve_member(guild, member_id):
 # TODO : Clean everything up
 class Moderation(commands.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client: discord.Bot):
         self.client = client
 
     @commands.command()
     @commands.bot_has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason="No specific reason"):
+    async def kick(self, ctx: commands.Context, member: discord.Member, *, reason: str = "No specific reason") -> None:
         """Kick a User."""
         embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed1.add_field(name="Type", value="Kick")
@@ -53,7 +55,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason="No Reason Stated."):
+    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str = "No Reason Stated.") -> None:
         """Ban a User."""
 
         embed1 = discord.Embed(title="Infraction information", color=discord.Color.red())
@@ -68,7 +70,7 @@ class Moderation(commands.Cog):
         await member.ban(reason=reason)
 
     class ActionReason(commands.Converter):
-        async def convert(self, ctx, argument):
+        async def convert(self, ctx: commands.Context, argument: str) -> str:
             ret = f'{ctx.author} (ID: {ctx.author.id}): {argument}'
 
             if len(ret) > 512:
@@ -77,7 +79,7 @@ class Moderation(commands.Cog):
             return ret
 
     class MemberID(commands.Converter):
-        async def convert(self, ctx, argument):
+        async def convert(self, ctx: commands.Context, argument: str) -> t.Union[str, type]:
             try:
                 member = await commands.MemberConverter().convert(ctx, argument)
             except commands.BadArgument:
@@ -98,10 +100,10 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def multiban(self, ctx, members: commands.Greedy[MemberID], *, reason: ActionReason = None):
+    async def multiban(self, ctx: commands.Context, members: commands.Greedy[MemberID], *, reason: ActionReason = None) -> None:
         """
         Bans multiple members from the server.
-        
+
         This only works through banning via ID.
         In order for this to work, the bot must have Ban Member permissions.
         To use this command you must have Ban Members permission.
@@ -130,7 +132,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def unban(ctx, *, member):
+    async def unban(self, ctx: commands.Context, *, member: str) -> None:
         """Unban a User."""
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')
@@ -146,7 +148,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount: int):
+    async def clear(self, ctx: commands.Context, amount: int) -> None:
         """Clear specified number of messages."""
 
         if amount is not None:
@@ -160,7 +162,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_permissions(manage_roles=True, manage_messages=True)
-    async def promote(self, ctx, member: discord.Member, role: discord.Role):
+    async def promote(self, ctx: commands.Context, member: discord.Member, role: discord.Role) -> None:
         """Promote member to role."""
         if role >= ctx.author.top_role:
             await ctx.send(embed=failure("Role needs to be below you in hierarchy."))
@@ -186,7 +188,7 @@ class Moderation(commands.Cog):
         dm_embed.set_footer(text="Promotion Command.")
         await member.send(embed=dm_embed)
 
-    async def _basic_cleanup_strategy(self, ctx, search):
+    async def _basic_cleanup_strategy(self, ctx: commands.Context, search: int) -> dict:
         count = 0
         async for msg in ctx.history(limit=search, before=ctx.message):
             if msg.author == ctx.me:
@@ -194,11 +196,11 @@ class Moderation(commands.Cog):
                 count += 1
         return {'Bot': count}
 
-    async def _complex_cleanup_strategy(self, ctx, search):
+    async def _complex_cleanup_strategy(self, ctx: commands.Context, search: int) -> Counter:
         prefixes = tuple(self.client.get_guild_prefixes(ctx.guild))  # thanks startswith
 
-        def check(m):
-            return m.author == ctx.me or m.content.startswith(prefixes)
+        def check(member: discord.Bot) -> bool:
+            return member.author == ctx.me or member.content.startswith(prefixes)
 
         deleted = await ctx.channel.purge(limit=search, check=check, before=ctx.message)
         return Counter(m.author.display_name for m in deleted)
@@ -206,7 +208,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
-    async def cleanup(self, ctx, search=100):
+    async def cleanup(self, ctx: commands.Context, search: int = 100) -> None:
         """Cleans up the bot's messages from the channel."""
 
         strategy = self._basic_cleanup_strategy
@@ -226,5 +228,5 @@ class Moderation(commands.Cog):
         await ctx.send('\n'.join(messages), delete_after=10)
 
 
-def setup(bot):
+def setup(bot: discord.Bot) -> None:
     bot.add_cog(Moderation(bot))
