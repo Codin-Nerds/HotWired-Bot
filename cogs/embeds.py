@@ -2,7 +2,7 @@ import textwrap
 import typing as t
 from collections import defaultdict
 
-from discord import Color, Embed, Member
+from discord import Color, Embed, Member, TextChannel
 from discord.errors import HTTPException
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
 
@@ -166,11 +166,10 @@ class Embeds(Cog):
     # endregion
     # region: sending and displaying embed
 
-    @embed_group.command()
-    async def preview(self, ctx: Context) -> None:
-        """Take a look at the Embed before you post it"""
+    async def send_embed(self, author: Member, channel: TextChannel) -> bool:
         try:
-            await ctx.send(embed=self.embeds[ctx.author])
+            await channel.send(embed=self.embeds[author])
+            return True
         except HTTPException as e:
             embed = Embed(
                 description=textwrap.dedent(
@@ -184,7 +183,25 @@ class Embeds(Cog):
                 ),
                 color=Color.red(),
             )
-            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
+            await channel.send(f"Sorry {author.mention}", embed=embed)
+            return False
+
+    @embed_group.command()
+    async def preview(self, ctx: Context) -> None:
+        """Take a look at the Embed before you post it"""
+        await self.send_embed(ctx.author, ctx.channel)
+
+    @embed_group.command()
+    async def send(self, ctx: Context, channel: TextChannel) -> None:
+        # Make sure author has permission to manage messages in specified channel
+        # Note that the cog check only checks that permission in the channel
+        # this message is sent to, not channel where the embed will be sent
+        channel_perms = channel.permissions_for(ctx.author)
+        if channel_perms.send_messages:
+            await ctx.send(f"Your embed was send to {channel.mention}")
+            await self.send_embed(ctx.author, channel)
+        else:
+            await ctx.send("Sorry, you can't send the embed here. You're missing **Manage Messages** permission")
 
     def cog_check(self, ctx: Context) -> bool:
         """
