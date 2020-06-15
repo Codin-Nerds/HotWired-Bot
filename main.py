@@ -91,7 +91,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
 
 def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.codesandbox")
-    bot.load_extension("cogs.coding")
+    # bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.custom")
     bot.load_extension("cogs.events")
@@ -103,6 +103,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
     bot.load_extension("cogs.converters")
+    bot.load_extension("cogs.embeds")
 
     bot.run(TOKEN)
 
