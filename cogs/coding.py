@@ -37,12 +37,13 @@ class Coding(Cog):
         bs_siblings = tag.next_siblings
         siblings = []
 
+        # get only tag elements, before the next h2
         for element in bs_siblings:
             if type(element) == NavigableString:
                 continue
             if element.name == "h2":
                 break
-            siblings.append(element.text)
+            siblings.append(element.text)  # get the text of the elemets before the next h2
         content = "\n".join(siblings)
 
         if len(content) >= 1024:
@@ -98,11 +99,13 @@ class Coding(Cog):
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}
+        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compler is needed
 
-        lang = language.strip("`").lower()
+        lang = language.strip("`").lower()  # strip the "`" characters to obtain code
         options_amount = len(options)
 
+        # Setting options and removing them from the beginning of the command
+        # options may be separated by any single whitespace, which we keep in the list
         code = re.split(r"(\s)", code, maxsplit=options_amount)
 
         for option in options:
@@ -110,7 +113,7 @@ class Coding(Cog):
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i)
+                code.pop(i)  # remove following whitespace character
 
         code = "".join(code)
 
@@ -119,37 +122,41 @@ class Coding(Cog):
         args = []
         inputs = []
 
-        lines = code.split("\n")
+        lines = code.split("\n")  # split the raw code into lines
         code = []
         for line in lines:
             if line.startswith("input "):
                 inputs.append(" ".join(line.split(" ")[1:]).strip("`"))
-            elif line.startswith("compiler-flags "):
+
+            elif line.startswith("compiler-flags "):  # check for flags
                 compilerFlags.extend(line[15:].strip("`").split(" "))
+
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))
+                commandLineOptions.extend(line[21:].strip("`").split(" "))  # cli options
+
             elif line.startswith("arguments "):
-                args.extend(line[10:].strip("`").split(" "))
+                args.extend(line[10:].strip("`").split(" "))  # arguments
+
             else:
-                code.append(line)
+                code.append(line)  # append the code, if nothing above
 
         inputs = "\n".join(inputs)
         code = "\n".join(code)
         text = None
 
         async with ctx.typing():
-            if ctx.message.attachments:
+            if ctx.message.attachments:  # if file is sent instead of raw code in codeblocks
                 file = ctx.message.attachments[0]
-                if file.size > 20000:
+                if file.size > 20000:  # check the size of file exceeding max limit
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith("link="):
+            elif code.split(" ")[-1].startswith("link="):  # if link is sent instead of file or codeblocks
                 base_url = urllib.parse.quote_plus(code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]")
 
-                url = get_raw(base_url)
+                url = get_raw(base_url)  # extract the raw url
 
                 async with aiohttp.ClientSession() as client_session:
                     async with client_session.get(url) as response:
@@ -160,13 +167,15 @@ class Coding(Cog):
                         text = await response.text()
                         if len(text) > 20000:
                             return await ctx.send("Code must be shorter than 20,000 characters.")
-            elif code.strip("`"):
+
+            elif code.strip("`"):  # strip the raw code, if codeblock
                 text = code.strip("`")
                 firstLine = text.splitlines()[0]
                 if re.fullmatch(r"( |[0-9A-z]*)\b", firstLine):
                     header = len(firstLine) + 1
                     text = text[header:]
 
+            # Ensures code isn't empty after removing options
             if text is None:
                 raise commands.MissingRequiredArgument(ctx.command.clean_params["code"])
 
@@ -186,16 +195,16 @@ class Coding(Cog):
             }
 
             if lang in quickmap:
-                lang = quickmap[lang]
+                lang = quickmap[lang]  # search the existence of language
 
             if lang in self.bot.default:
                 lang = self.bot.default[lang]
-            if lang not in self.bot.languages:
+            if lang not in self.bot.languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` not available."
                 if matches:
-                    message = message + f" Did you mean:\n{matches}"
+                    message = message + f" Did you mean:\n{matches}"  # provide a suggestion.
 
                 return await ctx.send(message)
 
@@ -221,6 +230,9 @@ class Coding(Cog):
                     pass
 
             if len(result) > 1991 or result.count("\n") > 40:
+                # If it exceeds 2000 characters (Discord longest message), counting ` and ph\n characters
+                # Or if it floods with more than 40 lines
+                # Create a hastebin and send it back
                 link = await paste(result)
 
                 if link is None:
@@ -238,6 +250,7 @@ class Coding(Cog):
         returnedID = returned.id
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
+            # check the reaction, if reacted, delete the output
             return user == ctx.author and str(reaction.emoji) == "🗑" and reaction.message.id == returnedID
 
         try:
@@ -252,7 +265,7 @@ class Coding(Cog):
     async def reference(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
-        lang = language.strip("`")
+        lang = language.strip("`")  # ugh, strip away the ugly characters
 
         if not lang.lower() in self.referred:
             await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list references` for available ones.")
@@ -265,7 +278,7 @@ class Coding(Cog):
     async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
-        lang = language.strip("`")
+        lang = language.strip("`")  # same thingy again
 
         if not lang.lower() in self.documented:
             await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list documentations` for available ones.")
