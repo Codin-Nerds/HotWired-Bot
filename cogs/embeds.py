@@ -12,11 +12,17 @@ class Embeds(Cog):
         self.bot = bot
         # Provide an empty embed for every member (key)
         self.embeds = defaultdict(lambda: Embed())
+        # Provide a default ID of -1 for every member (key) for embed fields
+        # setting it to -1 is necessary because adding embed only increments this
+        # default value of -1 ensures start on 0
+        self.embed_fields = defaultdict(lambda: -1)
 
-    @group(invoke_without_command=True, name="embed", aliases=["embedset"])
+    @group(invoke_without_command=True, name="embed", aliases=["embedset", "set_embed"])
     async def embed_group(self, ctx: Context) -> None:
         """Commands for configuring the Embed messages."""
         await ctx.send("This command is not meant to be used on its own!")
+
+    # region: basic embed settings (title, description, footer, image, color)
 
     @embed_group.command(aliases=["set_title"])
     async def title(self, ctx: Context, *, title: str) -> None:
@@ -58,7 +64,10 @@ class Embeds(Cog):
         self.embeds[ctx.author].colour = color
         await ctx.send("Embeds color updated.")
 
-    @embed_group.group(invoke_without_command=True, name="author", aliases=["authorset"])
+    # endregion
+    # region: author settings
+
+    @embed_group.group(invoke_without_command=True, name="author", aliases=["authorset", "set_author"])
     async def author_group(self, ctx: Context) -> None:
         """Commands for configuring the author of Embed messages."""
         await ctx.send("This command is not meant to be used on its own!")
@@ -87,6 +96,78 @@ class Embeds(Cog):
 
         self.embeds[ctx.author].set_author(name=self.embeds[ctx.author].author.name, url=self.embeds[ctx.author].author.url, icon_url=author_icon)
         await ctx.send("Embeds author icon updated.")
+
+    # endregion
+    # region: field settings
+
+    @embed_group.group(invoke_without_command=True, name="field", aliases=["filedset", "set_field"])
+    async def field_group(self, ctx: Context) -> None:
+        await ctx.send("This command is not meant to be used on its own!")
+
+    @field_group.command(name="add")
+    async def field_add(self, ctx: Context, *, title: t.Optional[str] = None) -> None:
+        """Create new field in Embed."""
+        self.embeds[ctx.author].add_field(name=title, value="")
+        self.embed_fields[ctx.author] += 1
+        await ctx.send(f"Embeds field **#{self.embed_fields[ctx.author]}** created")
+
+    @field_group.command(name="remove", aliases=["delete", "rem", "del"])
+    async def field_remove(self, ctx: Context, ID: int) -> None:
+        """Remove filed with specific `ID` from Embed."""
+        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+            self.embeds[ctx.author].remove_field(ID)
+            self.embed_fields[ctx.author] -= 1
+            await ctx.send(f"Embeds field **#{ID}** has been removed.")
+        else:
+            await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
+
+    @field_group.command(name="description", aliases=["set_description", "value", "set_value"])
+    async def field_description(self, ctx: Context, ID: int, *, description: str) -> None:
+        """Set a description for embeds field #`ID`."""
+        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+            self.embeds[ctx.author].set_field_at(ID, name=self.embeds[ctx.author].fields[ID].name, value=description)
+            await ctx.send(f"Embeds field **#{ID}** description updated.")
+        else:
+            await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
+
+    @field_group.command(name="append_description", aliases=["add_description"])
+    async def field_append_description(self, ctx: Context, ID: int, *, description: str) -> None:
+        """Set a description for embeds field #`ID`."""
+        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+            self.embeds[ctx.author].set_field_at(
+                ID, name=self.embeds[ctx.author].fields[ID].name, value=self.embeds[ctx.author].fields[ID].value + description
+            )
+            await ctx.send(f"Embeds field **#{ID}** description appended.")
+        else:
+            await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
+
+    @field_group.command(name="title", aliases=["set_title", "name", "set_name"])
+    async def field_title(self, ctx: Context, ID: int, *, title: str) -> None:
+        """Set a title for embeds field #`ID`."""
+        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+            self.embeds[ctx.author].set_field_at(ID, name=title, value=self.embeds[ctx.author].fields[ID].value)
+            await ctx.send(f"Embeds field **#{ID}** description updated.")
+        else:
+            await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
+
+    @field_group.command(name="inline", aliases=["set_inline", "in_line", "set_in_line"])
+    async def field_inline(self, ctx: Context, ID: int, inline_status: bool) -> None:
+        """Choose if embed field #`ID` should be inline or not"""
+        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+            self.embeds[ctx.author].set_field_at(
+                ID, name=self.embeds[ctx.author].fields[ID].name, value=self.embeds[ctx.author].fields[ID].value, inline=inline_status
+            )
+            await ctx.send(f"Embeds field **#{ID}** is now {'' if inline_status else 'not'} inline")
+        else:
+            await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
+
+    # endregion
+    # region: sending and displaying embed
+
+    @embed_group.command()
+    async def preview(self, ctx: Context) -> None:
+        """Take a look at the Embed before you post it"""
+        await ctx.send(embed=self.embeds[ctx.author])
 
     def cog_check(self, ctx: Context) -> bool:
         """
