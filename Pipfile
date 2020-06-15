@@ -27,3 +27,6 @@ python_version = "3.8"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 autoformat = "black ."
+
+[pipenv]
+allow_prereleases = true

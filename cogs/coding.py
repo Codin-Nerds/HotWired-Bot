@@ -32,20 +32,19 @@ class Coding(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    def get_h2_content(self, tag) -> str:
+    def get_h2_content(self, tag: NavigableString) -> str:
         """Returns content between two h2 tags."""
-
-        bssiblings = tag.next_siblings
+        bs_siblings = tag.next_siblings
         siblings = []
-        for elem in bssiblings:
-            # get only tag elements, before the next h2
-            # Putting away the comments, we know there's at least one after it.
-            if type(elem) == NavigableString:
+
+        for element in bs_siblings:
+            if type(element) == NavigableString:
                 continue
-            if elem.name == "h2":
+            if element.name == "h2":
                 break
-            siblings.append(elem.text)
+            siblings.append(element.text)
         content = "\n".join(siblings)
+
         if len(content) >= 1024:
             content = content[:1021] + "..."
 
@@ -72,11 +71,12 @@ class Coding(Cog):
         "sql": _ref.sql_ref,
     }
 
-    # TODO: lua, java, javascript, asm
+    # TODO: lua, java, javascript, asm, c#
     documented = {"c": _doc.c_doc, "cpp": _doc.cpp_doc, "haskell": _doc.haskell_doc, "python": _doc.python_doc}
 
     @commands.command(
-        help="""run <language> [--wrapped] [--stats] <code>
+        help="""
+        run <language> [--wrapped] [--stats] <code>
         for command-line-options, compiler-flags and arguments you may
         add a line starting with this argument, and after a space add
         your options, flags or args.
@@ -91,29 +91,26 @@ class Coding(Cog):
         If the output exceeds 40 lines or Discord max message length, it will be put
         in a new hastebin and the link will be returned.
         When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
-        Useful to hide your syntax fails or when you forgot to print the result.""",
+        Useful to hide your syntax fails or when you forgot to print the result.
+        """,
         brief="Execute code in a given programming language",
     )
-    async def run(self, ctx: Context, language: str, *, code: str = ""):
+    async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
-        # Powered by tio.run
 
         options = {"--stats": False, "--wrapped": False}
 
         lang = language.strip("`").lower()
+        options_amount = len(options)
 
-        optionsAmount = len(options)
-
-        # Setting options and removing them from the beginning of the command
-        # options may be separated by any single whitespace, which we keep in the list
-        code = re.split(r"(\s)", code, maxsplit=optionsAmount)
+        code = re.split(r"(\s)", code, maxsplit=options_amount)
 
         for option in options:
-            if option in code[: optionsAmount * 2]:
+            if option in code[: options_amount * 2]:
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i)  # remove following whitespace character
+                code.pop(i)
 
         code = "".join(code)
 
@@ -137,22 +134,19 @@ class Coding(Cog):
                 code.append(line)
 
         inputs = "\n".join(inputs)
-
         code = "\n".join(code)
-
         text = None
 
         async with ctx.typing():
             if ctx.message.attachments:
-                # Code in file
                 file = ctx.message.attachments[0]
                 if file.size > 20000:
                     return await ctx.send("File must be smaller than 20 kio.")
+
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
             elif code.split(" ")[-1].startswith("link="):
-                # Code in a webpage
                 base_url = urllib.parse.quote_plus(code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]")
 
                 url = get_raw(base_url)
@@ -167,7 +161,6 @@ class Coding(Cog):
                         if len(text) > 20000:
                             return await ctx.send("Code must be shorter than 20,000 characters.")
             elif code.strip("`"):
-                # Code in message
                 text = code.strip("`")
                 firstLine = text.splitlines()[0]
                 if re.fullmatch(r"( |[0-9A-z]*)\b", firstLine):
@@ -175,10 +168,8 @@ class Coding(Cog):
                     text = text[header:]
 
             if text is None:
-                # Ensures code isn't empty after removing options
                 raise commands.MissingRequiredArgument(ctx.command.clean_params["code"])
 
-            # common identifiers, also used in highlight.js and thus discord codeblocks
             quickmap = {
                 "asm": "assembly",
                 "c#": "cs",
@@ -227,18 +218,14 @@ class Coding(Cog):
                     end = result.rindex("%\nExit code: ") + 2
                     result = result[:start] + result[end:]
                 except ValueError:
-                    # Too much output removes this markers
                     pass
 
             if len(result) > 1991 or result.count("\n") > 40:
-                # If it exceeds 2000 characters (Discord longest message), counting ` and ph\n characters
-                # Or if it floods with more than 40 lines
-                # Create a hastebin and send it back
                 link = await paste(result)
 
                 if link is None:
                     return await ctx.send("Your output was too long, but I couldn't make an online bin out of it")
-                return await ctx.send(f"Output was too long (more than 2000 characters or 40 lines) so I put it here: {link}")
+                return await ctx.send(f"Output was too long (more than 2000 characters or 40 lines) so the hastebn link is: {link}")
 
             zero = "\N{zero width space}"
             result = re.sub("```", f"{zero}`{zero}`{zero}`{zero}", result)
@@ -250,11 +237,11 @@ class Coding(Cog):
         await returned.add_reaction("🗑")
         returnedID = returned.id
 
-        def check(reaction, user):
+        def check(reaction: discord.Reaction, user: discord.Member) -> bool:
             return user == ctx.author and str(reaction.emoji) == "🗑" and reaction.message.id == returnedID
 
         try:
-            await self.bot.wait_for("reaction_add", timeout=60.0, check=check)
+            await self.bot.wait_for("reaction_add", timeout=65.0, check=check)
         except asyncio.TimeoutError:
             pass
         else:
@@ -262,31 +249,33 @@ class Coding(Cog):
 
     @commands.command(aliases=["ref"])
     @typing
-    async def reference(self, ctx, language, *, query: str):
+    async def reference(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
         lang = language.strip("`")
 
         if not lang.lower() in self.referred:
-            return await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list references` for available ones.")
+            await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list references` for available ones.")
+            return
 
         await self.referred[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(aliases=["doc"])
     @typing
-    async def documentation(self, ctx, language, *, query: str):
+    async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
         lang = language.strip("`")
 
         if not lang.lower() in self.documented:
-            return await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list documentations` for available ones.")
+            await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list documentations` for available ones.")
+            return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))
 
     @commands.command()
     @typing
-    async def man(self, ctx, *, page: str):
+    async def man(self, ctx: Context, *, page: str) -> None:
         """Returns the manual's page for a (mostly Debian) linux command."""
 
         base_url = f"https://man.cx/{page}"
@@ -302,11 +291,8 @@ class Coding(Cog):
                 nameTag = soup.find("h2", string="NAME\n")
 
                 if not nameTag:
-                    # No NAME, no page
                     return await ctx.send(f"No manual entry for `{page}`. (Debian)")
 
-                # Get the two (or less) first parts from the nav aside
-                # The first one is NAME, we already have it in nameTag
                 contents = soup.find_all("nav", limit=2)[1].find_all("li", limit=3)[1:]
 
                 if contents[-1].string == "COMMENTS":
@@ -372,11 +358,13 @@ class Coding(Cog):
                 title=f"Available for {group}: {len(self.bot.languages)}",
                 description="View them on [tio.run](https://tio.run/#), or in [JSON format](https://tio.run/languages.json)",
             )
-            return await ctx.send(embed=emb)
+            await ctx.send(embed=emb)
+            return
 
         if group not in choices:
             emb = discord.Embed(title="Available listed commands", description=f"`languages`, `{'`, `'.join(choices)}`")
-            return await ctx.send(embed=emb)
+            await ctx.send(embed=emb)
+            return
 
         availables = choices[group]
         description = f"`{'`, `'.join([*availables])}`"
@@ -384,5 +372,5 @@ class Coding(Cog):
         await ctx.send(embed=emb)
 
 
-def setup(bot) -> None:
+def setup(bot: Bot) -> None:
     bot.add_cog(Coding(bot))
