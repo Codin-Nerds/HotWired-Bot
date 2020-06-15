@@ -1,15 +1,14 @@
-from discord.ext import commands
+from discord.ext.commands import Bot, Cog, Context, command
 
 
-class Infog(commands.Cog):
+class Infog(Cog):
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
 
-    def __init__(self, client):
-        self.client = client
-
-    @commands.command()
-    async def infog(self, ctx):
+    @command()
+    async def infog(self, ctx: Context) -> None:
         await ctx.send("Info gathered")
 
 
-def setup(client):
-    client.add_cog(Infog(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Infog(bot))
