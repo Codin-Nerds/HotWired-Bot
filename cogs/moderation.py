@@ -71,7 +71,6 @@ class Moderation(Cog):
     @has_permissions(ban_members=True)
     async def ban(self, ctx: Context, member: discord.Member, *, reason: str = "No Reason Stated.") -> None:
         """Ban a User."""
-
         embed = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed.add_field(name="Type", value="Ban")
         embed.add_field(name="Reason", value=reason)
@@ -171,7 +170,6 @@ class Moderation(Cog):
         # TODO: Check if this condition is necessary
         if amount is not None:
             await ctx.channel.purge(limit=amount + 1)
-
             # TODO: This message might be getting in the way,
             # purpose of cleaning is to remove messages, not add more of them
             await ctx.send("**Messages cleared** " + ctx.message.author.mention)
@@ -185,7 +183,6 @@ class Moderation(Cog):
     @has_permissions(manage_roles=True, manage_messages=True)
     async def promote(self, ctx: Context, member: discord.Member, role: discord.Role) -> None:
         """Promote member to role."""
-
         # TODO: A custom check can handle this
         if role >= ctx.author.top_role:
             embed = Embed(title="Error", description="Role needs to be below you in hierarchy.", color=Color.red(),)
