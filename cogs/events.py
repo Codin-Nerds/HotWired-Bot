@@ -17,8 +17,6 @@ class Custom(Cog):
         if message.content.lower().startswith("help"):
             await message.channel.send("Hey! Why don't you run the help command with `>>help`")
 
-        await self.bot.process_commands(message)
-
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:
         error_message = f"```py\n{traceback.format_exc()}\n```"

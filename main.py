@@ -42,11 +42,6 @@ async def on_ready() -> None:
 
 
 @client.event
-async def on_message(message: str) -> None:
-    pass
-
-
-@client.event
 async def on_guild_join(guild: discord.Guild) -> None:
 
     hw = client.get_user(715545167649570977)
