@@ -22,9 +22,7 @@ from discord.ext.commands import (
 
 
 def can_execute_action(ctx: Context, user: discord.User, target: discord.User) -> bool:
-    return user.id == ctx.bot.owner_id or \
-           user == ctx.guild.owner or \
-           user.top_role > target.top_role
+    return user.id == ctx.bot.owner_id or user == ctx.guild.owner or user.top_role > target.top_role
 
 
 class MemberNotFound(Exception):
@@ -45,7 +43,6 @@ async def resolve_member(self, guild: discord.Guild, member_id: int) -> discord.
 
 # TODO : Clean everything up
 class Moderation(Cog):
-
     def __init__(self, client: discord.Bot):
         self.client = client
 
@@ -84,11 +81,11 @@ class Moderation(Cog):
 
     class ActionReason(Converter):
         async def convert(self, ctx: Context, argument: str) -> str:
-            ret = f'{ctx.author} (ID: {ctx.author.id}): {argument}'
+            ret = f"{ctx.author} (ID: {ctx.author.id}): {argument}"
 
             if len(ret) > 512:
                 reason_max = 512 - len(ret) + len(argument)
-                raise BadArgument(f'Reason is too long ({len(argument)}/{reason_max})')
+                raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
             return ret
 
     class MemberID(Converter):
@@ -103,10 +100,10 @@ class Moderation(Cog):
                     raise BadArgument(f"{argument} is not a valid member or member ID.") from None
                 except MemberNotFound:
                     # hackban case
-                    return type('_Hackban', (), {'id': member_id, '__str__': lambda s: f'Member ID {s.id}'})()
+                    return type("_Hackban", (), {"id": member_id, "__str__": lambda s: f"Member ID {s.id}"})()
 
             if not can_execute_action(ctx, ctx.author, member):
-                raise BadArgument('You cannot do this action on this user due to role hierarchy.')
+                raise BadArgument("You cannot do this action on this user due to role hierarchy.")
             return member
 
     @command()
@@ -123,15 +120,15 @@ class Moderation(Cog):
         """
 
         if reason is None:
-            reason = f'Action done by {ctx.author} (ID: {ctx.author.id})'
+            reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
 
         total_members = len(members)
         if total_members == 0:
-            return await ctx.send('No members to ban.')
+            return await ctx.send("No members to ban.")
 
-        confirm = await ctx.prompt(f'This will ban **{plural(total_members):member}**. Are you sure?', reacquire=False)
+        confirm = await ctx.prompt(f"This will ban **{plural(total_members):member}**. Are you sure?", reacquire=False)
         if not confirm:
-            return await ctx.send('Aborting.')
+            return await ctx.send("Aborting.")
 
         failed = 0
         for member in members:
@@ -140,7 +137,7 @@ class Moderation(Cog):
             except discord.HTTPException:
                 failed += 1
 
-        await ctx.send(f'Banned {total_members - failed}/{total_members} members.')
+        await ctx.send(f"Banned {total_members - failed}/{total_members} members.")
 
     @command()
     @bot_has_permissions(ban_members=True)
@@ -218,7 +215,7 @@ class Moderation(Cog):
             if msg.author == ctx.me:
                 await msg.delete()
                 count += 1
-        return {'Bot': count}
+        return {"Bot": count}
 
     async def _complex_cleanup_strategy(self, ctx: Context, search: int) -> Counter:
         prefixes = tuple(self.client.get_guild_prefixes(ctx.guild))  # thanks startswith
@@ -245,11 +242,11 @@ class Moderation(Cog):
         messages = [f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
 
         if deleted:
-            messages.append('')
+            messages.append("")
             spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
-            messages.extend(f'- **{author}**: {count}' for author, count in spammers)
+            messages.extend(f"- **{author}**: {count}" for author, count in spammers)
 
-        await ctx.send('\n'.join(messages), delete_after=10)
+        await ctx.send("\n".join(messages), delete_after=10)
 
 
 def setup(bot: Bot) -> None:
