@@ -10,8 +10,5 @@ __pycache__/
 # Ignore enviromental vars (contains private information)
 .env
 
-# Ignore enviromental vars in Py File(contains private information)
-setup.py
-
 # Ignore intellij Files
 .idea

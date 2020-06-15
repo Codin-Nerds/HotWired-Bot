@@ -8,11 +8,15 @@ ig_url = "https://instagram.com/the.codin.hole/"
 github_repo_link = "https://github.com/janaSunrise/HotWired-Bot"
 discord_server = "https://discord.gg/CgH6Sj6"
 
-invite_link = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=2020835191" \
-              "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
+invite_link = (
+    "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=2020835191"
+    "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
+)
 
-admin_invite_link = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=8" \
-                    "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
+admin_invite_link = (
+    "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=8"
+    "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
+)
 
 COMMAND_PREFIX = ">>"
 
