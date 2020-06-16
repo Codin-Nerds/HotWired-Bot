@@ -84,7 +84,7 @@ class Moderation(Cog):
                 raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
             return ret
 
-    class MemberID(Converter):
+    class UserID(Converter):
         async def convert(self, ctx: Context, argument: str) -> t.Union[str, type]:
             try:
                 member = await MemberConverter().convert(ctx, argument)
@@ -106,7 +106,7 @@ class Moderation(Cog):
     @guild_only()
     @bot_has_permissions(ban_members=True)
     @has_permissions(ban_members=True)
-    async def multiban(self, ctx: Context, members: Greedy[MemberID], *, reason: ActionReason = None) -> None:
+    async def multiban(self, ctx: Context, members: Greedy[UserID], *, reason: ActionReason = None) -> None:
         """Bans multiple members from the server."""
 
         if reason is None:
