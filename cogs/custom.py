@@ -9,7 +9,6 @@ class Custom(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    # Commands
     @command()
     async def hello(self, ctx: Context) -> None:
         """Greet a User."""
