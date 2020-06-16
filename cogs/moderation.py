@@ -30,15 +30,10 @@ class MemberNotFound(Exception):
     pass
 
 
-async def resolve_member(guild: discord.Guild, member_id: int) -> discord.User:
-    user = guild.get_member(member_id)
+async def resolve_user(bot: Bot, member_id: int) -> discord.User:
+    user = bot.get_member(member_id)
     if user is None:
-        if guild.chunked:
-            raise MemberNotFound()
-        try:
-            user = await guild.fetch_member(member_id)
-        except discord.NotFound:
-            raise MemberNotFound()
+        raise MemberNotFound()
     return user
 
 
@@ -96,7 +91,7 @@ class Moderation(Cog):
             except BadArgument:
                 try:
                     member_id = int(argument, base=10)
-                    member = await resolve_member(ctx.guild, member_id)
+                    member = await resolve_user(ctx.guild, member_id)
                 except ValueError:
                     raise BadArgument(f"{argument} is not a valid member or member ID.") from None
                 except MemberNotFound:
