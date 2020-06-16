@@ -24,6 +24,7 @@ GPUtil = "==1.4.0"
 python_version = "3.8"
 
 [scripts]
+start="python -u ./main.py"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 autoformat = "black ."

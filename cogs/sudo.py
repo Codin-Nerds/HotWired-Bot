@@ -1,12 +1,15 @@
 import datetime
 import platform
 import textwrap
+import typing as t
 
 import GPUtil
 import psutil
 from discord import Color, Embed
 from discord import __version__ as discord_version
-from discord.ext.commands import Bot, Cog, Context, group
+from discord.ext.commands import Bot, Cog, Context, check, group
+
+from .utils import constants
 
 
 class Sudo(Cog):
@@ -42,6 +45,21 @@ class Sudo(Cog):
         if ctx.invoked_subcommand is None:
             embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
             await ctx.send(embed=embed)
+
+    async def is_owner(self, ctx: Context) -> t.Union[bool, None]:
+        if ctx.author.id in constants.devs:
+            return True
+        else:
+            embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
+            await ctx.send(embed=embed)
+
+    @sudo.command()
+    @check(is_owner)
+    async def shutoff(self, ctx: Context) -> None:
+        if ctx.author.id in constants.devs:
+            await ctx.message.add_reaction("✅")
+            print("Shutting Down!")
+            await self.client.logout()
 
     @sudo.command()
     async def stats(self, ctx: Context) -> None:
