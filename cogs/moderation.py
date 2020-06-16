@@ -68,8 +68,17 @@ async def resolve_user(bot: Bot, member_id: int) -> discord.User:
 class Moderation(Cog):
     """This cog provides moderation commands."""
 
-    def __init__(self, bot: discord.Bot) -> None:
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    def cog_check(self, ctx: Context) -> bool:
+        """
+        Only allow users with manage messages permission to invoke commands in this cog.
+        This is needed because Embeds can be much longer in comparison to regular messages,
+        therefore it would be very easy to spam things and clutter the chat.
+        """
+        perms = ctx.author.permissions_in(ctx.channel)
+        return perms.manage_messages
 
     @command()
     @bot_has_permissions(kick_members=True)
@@ -209,8 +218,8 @@ class Moderation(Cog):
     async def _complex_cleanup_strategy(self, ctx: Context, search: int) -> Counter:
         prefixes = tuple(self.bot.get_guild_prefixes(ctx.guild))  # thanks startswith
 
-        def check(member: discord.Bot) -> bool:
-            return member.author == ctx.me or member.content.startswith(prefixes)
+        def check(bot: Bot) -> bool:
+            return bot.author == ctx.me or bot.content.startswith(prefixes)
 
         deleted = await ctx.channel.purge(limit=search, check=check, before=ctx.message)
         return Counter(m.author.display_name for m in deleted)
