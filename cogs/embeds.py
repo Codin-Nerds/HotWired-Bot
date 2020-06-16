@@ -1,3 +1,4 @@
+import json
 import textwrap
 import typing as t
 from collections import defaultdict
@@ -5,6 +6,86 @@ from collections import defaultdict
 from discord import Color, Embed, Member, TextChannel
 from discord.errors import HTTPException
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
+
+
+class JsonEmbedParser:
+    def __init__(self, ctx: Context, json_dict: dict) -> None:
+        self.ctx = ctx
+        self.json = JsonEmbedParser.fill_empty_values(json_dict)
+
+    @classmethod
+    async def from_str(cls: "JsonEmbedParser", ctx: Context, json_string: str) -> t.Union["JsonEmbedParser", bool]:
+        """
+        Return class instance from json string
+
+        This will return either class instance (on correct json string),
+        or False on incorrect json string.
+        """
+        json_dict = await cls.parse_json(ctx, json_string)
+        if json_dict is False:
+            return False
+        else:
+            return cls(ctx, json_dict)
+
+    @staticmethod
+    async def parse_json(ctx: Context, json_code: str) -> t.Union[dict, bool]:
+        # Sanitize code (remove codeblocks if any)
+        if "```" in json_code:
+            json_code = json_code.replace("```json\n", "")
+            json_code = json_code.replace("```\n", "")
+            json_code = json_code.replace("```json", "")
+            json_code = json_code.replace("```", "")
+
+        try:
+            return json.loads(json_code)
+        except json.JSONDecodeError as e:
+            lines = json_code.split("\n")
+
+            embed = Embed(
+                description=textwrap.dedent(
+                    f"""
+                    Sorry, I couldn't parse this JSON:
+                    ```
+                    {e}
+                    ```
+                    The error seems to be here *(`line: {e.lineno} col: {e.colno}`)*:
+                    ```
+                    {lines[e.lineno - 1]}
+                    {" " * (int(e.colno) - 1)}^
+                    ```
+                    """
+                ),
+                color=Color.red(),
+            )
+            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
+            return False
+
+    @staticmethod
+    def fill_empty_values(json_dct: dict) -> defaultdict:
+        defaultdict
+
+    def make_embed(self) -> t.Tuple[str, Embed]:
+        jsonc = self.json
+
+        content = jsonc["content"]
+
+        embed = Embed(
+            title=jsonc["title"],
+            description=jsonc["description"],
+            colour=jsonc["color"] if jsonc["color"] else 0,
+            url=jsonc["url"],
+            # timestamp=datetime.datetime.utcformattimestamp()
+        )
+
+        embed.set_image(url=jsonc["image"]["url"])
+        embed.set_thumbnail(url=jsonc["thumbnail"]["url"])
+        embed.set_author(name=jsonc["author"]["name"], url=jsonc["author"]["url"], icon_url=jsonc["author"]["icon_url"])
+        embed.set_footer(text=jsonc["footer"]["text"], icon_url=jsonc["footer"]["icon_url"])
+
+        for field in jsonc["fields"]:
+            embed.add_field(name=field["name"], value=field["value"])
+
+        return (content, embed)
 
 
 class Embeds(Cog):
@@ -202,6 +283,18 @@ class Embeds(Cog):
             await self.send_embed(ctx.author, channel)
         else:
             await ctx.send("Sorry, you can't send the embed here. You're missing **Manage Messages** permission")
+
+    # endregion
+    # region: json
+
+    @embed_group.command(alias=["json_load", "from_json", "json"])
+    async def load(self, ctx: Context, *, json_code: str) -> None:
+        """Generate Embed from given JSON code"""
+        embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
+        if embed_parser is not False:
+            await ctx.send(embed=embed_parser.make_embed())
+
+    # endregion
 
     def cog_check(self, ctx: Context) -> bool:
         """
