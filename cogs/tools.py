@@ -8,7 +8,6 @@ from utils.wolframscrape import get_wolfram_data
 
 import unicodedata
 from typing import Tuple
-import typing as t
 import re
 
 
@@ -46,21 +45,6 @@ class Tools(Cog):
         embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
         await ctx.send(embed=embed)
-
-    @command()
-    async def charinfo(self, ctx: Context, *, characters: str) -> t.Union[str, None]:
-        """Shows you information about up to 25 characters."""
-
-        def to_string(c: str) -> str:
-            digit = f"{ord(c):x}"
-            name = unicodedata.name(c, "Name not found.")
-            return f"`\\U{digit:>08}`: {name} - {c} \N{EM DASH} <http://www.fileformat.info/info/unicode/char/{digit}>"
-
-        msg = "\n".join(map(to_string, characters))
-        if len(msg) > 2000:
-            await ctx.send("Output too long to display.")
-            return
-        await ctx.send(msg)
 
     @command()
     async def charinfo_uni(self, ctx: Context, *, characters: str) -> None:
