@@ -1,8 +1,7 @@
 import asyncio
-from collections import Counter
-import typing as t
-from .utils.formats import plural
 import textwrap
+import typing as t
+from collections import Counter
 
 import discord
 from discord import Color, Embed
@@ -12,13 +11,15 @@ from discord.ext.commands import (
     Cog,
     Context,
     Converter,
+    Greedy,
+    MemberConverter,
     bot_has_permissions,
     command,
     guild_only,
-    Greedy,
     has_permissions,
-    MemberConverter,
 )
+
+from .utils.formats import plural
 
 
 def can_execute_action(ctx: Context, user: discord.User, target: discord.User) -> bool:
