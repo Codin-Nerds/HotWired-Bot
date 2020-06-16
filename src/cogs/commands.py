@@ -14,7 +14,7 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-        # TODO: Get the dev-mode from constants.py
+        # TODO: Get the dev-mode from config.py
         try:
             self.dev_mode = platform.system() != "Linux" and sys.argv[1] != "-d"
         except IndexError:

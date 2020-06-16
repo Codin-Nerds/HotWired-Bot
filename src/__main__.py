@@ -1,44 +1,27 @@
 import asyncio
 import os
 import textwrap
-from itertools import cycle
 
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from cogs.utils import constants
+from utils import config
+envs = config.envs
 
-TOKEN = os.environ["BOT_TOKEN"]
-PREFIX = constants.COMMAND_PREFIX
+TOKEN = envs("BOT_TOKEN")
+PREFIX = config.COMMAND_PREFIX
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 client = commands.Bot(command_prefix=PREFIX, case_insensitivity=True, owner_id=688275913535914014)
-
-status = [
-    "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-    f"Ping me using {PREFIX}help",
-    "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
-    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
-]
-
-
-async def change_status() -> None:
-    await client.wait_until_ready()
-    msgs = cycle(status)
-
-    while not client.is_closed():
-        current_status = next(msgs)
-        await client.change_presence(activity=discord.Game(name=current_status))
-        await asyncio.sleep(10800)
 
 
 @client.event
 async def on_ready() -> None:
     print("Bot is Ready.")
     print(f"Logged in as: {client.user.name} : {client.user.id}")
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for stranded peeps"))
 
 
 @client.event
@@ -107,7 +90,6 @@ def setup_bot(bot: Bot) -> None:
     bot.run(TOKEN)
 
 
-client.loop.create_task(change_status())
 
 if __name__ == "__main__":
     setup_bot(client)

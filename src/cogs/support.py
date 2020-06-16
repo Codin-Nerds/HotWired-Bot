@@ -1,7 +1,7 @@
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
-from .utils import constants
+from utils import config
 
 
 class Support(Cog):
@@ -13,7 +13,7 @@ class Support(Cog):
         """Invite link for Bot."""
         embed = Embed(
             title="Inviting me to your Server?",
-            description=f"❯❯ [Invite Link]({constants.invite_link})" f"\n❯❯ [Secondary Invite Link]({constants.admin_invite_link})",
+            description=f"❯❯ [Invite Link]({config.invite_link})" f"\n❯❯ [Secondary Invite Link]({config.admin_invite_link})",
             color=Color.dark_green(),
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)
@@ -26,8 +26,8 @@ class Support(Cog):
             title="Need Support? OR Want to give Feedback?",
             description="If you have any **problems with the bot** or "
             "if you have any **suggestions/feedback** be sure to join the Support Server!"
-            f"❯❯ [Support Server]({constants.discord_server})"
-            f"❯❯ [Invite Link]({constants.invite_link})",
+            f"❯❯ [Support Server]({config.discord_server})"
+            f"❯❯ [Invite Link]({config.invite_link})",
             color=Color.dark_green(),
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)

@@ -1,6 +1,11 @@
 from enum import Enum
-
+from dotenv import load_dotenv
 from discord import Color
+import os
+
+load_dotenv()
+
+envs = os.getenv
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"

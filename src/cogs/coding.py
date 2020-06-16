@@ -17,10 +17,10 @@ from discord.ext.commands.cooldowns import BucketType
 from discord.ext.commands import Cog, Context
 from discord.utils import escape_mentions
 
-from .code_utils import _doc, _ref
-from .code_utils._used import get_raw, paste, typing
+from utils import _doc, _ref
+from utils._used import get_raw, paste, typing
 import typing as t
-from .code_utils._tio import Tio
+from utils._tio import Tio
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
