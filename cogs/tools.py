@@ -1,14 +1,13 @@
 import hashlib
+import re
+import unicodedata
+from typing import Tuple
 
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
 from utils.mathscrape import get_math_results
 from utils.wolframscrape import get_wolfram_data
-
-import unicodedata
-from typing import Tuple
-import re
 
 
 class Tools(Cog):
