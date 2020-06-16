@@ -1,37 +1,26 @@
-def decimalToBinary(n):
-    return bin(n).replace("0b", "")
+import typing as t
 
 
-def binaryToDecimal(n):
-    return int(n, 2)
+def to_binary(number: int) -> str:
+    """Convert any passed integer into binary string."""
+    return bin(number).replace("0b", "")
 
 
-def check(string):
-    p = set(string)
-    s = {'0', '1'}
+def binaryop(num1: str, num2: str, operator: t.Literal["+", "-", "*", "/"]) -> str:
+    try:
+        num1 = int(num1, 2)
+        num2 = int(num2, 2)
+    except ValueError:
+        return "Invalid Binary Number"
 
-    if s == p or p == {'0'} or p == {'1'}:
-        return True
+    operations = {
+        "+": lambda n1, n2: to_binary(n1 + n2),
+        "-": lambda n1, n2: to_binary(n1 - n2),
+        "*": lambda n1, n2: to_binary(n1 * n2),
+        "/": lambda n1, n2: to_binary(n1 / n2),
+    }
 
-    else:
-        return False
-
-
-def binaryop(num1, num2, op):
-    if check(str(num1)) and check(str(num2)):
-        num1 = binaryToDecimal(str(num1))
-        num2 = binaryToDecimal(str(num2))
-
-        if op == '+':
-            return decimalToBinary(num1 + num2)
-        elif op == '-':
-            return decimalToBinary(num1 - num2)
-        elif op == '*':
-            return decimalToBinary(num1 * num2)
-        elif op == '/':
-            try:
-                return decimalToBinary(num1 / num2)
-            except ZeroDivisionError:
-                print('Not Divisible by zero')
-        else:
-            return "Invalid Binary Number"
+    try:
+        return operations[operator](num1, num2)
+    except ZeroDivisionError:
+        return "N/A (ZERO DIVISION)"
