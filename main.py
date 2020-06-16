@@ -9,12 +9,13 @@ from discord.ext.commands import Bot
 
 from cogs.utils import constants
 
-TOKEN = os.environ["BOT_TOKEN"]
+TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = constants.COMMAND_PREFIX
+
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
-client = commands.Bot(command_prefix=PREFIX, case_insensitivity=True, owner_id=688275913535914014)
+client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
 
 status = [
     "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
@@ -91,7 +92,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
 
 def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.codesandbox")
-    bot.load_extension("cogs.coding")
+    # bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.custom")
     bot.load_extension("cogs.events")
