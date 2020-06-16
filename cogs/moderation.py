@@ -42,7 +42,7 @@ class UserID(Converter):
             except ValueError:
                 raise BadArgument(f"{member_id} is not a valid member or member ID.") from None
             except MemberNotFound:
-                return type("_Hackban", (), {"id": member_id, "__str__": lambda s: f"Member ID {s.id}"})()
+                await ctx.guild.ban(discord.Object(id=member_id))
 
         if not can_execute_action(ctx, ctx.author, member):
             raise BadArgument("You cannot do this action on this user due to role hierarchy.")
