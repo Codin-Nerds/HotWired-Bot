@@ -47,7 +47,7 @@ class Tools(Cog):
         await ctx.send(embed=embed)
 
     @command()
-    async def charinfo_uni(self, ctx: Context, *, characters: str) -> None:
+    async def charinfo(self, ctx: Context, *, characters: str) -> None:
         """Shows you information on up to 25 unicode characters."""
         match = re.match(r"<(a?):(\w+):(\d+)>", characters)
         if match:
