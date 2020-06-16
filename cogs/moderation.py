@@ -111,13 +111,7 @@ class Moderation(Cog):
     @bot_has_permissions(ban_members=True)
     @has_permissions(ban_members=True)
     async def multiban(self, ctx: Context, members: Greedy[MemberID], *, reason: ActionReason = None) -> None:
-        """
-        Bans multiple members from the server.
-
-        This only works through banning via ID.
-        In order for this to work, the bot must have Ban Member permissions.
-        To use this command you must have Ban Members permission.
-        """
+        """Bans multiple members from the server."""
 
         if reason is None:
             reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
@@ -167,6 +161,7 @@ class Moderation(Cog):
         # TODO: Check if this condition is necessary
         if amount is not None:
             await ctx.channel.purge(limit=amount + 1)
+
             # TODO: This message might be getting in the way,
             # purpose of cleaning is to remove messages, not add more of them
             await ctx.send("**Messages cleared** " + ctx.message.author.mention)
@@ -239,7 +234,7 @@ class Moderation(Cog):
 
         spammers = await strategy(ctx, search)
         deleted = sum(spammers.values())
-        messages = [f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
+        messages = [f"{deleted} message{' was' if deleted == 1 else 's were'} removed."]
 
         if deleted:
             messages.append("")
