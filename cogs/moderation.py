@@ -47,7 +47,6 @@ class Moderation(Cog):
     @has_permissions(kick_members=True)
     async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "No specific reason") -> None:
         """Kick a User."""
-
         embed = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed.add_field(name="Type", value="Kick")
         embed.add_field(name="Reason", value=reason)
@@ -106,7 +105,6 @@ class Moderation(Cog):
     @has_permissions(ban_members=True)
     async def multiban(self, ctx: Context, members: Greedy[UserID], *, reason: ActionReason = None) -> None:
         """Bans multiple members from the server."""
-
         if reason is None:
             reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
 
@@ -132,7 +130,6 @@ class Moderation(Cog):
     @has_permissions(ban_members=True)
     async def unban(self, ctx: Context, *, member: str) -> None:
         """Unban a User."""
-
         # TODO: Use custom converter for `member`
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
@@ -151,7 +148,6 @@ class Moderation(Cog):
     @has_permissions(manage_messages=True)
     async def clear(self, ctx: Context, amount: int) -> None:
         """Clear specified number of messages."""
-
         # TODO: Check if this condition is necessary
         if amount is not None:
             await ctx.channel.purge(limit=amount + 1)
