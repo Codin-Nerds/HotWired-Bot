@@ -1,13 +1,14 @@
 import datetime
 import platform
 import textwrap
+import typing as t
 
 import GPUtil
 import psutil
 from discord import Color, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Bot, Cog, Context, check, group
-import typing as t
+
 from .utils import constants
 
 
