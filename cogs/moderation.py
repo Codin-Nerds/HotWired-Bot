@@ -85,17 +85,15 @@ class Moderation(Cog):
             return ret
 
     class UserID(Converter):
-        async def convert(self, ctx: Context, argument: str) -> t.Union[str, type]:
+        async def convert(self, ctx: Context, member_id: int) -> t.Union[str, type]:
             try:
-                member = await MemberConverter().convert(ctx, argument)
+                member = await MemberConverter.convert(ctx, member_id)
             except BadArgument:
                 try:
-                    member_id = int(argument, base=10)
                     member = await resolve_user(ctx.guild, member_id)
                 except ValueError:
-                    raise BadArgument(f"{argument} is not a valid member or member ID.") from None
+                    raise BadArgument(f"{member_id} is not a valid member or member ID.") from None
                 except MemberNotFound:
-                    # hackban case
                     return type("_Hackban", (), {"id": member_id, "__str__": lambda s: f"Member ID {s.id}"})()
 
             if not can_execute_action(ctx, ctx.author, member):
