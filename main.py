@@ -65,7 +65,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
         value=textwrap.dedent(
             f"""
             **► __Bot Id__**: 715545167649570977
-            **► __Developer__**: **TheOriginalDude#0585**
+            **► __Developer__**: **{constants.creator}**
             **► __Prefix__**: {PREFIX}
             """
         ),

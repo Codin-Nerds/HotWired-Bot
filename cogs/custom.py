@@ -2,7 +2,7 @@ import textwrap
 import time
 
 from discord import Color, Embed, Member
-from discord.ext.commands import Bot, Cog, Context, command, has_permissions
+from discord.ext.commands import BadArgument, Bot, Cog, Context, command, has_permissions
 
 
 class Custom(Cog):
@@ -12,7 +12,7 @@ class Custom(Cog):
     @command()
     async def hello(self, ctx: Context) -> None:
         """Greet a User."""
-        await ctx.send("Hey there Buddy!")
+        await ctx.send("Hey there Buddy! How's it Going?")
 
     @command()
     @has_permissions(manage_messages=True)
@@ -25,6 +25,26 @@ class Custom(Cog):
         duration = round((end - start) * 1000, 2)
         embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
         await message.edit(embed=embed)
+
+    @command(aliases=("poll",))
+    async def vote(self, ctx: Context, title: str, *options: str) -> None:
+        """
+        Build a quick voting poll with matching reactions with the provided options.
+
+        A maximum of 20 options can be provided, as Discord supports a max of 20
+        reactions on a single message.
+        """
+        if len(options) < 2:
+            raise BadArgument("Please provide at least 2 options.")
+        if len(options) > 20:
+            raise BadArgument("I can only handle 20 options!")
+
+        codepoint_start = 127462  # represents "regional_indicator_a" unicode value
+        options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
+        embed = Embed(title=title, description="\n".join(options.values()))
+        message = await ctx.send(embed=embed)
+        for reaction in options:
+            await message.add_reaction(reaction)
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:

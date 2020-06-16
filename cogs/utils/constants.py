@@ -2,6 +2,7 @@ from enum import Enum
 
 from discord import Color
 
+creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
