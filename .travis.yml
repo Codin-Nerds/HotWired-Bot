@@ -15,4 +15,5 @@ install:
     - "pipenv sync -d"
 
 script:
+    - "pipenv run autoformat"
     - "pipenv run lint"
