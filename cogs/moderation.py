@@ -19,7 +19,7 @@ from discord.ext.commands import (
     has_permissions,
 )
 
-from .utils.formats import plural
+from .utils.formats import Plural
 
 
 def can_execute_action(ctx: Context, user: discord.User, target: discord.User) -> bool:
@@ -39,8 +39,10 @@ async def resolve_user(bot: Bot, member_id: int) -> discord.User:
 
 # TODO : Clean everything up
 class Moderation(Cog):
-    def __init__(self, client: discord.Bot) -> None:
-        self.client = client
+    """This cog provides moderation commands."""
+
+    def __init__(self, bot: discord.Bot) -> None:
+        self.bot = bot
 
     @command()
     @bot_has_permissions(kick_members=True)
@@ -112,7 +114,7 @@ class Moderation(Cog):
         if total_members == 0:
             return await ctx.send("No members to ban.")
 
-        confirm = await ctx.prompt(f"This will ban **{plural(total_members):member}**. Are you sure?", reacquire=False)
+        confirm = await ctx.prompt(f"This will ban **{Plural(total_members):member}**. Are you sure?", reacquire=False)
         if not confirm:
             return await ctx.send("Aborting.")
 
@@ -203,7 +205,7 @@ class Moderation(Cog):
         return {"Bot": count}
 
     async def _complex_cleanup_strategy(self, ctx: Context, search: int) -> Counter:
-        prefixes = tuple(self.client.get_guild_prefixes(ctx.guild))  # thanks startswith
+        prefixes = tuple(self.bot.get_guild_prefixes(ctx.guild))  # thanks startswith
 
         def check(member: discord.Bot) -> bool:
             return member.author == ctx.me or member.content.startswith(prefixes)
