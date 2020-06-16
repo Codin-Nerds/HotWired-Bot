@@ -22,6 +22,33 @@ from discord.ext.commands import (
 from .utils.formats import Plural
 
 
+class ActionReason(Converter):
+    async def convert(self, ctx: Context, argument: str) -> str:
+        ret = f"{ctx.author} (ID: {ctx.author.id}): {argument}"
+
+        if len(ret) > 512:
+            reason_max = 512 - len(ret) + len(argument)
+            raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
+        return ret
+
+
+class UserID(Converter):
+    async def convert(self, ctx: Context, member_id: int) -> t.Union[str, type]:
+        try:
+            member = await MemberConverter.convert(ctx, member_id)
+        except BadArgument:
+            try:
+                member = await resolve_user(ctx.guild, member_id)
+            except ValueError:
+                raise BadArgument(f"{member_id} is not a valid member or member ID.") from None
+            except MemberNotFound:
+                return type("_Hackban", (), {"id": member_id, "__str__": lambda s: f"Member ID {s.id}"})()
+
+        if not can_execute_action(ctx, ctx.author, member):
+            raise BadArgument("You cannot do this action on this user due to role hierarchy.")
+        return member
+
+
 def can_execute_action(ctx: Context, user: discord.User, target: discord.User) -> bool:
     return user.id == ctx.bot.owner_id or user == ctx.guild.owner or user.top_role > target.top_role
 
@@ -47,7 +74,7 @@ class Moderation(Cog):
     @command()
     @bot_has_permissions(kick_members=True)
     @has_permissions(kick_members=True)
-    async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "No specific reason") -> None:
+    async def kick(self, ctx: Context, member: UserID, *, reason: str = "No specific reason.") -> None:
         """Kick a User."""
         embed = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed.add_field(name="Type", value="Kick")
@@ -63,7 +90,7 @@ class Moderation(Cog):
     @command()
     @bot_has_permissions(ban_members=True)
     @has_permissions(ban_members=True)
-    async def ban(self, ctx: Context, member: discord.Member, *, reason: str = "No Reason Stated.") -> None:
+    async def ban(self, ctx: Context, member: UserID, *, reason: str = "No Reason Stated.") -> None:
         """Ban a User."""
         embed = discord.Embed(title="Infraction information", color=discord.Color.red())
         embed.add_field(name="Type", value="Ban")
@@ -75,31 +102,6 @@ class Moderation(Cog):
         await ctx.send(embed=embed)
         await member.send(embed=embed)
         await member.ban(reason=reason)
-
-    class ActionReason(Converter):
-        async def convert(self, ctx: Context, argument: str) -> str:
-            ret = f"{ctx.author} (ID: {ctx.author.id}): {argument}"
-
-            if len(ret) > 512:
-                reason_max = 512 - len(ret) + len(argument)
-                raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
-            return ret
-
-    class UserID(Converter):
-        async def convert(self, ctx: Context, member_id: int) -> t.Union[str, type]:
-            try:
-                member = await MemberConverter.convert(ctx, member_id)
-            except BadArgument:
-                try:
-                    member = await resolve_user(ctx.guild, member_id)
-                except ValueError:
-                    raise BadArgument(f"{member_id} is not a valid member or member ID.") from None
-                except MemberNotFound:
-                    return type("_Hackban", (), {"id": member_id, "__str__": lambda s: f"Member ID {s.id}"})()
-
-            if not can_execute_action(ctx, ctx.author, member):
-                raise BadArgument("You cannot do this action on this user due to role hierarchy.")
-            return member
 
     @command()
     @guild_only()
