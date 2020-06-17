@@ -12,3 +12,6 @@ __pycache__/
 
 # Ignore intellij Files
 .idea
+
+# Ignore spyder Files
+.spyproject/
