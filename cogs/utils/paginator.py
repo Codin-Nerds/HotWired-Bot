@@ -8,9 +8,9 @@ FIRST_EMOJI = "\u23EE"  # [:track_previous:]
 LEFT_EMOJI = "\u2B05"  # [:arrow_left:]
 RIGHT_EMOJI = "\u27A1"  # [:arrow_right:]
 LAST_EMOJI = "\u23ED"  # [:track_next:]
-PAGE_NUM_EMOJI = ":1234: "
-STOP_EMOJI = ":stop_button: "
-INFO_EMOJI = ":information_source: "
+PAGE_NUM_EMOJI = "\N{INPUT SYMBOL FOR NUMBERS}"
+STOP_EMOJI = "\N{BLACK SQUARE FOR STOP}"
+INFO_EMOJI = "\N{INFORMATION SOURCE}"
 
 
 class CannotPaginate(Exception):
@@ -100,7 +100,8 @@ class Pages:
         embed = self.get_embed(entries, page, first=first)
 
         if not self.paginating:
-            return await self.channel.send(content=content, embed=embed)
+            await self.channel.send(content=content, embed=embed)
+            return
 
         if not first:
             await self.message.edit(content=content, embed=embed)
@@ -109,9 +110,6 @@ class Pages:
         self.message = await self.channel.send(content=content, embed=embed)
         for (reaction, _) in self.reaction_emojis:
             if self.maximum_pages == 2 and reaction in ("\u23ed", "\u23ee"):
-                # no |<< or >>| buttons if we only have two pages
-                # we can't forbid it if someone ends up using it but remove
-                # it from the default set
                 continue
 
             await self.message.add_reaction(reaction)
