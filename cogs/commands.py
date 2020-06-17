@@ -1,126 +1,138 @@
-import asyncio
 import datetime
 import os
 import platform
-import random
-import string
 import sys
+import textwrap
 import traceback
+import typing as t
 
-import discord
-from discord.ext import commands
+from discord import Color, Embed, Member
+from discord.ext.commands import Bot, Cog, Context, command
 
 
-class Commands(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+class Commands(Cog):
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
+
+        # TODO: Get the dev-mode from constants.py
         try:
-            self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
+            self.dev_mode = platform.system() != "Linux" and sys.argv[1] != "-d"
         except IndexError:
             self.dev_mode = True
 
-    @commands.command(name='serverinfo', aliases=['server'])
-    async def serverinfo(self, ctx):
+    @command(aliases=["server"])
+    async def serverinfo(self, ctx: Context) -> None:
         """Get information about the server."""
 
-        embed = discord.Embed(colour=discord.Color.gold())
+        embed = Embed(colour=Color.gold())
         embed.title = f"{ctx.guild.name}'s stats and information."
         embed.description = ctx.guild.description if ctx.guild.description else None
-        embed.add_field(name='__**General information:**__',
-                        value=f'**Owner:** {ctx.guild.owner}\n'
-                              f'**Created at:** {datetime.datetime.strftime(ctx.guild.created_at, "%A %d %B %Y at %H:%M")}\n'
-                              f'**Members:** {ctx.guild.member_count} | '
-                              f'**Nitro Tier:** {ctx.guild.premium_tier} | '
-                              f'**Boosters:** {ctx.guild.premium_subscription_count}\n'
-                              f'**File Size:** {round(ctx.guild.filesize_limit / 1048576)} MB | '
-                              f'**Bitrate:** {round(ctx.guild.bitrate_limit / 1000)} kbps | '
-                              f'**Emoji:** {ctx.guild.emoji_limit}\n')
+        embed.add_field(
+            name="__**General information:**__",
+            value=textwrap.dedent(
+                f"""
+                **Owner:** {ctx.guild.owner}
+                **Created at:** {datetime.datetime.strftime(ctx.guild.created_at, "%A %d %B %Y at %H:%M")}
+                **Members:** {ctx.guild.member_count}
+                **Nitro Tier:** {ctx.guild.premium_tier} | **Boosters:** {ctx.guild.premium_subscription_count}
+                **File Size:** {round(ctx.guild.filesize_limit / 1048576)} MB
+                **Bitrate:** {round(ctx.guild.bitrate_limit / 1000)} kbps
+                **Emoji:** {ctx.guild.emoji_limit}
+                """
+            ),
+        )
 
-        embed.add_field(name='__**Channels:**__',
-                        value=f'**AFK timeout:** {int(ctx.guild.afk_timeout / 60)}m | '
-                              f'**AFK channel:** {ctx.guild.afk_channel}\n'
-                              f'**Text channels:** {len(ctx.guild.text_channels)} | '
-                              f'**Voice channels:** {len(ctx.guild.voice_channels)}\n', inline=False)
+        embed.add_field(
+            name="__**Channels:**__",
+            value=textwrap.dedent(
+                f"""
+                **AFK timeout:** {int(ctx.guild.afk_timeout / 60)}m | **AFK channel:** {ctx.guild.afk_channel}
+                **Text channels:** {len(ctx.guild.text_channels)} | **Voice channels:** {len(ctx.guild.voice_channels)}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.set_footer(text=f'ID: {ctx.guild.id}')
+        embed.set_footer(text=f"ID: {ctx.guild.id}")
 
         return await ctx.send(embed=embed)
 
-    @commands.command(name='userinfo', aliases=['user'])
-    async def userinfo(self, ctx, *, member: discord.Member = None):
+    @command(aliases=["user"])
+    async def userinfo(self, ctx: Context, *, member: t.Optional[Member] = None) -> None:
         """
         Get information about you, or a specified member.
 
         `member`: The member to get information from. Can be a Mention, Name or ID.
         """
 
-        if member is None:
+        if not member:
             member = ctx.author
 
-        embed = discord.Embed(colour=discord.Color.gold())
+        embed = Embed(colour=Color.gold())
         embed.title = f"{member}'s stats and information."
-        embed.add_field(name='__**General information:**__',
-                        value=f'**Discord Name:** {member}\n'
-                              f'**Created at:** {datetime.datetime.strftime(member.created_at, "%A %d %B %Y at %H:%M")}\n', inline=False)
+        embed.add_field(
+            name="__**General information:**__",
+            value=textwrap.dedent(
+                f"""
+                **Discord Name:** {member}
+                **Created at:** {datetime.datetime.strftime(member.created_at, "%A %d %B %Y at %H:%M")}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.add_field(name='__**Server-related information:**__',
-                        value=f'**Nickname:** {member.nick}\n'
-                              f'**Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}\n'
-                              f'**Top role:** {member.top_role.mention}', inline=False)
+        embed.add_field(
+            name="__**Server-related information:**__",
+            value=textwrap.dedent(
+                f"""**Nickname:** {member.nick}
+                **Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}
+                **Top role:** {member.top_role.mention}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.set_thumbnail(url=member.avatar_url_as(format='png'))
-        embed.set_footer(text=f'ID: {member.id}')
+        embed.set_thumbnail(url=member.avatar_url_as(format="png"))
+        embed.set_footer(text=f"ID: {member.id}")
 
         return await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
-    async def spam(self, ctx, times=100000, text=None):
-        def randomString(stringLength=8):
-            letters = string.ascii_lowercase
-            return ''.join(random.choice(letters) for i in range(stringLength))
-        if text is None:
-            num = random.randint(4, 16)
-            for i in range(times):
-                await ctx.send(randomString(num))
-                await asyncio.sleep(1)
-        else:
-            num = random.randint(4, 16)
-            for i in range(times):
-                await ctx.send(text)
-                await asyncio.sleep(1)
-
-    @commands.command(aliases=['cembed', 'emb', 'new'])
-    async def create(self, ctx, *, msg):
+    @command(aliases=["cembed", "emb", "new"])
+    async def create(self, ctx: Context, *, msg: str) -> None:
         """Create an embed."""
+        # TODO: This command is WIP
         await ctx.send(msg)
 
-    @commands.command(hidden=True)
-    async def load(self, ctx, *, extension):
+    @command(hidden=True)
+    async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
+        # TODO: Implement is_owner check here
         try:
-            self.bot.load_extension(f'cogs.{extension}')
+            self.bot.load_extension(f"cogs.{extension}")
         except Exception:
-            await ctx.send(f'```py\n{traceback.format_exc()}\n```')
+            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
-            await ctx.send('\N{SQUARED OK}')
+            await ctx.send("\N{SQUARED OK}")
 
-    @commands.command(name='reload', hidden=True)
-    async def _reload(self, ctx, *, extension):
+    @command(name="reload", hidden=True)
+    async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
+        # TODO: Implement is_owner check here
         try:
-            self.bot.unload_extension(f'cogs.{extension}')
-            self.bot.load_extension(f'cogs.{extension}')
+            self.bot.unload_extension(f"cogs.{extension}")
+            self.bot.load_extension(f"cogs.{extension}")
         except Exception:
-            await ctx.send(f'```py\n{traceback.format_exc()}\n```')
+            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
-            await ctx.send('\N{SQUARED OK}')
+            await ctx.send("\N{SQUARED OK}")
 
-    @commands.command(hidden=True)
-    async def restart(self, ctx):
+    @command(hidden=True)
+    async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
+        # TODO: Implement is_owner check here
         await self.bot.logout()
-        os.system("python main.py")
+        os.system("python main.py")  # TODO: This might get changed
 
 
-def setup(client):
-    client.add_cog(Commands(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Commands(bot))
