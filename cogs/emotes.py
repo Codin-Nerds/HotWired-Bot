@@ -1,12 +1,15 @@
+import textwrap
+
 import discord
 from discord.ext.commands import Bot, Cog, Context, command
 from discord.utils import get
 
-from .utils import constants
-import textwrap
-
 from .emote_utils.emotes import Emote
-from .emote_utils.exceptions import InvalidCommandException, EmoteNotFoundException
+from .emote_utils.exceptions import (
+    EmoteNotFoundException,
+    InvalidCommandException,
+)
+from .utils import constants
 
 
 class Emotes(Cog):

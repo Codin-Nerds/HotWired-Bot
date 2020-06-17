@@ -1,8 +1,9 @@
 import io
 import re
+import typing as t
 
 import requests
-import typing as t
+
 from .exceptions import EmoteNotFoundException, InvalidCommandException
 
 
