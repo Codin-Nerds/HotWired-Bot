@@ -5,9 +5,8 @@ class Plural:
         self.value = value
 
     def __format__(self, format_spec: str) -> str:
-        val = self.value
         singular, sep, plural = format_spec.partition("|")
         plural = plural or f"{singular}s"
-        if abs(val) != 1:
-            return f"{val} {plural}"
-        return f"{val} {singular}"
+        if abs(self.value) != 1:
+            return f"{self.value} {plural}"
+        return f"{self.value} {singular}"
