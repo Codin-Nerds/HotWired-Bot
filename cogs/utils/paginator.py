@@ -4,6 +4,7 @@ from discord.ext.commands import Paginator as CommandPaginator
 from discord.ext.commands import Context
 import typing as t
 
+
 FIRST_EMOJI = "\u23EE"  # [:track_previous:]
 LEFT_EMOJI = "\u2B05"  # [:arrow_left:]
 RIGHT_EMOJI = "\u27A1"  # [:arrow_right:]
