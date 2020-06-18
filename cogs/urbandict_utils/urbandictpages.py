@@ -25,6 +25,7 @@ class UrbanDictionaryPages(Pages):
         return ret
 
     def prepare_embed(self, entry: dict, page: int, *, first: bool = False) -> None:
+        """Prepare embeds for the paginator."""
         if self.maximum_pages > 1:
             title = f'{entry["word"]}: {page} out of {self.maximum_pages}'
         else:
