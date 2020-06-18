@@ -41,7 +41,7 @@ class Custom(Cog):
 
         embed = Embed(
             title="Greetings",
-            description=textwrap.dedent(
+            description=(
                 f"""
                 Thanks for adding HotWired in this server,
                 **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
