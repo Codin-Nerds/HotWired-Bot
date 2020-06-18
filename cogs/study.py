@@ -1,7 +1,7 @@
 import discord
 from discord.ext.commands import Bot, Cog, Context, command
 import aiohttp
-
+import textwrap
 from utils.mathscrape import get_math_results
 from utils.wolframscrape import get_wolfram_data
 from .urbandict_utils.urbandictpages import UrbanDictionaryPages
@@ -51,7 +51,7 @@ class Study(Cog):
                 if resp.status != 200:
                     await ctx.send(f"An error occurred: {resp.status} {resp.reason}.")
                     embed = discord.Embed(
-                        title="Response Error Occured!", 
+                        title="Response Error Occured!",
                         description=textwrap.dedent(
                             f"""
                             Status Code: {resp.status}
