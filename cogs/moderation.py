@@ -7,7 +7,7 @@ from datetime import datetime
 from functools import wraps
 
 import discord
-from discord import Color, Embed, Guild, NotFound
+from discord import Color, Embed, Guild, Member, NotFound, Role, User
 from discord.errors import Forbidden
 from discord.ext.commands import BadArgument, Bot, Cog, Context, Converter, Greedy, NoPrivateMessage, UserConverter, command, has_permissions
 
@@ -18,7 +18,7 @@ class MemberNotFound(NotFound):
     pass
 
 
-async def get_member(guild: Guild, user: discord.User) -> discord.Member:
+async def get_member(guild: Guild, user: User) -> Member:
     member = guild.get_member(user.id)
     if not member:
         try:
@@ -39,13 +39,13 @@ class ActionReason(Converter):
 
 class UserID(UserConverter):
     """
-    Try to convert any accepted string into `discord.Member` or `discord.User`.
+    Try to convert any accepted string into `Member` or `User`.
 
-    When possible try to convert user into `discord.Member` but if not, use `discord.User` instead.
+    When possible try to convert user into `Member` but if not, use `User` instead.
     """
 
-    async def convert(self, ctx: Context, argument: str) -> discord.User:
-        """Convert the `argument` into `discord.Member` or `discord.User`."""
+    async def convert(self, ctx: Context, argument: str) -> User:
+        """Convert the `argument` into `Member` or `User`."""
         with suppress(BadArgument):
             # Try to use UserConverter first
             user = await super().convert(ctx, argument)
@@ -70,7 +70,7 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
     Make sure user can target someone accordingly to role hierarchy.
 
     `argument_number` states which argument corresponds to the selected user.
-    it should point to `discord.Member` or `discord.User` on guild
+    it should point to `Member` or `User` on guild
     """
 
     def wrap(func: t.Callable) -> t.Callable:
@@ -84,17 +84,17 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                 except (IndexError, TypeError):
                     raise ValueError(f"Specified argument '{argument}' not found.")
 
-            if isinstance(user, discord.User):
+            if isinstance(user, User):
                 try:
                     member = await get_member(ctx.guild, user)
                 except MemberNotFound:
                     # Skip checks in case of bad member
                     await func(self, ctx, *args, **kwargs)
                     return
-            elif isinstance(user, discord.Member):
+            elif isinstance(user, Member):
                 member = user
             else:
-                raise ValueError("Specified argument is not `discord.Member` or `discord.User`")
+                raise ValueError("Specified argument is not `Member` or `User`")
 
             actor = ctx.author
             # Run the function in case actor has higher role then member, or is a guild owner
@@ -128,9 +128,9 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     @follow_roles()
-    async def kick(self, ctx: Context, member: discord.Member, *, reason: str = "No specific reason.") -> None:
+    async def kick(self, ctx: Context, member: Member, *, reason: str = "No specific reason.") -> None:
         """Kick a User."""
-        if not isinstance(member, discord.Member):
+        if not isinstance(member, Member):
             embed = Embed(
                 title="You can't kick this user",
                 description=textwrap.dedent(
@@ -292,7 +292,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_roles=True)
-    async def promote(self, ctx: Context, member: discord.Member, *, role: discord.Role) -> None:
+    async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
         """Promote member to role."""
         if role >= ctx.author.top_role:
             embed = Embed(
