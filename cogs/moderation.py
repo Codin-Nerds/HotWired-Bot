@@ -306,7 +306,7 @@ class Moderation(Cog):
             await ctx.send(embed=embed)
             return
         if role in member.roles:
-            embed = Embed(title="Error", description=f"{member.mention} already have {role.mention} role!", color=Color.red())
+            embed = Embed(title="Error", description=f"{member.mention} already has the {role.mention} role!", color=Color.red())
             await ctx.send(embed=embed)
             return
 
