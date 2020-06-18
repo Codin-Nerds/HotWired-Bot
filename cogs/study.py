@@ -51,7 +51,14 @@ class Study(Cog):
                 if resp.status != 200:
                     await ctx.send(f"An error occurred: {resp.status} {resp.reason}.")
                     embed = discord.Embed(
-                        title="Response Error Occured!", description=f"Status Code: {resp.status} \nReason: {resp.reason}", color=discord.Color.red()
+                        title="Response Error Occured!", 
+                        description=textwrap.dedent(
+                            f"""
+                            Status Code: {resp.status}
+                            Reason: {resp.reason}
+                            """
+                        ),
+                        color=discord.Color.red(),
                     )
                     await ctx.send(embed=embed)
                     return
