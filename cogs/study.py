@@ -25,10 +25,8 @@ class Study(Cog):
 
         else:
             embed = discord.Embed(title="Equation Results")
-
             embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=res, inline=False)
-
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
             await ctx.send(embed=embed)
