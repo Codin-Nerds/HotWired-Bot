@@ -161,7 +161,7 @@ class Games(Cog):
             return message.author == ctx.author and message.channel == ctx.channel
 
         word = random.choice(word_list).upper()
-        word_completion = "*" * len(word)
+        word_completion = "#" * len(word)
         guessed = False
         guessed_letters = []
         guessed_words = []
@@ -192,7 +192,7 @@ class Games(Cog):
                     for index in indices:
                         word_as_list[index] = guess
                     word_completion = "".join(word_as_list)
-                    if "*" not in word_completion:
+                    if "#" not in word_completion:
                         guessed = True
 
             elif len(guess) == len(word) and guess.isalpha():
