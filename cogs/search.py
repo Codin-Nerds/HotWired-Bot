@@ -175,9 +175,7 @@ class Search(Cog, name="Basic"):
             try:
                 await self._basic_search(ctx, ctx.message.content[len(ctx.prefix) :])
             except searchexceptions.SafesearchFail:
-                await ctx.send(
-                    "**Sorry!** That query included language " "we cannot accept in a non-NSFW channel. " "Please try again in an NSFW channel."
-                )
+                await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 
     @command()
     async def anime(self, ctx: Context, *, query: str) -> None:
