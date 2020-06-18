@@ -47,7 +47,6 @@ class Study(Cog):
     @command(aliases=["dict"])
     async def urban(self, ctx: Context, *, word: str) -> None:
         """Searches urban dictionary."""
-
         url = "http://api.urbandictionary.com/v0/define"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params={"term": word}) as resp:
