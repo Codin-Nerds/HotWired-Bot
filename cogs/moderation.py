@@ -263,7 +263,7 @@ class Moderation(Cog):
             await ctx.send(embed=embed)
         except NotFound:
             embed = discord.Embed(
-                title="No such ban",
+                title="Ban not Found!",
                 description=textwrap.dedent(
                     f"""
                     There are no active bans on discord for {user.mention}.
