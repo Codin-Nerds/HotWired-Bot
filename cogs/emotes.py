@@ -47,9 +47,11 @@ class Emotes(Cog):
         )
         emote = textwrap.dedent(
             f"""
-            Send an animated emote\n\n
-            **How To:**\n
-            `{constants.COMMAND_PREFIX}emote <emote_name>`\n\n
+            Send an animated emote
+
+            **How To:**
+            `{constants.COMMAND_PREFIX}emote <emote_name>`
+
             Supply emote names as a comma-separated list to send multiple emotes in a single message
             """
         )
