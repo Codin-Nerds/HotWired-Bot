@@ -1,5 +1,4 @@
 import random
-import textwrap
 
 from assets.words import word_list
 
@@ -70,89 +69,75 @@ class Games(Cog):
         def display_hangman(tries: int) -> str:
             stages = [
                 # final state: head, torso, both arms, and both legs
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |     \|/
-                       |      |
-                       |     / \
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|     \|/
+|      |
+|     / \
+-
+                    ```""",
                 # head, torso, both arms, and one leg
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |     \|/
-                       |      |
-                       |     /
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|     \|/
+|      |
+|     /
+-
+                    ```""",
                 # head, torso, and both arms
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |     \|/
-                       |      |
-                       |
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|     \|/
+|      |
+|
+-
+                    ```""",
                 # head, torso, and one arm
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |     \|
-                       |      |
-                       |
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|     \|
+|      |
+|
+-
+                    ```""",
                 # head and torso
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |      |
-                       |      |
-                       |
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|      |
+|      |
+|
+-
+                    ```""",
                 # head
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |      O
-                       |
-                       |
-                       |
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|      O
+|
+|
+|
+-
+                    ```""",
                 # initial empty state
-                textwrap.dedent(
-                    r"""
-                       --------
-                       |      |
-                       |
-                       |
-                       |
-                       |
-                       -
-                    """
-                ),
+                r"""```
+--------
+|      |
+|
+|
+|
+|
+-
+                    ```""",
             ]
             return stages[tries]
 
@@ -167,8 +152,11 @@ class Games(Cog):
         tries = 6
 
         await ctx.send(embed=Embed(title="Let's play Hangman!", color=Color.dark_green()))
-        await ctx.send(embed=Embed(title="Hangman Status", description=display_hangman(tries), color=Color.dark_magenta()))
-        await ctx.send(embed=Embed(title="Word Completion", description=word_completion, color=Color.dark_magenta()))
+        embed = Embed(title="Hangman Status", color=Color.dark_teal())
+        embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+        embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+        embed.set_footer(text="Powered By HotWired.")
+        await ctx.send(embed=embed)
 
         while not guessed and tries > 0:
             await ctx.send(embed=Embed(description="Please guess a letter or word: ", color=Color.gold()))
@@ -207,8 +195,11 @@ class Games(Cog):
             else:
                 await ctx.send(embed=Embed(description="Not a valid guess.", color=Color.blurple()))
 
-            await ctx.send(embed=Embed(title="Hangman Status", description=display_hangman(tries), color=Color.dark_magenta()))
-            await ctx.send(embed=Embed(title="Word Completion", description=word_completion, color=Color.dark_magenta()))
+            embed = Embed(title="Hangman Status", color=Color.dark_teal())
+            embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+            embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+            embed.set_footer(text="Powered By HotWired.")
+            await ctx.send(embed=embed)
 
         if guessed:
             await ctx.send(embed=Embed(description="Congrats, you guessed the word! You win! :partying_face: ", color=Color.dark_green()))
