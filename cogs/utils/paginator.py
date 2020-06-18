@@ -66,7 +66,8 @@ class Pages:
 
     def get_page(self, page: int) -> t.List[str]:
         base = (page - 1) * self.per_page
-        return self.entries[base : base + self.per_page]
+        stop = base + self.per_page
+        return self.entries[base:stop]
 
     def get_content(self, entries: t.List[str], page: int, *, first: bool = False) -> None:
         return None
