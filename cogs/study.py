@@ -15,7 +15,6 @@ class Study(Cog):
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
         """Calculate an equation"""
-
         res = get_math_results(equation)
 
         if res.lower() == "invalid equation":
