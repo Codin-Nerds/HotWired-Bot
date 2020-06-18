@@ -5,7 +5,7 @@ from discord import Color, Embed, Member
 from discord.ext.commands import BadArgument, Bot, Cog, Context, command, has_permissions
 
 
-class Custom(Cog):
+class Common(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -88,7 +88,4 @@ class Custom(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(Custom(bot))
-
-
-# TODO: Custom is a bad name for a cog, this should be renamed
+    bot.add_cog(Common(bot))
