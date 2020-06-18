@@ -1,8 +1,10 @@
 import asyncio
-import discord
-from discord.ext.commands import Paginator as CommandPaginator
-from discord.ext.commands import Context
 import typing as t
+
+import discord
+from discord.ext.commands import Context
+from discord.ext.commands import Paginator as CommandPaginator
+
 
 FIRST_EMOJI = "\u23EE"  # [:track_previous:]
 LEFT_EMOJI = "\u2B05"  # [:arrow_left:]
@@ -65,7 +67,8 @@ class Pages:
 
     def get_page(self, page: int) -> t.List[str]:
         base = (page - 1) * self.per_page
-        return self.entries[base : base + self.per_page]
+        stop = base + self.per_page
+        return self.entries[base:stop]
 
     def get_content(self, entries: t.List[str], page: int, *, first: bool = False) -> None:
         return None
