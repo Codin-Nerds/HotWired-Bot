@@ -27,27 +27,31 @@ class Emotes(Cog):
     async def emote_add_help(self, ctx: Context) -> None:
         """Shows help on how to add emotes."""
         add_emote = textwrap.dedent(
-            "Adds a twitch emote to the server\n\n"
-            "**Usage:**\n"
-            f"`{constants.COMMAND_PREFIX}add_emote twitch <emote_id>`\n"
-            f"`{constants.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`\n"
-            f"`{constants.COMMAND_PREFIX}add_emote frf <emote_id>`\n\n"
-            "To get an emote visit [twitchemotes.com](https://twitchemotes.com), "
-            "[betterttv.com](https://betterttv.com/emotes/shared), or "
-            "[frankerfacez.com](https://www.frankerfacez.com/emoticons/) and find "
-            "an emote you like!.\n"
-            "The channel name for BetterTTV emotes is found in the top right section "
-            "of the web page for the emote\n"
-            "The the ID of the emote is found at the end of the URL for a specific emote.\n"
-            "twitchemotes.com/emotes/__**120232**__\n"
-            "betterttv.com/emotes/__**5771aa498bbc1e572cb7ae4d**__\n"
-            "frankerfacez.com/emoticon/__**261802**__-4Town"
+            f"""
+            Adds a twitch emote to the server\n\n
+            **Usage:**\n
+            `{constants.COMMAND_PREFIX}add_emote twitch <emote_id>`\n
+            `{constants.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`\n
+            `{constants.COMMAND_PREFIX}add_emote frf <emote_id>`\n\n
+            To get an emote visit [twitchemotes.com](https://twitchemotes.com),
+            [betterttv.com](https://betterttv.com/emotes/shared), or
+            [frankerfacez.com](https://www.frankerfacez.com/emoticons/) and find
+            an emote you like!.\n
+            The channel name for BetterTTV emotes is found in the top right section
+            of the web page for the emote\n
+            The the ID of the emote is found at the end of the URL for a specific emote.\n
+            twitchemotes.com/emotes/__**120232**__\n
+            betterttv.com/emotes/__**5771aa498bbc1e572cb7ae4d**__\n
+            frankerfacez.com/emoticon/__**261802**__-4Town
+            """
         )
         emote = textwrap.dedent(
-            "Send an animated emote\n\n"
-            "**How To:**\n"
-            f"`{constants.COMMAND_PREFIX}emote <emote_name>`\n\n"
-            "Supply emote names as a comma-separated list to send multiple emotes in a single message"
+            f"""
+            Send an animated emote\n\n
+            **How To:**\n
+            `{constants.COMMAND_PREFIX}emote <emote_name>`\n\n
+            Supply emote names as a comma-separated list to send multiple emotes in a single message
+            """
         )
         embed = discord.Embed(colour=discord.Colour.dark_gold())
         embed.add_field(name=f"{constants.COMMAND_PREFIX}add_emote", value=add_emote)
