@@ -29,11 +29,14 @@ async def get_member(guild: Guild, user: User) -> Member:
 
 
 class ActionReason(Converter):
-    """Make sure reason is """
+    """Make sure reason length is within 512 characters."""
 
     async def convert(self, ctx: Context, argument: str) -> str:
-        if len(argument) > 512:
-            raise BadArgument(f"Reason is too long ({len(argument)}/512)")
+        """Add ID to the reason and make sure it's withing length."""
+        reason = f"[ID: {ctx.author.id}]: {argument}"
+        if len(reason) > 512:
+            reason_max = 512 - len(reason) + len(argument)
+            raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
         return argument
 
 
