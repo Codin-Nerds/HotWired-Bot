@@ -1,28 +1,28 @@
 import asyncio
+import os
 from itertools import cycle
 
 import discord
-import setup
+from discord.ext import commands
+from discord.ext.commands import Bot
 
 from cogs.utils import constants
-# from cogs.utils.embedHandler import error_embed
-from discord.ext import commands
 
-TOKEN = setup.BOT_TOKEN
+TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = constants.COMMAND_PREFIX
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), owner_id=constants.owner_id)
 
 status = [
-    "😁Working At The Codin\' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator\'s Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+    f"😁Working At The Codin' Hole! Join me at {constants.discord_server}",
+    f"▶Check out My Creator's Youtube channel : {constants.youtube_url}",
     f"Ping me using {PREFIX}help",
-    "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
-    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+    f"Official Instagram of My Creator ❌ {constants.ig_url}",
+    f"Ready To Work and Get Worked! My Github 🔆 {constants.github_repo_link}",
 ]
 
 
-async def change_status():
+async def change_status() -> None:
     await client.wait_until_ready()
     msgs = cycle(status)
 
@@ -33,14 +33,9 @@ async def change_status():
 
 
 @client.event
-async def on_ready():
-    print('Bot is Ready.')
+async def on_ready() -> None:
+    print("Bot is Ready.")
     print(f"Logged in as: {client.user.name} : {client.user.id}")
-
-
-@client.event
-async def on_message(message):
-    pass
 
 
 # @client.event
@@ -63,9 +58,9 @@ async def on_message(message):
 #    await ctx.send(embed=embed)
 
 
-def SetupBot(bot):
+def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.codesandbox")
-    bot.load_extension("cogs.coding")
+    # bot.load_extension("cogs.coding")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.custom")
     bot.load_extension("cogs.events")
@@ -73,10 +68,10 @@ def SetupBot(bot):
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.moderation")
-    bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
+    bot.load_extension("cogs.converters")
 
     bot.run(TOKEN)
 
@@ -84,4 +79,4 @@ def SetupBot(bot):
 client.loop.create_task(change_status())
 
 if __name__ == "__main__":
-    SetupBot(client)
+    setup_bot(client)
