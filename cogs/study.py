@@ -11,9 +11,6 @@ class Study(Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @command()
-    async def pcalc(self, ctx: Context) -> None:
-        pass
 
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
