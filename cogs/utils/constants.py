@@ -2,7 +2,7 @@ from enum import Enum
 
 from discord import Color
 
-ids = [
+owner_ids = [
     688275913535914014,
     306876636526280705
 ]
