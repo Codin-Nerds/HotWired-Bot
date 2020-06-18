@@ -1,4 +1,6 @@
 import random
+import textwrap
+
 from assets.words import word_list
 
 from discord import Color, Embed, Message
@@ -67,76 +69,91 @@ class Games(Cog):
     @command()
     async def hangman(self, ctx: Context) -> None:
         def display_hangman(tries: int) -> str:
-            stages = [  # final state: head, torso, both arms, and both legs
-                r"""
-                   --------
-                   |      |
-                   |      O
-                   |     \|/
-                   |      |
-                   |     / \
-                   -
-                """,
+            stages = [
+                # final state: head, torso, both arms, and both legs
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |     \|/
+                       |      |
+                       |     / \
+                       -
+                    """
+                ),
                 # head, torso, both arms, and one leg
-                r"""
-                   --------
-                   |      |
-                   |      O
-                   |     \|/
-                   |      |
-                   |     /
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |     \|/
+                       |      |
+                       |     /
+                       -
+                    """
+                ),
                 # head, torso, and both arms
-                r"""
-                   --------
-                   |      |
-                   |      O
-                   |     \|/
-                   |      |
-                   |
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |     \|/
+                       |      |
+                       |
+                       -
+                    """
+                ),
                 # head, torso, and one arm
-                r"""
-                   --------
-                   |      |
-                   |      O
-                   |     \|
-                   |      |
-                   |
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |     \|
+                       |      |
+                       |
+                       -
+                    """
+                ),
                 # head and torso
-                """
-                   --------
-                   |      |
-                   |      O
-                   |      |
-                   |      |
-                   |
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |      |
+                       |      |
+                       |
+                       -
+                    """
+                ),
                 # head
-                """
-                   --------
-                   |      |
-                   |      O
-                   |
-                   |
-                   |
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |      O
+                       |
+                       |
+                       |
+                       -
+                    """
+                ),
                 # initial empty state
-                """
-                   --------
-                   |      |
-                   |
-                   |
-                   |
-                   |
-                   -
-                """,
+                textwrap.dedent(
+                    r"""
+                       --------
+                       |      |
+                       |
+                       |
+                       |
+                       |
+                       -
+                    """
+                ),
             ]
             return stages[tries]
 
@@ -144,32 +161,30 @@ class Games(Cog):
             return message.author == ctx.author and message.channel == ctx.channel
 
         word = random.choice(word_list).upper()
-        word_completion = "_" * len(word)
+        word_completion = "*" * len(word)
         guessed = False
         guessed_letters = []
         guessed_words = []
         tries = 6
 
-        await ctx.send(embed=Embed(title="Let's play Hangman!", color=Color.dark_magenta()))
+        await ctx.send(embed=Embed(title="Let's play Hangman!", color=Color.dark_green()))
         await ctx.send(embed=Embed(title="Hangman Status", description=display_hangman(tries), color=Color.dark_magenta()))
         await ctx.send(embed=Embed(title="Word Completion", description=word_completion, color=Color.dark_magenta()))
-        await ctx.send("\n")
 
         while not guessed and tries > 0:
-            await ctx.send("Please guess a letter or word: ")
+            await ctx.send(embed=Embed(description="Please guess a letter or word: ", color=Color.gold()))
             input = await self.bot.wait_for("message", check=check)
-            guess = input.upper()
+            guess = input.content.upper()
 
             if len(guess) == 1 and guess.isalpha():
                 if guess in guessed_letters:
-                    await ctx.send(embed=Embed(description=f"You already guessed the letter {guess}", color=Color.blurple()))
+                    await ctx.send(embed=Embed(description=f"You already guessed the letter {guess}", color=Color.red()))
                 elif guess not in word:
-                    await ctx.send()
-                    await ctx.send(embed=Embed(description=f"{guess} is not in the word.", color=Color.blurple()))
+                    await ctx.send(embed=Embed(description=f"{guess} is not in the word.", color=Color.dark_magenta()))
                     tries -= 1
                     guessed_letters.append(guess)
                 else:
-                    await ctx.send(embed=Embed(description=f"Good job, {guess} is in the word!", color=Color.blurple()))
+                    await ctx.send(embed=Embed(description=f"Good job, {guess} is in the word!", color=Color.dark_green()))
                     guessed_letters.append(guess)
                     word_as_list = list(word_completion)
                     indices = [i for i, letter in enumerate(word) if letter == guess]
@@ -177,14 +192,14 @@ class Games(Cog):
                     for index in indices:
                         word_as_list[index] = guess
                     word_completion = "".join(word_as_list)
-                    if "_" not in word_completion:
+                    if "*" not in word_completion:
                         guessed = True
 
             elif len(guess) == len(word) and guess.isalpha():
                 if guess in guessed_words:
-                    await ctx.send(embed=Embed(description=f"You already guessed the word {guess}", color=Color.blurple()))
+                    await ctx.send(embed=Embed(description=f"You already guessed the word {guess}", color=Color.red()))
                 elif guess != word:
-                    await ctx.send(embed=Embed(description=f"{guess} is not the word.", color=Color.blurple()))
+                    await ctx.send(embed=Embed(description=f"{guess} is not the word.", color=Color.dark_orange()))
                     tries -= 1
                     guessed_words.append(guess)
                 else:
@@ -195,12 +210,10 @@ class Games(Cog):
 
             await ctx.send(embed=Embed(title="Hangman Status", description=display_hangman(tries), color=Color.dark_magenta()))
             await ctx.send(embed=Embed(title="Word Completion", description=word_completion, color=Color.dark_magenta()))
-            await ctx.send("\n")
 
         if guessed:
             await ctx.send(embed=Embed(description="Congrats, you guessed the word! You win! :partying_face: ", color=Color.dark_green()))
         else:
-            await ctx.send()
             await ctx.send(
                 embed=Embed(description=f"Sorry, you ran out of tries. The word was {word}. Maybe next time! :frowning: ", color=Color.red())
             )
