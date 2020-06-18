@@ -154,7 +154,7 @@ class Moderation(Cog):
                 f"""
                 **Reason**: {reason}
                 **User**: {member.mention} (`{member.id}`)
-                **Actor**: {ctx.author.mention} (`{ctx.author.id}`)
+                **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                 """
             ),
             color=discord.Color.orange(),
@@ -191,7 +191,7 @@ class Moderation(Cog):
                 f"""
                 **Reason**: {reason}
                 **User**: {member.mention} (`{member.id}`)
-                **Actor**: {ctx.author.mention} (`{ctx.author.id}`)
+                **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                 """
             ),
             color=discord.Color.orange(),
@@ -253,7 +253,7 @@ class Moderation(Cog):
                 description=textwrap.dedent(
                     f"""
                     **User**: {user.mention} (`{user.id}`)
-                    **Actor**: {ctx.author.mention} (`{ctx.author.id}`)
+                    **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                     """
                 ),
                 color=discord.Color.green(),
