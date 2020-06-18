@@ -77,8 +77,7 @@ class Converters(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            # TODO: `self.algos` doesn't seem to be defined
-            matches = "\n".join([supported for supported in self.algos if algo in supported][:10])
+            matches = "\n".join([supported for supported in self.hash_algos if algo in supported][:10])
             message = f"`{algorithm}` not available."
             if matches:
                 message += f" Did you mean:\n{matches}"
