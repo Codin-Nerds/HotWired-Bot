@@ -351,34 +351,33 @@ class Moderation(Cog):
         dm_embed.set_footer(text=f"Server: {ctx.guild.name}", icon_url=ctx.guild.icon_url)
         await member.send(embed=dm_embed)
 
-    async def _basic_cleanup_strategy(self, ctx: Context, search: int) -> dict:
+    async def _basic_cleanup_strategy(self, ctx: Context, amount: int) -> dict:
         count = 0
-        async for msg in ctx.history(limit=search, before=ctx.message):
+        async for msg in ctx.history(limit=amount, before=ctx.message):
             if msg.author == ctx.me:
                 await msg.delete()
                 count += 1
-        return {"Bot": count}
+        return {ctx.me: count}
 
-    async def _complex_cleanup_strategy(self, ctx: Context, search: int) -> Counter:
+    async def _complex_cleanup_strategy(self, ctx: Context, amount: int) -> Counter:
         prefixes = tuple(await self.bot.get_prefix(ctx.message))
 
         def check(bot: Bot) -> bool:
             return bot.author == ctx.me or bot.content.startswith(prefixes)
 
-        deleted = await ctx.channel.purge(limit=search, check=check, before=ctx.message)
+        deleted = await ctx.channel.purge(limit=amount, check=check, before=ctx.message)
         return Counter(m.author for m in deleted)
 
     @command()
     @has_permissions(manage_messages=True)
-    async def cleanup(self, ctx: Context, search: int = 100) -> None:
+    async def cleanup(self, ctx: Context, amount: int = 100) -> None:
         """Cleans up the bots messages from the channel."""
-
         strategy = self._basic_cleanup_strategy
 
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             strategy = self._complex_cleanup_strategy
 
-        spammers = await strategy(ctx, search)
+        spammers = await strategy(ctx, amount)
         deleted = sum(spammers.values())
 
         if deleted:
