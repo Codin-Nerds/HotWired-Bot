@@ -63,12 +63,8 @@ class Study(Cog):
                     await ctx.send(embed=embed)
                     return
 
-        try:
-            pages = UrbanDictionaryPages(ctx, data)
-            await pages.paginate()
-        except Exception as e:  # everything else is handled by the classes.
-            embed = discord.Embed(title="Unexpected Error Occured!", description=e, color=discord.Color.red())
-            await ctx.send(embed=embed)
+        pages = UrbanDictionaryPages(ctx, data)
+        await pages.paginate()
 
 
 def setup(bot: Bot) -> None:
