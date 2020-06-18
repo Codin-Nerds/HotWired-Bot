@@ -1,8 +1,10 @@
-import discord
 import re
-from discord.ext.commands import Context
-from cogs.utils.paginator import Pages
 import typing as t
+
+import discord
+from discord.ext.commands import Context
+
+from cogs.utils.paginator import Pages
 
 
 class UrbanDictionaryPages(Pages):
