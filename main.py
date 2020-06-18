@@ -96,6 +96,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.converters")
     bot.load_extension("cogs.custom")
+    bot.load_extension("cogs.emotes")
     bot.load_extension("cogs.events")
     bot.load_extension("cogs.fun")
     bot.load_extension("cogs.games")
