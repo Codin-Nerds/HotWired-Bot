@@ -44,10 +44,14 @@ class Emotes(Cog):
             "frankerfacez.com/emoticon/__**261802**__-4Town"
         )
         emote = textwrap.dedent(
-            "Send an animated emote\n\n"
-            "**How To:**\n"
-            f"`{constants.COMMAND_PREFIX}emote <emote_name>`\n\n"
-            "Supply emote names as a comma-separated list to send multiple emotes in a single message"
+            f"""
+            Send an animated emote
+            
+            **How To:**
+            `{constants.COMMAND_PREFIX}emote <emote_name>`
+            
+            Supply emote names as a comma-separated list to send multiple emotes in a single message
+            """
         )
         embed = discord.Embed(colour=discord.Colour.dark_gold())
         embed.add_field(name=f"{constants.COMMAND_PREFIX}add_emote", value=add_emote)
