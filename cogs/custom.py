@@ -1,39 +1,61 @@
+import asyncio
+import textwrap
 import time
 
-import discord
-from cogs.utils.embedHandler import error_embed, info, status_embed
-from discord.ext import commands
+from discord import Color, Embed, Forbidden, Member
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
 
 from .utils import constants
-import asyncio
+from .utils.embed_handler import status_embed
 
 
-class Custom(commands.Cog):
+class Custom(Cog):
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
 
-    def __init__(self, client):
-        self.client = client
+    @command()
+    async def hello(self, ctx: Context) -> None:
+        """Greet a User."""
+        await ctx.send("Hey there Buddy! How's it Going?")
 
-    @commands.command()
-    async def hello(self, ctx):
-        await ctx.send('Hey there Buddy!')
-
-    @commands.command()
-    @commands.has_permissions(manage_messages=True)
-    async def ping(self, ctx):
+    @command()
+    @has_permissions(manage_messages=True)
+    async def ping(self, ctx: Context) -> None:
         """Shows bot ping."""
         start = time.perf_counter()
-        message = await ctx.send(embed=info("Pong!", ctx.me))
+        embed = Embed(title="Info", description="Pong!", color=Color.blurple())
+        message = await ctx.send(embed=embed)
         end = time.perf_counter()
-        duration = (end - start) * 1000
-        await message.edit(embed=info(f":ping_pong: {duration:.2f}ms", ctx.me, "Pong!"))
+        duration = round((end - start) * 1000, 2)
+        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
+        await message.edit(embed=embed)
 
-    @commands.command()
-    async def members(self, ctx):
+    @command(aliases=("poll",))
+    async def vote(self, ctx: Context, title: str, *options: str) -> None:
+        """
+        Build a quick voting poll with matching reactions with the provided options.
+
+        A maximum of 20 options can be provided, as Discord supports a max of 20
+        reactions on a single message.
+        """
+        if len(options) < 2:
+            raise BadArgument("Please provide at least 2 options.")
+        if len(options) > 20:
+            raise BadArgument("I can only handle 20 options!")
+        codepoint_start = 127462  # represents "regional_indicator_a" unicode value
+        options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
+        embed = Embed(title=title, description="\n".join(options.values()))
+        message = await ctx.send(embed=embed)
+        for reaction in options:
+            await message.add_reaction(reaction)
+
+    @command()
+    async def members(self, ctx: Context) -> None:
         """Returns the number of members in a server."""
-        await ctx.send(embed=info(f"{ctx.guild.member_count}", ctx.me, "Member count"))
+        await ctx.send(embed=Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple()))
 
-    @commands.command()
-    async def status(self, ctx, member: discord.Member = None):
+    @command()
+    async def status(self, ctx: Context, member: Member = None) -> None:
         """Returns the status of a member."""
         if member is None:
             member = ctx.author
@@ -45,8 +67,8 @@ class Custom(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def pfp(self, ctx, member: discord.Member = None):
+    @command()
+    async def pfp(self, ctx, member: Member = None) -> None:
         """Displays the profile picture of a member."""
         if member is None:
             message, url = "Your avatar", ctx.author.avatar_url
@@ -55,22 +77,27 @@ class Custom(commands.Cog):
         else:
             message, url = f"{member} avatar", member.avatar_url
 
-        embed = info(message, ctx.me)
+        embed = Embed(description=message, color=Color.dark_blue())
         embed.set_image(url=url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["git"])
-    async def github(self, ctx):
+    @command(aliases=["git"])
+    async def github(self, ctx: Context) -> None:
         """GitHub repository"""
-        embed = info(f"[HotWired Github Repo.]({constants.github_repo_link})", ctx.me, "Github")
-        await ctx.send(embed=embed)
+        await ctx.send(
+            embed=Embed(
+                title="Github Repo",
+                description=f"[Click Here]({constants.github_repo_url}) to visit the Open Source Repo of HotWired",
+                color=Color.dark_blue(),
+            )
+        )
 
-    @commands.command()
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def countdown(self, ctx, start: int):
+    @command()
+    @cooldown(1, 10, BucketType.user)
+    async def countdown(self, ctx: Context, start: int) -> None:
         try:
             await ctx.message.delete()
-        except discord.Forbidden:
+        except Forbidden:
             pass
 
         message = await ctx.send(start)
@@ -82,38 +109,49 @@ class Custom(commands.Cog):
             await asyncio.sleep(1)
         await message.delete()
 
-    @commands.command(aliases=['asking'])
-    async def howtoask(self, ctx):
+    @command(aliases=["asking"])
+    async def howtoask(self, ctx: Context) -> None:
         """How to ask a Question."""
-        embed = info(
-            "**1 ❯** Pick the appropriate channel\n"
-            "**2 ❯** Post your question mentioning all the details\n"
-            "**3 ❯** Ping the appropriate helper role or someone for your question\n"
-            "**4 ❯** Patiently wait for a helper to respond\n",
-            ctx.me, "How To Ask a Question?"
+        embed = Embed(
+            title="How To Ask a Question?",
+            description=textwrap.dedent(
+                """
+                **1 ❯** Pick the appropriate channel
+                **2 ❯** Post your question mentioning all the details
+                **3 ❯** Ping the appropriate helper role or someone for your question
+                **4 ❯** Patiently wait for a helper to respond
+                """
+            ),
+            color=Color.blurple(),
         )
         img_url = "https://media.giphy.com/media/3ojqPGJAHWqC1VQPDk/giphy.gif"
         embed.set_image(url=img_url)
-        await ctx.send('**A S K I N G   A   Q U E S T I O N ❓**')
+        await ctx.send("**A S K I N G   A   Q U E S T I O N ❓**")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['thank', 'ty'])
-    async def thanks(self, ctx, member: discord.Member, *, reason=None):
+    @command(aliases=["thank", "ty"])
+    async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
-            embed = error_embed(f"{ctx.author.mention} **You Cannot Thank Yourself!**", "WARNING!")
+            embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
         else:
-            if reason is not None:
-                embed = info(f"{member.mention} was Thanked By {ctx.author.mention} \n**MESSAGE** : {reason}", ctx.me, "THANKS")
-                img_url = "https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif"
-                embed.set_image(url=img_url)
-            else:
-                embed = info(f"{member.mention} was Thanked By {ctx.author.mention} !", ctx.me, "THANKS")
-                img_url = "https://media.giphy.com/media/osjgQPWRx3cac/giphy.gif"
-                embed.set_image(url=img_url)
+            embed = Embed(
+                title="THANKS",
+                description=textwrap.dedent(
+                    f"""
+                    {member.mention} was thanked by {ctx.author.mention}!
+                    {'**MESSAGE**:' + reason if reason else ''}
+                    """
+                ),
+                color=Color.blurple(),
+            )
+            embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(Custom(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Custom(bot))
+
+
+# TODO: Custom is a bad name for a cog, this should be renamed

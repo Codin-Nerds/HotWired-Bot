@@ -4,6 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+flake8 = "*"
+pre-commit = "*"
+black = "==19.10b0"
+flake8-annotations = "*"
 
 [packages]
 psutil = "==5.7.0"
@@ -19,4 +23,13 @@ flake8 = "*"
 html2text = "*"
 
 [requires]
-python_version = "3.8.3"
+python_version = "3.8"
+
+[scripts]
+start="python -u ./main.py"
+lint = "pre-commit run --all-files"
+precommit = "pre-commit install"
+autoformat = "black ."
+
+[pipenv]
+allow_prereleases = true

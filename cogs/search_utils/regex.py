@@ -1,7 +1,7 @@
 from re import compile, I, X
 
 nono_re = compile(
-r"""tranny|
+    r"""tranny|
 faggot|
 fag\b|
 \bporn|
@@ -146,9 +146,5 @@ goatse|
 \bs\s*h\s*e\s*m\s*a\s*l\s*e\b|
 \bs\s*m\s*e\s*g\s*m\s*a\b|
 \d{6}""",
-I | X
+    I | X,
 )
-
-
-def setup(bot):
-    pass
