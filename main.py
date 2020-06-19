@@ -16,8 +16,8 @@ SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 extensions = ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.custom", "cogs.emotes",
-                "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
-                "cogs.support", "cogs.tools"]
+            "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
+            "cogs.support", "cogs.tools"]
 # "cogs.coding"
 
 
@@ -80,7 +80,7 @@ class Bot(commands.Bot):
         await guild.system_channel.send(embed=embed)
 
         await self.logchannel.send(f"The bot has been added to **{guild.name}** ,"
-                                    "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
+                                "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
 
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True, owner_id=688275913535914014)
