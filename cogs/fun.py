@@ -7,7 +7,7 @@ import os
 import discord
 from random import choice, randint
 from discord import Color, Embed, Message
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, tasks
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown
 
 from cogs.utils.errors import ServiceError
 
@@ -24,22 +24,18 @@ class Fun(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.catfact_update.start()
         self.user_agent = {"User-Agent": "HotWired"}
         self.dadjoke = {
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
 
-    @tasks.loop(hours=12)
-    async def catfact_update(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://cat-fact.herokuapp.com/facts") as response:
-                self.all_facts = await response.json()
-
     @command()
     async def catfact(self, ctx: Context) -> None:
         """Sends a random cat fact"""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://cat-fact.herokuapp.com/facts") as response:
+                self.all_facts = await response.json()
         fact = choice(self.all_facts["all"])
         await ctx.send(embed=Embed(title="Did you Know?", description=fact["text"], color=0x690E8))
 
