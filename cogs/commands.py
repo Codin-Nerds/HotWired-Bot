@@ -35,8 +35,10 @@ class Commands(Cog):
                     list_of_files.append(final_path.split("." + os.path.sep)[-1] + f" : {file_lines} lines")
 
         embed = Embed(colour=Color.dark_orange())
-        embed.add_field(name=f"{self.bot.user.name}'s structure", value="\n".join(list_of_files))
-        embed.set_footer(text=f"I am made of {total} lines of Python, spread across {file_amount} files !")
+        # embed.add_field(name=f"{self.bot.user.name}'s structure", value="\n".join(list_of_files))
+        # embed.set_footer(text=f"I am made of {total} lines of Python, spread across {file_amount} files !")
+        embed.add_field(name="**Code Data**", value=f"I am made of {total} lines of Python, spread across {file_amount} files !")
+        await ctx.send("```" + "\n".join(list_of_files) + "```")
         await ctx.send(embed=embed)
 
     @command(aliases=["server"])
