@@ -42,6 +42,13 @@ async def on_ready() -> None:
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
 
+@client.command()
+async def shutoff(ctx):
+    if ctx.author.id in constants.devs:
+        await ctx.message.add_reaction("☑️")
+        await client.logout()
+
+
 @client.event
 async def on_guild_join(guild: discord.Guild) -> None:
 
@@ -100,7 +107,6 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.moderation")
-    bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
     bot.load_extension("cogs.converters")
