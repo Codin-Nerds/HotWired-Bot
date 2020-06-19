@@ -1,5 +1,6 @@
 import os
 import textwrap
+from __future__ import annotations
 from itertools import cycle
 
 import discord
@@ -14,13 +15,13 @@ SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 extensions = ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.custom", "cogs.emotes",
-    "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
-    "cogs.support", "cogs.tools"]
+        "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
+        "cogs.support", "cogs.tools"]
 # "cogs.coding"
 
 
 class Bot(commands.Bot):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> Bot:
         super().__init__(*args, **kwargs)
         self.status = cycle([
             "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
@@ -48,7 +49,8 @@ class Bot(commands.Bot):
         await self.change_presence(activity=discord.Game(name=next(self.status)))
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
-        embed = discord.Embed(title="Greetings",
+        embed = discord.Embed(
+            title="Greetings",
             description=textwrap.dedent(
                 f"""
                 Thanks for adding HotWired in this server,
@@ -56,14 +58,16 @@ class Bot(commands.Bot):
                 The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
                 """), color=0x2F3136)
 
-        embed.add_field(name="General information",
+        embed.add_field(
+            name="General information",
             value=textwrap.dedent(
                 f"""
                 **► __Bot Id__**: 715545167649570977
                 **► __Developer__**: **{constants.creator}**
                 **► __Prefix__**: {PREFIX}
                 """))
-        embed.add_field(name="**Links**",
+        embed.add_field(
+            name="**Links**",
             value=textwrap.dedent(
                 f"""
                 **►** [Support Server]({SUPPORT_SERVER})
@@ -76,6 +80,7 @@ class Bot(commands.Bot):
 
         await self.logchannel.send(f"The bot has been added to **{guild.name}** ,"
             "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
+
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True, owner_id=688275913535914014)
 
