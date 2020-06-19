@@ -74,7 +74,8 @@ class Commands(Cog):
         embed.add_field(
             name="__**Server-related information:**__",
             value=textwrap.dedent(
-                f"""**Nickname:** {member.nick}
+                f"""
+                **Nickname:** {member.nick}
                 **Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}
                 **Top role:** {member.top_role.mention}
                 """

@@ -4,8 +4,8 @@ from discord import Color
 
 DEV_MODE = True
 
-owner_id = 688275913535914014
 log_channel = 704197974577643550
+owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
 
@@ -24,8 +24,6 @@ admin_invite_link = (
     "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=8"
     "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
 )
-
-SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 
 COMMAND_PREFIX = ">>"
 

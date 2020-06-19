@@ -1,11 +1,9 @@
 import traceback
-import textwrap
-from .utils import constants
 
 from discord import Color, Embed, Guild, Message
 from discord.ext.commands import Bot, Cog
-
-PREFIX = constants.COMMAND_PREFIX
+import textwrap
+from .utils import constants
 
 
 class Custom(Cog):
@@ -47,7 +45,7 @@ class Custom(Cog):
                     **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
                     Music commands and many more!.
                     The bot is still in dev so you can expect more commands and features.To get a list of commands ,
-                    please use **{PREFIX}help**
+                    please use **{constants.PREFIX}help**
                 """
             ),
             color=0x2F3136,
@@ -57,10 +55,10 @@ class Custom(Cog):
             name="General information",
             value=textwrap.dedent(
                 f"""
-                                  f**► __Bot Id__**: {self.client.user.id}
-                                  **► __Developer__**: **TheOriginalDude#0585**
-                                  **► __Prefix__**: {PREFIX}
-            """
+                                  **► __Bot Id__**: {self.client.user.id}
+                                  **► __Developer__**: **{constants.creator}**
+                                  **► __Prefix__**: {constants.PREFIX}
+                """
             ),
         )
         embed.add_field(
@@ -69,7 +67,7 @@ class Custom(Cog):
                 f"""
                                   **►** [Support Server]({constants.discord_server})
                                   **►** [Invite link]({constants.invite_link})
-            """
+                """
             ),
         )
 
