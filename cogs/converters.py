@@ -11,7 +11,8 @@ class Converters(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
+        self.hash_algos = sorted(
+            [h for h in hashlib.algorithms_available if h.islower()])
 
     @command(name="ascii")
     async def _ascii(self, ctx: Context, *, text: str) -> None:
@@ -77,7 +78,8 @@ class Converters(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            matches = "\n".join([supported for supported in self.hash_algos if algo in supported][:10])
+            matches = "\n".join(
+                [supported for supported in self.hash_algos if algo in supported][:10])
             message = f"`{algorithm}` not available."
             if matches:
                 message += f" Did you mean:\n{matches}"
