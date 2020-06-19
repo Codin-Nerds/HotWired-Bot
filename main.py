@@ -33,6 +33,7 @@ class Bot(commands.Bot):
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
+            self.change_status.start()
             self.fist_on_ready = False
             self.hw = self.get_user(715545167649570977)
             self.log_channel = self.get_channel(704197974577643550)
@@ -45,10 +46,6 @@ class Bot(commands.Bot):
     @tasks.loop(hours = 3)
     async def change_status(self) -> None:
         await self.change_presence(activity = discord.Game(name = next(self.status)))
-
-    @change_status.before_loop
-    async def wait_ready(self) -> None:
-        await self.wait_until_ready()
 
     async def on_guild_join(self, guild : discord.Guild) -> None:
         embed = discord.Embed(title = "Greetings",
@@ -76,7 +73,7 @@ class Bot(commands.Bot):
 
         await self.logchannel.send(f"The bot has been added to **{guild.name}** , \nWe've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
 
-bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
+bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive = True, owner_id = 688275913535914014)
 
 if __name__ == "__main__":
     bot.run(TOKEN)
