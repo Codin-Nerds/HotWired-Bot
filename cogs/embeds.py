@@ -293,7 +293,20 @@ class Embeds(Cog):
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
 
     # endregion
-    # region: sending and displaying embed
+    # region: json
+
+    @embed_group.command(aliases=["json_load", "from_json", "json"])
+    async def load(self, ctx: Context, *, json_code: str) -> None:
+        """Generate Embed from given JSON code"""
+        embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
+        if embed_parser is not False:
+            self.embeds[ctx.author] = embed_parser.make_embed()
+            await ctx.send("Embed updated accordingly to provided JSON")
+        else:
+            await ctx.send("Invalid embed JSON")
+
+    # endregion
+    # region: showing, sending embed
 
     async def send_embed(self, author: Member, channel: TextChannel) -> bool:
         try:
@@ -331,19 +344,6 @@ class Embeds(Cog):
             await self.send_embed(ctx.author, channel)
         else:
             await ctx.send("Sorry, you can't send the embed here. You're missing **Manage Messages** permission")
-
-    # endregion
-    # region: json
-
-    @embed_group.command(aliases=["json_load", "from_json", "json"])
-    async def load(self, ctx: Context, *, json_code: str) -> None:
-        """Generate Embed from given JSON code"""
-        embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
-        if embed_parser is not False:
-            self.embeds[ctx.author] = embed_parser.make_embed()
-            await ctx.send("Embed updated accordingly to provided JSON")
-        else:
-            await ctx.send("Invalid embed JSON")
 
     # endregion
 
