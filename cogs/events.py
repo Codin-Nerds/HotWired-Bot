@@ -56,10 +56,10 @@ class Custom(Cog):
             name="General information",
             value=textwrap.dedent(
                 f"""
-                                  f**► __Bot Id__**: {self.client.user.id}
-                                  **► __Developer__**: **TheOriginalDude#0585**
-                                  **► __Prefix__**: {PREFIX}
-            """
+                **► __Bot Id__**: {self.client.user.id}
+                **► __Developer__**: **{constants.creator}**
+                **► __Prefix__**: {PREFIX}
+                """
             ),
         )
         embed.add_field(
