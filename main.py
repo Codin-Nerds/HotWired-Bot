@@ -15,22 +15,37 @@ PREFIX = constants.COMMAND_PREFIX
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
-extensions = ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.custom", "cogs.emotes",
-              "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
-              "cogs.support", "cogs.tools"]
+extensions = [
+    "cogs.codesandbox",
+    "cogs.commands",
+    "cogs.converters",
+    "cogs.custom",
+    "cogs.emotes",
+    "cogs.events",
+    "cogs.fun",
+    "cogs.games",
+    "cogs.infog",
+    "cogs.moderation",
+    "cogs.study",
+    "cogs.sudo",
+    "cogs.support",
+    "cogs.tools",
+]
 # "cogs.coding"
 
 
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs) -> Bot:
         super().__init__(*args, **kwargs)
-        self.status = cycle([
-            "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-            "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-            f"Ping me using {PREFIX}help",
-            "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
-            "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
-        ])
+        self.status = cycle(
+            [
+                "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+                "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+                f"Ping me using {PREFIX}help",
+                "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+                "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+            ]
+        )
         self.first_on_ready = True
 
     async def on_ready(self) -> None:
@@ -57,7 +72,10 @@ class Bot(commands.Bot):
                 Thanks for adding HotWired in this server,
                 **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
                 The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
-                """), color=0x2F3136)
+                """
+                ),
+                color=0x2F3136,
+                )
 
         embed.add_field(
             name="General information",
@@ -66,14 +84,18 @@ class Bot(commands.Bot):
                 **► __Bot Id__**: 715545167649570977
                 **► __Developer__**: **{constants.creator}**
                 **► __Prefix__**: {PREFIX}
-                """))
+                """
+            ),
+        )
         embed.add_field(
             name="**Links**",
             value=textwrap.dedent(
                 f"""
                 **►** [Support Server]({SUPPORT_SERVER})
                 **►** [Invite link]({INVITE})
-                """))
+                """
+            ),
+        )
 
         embed.set_thumbnail(url=self.hw.avatar_url)
 
@@ -81,7 +103,8 @@ class Bot(commands.Bot):
 
         await self.logchannel.send(
             f"The bot has been added to **{guild.name}** ,"
-            "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: ")
+            "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
+        )
 
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True, owner_id=688275913535914014)
