@@ -62,30 +62,59 @@ class JsonEmbedParser:
 
     @staticmethod
     def fill_empty_values(json_dct: dict) -> defaultdict:
-        defaultdict
+        """Set all values to Embed.Empty to avoid keyerrors."""
+        new_json = defaultdict(lambda: Embed.Empty, json_dct)
+
+        # Some of the values needs to be subscriptable, set those explicitly here
+        subscriptable = ["image", "thumbnail", "author", "footer"]
+        for param in subscriptable:
+            try:
+                new_json["embed"][param] = defaultdict(lambda: Embed.Empty, new_json["embed"][param])
+            except KeyError:
+                new_json["embed"][param] = defaultdict(lambda: Embed.Empty)
+
+        try:
+            for field in new_json["embed"]["fields"]:
+                field = defaultdict(lambda: Embed.Empty, field)
+        except KeyError:
+            new_json["embed"]["fields"] = []
+
+        print(new_json)
+        return new_json
 
     def make_embed(self) -> t.Tuple[str, Embed]:
-        jsonc = self.json
+        jsonc = self.json["embed"]
 
-        content = jsonc["content"]
+        content = self.json["content"]
 
         embed = Embed(
             title=jsonc["title"],
             description=jsonc["description"],
-            colour=jsonc["color"] if jsonc["color"] else 0,
+            colour=jsonc["color"],
             url=jsonc["url"],
+            # TODO: Fix timestamp
             # timestamp=datetime.datetime.utcformattimestamp()
         )
 
-        embed.set_image(url=jsonc["image"]["url"])
-        embed.set_thumbnail(url=jsonc["thumbnail"]["url"])
-        embed.set_author(name=jsonc["author"]["name"], url=jsonc["author"]["url"], icon_url=jsonc["author"]["icon_url"])
+        # Setting URLs with no value would result in HTTPException on send
+        if jsonc["image"]["url"] is not Embed.Empty:
+            embed.set_image(url=jsonc["image"]["url"])
+        if jsonc["thumbnail"]["url"] is not Embed.Empty:
+            embed.set_thumbnail(url=jsonc["thumbnail"]["url"])
+        # Author's name can't be Embed.Empty (it will result in string "Embed.Empty" as the name)
+        if jsonc["author"]["name"] is not Embed.Empty:
+            embed.set_author(name=jsonc["author"]["name"], url=jsonc["author"]["url"], icon_url=jsonc["author"]["icon_url"])
+
         embed.set_footer(text=jsonc["footer"]["text"], icon_url=jsonc["footer"]["icon_url"])
 
         for field in jsonc["fields"]:
             embed.add_field(name=field["name"], value=field["value"])
 
         return (content, embed)
+
+    async def send_embed(self, ctx: Context) -> None:
+        content, embed = self.make_embed()
+        await ctx.send(content, embed=embed)
 
 
 class Embeds(Cog):
@@ -287,12 +316,12 @@ class Embeds(Cog):
     # endregion
     # region: json
 
-    @embed_group.command(alias=["json_load", "from_json", "json"])
+    @embed_group.command(aliases=["json_load", "from_json", "json"])
     async def load(self, ctx: Context, *, json_code: str) -> None:
         """Generate Embed from given JSON code"""
         embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
         if embed_parser is not False:
-            await ctx.send(embed=embed_parser.make_embed())
+            await embed_parser.send_embed(ctx)
 
     # endregion
 
