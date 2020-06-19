@@ -66,9 +66,9 @@ class Custom(Cog):
             name="**Links**",
             value=textwrap.dedent(
                 f"""
-                                  **►** [Support Server]({constants.discord_server})
-                                  **►** [Invite link]({constants.invite_link})
-            """
+                **►** [Support Server]({constants.discord_server})
+                **►** [Invite link]({constants.invite_link})
+                """
             ),
         )
 
