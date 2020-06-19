@@ -31,6 +31,7 @@ COMMAND_PREFIX = ">>"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
+# Magic 8-Ball responses
 NEGATIVE_REPLIES = [
     "Noooooo!!",
     "Nope.",
