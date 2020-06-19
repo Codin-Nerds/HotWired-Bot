@@ -39,13 +39,14 @@ async def change_status() -> None:
 @client.event
 async def on_ready() -> None:
     print("Bot is Ready.")
-    print(f"Logged in as: {client.user.name} : {client.user.id}")
+    print(f"Logged in as: {client.user.name} : {client.user.id}\n" f"Run {PREFIX}shutoff to close all the processes and exit/logout.")
 
 
 @client.command()
 async def shutoff(ctx):
     if ctx.author.id in constants.devs:
         await ctx.message.add_reaction("☑️")
+        print("Bot logged off")
         await client.logout()
 
 
