@@ -4,33 +4,7 @@ from assets.words import word_list
 
 from discord import Color, Embed, Message
 from discord.ext.commands import Bot, Cog, Context, command
-
-POSITIVE_BALL8_RESPONSES = [
-    "Yes - definitely.",
-    "You may rely on it.",
-    "As I see it, yes.",
-    "Most likely.",
-    "Outlook good.",
-    "Yes.",
-    "Signs point to yes.",
-    "It is certain.",
-    "It is decidedly so.",
-    "Without a doubt.",
-]
-NEGATIVE_BALL8_RESPONSES = [
-    "Don't count on it.",
-    "My reply is no.",
-    "My sources say no.",
-    "Outlook not so good.",
-    "Very doubtful.",
-]
-UNSURE_BALL8_RESPONSES = [
-    "Reply hazy, try again.",
-    "Ask again later.",
-    "Better not tell you now.",
-    "Cannot predict now.",
-    "Concentrate and ask again.",
-]
+from .utils import constants
 
 
 class Games(Cog):
@@ -54,11 +28,11 @@ class Games(Cog):
         reply_type = random.randint(1, 3)
 
         if reply_type == 1:
-            answer = random.choice(POSITIVE_BALL8_RESPONSES)
+            answer = random.choice(constants.POSITIVE_REPLIES)
         elif reply_type == 2:
-            answer = random.choice(NEGATIVE_BALL8_RESPONSES)
+            answer = random.choice(constants.NEGATIVE_REPLIES)
         elif reply_type == 3:
-            answer = random.choice(UNSURE_BALL8_RESPONSES)
+            answer = random.choice(constants.ERROR_REPLIES)
 
         embed = Embed(title="Magic 8-ball", color=Color.blurple())
         embed.add_field(name="Question", value=question)

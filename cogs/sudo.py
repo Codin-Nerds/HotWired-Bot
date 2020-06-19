@@ -2,6 +2,8 @@ import datetime
 import platform
 import textwrap
 import typing as t
+import traceback
+import os
 
 import GPUtil
 import psutil
@@ -60,6 +62,36 @@ class Sudo(Cog):
             await ctx.message.add_reaction("✅")
             print("Shutting Down!")
             await self.client.logout()
+
+    @sudo.command()
+    @check(is_owner)
+    async def load(self, ctx: Context, *, extension: str) -> None:
+        """Loads a cog."""
+        try:
+            self.bot.load_extension(f"cogs.{extension}")
+        except Exception:
+            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
+        else:
+            await ctx.send("\N{SQUARED OK}")
+
+    @sudo.command(name="reload")
+    @check(is_owner)
+    async def _reload(self, ctx: Context, *, extension: str) -> None:
+        """Reloads a module."""
+        try:
+            self.bot.unload_extension(f"cogs.{extension}")
+            self.bot.load_extension(f"cogs.{extension}")
+        except Exception:
+            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
+        else:
+            await ctx.send("\N{SQUARED OK}")
+
+    @sudo.command()
+    @check(is_owner)
+    async def restart(self, ctx: Context) -> None:
+        """Restart The bot."""
+        await self.client.logout()
+        os.system("python main.py")
 
     @sudo.command()
     async def stats(self, ctx: Context) -> None:
