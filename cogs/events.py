@@ -43,12 +43,12 @@ class Custom(Cog):
             title="Greetings",
             description=(
                 f"""
-                Thanks for adding HotWired in this server,
-                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
-                Music commands and many more!.
-                The bot is still in dev so you can expect more commands and features.To get a list of commands ,
-                please use **{PREFIX}help**
-            """
+                    Thanks for adding HotWired in this server,
+                    **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
+                    Music commands and many more!.
+                    The bot is still in dev so you can expect more commands and features.To get a list of commands ,
+                    please use **{PREFIX}help**
+                """
             ),
             color=0x2F3136,
         )
