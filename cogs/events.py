@@ -1,9 +1,12 @@
 import traceback
+import textwrap
 
 from discord import Color, Embed, Guild, Message
 from discord.ext.commands import Bot, Cog
-import textwrap
+
 from .utils import constants
+
+PREFIX = constants.COMMAND_PREFIX
 
 
 class Custom(Cog):
@@ -33,19 +36,17 @@ class Custom(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
-
-        hw = self.client.user
         logchannel = self.client.get_channel(constants.log_channel)
 
         embed = Embed(
             title="Greetings",
             description=(
                 f"""
-                    Thanks for adding HotWired in this server,
-                    **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
-                    Music commands and many more!.
-                    The bot is still in dev so you can expect more commands and features.To get a list of commands ,
-                    please use **{constants.PREFIX}help**
+                Thanks for adding HotWired in this server,
+                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
+                Music commands and many more!.
+                The bot is still in dev so you can expect more commands and features. To get a list of commands ,
+                Use **{PREFIX}help**
                 """
             ),
             color=0x2F3136,
@@ -55,9 +56,9 @@ class Custom(Cog):
             name="General information",
             value=textwrap.dedent(
                 f"""
-                                  **► __Bot Id__**: {self.client.user.id}
-                                  **► __Developer__**: **{constants.creator}**
-                                  **► __Prefix__**: {constants.PREFIX}
+                    **► __Bot Id__**: {self.client.user.id}
+                    **► __Developer__**: **{constants.creator}**
+                    **► __Prefix__**: {PREFIX}
                 """
             ),
         )
@@ -65,14 +66,13 @@ class Custom(Cog):
             name="**Links**",
             value=textwrap.dedent(
                 f"""
-                                  **►** [Support Server]({constants.discord_server})
-                                  **►** [Invite link]({constants.invite_link})
+                    **►** [Support Server]({constants.discord_server})
+                    **►** [Invite link]({constants.invite_link})
                 """
             ),
         )
 
-        embed.set_thumbnail(url=hw.avatar_url)
-
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
         try:
             await guild.system_channel.send(embed=embed)
         except Exception:

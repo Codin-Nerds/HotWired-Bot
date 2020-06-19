@@ -25,10 +25,13 @@ admin_invite_link = (
     "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
 )
 
+SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
+
 COMMAND_PREFIX = ">>"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
+# Magic 8-Ball responses
 NEGATIVE_REPLIES = [
     "Noooooo!!",
     "Nope.",
