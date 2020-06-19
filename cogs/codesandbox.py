@@ -35,17 +35,17 @@ class CodeSandbox(Cog):
         buffer = io.StringIO()
 
         # function placeholder
-        to_compile = f'async def foo():\n{textwrap.indent(code, " ")}'
+        to_compile = f'async def codefn():\n{textwrap.indent(code, " ")}'
 
         try:
             exec(to_compile, env)  # TODO: Very unsafe
         except Exception as e:
             return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n``")
 
-        foo = env["foo"]
+        codefn = env["codefn"]
         try:
             with redirect_stdout(buffer):
-                ret = await foo()
+                ret = await codefn()
         except Exception:
             value = buffer.getvalue()
             await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
