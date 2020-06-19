@@ -8,10 +8,7 @@ def owner(ctx: Context) -> bool:
 
 
 async def has_greater_roles(ctx: Context, member: Member) -> bool:
-    if member.top_role >= ctx.author.top_role:
-        return True
-    else:
-        return False
+    return member.top_role >= ctx.author.top_role
 
 
 def cog_check(ctx: Context) -> bool:
