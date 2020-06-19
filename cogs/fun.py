@@ -1,15 +1,22 @@
 import random
 import textwrap
 import urllib
-
+import typing as t
 import aiohttp
+import os
 import discord
-from discord import Color, Embed
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown
+from random import choice, randint
+from discord import Color, Embed, Message
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, tasks
 
 from cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
+
+
+file = open("assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
+excuses = file.readlines()
+file.close()
 
 
 class Fun(Cog):
@@ -17,11 +24,51 @@ class Fun(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.catfact_update.start()
         self.user_agent = {"User-Agent": "HotWired"}
         self.dadjoke = {
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
+
+    @tasks.loop(hours=12)
+    async def catfact_update(self) -> None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://cat-fact.herokuapp.com/facts") as response:
+                self.all_facts = await response.json()
+
+    @command()
+    async def catfact(self, ctx: Context) -> None:
+        """Sends a random cat fact"""
+        fact = choice(self.all_facts["all"])
+        await ctx.send(embed=Embed(title="Did you Know?", description=fact["text"], color=0x690E8))
+
+    @command()
+    async def chuck(self, ctx: Context) -> t.Union[None, Message]:
+        """Get a random Chuck Norris joke"""
+        if randint(0, 1):
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://api.chucknorris.io/jokes/random") as r:
+                    joke = await r.json()
+                    return await ctx.send(joke["value"])
+        if ctx.guild:
+            if not ctx.channel.is_nsfw():
+                async with aiohttp.ClientSession() as session:
+                    async with session.get("http://api.icndb.com/jokes/random?exclude=[explicit]") as r:
+                        joke = await r.json()
+                        return await ctx.send(joke["value"]["joke"])
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get("http://api.icndb.com/jokes/random") as r:
+                joke = await r.json()
+                await ctx.send(joke["value"]["joke"].replace("&quote", '"'))
+
+    @command()
+    async def dong(self, ctx: Context, dick: discord.Member = None) -> None:
+        """How long is this person's dong ?"""
+        if not dick:
+            dick = ctx.author
+        await ctx.send(f"{dick.mention}'s magnum dong is this long : 8{'=' * randint(0, 15)}>")
 
     @command()
     async def cat(self, ctx: Context) -> None:
@@ -100,6 +147,16 @@ class Fun(Cog):
             await ctx.send(embed=httpcat_em)
         else:
             raise BadArgument("Specified HTTP code invalid")
+
+    @command()
+    async def fox(self, ctx: Context) -> None:
+        """Sends a random fox picture"""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://randomfox.ca/floof/") as response:
+                picture = await response.json()
+                embed = discord.Embed(title="Fox", color=0x690E8)
+                embed.set_image(url=picture["image"])
+                await ctx.send(embed=embed)
 
     @command()
     async def dog(self, ctx: Context) -> None:

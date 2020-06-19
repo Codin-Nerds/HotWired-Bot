@@ -74,7 +74,7 @@ class Custom(Cog):
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
-                description=f"[Click Here]({constants.github_repo_url}) to visit the Open Source Repo of HotWired",
+                description=f"[Click Here]({constants.github_repo_link}) to visit the Open Source Repo of HotWired",
                 color=Color.dark_blue(),
             )
         )

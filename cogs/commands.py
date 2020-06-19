@@ -1,6 +1,9 @@
 import datetime
 import textwrap
 import typing as t
+import codecs
+import os
+import pathlib
 
 from discord import Color, Embed, Member
 from discord.ext.commands import Bot, Cog, Context, command
@@ -9,6 +12,32 @@ from discord.ext.commands import Bot, Cog, Context, command
 class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @command(ignore_extra=True)
+    async def code(self, ctx: Context) -> None:
+        """Return Stats about bot's code."""
+        total = 0
+        file_amount = 0
+        list_of_files = []
+        for p, subdirs, files in os.walk("."):
+            for name in files:
+                if name.endswith(".py"):
+                    file_lines = 0
+                    file_amount += 1
+                    with codecs.open("./" + str(pathlib.PurePath(p, name)), "r", "utf-8") as f:
+                        for i, l in enumerate(f):
+                            if l.strip().startswith("#") or len(l.strip()) == 0:  # skip commented lines.
+                                pass
+                            else:
+                                total += 1
+                                file_lines += 1
+                    final_path = p + os.path.sep + name
+                    list_of_files.append(final_path.split("." + os.path.sep)[-1] + f" : {file_lines} lines")
+
+        embed = Embed(colour=Color.dark_orange())
+        embed.add_field(name=f"{self.bot.user.name}'s structure", value="\n".join(list_of_files))
+        embed.set_footer(text=f"I am made of {total} lines of Python, spread across {file_amount} files !")
+        await ctx.send(embed=embed)
 
     @command(aliases=["server"])
     async def serverinfo(self, ctx: Context) -> None:
