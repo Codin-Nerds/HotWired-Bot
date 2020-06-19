@@ -4,9 +4,7 @@ from constants import owner_ids
 
 
 def owner(ctx: Context) -> bool:
-    if ctx.author.id not in owner_ids:
-        return False
-    return True
+    return ctx.author.id in owner_ids
 
 
 async def has_greater_roles(ctx: Context, member: Member) -> bool:
