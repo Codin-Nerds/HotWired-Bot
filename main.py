@@ -31,7 +31,7 @@ class Bot(commands.Bot):
         ])
         self.first_on_ready = True
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         if self.first_on_ready:
             self.fist_on_ready = False
             self.hw = self.get_user(715545167649570977)
@@ -43,14 +43,14 @@ class Bot(commands.Bot):
             await self.log_channel.send("I'm ready (again)")
 
     @tasks.loop(hours = 3)
-    async def change_status(self):
+    async def change_status(self) -> None:
         await self.change_presence(activity = discord.Game(name = next(self.status)))
 
     @change_status.before_loop
-    async def wait_ready(self):
-        awit self.wait_until_ready()
+    async def wait_ready(self) -> None:
+        await self.wait_until_ready()
 
-    async def on_guild_join(self, guild):
+    async def on_guild_join(self, guild : discord.Guild) -> None:
         embed = discord.Embed(title = "Greetings",
             description = textwrap.dedent(f"""
                 Thanks for adding HotWired in this server,
