@@ -8,6 +8,13 @@ from discord.errors import HTTPException
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
 
 
+class EmbedData(t.NamedTuple):
+    """Data for user embeds."""
+
+    content: str
+    embed: Embed
+
+
 class JsonEmbedParser:
     def __init__(self, ctx: Context, json_dict: dict) -> None:
         self.ctx = ctx
@@ -63,38 +70,50 @@ class JsonEmbedParser:
     @staticmethod
     def fill_empty_values(json_dct: dict) -> defaultdict:
         """Set all values to Embed.Empty to avoid keyerrors."""
-        new_json = defaultdict(lambda: Embed.Empty, json_dct)
+        try:
+            new_json = defaultdict(lambda: Embed.Empty, json_dct["embed"])
+        except KeyError:
+            new_json = defaultdict(lambda: Embed.Empty, json_dct)
 
         # Some of the values needs to be subscriptable, set those explicitly here
         subscriptable = ["image", "thumbnail", "author", "footer"]
         for param in subscriptable:
             try:
-                new_json["embed"][param] = defaultdict(lambda: Embed.Empty, new_json["embed"][param])
-            except KeyError:
-                new_json["embed"][param] = defaultdict(lambda: Embed.Empty)
+                new_json[param] = defaultdict(lambda: Embed.Empty, new_json[param])
+            except TypeError:
+                new_json[param] = defaultdict(lambda: Embed.Empty)
 
         try:
-            for field in new_json["embed"]["fields"]:
+            for index, field in enumerate(new_json["fields"]):
                 field = defaultdict(lambda: Embed.Empty, field)
+                if field["inline"] is Embed.Empty:
+                    field["inline"] = False
+                new_json["fields"][index] = field
+        except TypeError:
+            new_json["fields"] = []
+
+        try:
+            content = json_dct["content"]
         except KeyError:
-            new_json["embed"]["fields"] = []
+            try:
+                content = new_json["content"]
+            except KeyError:
+                content = ""
 
-        print(new_json)
-        return new_json
+        return {"content": content, "embed": new_json}
 
-    def make_embed(self) -> t.Tuple[str, Embed]:
+    def make_embed(self) -> EmbedData:
         jsonc = self.json["embed"]
 
         content = self.json["content"]
 
-        embed = Embed(
-            title=jsonc["title"],
-            description=jsonc["description"],
-            colour=jsonc["color"],
-            url=jsonc["url"],
-            # TODO: Fix timestamp
-            # timestamp=datetime.datetime.utcformattimestamp()
-        )
+        embed = Embed()
+        embed.title = jsonc["title"]
+        embed.description = jsonc["description"]
+        embed.colour = jsonc["color"]
+        embed.url = jsonc["url"]
+        # TODO: Fix timestamp
+        # embed.timestamp = datetime.datetime.utcformattimestamp()
 
         # Setting URLs with no value would result in HTTPException on send
         if jsonc["image"]["url"] is not Embed.Empty:
@@ -108,13 +127,9 @@ class JsonEmbedParser:
         embed.set_footer(text=jsonc["footer"]["text"], icon_url=jsonc["footer"]["icon_url"])
 
         for field in jsonc["fields"]:
-            embed.add_field(name=field["name"], value=field["value"])
+            embed.add_field(name=field["name"], value=field["value"], inline=field["inline"])
 
-        return (content, embed)
-
-    async def send_embed(self, ctx: Context) -> None:
-        content, embed = self.make_embed()
-        await ctx.send(content, embed=embed)
+        return EmbedData(content, embed)
 
 
 class Embeds(Cog):
@@ -123,7 +138,7 @@ class Embeds(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         # Provide an empty embed for every member (key)
-        self.embeds = defaultdict(lambda: Embed())
+        self.embeds = defaultdict(lambda: EmbedData("", Embed()))
         # Provide a default ID of -1 for every member (key) for embed fields
         # setting it to -1 is necessary because adding embed only increments this
         # default value of -1 ensures start on 0
@@ -139,31 +154,31 @@ class Embeds(Cog):
     @embed_group.command(aliases=["set_title"])
     async def title(self, ctx: Context, *, title: str) -> None:
         """Set Title for the Embed."""
-        self.embeds[ctx.author].title = title
+        self.embeds[ctx.author].embed.title = title
         await ctx.send("Embeds title updated.")
 
     @embed_group.command(aliases=["set_description"])
     async def description(self, ctx: Context, *, description: str) -> None:
         """Set Description for the Embed."""
-        self.embeds[ctx.author].description = description
+        self.embeds[ctx.author].embed.description = description
         await ctx.send("Embeds description updated.")
 
     @embed_group.command(aliases=["add_description"])
     async def append_description(self, ctx: Context, *, description: str) -> None:
         """Add text into Description of the Embed."""
-        self.embeds[ctx.author].description += description
+        self.embeds[ctx.author].embed.description += description
         await ctx.send("Embeds description appended.")
 
     @embed_group.command(aliases=["set_footer"])
     async def footer(self, ctx: Context, *, footer: str) -> None:
         """Set Footer for the Embed."""
-        self.embeds[ctx.author].set_footer(text=footer)
+        self.embeds[ctx.author].embed.set_footer(text=footer)
         await ctx.send("Embeds footer updated.")
 
     @embed_group.command(aliases=["set_image"])
     async def image(self, ctx: Context, url: str) -> None:
         """Set image for the Embed."""
-        self.embeds[ctx.author].set_image(url=url)
+        self.embeds[ctx.author].embed.set_image(url=url)
         await ctx.send("Embeds image updated.")
 
     @embed_group.command(aliases=["set_color"])
@@ -173,7 +188,7 @@ class Embeds(Cog):
 
         `color` can be HEX color code or some of the standard colors (red, blue, ...).
         """
-        self.embeds[ctx.author].colour = color
+        self.embeds[ctx.author].embed.colour = color
         await ctx.send("Embeds color updated.")
 
     # endregion
@@ -187,13 +202,15 @@ class Embeds(Cog):
     @author_group.command(name="name", aliases=["set_name"])
     async def author_name(self, ctx: Context, author_name: str) -> None:
         """Set authors name for the Embed."""
-        self.embeds[ctx.author].set_author(name=author_name, url=self.embeds[ctx.author].author.url, icon_url=self.embeds[ctx.author].author.icon_url)
+        embed = self.embeds[ctx.author].embed
+        embed.set_author(name=author_name, url=embed.author.url, icon_url=embed.author.icon_url)
         await ctx.send("Embeds author updated.")
 
     @author_group.command(name="url", aliases=["set_url"])
     async def author_url(self, ctx: Context, author_url: str) -> None:
         """Set authors URL for Embed."""
-        self.embeds[ctx.author].set_author(name=self.embeds[ctx.author].author.name, url=author_url, icon_url=self.embeds[ctx.author].author.icon_url)
+        embed = self.embeds[ctx.author].embed
+        embed.set_author(name=embed.author.name, url=author_url, icon_url=embed.author.icon_url)
         await ctx.send("Embeds author URL updated.")
 
     @author_group.command(name="icon", aliases=["set_icon"])
@@ -203,10 +220,12 @@ class Embeds(Cog):
 
         `author_icon` can either be URL to the image or you can mention a user to get his avatar
         """
-        if not isinstance(author_icon, str):
+        if isinstance(author_icon, Member):
             author_icon = author_icon.avatar_url_as(format="png")
 
-        self.embeds[ctx.author].set_author(name=self.embeds[ctx.author].author.name, url=self.embeds[ctx.author].author.url, icon_url=author_icon)
+        embed = self.embeds[ctx.author].embed
+
+        embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=author_icon)
         await ctx.send("Embeds author icon updated.")
 
     # endregion
@@ -219,7 +238,7 @@ class Embeds(Cog):
     @field_group.command(name="add")
     async def field_add(self, ctx: Context, *, title: t.Optional[str] = None) -> None:
         """Create new field in Embed."""
-        self.embeds[ctx.author].add_field(name=title, value="")
+        self.embeds[ctx.author].embed.add_field(name=title, value="")
         self.embed_fields[ctx.author] += 1
         await ctx.send(f"Embeds field **#{self.embed_fields[ctx.author]}** created")
 
@@ -227,7 +246,7 @@ class Embeds(Cog):
     async def field_remove(self, ctx: Context, ID: int) -> None:
         """Remove filed with specific `ID` from Embed."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
-            self.embeds[ctx.author].remove_field(ID)
+            self.embeds[ctx.author].embed.remove_field(ID)
             self.embed_fields[ctx.author] -= 1
             await ctx.send(f"Embeds field **#{ID}** has been removed.")
         else:
@@ -237,7 +256,8 @@ class Embeds(Cog):
     async def field_description(self, ctx: Context, ID: int, *, description: str) -> None:
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
-            self.embeds[ctx.author].set_field_at(ID, name=self.embeds[ctx.author].fields[ID].name, value=description)
+            embed = self.embeds[ctx.author].embed
+            embed.set_field_at(ID, name=embed.fields[ID].name, value=description)
             await ctx.send(f"Embeds field **#{ID}** description updated.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -246,9 +266,8 @@ class Embeds(Cog):
     async def field_append_description(self, ctx: Context, ID: int, *, description: str) -> None:
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
-            self.embeds[ctx.author].set_field_at(
-                ID, name=self.embeds[ctx.author].fields[ID].name, value=self.embeds[ctx.author].fields[ID].value + description
-            )
+            embed = self.embeds[ctx.author].embed
+            embed.set_field_at(ID, name=embed.fields[ID].name, value=embed.fields[ID].value + description)
             await ctx.send(f"Embeds field **#{ID}** description appended.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -257,7 +276,8 @@ class Embeds(Cog):
     async def field_title(self, ctx: Context, ID: int, *, title: str) -> None:
         """Set a title for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
-            self.embeds[ctx.author].set_field_at(ID, name=title, value=self.embeds[ctx.author].fields[ID].value)
+            embed = self.embeds[ctx.author].embed
+            embed.set_field_at(ID, name=title, value=embed.fields[ID].value)
             await ctx.send(f"Embeds field **#{ID}** description updated.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -266,9 +286,8 @@ class Embeds(Cog):
     async def field_inline(self, ctx: Context, ID: int, inline_status: bool) -> None:
         """Choose if embed field #`ID` should be inline or not"""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
-            self.embeds[ctx.author].set_field_at(
-                ID, name=self.embeds[ctx.author].fields[ID].name, value=self.embeds[ctx.author].fields[ID].value, inline=inline_status
-            )
+            embed = self.embeds[ctx.author].embed
+            embed.set_field_at(ID, name=embed.fields[ID].name, value=embed.fields[ID].value, inline=inline_status)
             await ctx.send(f"Embeds field **#{ID}** is now {'' if inline_status else 'not'} inline")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -278,7 +297,7 @@ class Embeds(Cog):
 
     async def send_embed(self, author: Member, channel: TextChannel) -> bool:
         try:
-            await channel.send(embed=self.embeds[author])
+            await channel.send(self.embeds[author].content, embed=self.embeds[author].embed)
             return True
         except HTTPException as e:
             embed = Embed(
@@ -296,7 +315,7 @@ class Embeds(Cog):
             await channel.send(f"Sorry {author.mention}", embed=embed)
             return False
 
-    @embed_group.command()
+    @embed_group.command(aliases=["show"])
     async def preview(self, ctx: Context) -> None:
         """Take a look at the Embed before you post it"""
         await self.send_embed(ctx.author, ctx.channel)
@@ -321,7 +340,10 @@ class Embeds(Cog):
         """Generate Embed from given JSON code"""
         embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
         if embed_parser is not False:
-            await embed_parser.send_embed(ctx)
+            self.embeds[ctx.author] = embed_parser.make_embed()
+            await ctx.send("Embed updated accordingly to provided JSON")
+        else:
+            await ctx.send("Invalid embed JSON")
 
     # endregion
 
