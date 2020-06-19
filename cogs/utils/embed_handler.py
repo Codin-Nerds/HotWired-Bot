@@ -1,6 +1,6 @@
 from discord import Color, Embed, Member, Status
 
-from bot.cogs.utils.members import get_member_activity, get_member_roles_as_mentions, get_member_status
+from cogs.utils.members import get_member_activity, get_member_roles_as_mentions, get_member_status
 
 
 def status_embed(member: Member, *, description: str = "") -> Embed:

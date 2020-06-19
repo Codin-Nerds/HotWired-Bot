@@ -61,7 +61,7 @@ class Custom(Cog):
         if member is None:
             member = ctx.author
 
-        if member.id == constants.owner_id:
+        if member.id == constants.owner_ids:
             embed = status_embed(member, description="Not telling")
         else:
             embed = status_embed(member)

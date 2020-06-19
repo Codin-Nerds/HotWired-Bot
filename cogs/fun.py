@@ -10,7 +10,6 @@ from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, com
 from cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
-from .utils.plainreq import get_req
 
 
 class Fun(Cog):
@@ -27,14 +26,15 @@ class Fun(Cog):
     @command()
     async def cat(self, ctx: Context) -> None:
         """Random cat images. Awww, so cute! Powered by random.cat"""
-        async with self.bot.session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
-            if r.status == 200:
-                js = await r.json()
-                em = discord.Embed(name="random.cat", colour=0x690E8)
-                em.set_image(url=js["file"])
-                await ctx.send(embed=em)
-            else:
-                raise ServiceError(f"could not fetch cute cat :( (http {r.status})")
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
+                if r.status == 200:
+                    js = await r.json()
+                    em = discord.Embed(name="random.cat", colour=0x690E8)
+                    em.set_image(url=js["file"])
+                    await ctx.send(embed=em)
+                else:
+                    raise ServiceError(f"could not fetch cute cat :( (http {r.status})")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
@@ -220,14 +220,16 @@ class Fun(Cog):
     @command()
     async def neko(self, ctx: Context) -> None:
         """Shows a neko"""
-        async with get_req(ctx.bot.session, nekos["sfw"]) as neko:
-            if neko.status == 200:
-                img = await neko.json()
-                neko_em = discord.Embed(colour=0x690E8)
-                neko_em.set_image(url=img["neko"])
-                await ctx.send(embed=neko_em)
-            else:
-                raise ServiceError(f"ERROR CODE: {neko.status})")
+        async with aiohttp.ClientSession() as session:
+            # TODO : WIP, can be merged
+            async with session.get(session, nekos["sfw"]) as neko:
+                if neko.status == 200:
+                    img = await neko.json()
+                    neko_em = discord.Embed(colour=0x690E8)
+                    neko_em.set_image(url=img["neko"])
+                    await ctx.send(embed=neko_em)
+                else:
+                    raise ServiceError(f"ERROR CODE: {neko.status})")
 
     @command()
     async def slap(self, ctx: Context, member: discord.Member) -> None:
@@ -238,13 +240,13 @@ class Fun(Cog):
         await ctx.send(embed=embed)
 
     @command()
-    async def punch(self, ctx: Context, member: discord.Member) -> None:
+    async def punch(self, ctx: Context, member: discord.Member = None) -> None:
         """Punch a User."""
         img_links = [
             "https://media.giphy.com/media/13HXKG2HGN8aPK/giphy.gif",
             "https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif",
         ]
-        actor = ctx.author.mention if ctx.author == member else "him/her self LMAO"
+        actor = ctx.author.mention if ctx.author is not None or not member else "him/her self LMAO"
         embed = Embed(title="Punch In The Face!", description=f"{member.mention} got punched in the face by {actor}!", color=Color.blurple(),)
         embed.set_image(url=random.choice(img_links))
         await ctx.send(embed=embed)
