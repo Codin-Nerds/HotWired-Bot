@@ -54,7 +54,7 @@ class Bot(commands.Bot):
             self.fist_on_ready = False
             self.hw = self.get_user(715545167649570977)
             self.log_channel = self.get_channel(704197974577643550)
-            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.use.name} : {self.user.id}")
+            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
             for ext in extensions:
                 self.load_extension(ext)
         else:
