@@ -20,8 +20,8 @@ extensions = ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.cust
 #"cogs.coding"
 
 class Bot(commands.Bot):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.status = cycle([
             "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
             "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
