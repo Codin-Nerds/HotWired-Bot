@@ -1,4 +1,5 @@
 import traceback
+import textwrap
 
 from discord import Color, Embed, Message, Guild, Member
 from discord.ext.commands import Bot, Cog
@@ -6,21 +7,27 @@ from discord.ext.commands import Bot, Cog
 import re
 import aiohttp
 
+from .utils import constants
 
-class Custom(Cog):
+PREFIX = constants.COMMAND_PREFIX
+
+
+class Events(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.dev_mode = constants.DEV_MODE
+        self.session = aiohttp.ClientSession()
 
     @staticmethod
     def get_link_code(string: str) -> str:
         return string.split("/")[-1]
 
     @staticmethod
-    async def check_our_invite(full_link: str, guild: Guild) -> bool:
+    async def is_our_invite(full_link: str, guild: Guild) -> bool:
         guild_invites = await guild.invites()
         for invite in guild_invites:
             # discord.gg/code resolves to https://discordapp.com/invite/code after using session.get(invite)
-            if Custom.get_link_code(invite.url) == Custom.get_link_code(full_link):
+            if Events.get_link_code(invite.url) == Events.get_link_code(full_link):
                 return True
         return False
 
@@ -30,9 +37,11 @@ class Custom(Cog):
         if message.author.bot:
             return
 
+        # DM Check.
         elif not isinstance(message.author, Member):
             return
 
+        # Is an Admin.
         elif message.author.guild_permissions.administrator:
             return
 
@@ -47,7 +56,7 @@ class Custom(Cog):
                     continue
 
                 if "discordapp.com/invite/" in invite or "discord.gg/" in invite:
-                    if not await Custom.check_our_invite(invite, message.guild):
+                    if not await Events.is_our_invite(invite, message.guild):
                         await message.channel.send(f"{message.author.mention} You are not allowed to post other Server's invites!")
 
     @Cog.listener()
@@ -64,6 +73,60 @@ class Custom(Cog):
         else:
             traceback.print_exc()
 
+    @Cog.listener()
+    async def on_guild_join(self, guild: Guild) -> None:
+        logchannel = self.client.get_channel(constants.log_channel)
+
+        embed = Embed(
+            title="Greetings",
+            description=(
+                f"""
+                Thanks for adding HotWired in this server,
+                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands,
+                Music commands and many more!.
+                The bot is still in dev so you can expect more commands and features. To get a list of commands ,
+                Use **{PREFIX}help**
+                """
+            ),
+            color=0x2F3136,
+        )
+
+        embed.add_field(
+            name="General information",
+            value=textwrap.dedent(
+                f"""
+                    **► __Bot Id__**: {self.client.user.id}
+                    **► __Developer__**: **{constants.creator}**
+                    **► __Prefix__**: {PREFIX}
+                """
+            ),
+        )
+        embed.add_field(
+            name="**Links**",
+            value=textwrap.dedent(
+                f"""
+                    **►** [Support Server]({constants.discord_server})
+                    **►** [Invite link]({constants.invite_link})
+                """
+            ),
+        )
+
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
+        try:
+            await guild.system_channel.send(embed=embed)
+        except Exception:
+            pass
+
+        await logchannel.send(
+            f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.client.guilds)}th** server! :champagne_glass: "
+        )
+
+    @Cog.listener()
+    async def on_guild_remove(self, guild: Guild) -> None:
+        logchannel = self.client.get_channel(constants.log_channel)
+
+        await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
+
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(Custom(bot))
+    bot.add_cog(Events(bot))

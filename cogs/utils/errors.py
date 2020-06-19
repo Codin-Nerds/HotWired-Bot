@@ -2,30 +2,19 @@ from discord.ext import commands
 
 
 class PostException(Exception):
-    """
-    Raised when there's a error in the post()
-    wrapper
-    """
+    """Raised when there's a error in the post() wrapper."""
 
     pass
 
 
 class ServiceError(commands.CommandInvokeError):
-    """
-    Subclass of commands.CommandInvokeError.
-    Raised whenever a request to a service
-    returns a failure of some sort.
-    """
+    """Raised whenever a request to a service and returns a failure of some sort."""
 
     pass
 
 
 class NSFWException(commands.CheckFailure):
-    """
-    Subclass of commands.CheckFailure.
-    Raised whenever a NSFW command is not
-    executed in a NSFW channel.
-    """
+    """Raised whenever a NSFW command is not executed in a NSFW channel."""
 
     pass
 

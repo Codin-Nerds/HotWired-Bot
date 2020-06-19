@@ -4,9 +4,7 @@ from bot.cogs.utils.members import get_member_activity, get_member_roles_as_ment
 
 
 def status_embed(member: Member, *, description: str = "") -> Embed:
-    """
-    Construct status embed for certain member.
-    """
+    """Construct status embed for certain member."""
     embed = Embed(title=member.display_name, description=description, color=Color.dark_purple())
 
     if member.status == Status.offline:

@@ -2,6 +2,7 @@ import os
 import re
 from typing import List
 from urllib.parse import quote_plus
+import textwrap
 
 import aiohttp
 import html2text
@@ -129,51 +130,50 @@ class Search(Cog, name="Basic"):
 
         await self._basic_search(ctx, query)
 
-    # @commands.command(aliases=['video'])
-    # async def videos(self, ctx, *, query: str):
-    #     """Search online for videos."""
+    @command(aliases=["video"])
+    async def videos(self, ctx: Context, *, query: str) -> None:
+        """Search online for videos."""
 
-    #     await self._basic_search(ctx, query, 'videos')
+        await self._basic_search(ctx, query, "videos")
 
-    # @commands.command()
-    # async def music(self, ctx, *, query: str):
-    #     """Search online for music."""
+    @command()
+    async def music(self, ctx: Context, *, query: str) -> None:
+        """Search online for music."""
 
-    #     await self._basic_search(ctx, query, 'music')
+        await self._basic_search(ctx, query, "music")
 
-    # @commands.command(aliases=['file'])
-    # async def files(self, ctx, *, query: str):
-    #     """Search online for files."""
+    @command(aliases=["file"])
+    async def files(self, ctx: Context, *, query: str) -> None:
+        """Search online for files."""
 
-    #     await self._basic_search(ctx, query, 'files')
+        await self._basic_search(ctx, query, "files")
 
-    # @commands.command(aliases=['image'])
-    # async def images(self, ctx, *, query: str):
-    #     """Search online for images."""
+    @command(aliases=["image"])
+    async def images(self, ctx: Context, *, query: str) -> None:
+        """Search online for images."""
 
-    #     await self._basic_search(ctx, query, 'images')
+        await self._basic_search(ctx, query, "images")
 
-    # @commands.command()
-    # async def it(self, ctx, *, query: str):
-    #     """Search online for IT-related information."""
+    @command()
+    async def it(self, ctx: Context, *, query: str) -> None:
+        """Search online for IT-related information."""
 
-    #     await self._basic_search(ctx, query, 'it')
+        await self._basic_search(ctx, query, "it")
 
-    # @commands.command(aliases=['map'])
-    # async def maps(self, ctx, *, query: str):
-    #     """Search online for map information."""
+    @command(aliases=["map"])
+    async def maps(self, ctx: Context, *, query: str) -> None:
+        """Search online for map information."""
 
-    #     await self._basic_search(ctx, query, 'maps')
+        await self._basic_search(ctx, query, "maps")
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: Error) -> None:
         """Listener makes no command fallback to searching."""
-
         fallback = (CommandNotFound, CheckFailure)
 
         if isinstance(error, fallback):
             try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix) :])
+                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix) :])  # conflict bw flake8 nd black here
             except searchexceptions.SafesearchFail:
                 await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 
@@ -186,7 +186,6 @@ class Search(Cog, name="Basic"):
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 async with session.get(base + "anime", params={"filter[text]": query}) as resp:
-
                     resp = await resp.json()
                     resp = resp["data"]
 
@@ -208,41 +207,41 @@ class Search(Cog, name="Basic"):
                     embed.add_field(name="Popularity Rank", value=anime["attributes"]["popularityRank"])
                     embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
                     embed.add_field(name="Status", value=anime["attributes"]["status"])
-
                     embed.add_field(name="Aired", value=f"{anime['attributes']['startDate']}{thing}")
                     embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
                     embed.add_field(name="Type", value=anime["attributes"]["showType"])
                     embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
                     embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by kitsu.io", icon_url=ctx.author.avatar_url_as(format="png"))
                     try:
-
                         await ctx.send(f"**{title}** - <{url}>", embed=embed)
-
                     except Exception:
                         aired = f"{anime['attributes']['startDate']}{thing}"
-                        template = f"""```
-        url: {url}
-        Title: {title}
-        Average Rating: {anime["attributes"]["averageRating"]}
-        Popularity Rank: {anime["attributes"]["popularityRank"]}
-        Age Rating: {anime["attributes"]["ageRating"]}
-        Status: {anime["attributes"]["status"]}
-        Aired: {aired}
-        Type: {anime['attributes']["showType"]}
-        Powered by kitsu.io```"""
+                        template = textwrap.dedent(
+                            f"""
+                            ```
+                            url: {url}
+                            Title: {title}
+                            Average Rating: {anime["attributes"]["averageRating"]}
+                            Popularity Rank: {anime["attributes"]["popularityRank"]}
+                            Age Rating: {anime["attributes"]["ageRating"]}
+                            Status: {anime["attributes"]["status"]}
+                            Aired: {aired}
+                            Type: {anime['attributes']["showType"]}
+                            Powered by kitsu.io
+                            ```
+                            """
+                        )
                         await ctx.send(template)
 
         @command()
         async def manga(self, ctx: Context, *, query: str) -> None:
             """Look up manga information."""
-
             base = "https://kitsu.io/api/edge/"
 
             # Handling
             async with ctx.typing():
                 async with aiohttp.ClientSession() as session:
                     async with session.get(base + "manga", params={"filter[text]": query}) as resp:
-
                         resp = await resp.json()
                         resp = resp["data"]
 
@@ -260,36 +259,41 @@ class Search(Cog, name="Basic"):
 
                         embed = Embed(title=f"{title}", color=ctx.author.color, url=url)
                         embed.description = manga["attributes"]["synopsis"][0:425] + "..."
+
                         if manga["attributes"]["averageRating"]:
                             embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
                         embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
+
                         if manga["attributes"]["ageRating"]:
                             embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
                         embed.add_field(name="Status", value=manga["attributes"]["status"])
                         thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
                         embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
+
                         if manga["attributes"]["chapterCount"]:
                             embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
                         embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
                         embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
 
                         try:
-
                             await ctx.send(f"**{title}** - <{url}>", embed=embed)
-
                         except Exception:
-
                             aired = f"{manga['attributes']['startDate']}{thing}"
-                            template = f"""```
-            url: {url}
-            Title: {title}
-            Average Rating: {manga["attributes"]["averageRating"]}
-            Popularity Rank: {manga["attributes"]["popularityRank"]}
-            Age Rating: {manga["attributes"]["ageRating"]}
-            Status: {manga["attributes"]["status"]}
-            Aired: {aired}
-            Type: {manga['attributes']["showType"]}
-            Powered by kitsu.io```"""
+                            template = textwrap.dedent(
+                                f"""
+                                ```
+                                url: {url}
+                                Title: {title}
+                                Average Rating: {manga["attributes"]["averageRating"]}
+                                Popularity Rank: {manga["attributes"]["popularityRank"]}
+                                Age Rating: {manga["attributes"]["ageRating"]}
+                                Status: {manga["attributes"]["status"]}
+                                Aired: {aired}
+                                Type: {manga['attributes']["showType"]}
+                                Powered by kitsu.io
+                                ```
+                                """
+                            )
                             await ctx.send(template)
 
 

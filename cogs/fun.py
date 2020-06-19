@@ -205,7 +205,9 @@ class Fun(Cog):
 
     @command(aliases=["bofh", "techproblem"])
     async def excuse(self, ctx: Context) -> None:
-        """Bastard Operator from Hell excuses.
+        """
+        Bastard Operator from Hell excuses.
+
         Source: http://pages.cs.wisc.edu/~ballard/bofh
         """
         async with aiohttp.ClientSession() as session:

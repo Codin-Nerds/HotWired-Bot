@@ -2,6 +2,7 @@ import asyncio
 import textwrap
 import time
 
+from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
 from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
 
@@ -67,20 +68,6 @@ class Custom(Cog):
 
         await ctx.send(embed=embed)
 
-    @command()
-    async def pfp(self, ctx, member: Member = None) -> None:
-        """Displays the profile picture of a member."""
-        if member is None:
-            message, url = "Your avatar", ctx.author.avatar_url
-        elif member == ctx.me:
-            message, url = "My avatar", member.avatar_url
-        else:
-            message, url = f"{member} avatar", member.avatar_url
-
-        embed = Embed(description=message, color=Color.dark_blue())
-        embed.set_image(url=url)
-        await ctx.send(embed=embed)
-
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
         """GitHub repository"""
@@ -95,10 +82,8 @@ class Custom(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def countdown(self, ctx: Context, start: int) -> None:
-        try:
+        with suppress(Forbidden):
             await ctx.message.delete()
-        except Forbidden:
-            pass
 
         message = await ctx.send(start)
         while start:
