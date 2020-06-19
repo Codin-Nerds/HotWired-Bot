@@ -38,8 +38,7 @@ async def change_status() -> None:
 
 @client.event
 async def on_ready() -> None:
-    print("Bot is Ready.")
-    print(f"Logged in as: {client.user.name} : {client.user.id}\n" f"Run {PREFIX}shutoff to close all the processes and exit/logout.")
+    print(f"Bot is Ready.\nLogged in as: {client.user.name} : {client.user.id}\nRun {PREFIX}shutoff to close all the processes and exit/logout.")
 
 
 @client.command()
