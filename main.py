@@ -15,10 +15,9 @@ PREFIX = constants.COMMAND_PREFIX
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
-extensions =
-    ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.custom", "cogs.emotes",
-    "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
-    "cogs.support", "cogs.tools"]
+extensions = ["cogs.codesandbox", "cogs.commands", "cogs.converters", "cogs.custom", "cogs.emotes",
+              "cogs.events", "cogs.fun", "cogs.games", "cogs.infog", "cogs.moderation", "cogs.study", "cogs.sudo",
+              "cogs.support", "cogs.tools"]
 # "cogs.coding"
 
 
