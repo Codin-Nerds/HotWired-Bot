@@ -1,6 +1,7 @@
 
 HotWired - Discord Bot
 =======================
+
 [![mit](https://img.shields.io/badge/Licensed%20under-MIT-red.svg?style=flat-square)](./LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/The-Codin-Hole/HotWired-Bot)
 [![Build Status](https://travis-ci.com/The-Codin-Hole/HotWired-Bot.svg?branch=master)](https://travis-ci.com/The-Codin-Hole/HotWired-Bot)
