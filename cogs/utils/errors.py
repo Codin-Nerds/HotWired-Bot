@@ -27,5 +27,4 @@ class ConfigError(Exception):
 
 class WeatherException(Exception):
     """Raised when there is an error attempting to access weather data."""
-
     pass
