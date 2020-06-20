@@ -11,7 +11,7 @@ class CodeSandbox(Cog):
         self.bot = bot
         self._last_eval_result = None
 
-    def _clean_code(self, code: str) -> None:
+    def _clean_code(self, code: str) -> str:
         if code.startswith("```") and code.endswith("```"):
             return "\n".join(code.split("\n")[1:-1])
         return code.strip("`\n")
