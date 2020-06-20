@@ -4,7 +4,7 @@ import typing as t
 from collections import defaultdict
 
 from discord import Color, Embed, Member, TextChannel
-from discord.errors import HTTPException
+from discord.errors import HTTPException, BadArgument
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
 
 
@@ -82,6 +82,11 @@ class JsonEmbedParser:
     def fill_empty_values(json_dct: dict) -> defaultdict:
         """Set all values to Embed.Empty to avoid keyerrors."""
         try:
+            content = json_dct["content"]
+        except KeyError:
+            content = ""
+
+        try:
             new_json = defaultdict(lambda: Embed.Empty, json_dct["embed"])
         except KeyError:
             new_json = defaultdict(lambda: Embed.Empty, json_dct)
@@ -93,6 +98,8 @@ class JsonEmbedParser:
                 new_json[param] = defaultdict(lambda: Embed.Empty, new_json[param])
             except TypeError:
                 new_json[param] = defaultdict(lambda: Embed.Empty)
+            except ValueError as e:
+                raise BadArgument(e)
 
         try:
             for index, field in enumerate(new_json["fields"]):
@@ -102,14 +109,6 @@ class JsonEmbedParser:
                 new_json["fields"][index] = field
         except TypeError:
             new_json["fields"] = []
-
-        try:
-            content = json_dct["content"]
-        except KeyError:
-            try:
-                content = new_json["content"]
-            except KeyError:
-                content = ""
 
         return {"content": content, "embed": new_json}
 
