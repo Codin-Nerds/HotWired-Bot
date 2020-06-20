@@ -40,7 +40,7 @@ class connect4(menus.Menu):
     def __init__(self, *players, **kwargs) -> None:
         super().__init__(**kwargs)
         self.winner = None
-        self.id_dict = {players[i].id : i + 1 for i in range(len(players))}
+        self.id_dict = {players[i].id: i + 1 for i in range(len(players))}
         self.ids = cycle(list(self.id_dict))
         self.players = players
         self.next = next(self.ids)
@@ -131,7 +131,7 @@ class connect4(menus.Menu):
 
 class BCard:
     def __init__(self, value, colour) -> None:
-        self._value=value
+        self._value = value
         self.is_ace = value == 1
         self.colour = colour
 
@@ -217,7 +217,10 @@ class Deck:
         if card in self and self.cost < self.money and not ini:
 
             def check(message) -> bool:
-                return message.author == ctx.author and message.channel == ctx.channel and message.content.lower() in ["y", "yes", "n", "no"]
+                if message.author == ctx.author:
+                    if message.channel == ctx.channel:
+                        return message.content.lower() in ["y", "yes", "n", "no"]
+                return False
 
             m1 = await ctx.send(f"You have a {card.name}. Do you want to split ? (y/n)")
             try:
@@ -406,9 +409,10 @@ class Blackjack_players(menus.Menu):
 
     def get_embed(self) -> Embed:
         r = "\n -"
+        ini = "Check the command's help for the rules. React with :white_check_mark: to join, :track_next: to begin the game\n\n"
         return Embed(
             title=f"Come play blackjack ! Initial bet is {self.cost} GP ({self.time} seconds left)",
-            description=f"Check the command's help for the rules. React with :white_check_mark: to join, :track_next: to begin the game\n\nCurrent players :\n -{r.join([player.mention for player in self.players])}",
+            description=f"{ini}Current players :\n -{r.join([player.mention for player in self.players])}",
         )
 
     @menus.button("\U00002705")
