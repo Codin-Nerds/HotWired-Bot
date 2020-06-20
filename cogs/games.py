@@ -447,7 +447,8 @@ class Games(Cog):
         """Please see the detailed help
         Rules : if it's your turn, press the button corresponding to the column in which you wana place the card.
         If you want to split (play on one more column, up to a max of 3, press :regional_indicator_3:). If you want to stop, press :x:.
-        To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value, except faces, which are worth 10 points, and the Ace, which is worth either 1 or 11).
+        To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value, except faces, which are worth 10 \
+        points, and the Ace, which is worth either 1 or 11).
         An Ace plus a face is called a blackjack, and beats a 21"""
         if cost < 0:
             await ctx.send("You can't bet negative money")
