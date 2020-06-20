@@ -35,17 +35,17 @@ UNSURE_BALL8_RESPONSES = [
     "Concentrate and ask again.",
 ]
 
+
 class connect4(menus.Menu):
     def __init__(self, *players, **kwargs) -> None:
         super().__init__(**kwargs)
         self.winner = None
-        self.id_dict = {players[i].id : i+1 for i in range(len(players))}
+        self.id_dict = {players[i].id : i + 1 for i in range(len(players))}
         self.ids = cycle(list(self.id_dict))
         self.players = players
         self.next = next(self.ids)
         self.status = [":black_large_square:", ":green_circle:", ":red_circle:"]
         self.state = [[0 for _ in range(6)] for __ in range(7)]
-
 
     def reaction_check(self, payload) -> bool:
         if payload.message_id != self.message.id:
@@ -60,7 +60,7 @@ class connect4(menus.Menu):
         return await ctx.send(embed=self.get_embed())
 
     async def action(self, n, payload) -> None:
-        if not 0 in self.state[n]:
+        if 0 not in self.state[n]:
             return
         self.next = next(self.ids)
         ID = self.id_dict[payload.user_id]
@@ -129,7 +129,7 @@ class connect4(menus.Menu):
         return self.winner
 
 
-class BCard():
+class BCard:
     def __init__(self, value, colour) -> None:
         self._value=value
         self.is_ace = value == 1
@@ -147,7 +147,7 @@ class BCard():
             "\U00002660\N{variation selector-16}",
             "\U00002663\N{variation selector-16}",
             "\U00002665\N{variation selector-16}",
-            "\U00002666\N{variation selector-16}"
+            "\U00002666\N{variation selector-16}",
         ][self.colour]
         return N
         # spades, clubs, hearts, diamonds
@@ -192,7 +192,7 @@ class BRow(list):
         return V
 
 
-class Deck():
+class Deck:
     def __init__(self, money, cost, player_id) -> None:
         self.cards = [BRow()]
         self._money = money
@@ -312,7 +312,7 @@ class Blackjack(menus.Menu):
         return embed
 
     async def send_initial_message(self, ctx, channel) -> Message:
-        return await ctx.send(self.player_dict[self.next].mention, embed = self.generate_embed())
+        return await ctx.send(self.player_dict[self.next].mention, embed=self.generate_embed())
 
     async def update_embed(self, new_turn=False) -> None:
         if new_turn:
@@ -408,7 +408,7 @@ class Blackjack_players(menus.Menu):
         r = "\n -"
         return Embed(
             title=f"Come play blackjack ! Initial bet is {self.cost} GP ({self.time} seconds left)",
-            description=f"Check the command's help for the rules. React with :white_check_mark: to join, :track_next: to begin the game\n\nCurrent players :\n -{r.join([player.mention for player in self.players])}"
+            description=f"Check the command's help for the rules. React with :white_check_mark: to join, :track_next: to begin the game\n\nCurrent players :\n -{r.join([player.mention for player in self.players])}",
         )
 
     @menus.button("\U00002705")
@@ -447,10 +447,10 @@ class Games(Cog):
         An Ace plus a face is called a blackjack, and beats a 21"""
         if cost < 0:
             await ctx.send("You can't bet negative money")
-        players, money_dict = await Blackjack_players(ctx.author, 100, cost, delete_message_after = True).prompt(ctx)
+        players, money_dict = await Blackjack_players(ctx.author, 100, cost, delete_message_after=True).prompt(ctx)
         if not players:
             return await ctx.send("Nobody wants to play")
-        balance_dict = await Blackjack(players, money_dict, cost, clear_reactions_after = True).prompt(ctx)
+        await Blackjack(players, money_dict, cost, clear_reactions_after=True).prompt(ctx)
 
     @command(aliases=["c4"])
     async def connect4(self, ctx: Context, member: Member) -> None:
