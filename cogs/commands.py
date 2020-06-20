@@ -7,6 +7,7 @@ import pathlib
 
 from discord import Color, Embed, Member
 from discord.ext.commands import Bot, Cog, Context, command
+from .utils import constants
 
 
 class Commands(Cog):
@@ -38,7 +39,8 @@ class Commands(Cog):
         # embed.add_field(name=f"{self.bot.user.name}'s structure", value="\n".join(list_of_files))
         # embed.set_footer(text=f"I am made of {total} lines of Python, spread across {file_amount} files !")
         embed.add_field(name="**Code Data**", value=f"I am made of {total} lines of Python, spread across {file_amount} files !")
-        await ctx.send("```" + "\n".join(list_of_files) + "```")
+        if ctx.author.id in constants.owner_ids:
+            await ctx.send("```" + "\n".join(list_of_files) + "```")
         await ctx.send(embed=embed)
 
     @command(aliases=["server"])
