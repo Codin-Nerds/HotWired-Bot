@@ -18,6 +18,7 @@ class EmbedData(t.NamedTuple):
 class JsonEmbedParser:
     def __init__(self, ctx: Context, json_dict: dict) -> None:
         self.ctx = ctx
+        self.raw_json = json_dict
         self.json = JsonEmbedParser.fill_empty_values(json_dict)
 
     @classmethod
@@ -33,6 +34,12 @@ class JsonEmbedParser:
             return False
         else:
             return cls(ctx, json_dict)
+
+    @classmethod
+    def from_embed(cls: "JsonEmbedParser", ctx: Context, embed: Embed) -> "JsonEmbedParser":
+        """Return class instance from embed."""
+        json_dict = embed.to_dict()
+        return cls(ctx, json_dict)
 
     @staticmethod
     async def parse_json(ctx: Context, json_code: str) -> t.Union[dict, bool]:
@@ -130,6 +137,9 @@ class JsonEmbedParser:
             embed.add_field(name=field["name"], value=field["value"], inline=field["inline"])
 
         return EmbedData(content, embed)
+
+    def make_json(self) -> str:
+        return json.dumps(self.raw_json)
 
 
 class Embeds(Cog):
@@ -304,6 +314,13 @@ class Embeds(Cog):
             await ctx.send("Embed updated accordingly to provided JSON")
         else:
             await ctx.send("Invalid embed JSON")
+
+    @embed_group.command(aliases=["json_dump", "to_json", "get_json"])
+    async def dump(self, ctx: Context) -> None:
+        embed = self.embeds[ctx.author].embed
+        embed_parser = JsonEmbedParser.from_embed(ctx, embed)
+        json = embed_parser.make_json()
+        await ctx.send(f"```json\n{json}```")
 
     # endregion
     # region: showing, sending embed
