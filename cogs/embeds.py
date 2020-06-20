@@ -36,9 +36,13 @@ class JsonEmbedParser:
             return cls(ctx, json_dict)
 
     @classmethod
-    def from_embed(cls: "JsonEmbedParser", ctx: Context, embed: Embed) -> "JsonEmbedParser":
+    def from_embed(cls: "JsonEmbedParser", ctx: Context, embed: t.Union[Embed, EmbedData]) -> "JsonEmbedParser":
         """Return class instance from embed."""
-        json_dict = embed.to_dict()
+        if isinstance(embed, EmbedData):
+            embed_dict = embed.embed.to_dict()
+            json_dict = {"content": embed.content, "embed": embed_dict}
+        else:
+            json_dict = embed.to_dict()
         return cls(ctx, json_dict)
 
     @staticmethod
@@ -317,8 +321,7 @@ class Embeds(Cog):
 
     @embed_group.command(aliases=["json_dump", "to_json", "get_json"])
     async def dump(self, ctx: Context) -> None:
-        embed = self.embeds[ctx.author].embed
-        embed_parser = JsonEmbedParser.from_embed(ctx, embed)
+        embed_parser = JsonEmbedParser.from_embed(ctx, self.embeds[ctx.author])
         json = embed_parser.make_json()
         await ctx.send(f"```json\n{json}```")
 
