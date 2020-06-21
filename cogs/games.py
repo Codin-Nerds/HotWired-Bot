@@ -36,7 +36,7 @@ UNSURE_BALL8_RESPONSES = [
 ]
 
 
-class connect4(menus.Menu):
+class Connect4(menus.Menu):
     def __init__(self, *players, **kwargs) -> None:
         super().__init__(**kwargs)
         self.winner = None
