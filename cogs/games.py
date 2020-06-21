@@ -190,11 +190,12 @@ class Games(Cog):
 
     @command()
     async def hangmanstop(self, ctx: Context) -> None:
+        """Stop a hangman game anytime."""
         if ctx.author.id not in self.hangman_players:
             await ctx.send("You don't have an active hangman game!")
         else:
             index = self.hangman_players.index(ctx.author.id)
-            del self.hangman_players[index]
+            self.hangman_players.pop(index)
 
 
 def setup(bot: Bot) -> None:

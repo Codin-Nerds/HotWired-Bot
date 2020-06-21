@@ -1,13 +1,9 @@
 import datetime
 import textwrap
 import typing as t
-import codecs
-import os
-import pathlib
 
 from discord import Color, Embed, Member
 from discord.ext.commands import Bot, Cog, Context, command
-from .utils import constants
 
 
 class Commands(Cog):
