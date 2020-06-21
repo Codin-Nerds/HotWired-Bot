@@ -8,7 +8,7 @@ import discord
 from .utils import constants
 from random import choice, randint
 from discord import Color, Embed, Message
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, is_nsfw, NSFWChannelRequired
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, is_nsfw, errors
 
 from cogs.utils.errors import ServiceError
 
@@ -79,7 +79,7 @@ class Fun(Cog):
             embed = Embed(color=0x690E8)
             embed.set_image(url=n.img(type))
             await ctx.send(embed=embed)
-        except NSFWChannelRequired:
+        except errors.NSFWChannelRequired:
             await ctx.send("Hey motherfucker! Go use this command in a NSFW Channel, this ain't ur home.")
         except n.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.possible)}```")

@@ -10,6 +10,7 @@ from .utils import constants
 class Games(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.hangman_players = []
 
     @command()
     async def roll(self, ctx: Context, min_limit: int = 1, max_limit: int = 10) -> None:
@@ -40,6 +41,9 @@ class Games(Cog):
 
     @command()
     async def hangman(self, ctx: Context) -> None:
+        """Play Hangman game."""
+        self.hangman_players.append(ctx.author.id)
+
         def display_hangman(tries: int) -> str:
             stages = [
                 # final state: head, torso, both arms, and both legs
@@ -133,6 +137,8 @@ class Games(Cog):
         await ctx.send(embed=embed)
 
         while not guessed and tries > 0:
+            if ctx.author.id not in self.hangman_players:
+                return
             await ctx.send(embed=Embed(description="Please guess a letter or word: ", color=Color.gold()))
             input = await self.bot.wait_for("message", check=check)
             guess = input.content.upper()
@@ -181,6 +187,14 @@ class Games(Cog):
             await ctx.send(
                 embed=Embed(description=f"Sorry, you ran out of tries. The word was {word}. Maybe next time! :frowning: ", color=Color.red())
             )
+
+    @command()
+    async def hangmanstop(self, ctx: Context) -> None:
+        if ctx.author.id not in self.hangman_players:
+            await ctx.send("You don't have an active hangman game!")
+        else:
+            index = self.hangman_players.index(ctx.author.id)
+            del self.hangman_players[index]
 
 
 def setup(bot: Bot) -> None:
