@@ -23,7 +23,8 @@ class Custom(Cog):
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
-        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
+        embed = Embed(
+            title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
         await message.edit(embed=embed)
 
     @command(aliases=("poll",))
@@ -40,7 +41,8 @@ class Custom(Cog):
             raise BadArgument("I can only handle 20 options!")
 
         codepoint_start = 127462  # represents "regional_indicator_a" unicode value
-        options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
+        options = {chr(i): f"{chr(i)} - {v}" for i,
+                   v in enumerate(options, start=codepoint_start)}
         embed = Embed(title=title, description="\n".join(options.values()))
         message = await ctx.send(embed=embed)
         for reaction in options:
@@ -70,7 +72,8 @@ class Custom(Cog):
     async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
         """Thank a User."""
         if ctx.author == member:
-            embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
+            embed = Embed(
+                title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
         else:
             embed = Embed(
@@ -83,12 +86,10 @@ class Custom(Cog):
                 ),
                 color=Color.blurple(),
             )
-            embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
+            embed.set_image(
+                url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
 
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Custom(bot))
-
-
-# TODO: Custom is a bad name for a cog, this should be renamed
