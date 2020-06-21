@@ -16,8 +16,8 @@ from .search_utils.regex import filter_words
 
 class Search(Cog, name="Basic"):
     """Searches the web for a variety of different resources."""
-    def __init__(self, bot: Bot) -> None:
 
+    def __init__(self, bot: Bot) -> None:
         # Main Stuff
         self.bot = bot
         self.info = bot.logging.info

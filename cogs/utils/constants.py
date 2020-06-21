@@ -85,7 +85,7 @@ ERROR_REPLIES = [
     "I can't believe you've done this",
 ]
 
-possible = [
+nsfw_possible = [
     "feet",
     "yuri",
     "trap",

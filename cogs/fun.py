@@ -48,7 +48,7 @@ class Fun(Cog):
             embed = Embed(color=0x690E8)
             embed.set_image(url=n.textcat())
             await ctx.send(embed=embed)
-        except Exception:
+        except n.errors.NothingFound:
             await ctx.send("Couldn't Fetch Textcat! :(")
 
     @command()
@@ -58,7 +58,7 @@ class Fun(Cog):
             embed = Embed(color=0x690E8)
             embed.set_image(url=n.why())
             await ctx.send(embed=embed)
-        except Exception:
+        except n.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "WHY!" :(')
 
     @command()
@@ -68,13 +68,13 @@ class Fun(Cog):
             embed = Embed(color=0x690E8)
             embed.set_image(url=n.fact())
             await ctx.send(embed=embed)
-        except Exception:
+        except n.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "Fact" :(')
 
     @command()
     @is_nsfw()
     async def image(self, ctx: Context, type: str) -> None:
-        """Sends a random image(sfw and nsfw)"""
+        """Sends a random image(sfw and nsfw)."""
         try:
             embed = Embed(color=0x690E8)
             embed.set_image(url=n.img(type))
@@ -82,13 +82,13 @@ class Fun(Cog):
         except errors.NSFWChannelRequired:
             await ctx.send("Hey motherfucker! Go use this command in a NSFW Channel, this ain't ur home.")
         except n.errors.InvalidArgument:
-            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.possible)}```")
+            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.nsfw_possible)}```")
         except n.errors.NothingFound:
             await ctx.send("Sorry, No Images Found.")
 
     @command()
     async def chuck(self, ctx: Context) -> t.Union[None, Message]:
-        """Get a random Chuck Norris joke"""
+        """Get a random Chuck Norris joke."""
         if randint(0, 1):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://api.chucknorris.io/jokes/random") as r:
@@ -108,7 +108,7 @@ class Fun(Cog):
 
     @command()
     async def cat(self, ctx: Context) -> None:
-        """Random cat images. Awww, so cute! Powered by random.cat"""
+        """Random cat images. Awww, so cute! Powered by random.cat."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
                 if r.status == 200:
@@ -121,7 +121,7 @@ class Fun(Cog):
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
-        """http.cat images - >>httpcat <http code>"""
+        """http.cat images - >>httpcat <http code>."""
         if http_id in constants.http_codes:
             httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
@@ -131,7 +131,7 @@ class Fun(Cog):
 
     @command()
     async def fox(self, ctx: Context) -> None:
-        """Sends a random fox picture"""
+        """Sends a random fox picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
@@ -144,10 +144,10 @@ class Fun(Cog):
         """Random doggos just because!"""
 
         def decide_source() -> str:
-            n = random.random()
-            if n < 0.5:
+            n = random.randint(0, 1)
+            if n == 0:
                 return "https://random.dog/woof"
-            elif n > 0.5:
+            elif n == 1:
                 return "https://dog.ceo/api/breeds/image/random"
 
         async with aiohttp.ClientSession() as session:
@@ -171,7 +171,7 @@ class Fun(Cog):
 
     @command()
     async def lizard(self, ctx) -> None:
-        """Shows a random lizard picture"""
+        """Shows a random lizard picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
@@ -196,7 +196,7 @@ class Fun(Cog):
 
     @command(aliases=["rhash", "robothash", "rh", "rohash"])
     async def robohash(self, ctx: Context, *, meme: str) -> None:
-        """text => robot image thing"""
+        """text => robot image thing."""
         try:
             e = discord.Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
@@ -257,7 +257,7 @@ class Fun(Cog):
 
     @command()
     async def neko(self, ctx: Context) -> None:
-        """Shows a neko"""
+        """Shows a neko."""
         async with aiohttp.ClientSession() as session:
             async with session.get(nekos["sfw"]) as neko:
                 if neko.status == 200:

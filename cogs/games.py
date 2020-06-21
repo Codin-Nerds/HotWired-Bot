@@ -2,15 +2,18 @@ import random
 
 from assets.words import word_list
 
-from discord import Color, Embed, Message
-from discord.ext.commands import Bot, Cog, Context, command
+import typing as t
+from discord import Color, Embed, Message, Guild, TextChannel, User, Member
+from discord.ext.commands import Bot, Cog, Context, command, errors
+from collections import defaultdict
+
 from .utils import constants
 
 
 class Games(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.hangman_players = []
+        self.hangman_players = defaultdict(lambda: defaultdict(list))
 
     @command()
     async def roll(self, ctx: Context, min_limit: int = 1, max_limit: int = 10) -> None:
@@ -42,8 +45,6 @@ class Games(Cog):
     @command()
     async def hangman(self, ctx: Context) -> None:
         """Play Hangman game."""
-        self.hangman_players.append(ctx.author.id)
-
         def display_hangman(tries: int) -> str:
             stages = [
                 # final state: head, torso, both arms, and both legs
@@ -129,29 +130,48 @@ class Games(Cog):
         guessed_words = []
         tries = 6
 
-        await ctx.send(embed=Embed(title="Let's play Hangman!", color=Color.dark_green()))
-        embed = Embed(title="Hangman Status", color=Color.dark_teal())
+        embed = Embed(title="Let's play Hangman!", color=Color.dark_green())
         embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
         embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
-        embed.set_footer(text="Powered By HotWired.")
-        await ctx.send(embed=embed)
+        embed.add_field(name="**❯❯ Word Status**", value="**Not Yet Guessed**", inline=False)
+        embed.set_footer(text=">>hangexit to exit the game! | Powered By HotWired.")
+        message = await ctx.send(embed=embed)
+        guess_embed = await ctx.send(embed=Embed(description="Please guess a letter or word: ", color=Color.gold()))
+        if not self.is_playing_hangman(ctx.author, ctx.guild, ctx.channel):
+            try:
+                self.add_hangman_player(ctx.author, ctx.guild, ctx.channel)
+            except errors.BadArgument:
+                await ctx.send(f"Active games by {ctx.author.mention} found. Use `>>hangexit` to exit!")
 
         while not guessed and tries > 0:
-            if ctx.author.id not in self.hangman_players:
-                return
-            await ctx.send(embed=Embed(description="Please guess a letter or word: ", color=Color.gold()))
             input = await self.bot.wait_for("message", check=check)
             guess = input.content.upper()
+            if guess == ">>HANGEXIT":
+                try:
+                    self.del_hangman_player(ctx.author, ctx.guild, ctx.channel)
+                except errors.BadArgument:
+                    await ctx.send(f"No active games by {ctx.author.mention} found!")
+            await input.delete()
 
             if len(guess) == 1 and guess.isalpha():
                 if guess in guessed_letters:
-                    await ctx.send(embed=Embed(description=f"You already guessed the letter {guess}", color=Color.red()))
+                    embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                    embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                    embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                    embed.add_field(name="**❯❯ Word Status**", value=f"You already guessed the letter {guess}", inline=False)
+                    embed.set_footer(text="Powered By HotWired.")
+                    await message.edit(embed=embed)
                 elif guess not in word:
-                    await ctx.send(embed=Embed(description=f"{guess} is not in the word.", color=Color.dark_magenta()))
                     tries -= 1
                     guessed_letters.append(guess)
+                    
+                    embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                    embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                    embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                    embed.add_field(name="**❯❯ Word Status**", value=f"{guess} is not in the word.", inline=False)
+                    embed.set_footer(text="Powered By HotWired.")
+                    await message.edit(embed=embed)
                 else:
-                    await ctx.send(embed=Embed(description=f"Good job, {guess} is in the word!", color=Color.dark_green()))
                     guessed_letters.append(guess)
                     word_as_list = list(word_completion)
                     indices = [i for i, letter in enumerate(word) if letter == guess]
@@ -162,40 +182,78 @@ class Games(Cog):
                     if "#" not in word_completion:
                         guessed = True
 
+                    embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                    embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                    embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                    embed.add_field(name="**❯❯ Word Status**", value=f"Good job, {guess} is in the word!", inline=False)
+                    embed.set_footer(text="Powered By HotWired.")
+                    await message.edit(embed=embed)
+
             elif len(guess) == len(word) and guess.isalpha():
                 if guess in guessed_words:
-                    await ctx.send(embed=Embed(description=f"You already guessed the word {guess}", color=Color.red()))
+                    embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                    embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                    embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                    embed.add_field(name="**❯❯ Word Status**", value=f"You already guessed the word {guess}", inline=False)
+                    embed.set_footer(text="Powered By HotWired.")
+                    await message.edit(embed=embed)
                 elif guess != word:
-                    await ctx.send(embed=Embed(description=f"{guess} is not the word.", color=Color.dark_orange()))
                     tries -= 1
                     guessed_words.append(guess)
+                    
+                    embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                    embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                    embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                    embed.add_field(name="**❯❯ Word Status**", value=f"{guess} is not in the word.", inline=False)
+                    embed.set_footer(text="Powered By HotWired.")
+                    await message.edit(embed=embed)
                 else:
                     guessed = True
                     word_completion = word
             else:
-                await ctx.send(embed=Embed(description="Not a valid guess.", color=Color.blurple()))
+                embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+                embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+                embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+                embed.add_field(name="**❯❯ Word Status**", value="Not a valid guess.", inline=False)
+                embed.set_footer(text="Powered By HotWired.")
+                await message.edit(embed=embed)
 
-            embed = Embed(title="Hangman Status", color=Color.dark_teal())
+        if guessed:
+            embed = Embed(title="Hangman Stats", color=Color.dark_blue())
             embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
             embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
             embed.set_footer(text="Powered By HotWired.")
-            await ctx.send(embed=embed)
-
-        if guessed:
+            await guess_embed.delete()
+            await message.edit(embed=embed)
             await ctx.send(embed=Embed(description="Congrats, you guessed the word! You win! :partying_face: ", color=Color.dark_green()))
         else:
+            embed = Embed(title="Hangman Stats", color=Color.dark_blue())
+            embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
+            embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
+            embed.set_footer(text="Powered By HotWired.")
+            await guess_embed.delete()
+            await message.edit(embed=embed)
             await ctx.send(
                 embed=Embed(description=f"Sorry, you ran out of tries. The word was {word}. Maybe next time! :frowning: ", color=Color.red())
             )
 
-    @command()
-    async def hangmanstop(self, ctx: Context) -> None:
-        """Stop a hangman game anytime."""
-        if ctx.author.id not in self.hangman_players:
-            await ctx.send("You don't have an active hangman game!")
+    def is_playing_hangman(self, player: Member, guild: Guild, channel: TextChannel) -> bool:
+        if player.id in self.hangman_players[guild][channel]:
+            return True
         else:
-            index = self.hangman_players.index(ctx.author.id)
-            self.hangman_players.pop(index)
+            return False
+
+    def add_hangman_player(self, player: Member, guild: Guild, channel: TextChannel) -> None:
+        if not self.is_playing_hangman(player, guild, channel):
+            self.hangman_players[guild][channel].append(player)
+        else:
+            raise errors.BadArgument("Player is already in game!")
+
+    def del_hangman_player(self, player: Member, guild: Guild, channel: TextChannel) -> None:
+        if self.is_playing_hangman(player, guild, channel):
+            self.hangman_players[guild.id][channel.id].remove[player]
+        else:
+            raise errors.BadArgument("Player is not in game!")
 
 
 def setup(bot: Bot) -> None:
