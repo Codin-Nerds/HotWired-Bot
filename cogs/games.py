@@ -163,7 +163,7 @@ class Games(Cog):
                 elif guess not in word:
                     tries -= 1
                     guessed_letters.append(guess)
-                    
+
                     embed = Embed(title="Hangman Stats", color=Color.dark_blue())
                     embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
                     embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
@@ -199,7 +199,7 @@ class Games(Cog):
                 elif guess != word:
                     tries -= 1
                     guessed_words.append(guess)
-                    
+
                     embed = Embed(title="Hangman Stats", color=Color.dark_blue())
                     embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
                     embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
