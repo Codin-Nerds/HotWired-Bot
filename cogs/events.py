@@ -1,7 +1,7 @@
 import traceback
 import textwrap
 
-from discord import Color, Embed, Message, Guild, Member
+from discord import Color, Embed, Message, Guild
 from discord.ext.commands import Bot, Cog
 
 import re
@@ -38,7 +38,7 @@ class Events(Cog):
             return
 
         # DM Check.
-        elif not isinstance(message.author, Member):
+        elif message.guild is None:
             return
 
         # Is an Admin.

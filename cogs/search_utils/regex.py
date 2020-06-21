@@ -1,6 +1,6 @@
 from re import compile, I, X
 
-nono_re = compile(
+filter_words = compile(
     r"""tranny|
     faggot|
     fag\b|

@@ -5,13 +5,15 @@ import typing as t
 import aiohttp
 import os
 import discord
+from .utils import constants
 from random import choice, randint
 from discord import Color, Embed, Message
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown
+from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, is_nsfw, NSFWChannelRequired
 
 from cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
+import nekos as n
 
 
 file = open("assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
@@ -40,6 +42,51 @@ class Fun(Cog):
         await ctx.send(embed=Embed(title="Did you Know?", description=fact["text"], color=0x690E8))
 
     @command()
+    async def textcat(self, ctx: Context) -> None:
+        """Sends a random textcat"""
+        try:
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=n.textcat())
+            await ctx.send(embed=embed)
+        except Exception:
+            await ctx.send("Couldn't Fetch Textcat! :(")
+
+    @command()
+    async def whydoes(self, ctx: Context) -> None:
+        """Sends a random why?__"""
+        try:
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=n.why())
+            await ctx.send(embed=embed)
+        except Exception:
+            await ctx.send('Couldn\'t Fetch any "WHY!" :(')
+
+    @command()
+    async def fact(self, ctx: Context) -> None:
+        """Sends a random fact"""
+        try:
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=n.fact())
+            await ctx.send(embed=embed)
+        except Exception:
+            await ctx.send('Couldn\'t Fetch any "Fact" :(')
+
+    @command()
+    @is_nsfw()
+    async def image(self, ctx: Context, type: str) -> None:
+        """Sends a random image(sfw and nsfw)"""
+        try:
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=n.img(type))
+            await ctx.send(embed=embed)
+        except NSFWChannelRequired:
+            await ctx.send("Hey motherfucker! Go use this command in a NSFW Channel, this ain't ur home.")
+        except n.errors.InvalidArgument:
+            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.possible)}```")
+        except n.errors.NothingFound:
+            await ctx.send("Sorry, No Images Found.")
+
+    @command()
     async def chuck(self, ctx: Context) -> t.Union[None, Message]:
         """Get a random Chuck Norris joke"""
         if randint(0, 1):
@@ -60,13 +107,6 @@ class Fun(Cog):
                 await ctx.send(joke["value"]["joke"].replace("&quote", '"'))
 
     @command()
-    async def dong(self, ctx: Context, dick: discord.Member = None) -> None:
-        """How long is this person's dong ?"""
-        if not dick:
-            dick = ctx.author
-        await ctx.send(f"{dick.mention}'s magnum dong is this long : 8{'=' * randint(0, 15)}>")
-
-    @command()
     async def cat(self, ctx: Context) -> None:
         """Random cat images. Awww, so cute! Powered by random.cat"""
         async with aiohttp.ClientSession() as session:
@@ -81,63 +121,8 @@ class Fun(Cog):
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
-        """http.cat images - ^httpcat <http code>"""
-        codes = [
-            100,
-            101,
-            200,
-            201,
-            202,
-            204,
-            206,
-            207,
-            300,
-            301,
-            302,
-            303,
-            304,
-            305,
-            307,
-            400,
-            401,
-            402,
-            403,
-            404,
-            405,
-            406,
-            408,
-            409,
-            410,
-            411,
-            412,
-            413,
-            414,
-            416,
-            417,
-            418,
-            420,
-            421,
-            422,
-            423,
-            424,
-            425,
-            426,
-            429,
-            444,
-            450,
-            451,
-            500,
-            502,
-            503,
-            504,
-            506,
-            507,
-            508,
-            509,
-            511,
-            599,
-        ]
-        if http_id in codes:
+        """http.cat images - >>httpcat <http code>"""
+        if http_id in constants.http_codes:
             httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
@@ -274,8 +259,7 @@ class Fun(Cog):
     async def neko(self, ctx: Context) -> None:
         """Shows a neko"""
         async with aiohttp.ClientSession() as session:
-            # TODO : WIP, can be merged
-            async with session.get(session, nekos["sfw"]) as neko:
+            async with session.get(nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
                     neko_em = discord.Embed(colour=0x690E8)

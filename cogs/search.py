@@ -2,6 +2,7 @@ import os
 import re
 from typing import List
 from urllib.parse import quote_plus
+from .utils import constants
 import textwrap
 
 import aiohttp
@@ -10,7 +11,7 @@ from discord import Embed, utils
 from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, Error
 
 from .search_utils import searchexceptions
-from .search_utils.regex import nono_re
+from .search_utils.regex import filter_words
 
 
 class Search(Cog, name="Basic"):
@@ -36,13 +37,12 @@ class Search(Cog, name="Basic"):
 
     async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
         """Uses scrapestack and the Qwant API to find search results."""
-
         # Typing
         base: str
         safesearch: str
 
         # NSFW Filtering
-        if nono_re.match(query) and not is_nsfw:
+        if filter_words.match(query) and not is_nsfw:
             raise searchexceptions.SafesearchFail("Query had NSFW.")
 
         base = "https://api.qwant.com/api"
@@ -125,46 +125,12 @@ class Search(Cog, name="Basic"):
             await ctx.send(msg)
 
     @command()
-    async def search(self, ctx: Context, *, query: str) -> None:
+    async def search(self, ctx: Context, category: str, *, query: str) -> None:
         """Search online for general results."""
-
-        await self._basic_search(ctx, query)
-
-    @command(aliases=["video"])
-    async def videos(self, ctx: Context, *, query: str) -> None:
-        """Search online for videos."""
-
-        await self._basic_search(ctx, query, "videos")
-
-    @command()
-    async def music(self, ctx: Context, *, query: str) -> None:
-        """Search online for music."""
-
-        await self._basic_search(ctx, query, "music")
-
-    @command(aliases=["file"])
-    async def files(self, ctx: Context, *, query: str) -> None:
-        """Search online for files."""
-
-        await self._basic_search(ctx, query, "files")
-
-    @command(aliases=["image"])
-    async def images(self, ctx: Context, *, query: str) -> None:
-        """Search online for images."""
-
-        await self._basic_search(ctx, query, "images")
-
-    @command()
-    async def it(self, ctx: Context, *, query: str) -> None:
-        """Search online for IT-related information."""
-
-        await self._basic_search(ctx, query, "it")
-
-    @command(aliases=["map"])
-    async def maps(self, ctx: Context, *, query: str) -> None:
-        """Search online for map information."""
-
-        await self._basic_search(ctx, query, "maps")
+        if category not in constants.basic_search_categories:
+            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(constants.basic_search_categories)}```")
+            return
+        await self._basic_search(ctx, query, category)
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: Error) -> None:
@@ -173,7 +139,7 @@ class Search(Cog, name="Basic"):
 
         if isinstance(error, fallback):
             try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix) :])  # conflict bw flake8 nd black here
+                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])  # conflict bw flake8 nd black here
             except searchexceptions.SafesearchFail:
                 await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 

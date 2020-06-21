@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "148ed2be6d181d1c03c2fc9b6eedac1473164cc0823c2b964493f5d7f1c1212b"
+            "sha256": "2da4ce6913249d1b84ab184bdd00c8c55ed1bb7905f4a8c82bb91778ab606b2d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -142,6 +142,14 @@
             "markers": "python_version >= '3.5'",
             "version": "==4.7.6"
         },
+        "nekos.py": {
+            "hashes": [
+                "sha256:a47d07c7190af701851fd4f2335da319989c5ddb65b8baa3207b4bbdee05be4c",
+                "sha256:a909bf771799c8837f431e6980001c95fab5254508fb3317fa2ffdddfe08c04d"
+            ],
+            "index": "pypi",
+            "version": "==1.0.3"
+        },
         "psutil": {
             "hashes": [
                 "sha256:1413f4158eb50e110777c4f15d7c759521703bd6beb58926f1d562da40180058",
@@ -161,6 +169,7 @@
         },
         "requests": {
             "hashes": [
+                "sha256:5d2d0ffbb515f39417009a46c14256291061ac01ba8f875b90cad137de83beb4",
                 "sha256:43999036bfa82904b6af1d99e4882b560e5e2c68e5c4b0aa03b655f3d7d73fee",
                 "sha256:b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6"
             ],

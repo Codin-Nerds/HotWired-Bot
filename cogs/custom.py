@@ -1,6 +1,7 @@
 import asyncio
 import textwrap
 import time
+import typing as t
 
 from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
@@ -56,13 +57,13 @@ class Custom(Cog):
         await ctx.send(embed=Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple()))
 
     @command()
-    async def status(self, ctx: Context, member: Member = None) -> None:
+    async def status(self, ctx: Context, member: t.Optional[Member] = None) -> None:
         """Returns the status of a member."""
         if member is None:
             member = ctx.author
 
         if member.id == constants.owner_ids:
-            embed = status_embed(member, description="Not telling")
+            embed = status_embed(member, description="None")
         else:
             embed = status_embed(member)
 
@@ -82,6 +83,7 @@ class Custom(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def countdown(self, ctx: Context, start: int) -> None:
+        """A Countdown timer, that counts down from the specified time in seconds."""
         with suppress(Forbidden):
             await ctx.message.delete()
 

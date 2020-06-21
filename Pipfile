@@ -20,6 +20,7 @@ stackexchange = "==0.5.0"
 tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 html2text = "*"
+"nekos.py" = "*"
 
 [requires]
 python_version = "3.8"
