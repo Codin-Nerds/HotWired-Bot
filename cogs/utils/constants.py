@@ -85,6 +85,7 @@ ERROR_REPLIES = [
     "I can't believe you've done this",
 ]
 
+# NSFW Command Possible types
 nsfw_possible = [
     "feet",
     "yuri",
@@ -151,6 +152,7 @@ nsfw_possible = [
     "woof",
 ]
 
+# Possible HTTP Codes for HttpCat
 http_codes = [
     100,
     101,
@@ -207,6 +209,7 @@ http_codes = [
     599,
 ]
 
+# Search Engine categories
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
 
 
