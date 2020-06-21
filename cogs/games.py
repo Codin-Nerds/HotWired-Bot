@@ -1,11 +1,10 @@
 import random
+from collections import defaultdict
+
+from discord import Color, Embed, Guild, Member, Message, TextChannel
+from discord.ext.commands import Bot, Cog, Context, command, errors
 
 from assets.words import word_list
-
-import typing as t
-from discord import Color, Embed, Message, Guild, TextChannel, User, Member
-from discord.ext.commands import Bot, Cog, Context, command, errors
-from collections import defaultdict
 
 from .utils import constants
 
