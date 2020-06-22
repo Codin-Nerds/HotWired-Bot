@@ -1,9 +1,10 @@
 import random
 import textwrap
-
+import aiohttp
 import discord
 from discord import Color, Embed
 from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown
+from .utils import constants
 
 
 class Fun(Cog):
@@ -11,6 +12,53 @@ class Fun(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @command()
+    async def xkcd(self, ctx: Context, comic_type: str = "latest") -> None:
+        """Get your favorite xkcd comics."""
+        comic_type = comic_type.lower()
+
+        if comic_type not in ["latest", "random"]:
+            url = f"https://xkcd.com/{comic_type}/info.0.json"
+        else:
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://xkcd.com/info.0.json") as r:
+                    data = await r.json()
+
+            if comic_type == "random":
+                random_comic = random.randint(1, data["num"])
+                url = f"https://xkcd.com/{random_comic}/info.0.json"
+            else:
+                random_comic = data["num"]
+                url = f"https://xkcd.com/{data['num']}/info.0.json"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as r:
+                if r.status == "200":
+                    data = await r.json()
+                    day, month, year = data["day"], data["month"], data["year"]
+
+                    embed = discord.Embed(title=data["title"], description=data["alt"], color=Color.blurple())
+                    embed.set_image(url=data["img"])
+                    embed.set_footer(text=f"Comic date : [{day}/{month}/{year}] | Comic Number - {random_comic}")
+
+                    await ctx.send(embed=embed)
+                else:
+                    url = "https://xkcd.com/info.0.json"
+                    async with aiohttp.ClientSession() as csession:
+                        async with csession.get(url) as req:
+                            data = await req.json()
+                            latest_comic_num = data["num"]
+
+                    help_embed = discord.Embed(
+                        title="HELP XKCD",
+                        description=f"""
+                        {constants.COMMAND_PREFIX}xkcd latest (Get the latest comic)
+                        {constants.COMMAND_PREFIX}xkcd <num> (Enter a comic number | range 1 to {latest_comic_num})
+                        {constants.COMMAND_PREFIX}xkcd random (Get a random comic)
+                        """,
+                    )
+                    await ctx.send(embed=help_embed)
 
     @command()
     async def slap(self, ctx: Context, member: discord.Member) -> None:
