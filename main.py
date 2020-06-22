@@ -35,7 +35,7 @@ extensions = [
 
 
 class Bot(commands.Bot):
-    def __init__(self, *args, **kwargs) -> Bot:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.status = cycle(
             [
