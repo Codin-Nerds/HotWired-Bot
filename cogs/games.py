@@ -145,6 +145,7 @@ class Games(Cog):
         while not guessed and tries > 0:
             input = await self.bot.wait_for("message", check=check)
             guess = input.content.upper()
+            # TODO : Repair this exit statement
             if guess == ">>HANGEXIT":
                 try:
                     self.del_hangman_player(ctx.author, ctx.guild, ctx.channel)
