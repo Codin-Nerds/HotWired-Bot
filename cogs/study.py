@@ -96,8 +96,6 @@ class Study(commands.Cog):
             if r.status == 200:
                 data = await r.read()
                 return json.loads(data.decode('utf8'))
-            else:
-                return None
 
     async def assemble_pod_image(self, atoms, dimensions):
         """Draws the given atoms onto a canvas of the given dimensions."""
