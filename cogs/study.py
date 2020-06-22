@@ -1,13 +1,17 @@
+import asyncio
+import json
+from io import BytesIO
+from urllib import parse
+
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
-import json
-from urllib import parse
-from io import BytesIO
+
 import setup as s
-from .utils import constants
 from PIL import Image, ImageChops, ImageDraw, ImageFont
-import asyncio
+
+from .utils import constants
+
 
 url = 'http://api.mathjs.org/v4/'
 
