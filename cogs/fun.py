@@ -21,26 +21,26 @@ class Fun(Cog):
         if comic_type not in ["latest", "random"]:
             url = f"https://xkcd.com/{comic_type}/info.0.json"
         else:
+            url = "https://xkcd.com/info.0.json"
+
+        if comic_type == "random":
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://xkcd.com/info.0.json") as r:
                     data = await r.json()
-
-            if comic_type == "random":
                 random_comic = random.randint(1, data["num"])
+
                 url = f"https://xkcd.com/{random_comic}/info.0.json"
-            else:
-                random_comic = data["num"]
-                url = f"https://xkcd.com/{data['num']}/info.0.json"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as r:
-                if r.status == "200":
+                if r.status == 200:
                     data = await r.json()
                     day, month, year = data["day"], data["month"], data["year"]
+                    comic_num = data["num"]
 
                     embed = discord.Embed(title=data["title"], description=data["alt"], color=Color.blurple())
                     embed.set_image(url=data["img"])
-                    embed.set_footer(text=f"Comic date : [{day}/{month}/{year}] | Comic Number - {random_comic}")
+                    embed.set_footer(text=f"Comic date : [{day}/{month}/{year}] | Comic Number - {comic_num}")
 
                     await ctx.send(embed=embed)
                 else:
