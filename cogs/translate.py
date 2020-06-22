@@ -30,17 +30,17 @@ class Translator(Cog):
         detection = translator.detect(sentence)
 
         embed = Embed(title="Sentence Info", color=Color.dark_orange())
-        embed.add_field(name="Language Code", value=detection.lang)
-        embed.add_field(name="Confidence", value=detection.confidence)
-        embed.add_field(name="Language", value=constants.LANGUAGES[detection.lang])
+        embed.add_field(name="Language Code", value=detection.lang, inline=False)
+        embed.add_field(name="Confidence", value=detection.confidence, inline=False)
+        embed.add_field(name="Language", value=constants.LANGUAGES[detection.lang], inline=False)
         await ctx.send(embed=embed)
 
     @command()
-    async def translate(self, ctx: Context, sentence: str = "Hello World", destination_language: str = "en", source_language: str = "en") -> None:
+    async def translate(self, ctx: Context, destination_language: str = "en", source_language: str = "en", *, sentence: str = "Hello World") -> None:
         translation = translator.translate(sentence, dest=destination_language, src=source_language)
         embed = Embed(
             title="Translation",
-            description=f"Sentence : {sentence}\nTranslation : {translation.text}\nType : {translation.src} > {translation.dest}",
+            description=f"Sentence : **{sentence}**\nTranslation : **{translation.text}**\nType : **{translation.src} > {translation.dest}**",
             color=Color.gold(),
         )
         await ctx.send(embed=embed)
