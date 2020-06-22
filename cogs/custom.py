@@ -15,6 +15,7 @@ class Custom(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    # TODO : Add custom command support after db integration
     @command()
     async def hello(self, ctx: Context) -> None:
         """Greet a User."""
@@ -29,9 +30,10 @@ class Custom(Cog):
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
-        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple(),)
+        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple())
         await message.edit(embed=embed)
 
+    # TODO : after db integration, add Time Limit, and grand announcement, when the poll is over.
     @command(aliases=("poll",))
     async def vote(self, ctx: Context, title: str, *options: str) -> None:
         """
@@ -44,6 +46,7 @@ class Custom(Cog):
             raise BadArgument("Please provide at least 2 options.")
         if len(options) > 20:
             raise BadArgument("I can only handle 20 options!")
+
         codepoint_start = 127462  # represents "regional_indicator_a" unicode value
         options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
         embed = Embed(title=title, description="\n".join(options.values()))
@@ -51,6 +54,7 @@ class Custom(Cog):
         for reaction in options:
             await message.add_reaction(reaction)
 
+    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
         """Returns the number of members in a server."""
@@ -69,6 +73,7 @@ class Custom(Cog):
 
         await ctx.send(embed=embed)
 
+    # TODO : add github logo thumnail to embed, and some more content. like about ig.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
         """GitHub repository"""
@@ -80,6 +85,7 @@ class Custom(Cog):
             )
         )
 
+    # TODO : beautify this timer with a realtime updating clock image.
     @command()
     @cooldown(1, 10, BucketType.user)
     async def countdown(self, ctx: Context, start: int) -> None:
@@ -87,11 +93,13 @@ class Custom(Cog):
         with suppress(Forbidden):
             await ctx.message.delete()
 
-        message = await ctx.send(start)
+        embed = Embed(title="TIMER", description=start)
+        message = await ctx.send(embed=embed)
         while start:
             minutes, seconds = divmod(start, 60)
             content = f"{minutes:02d}:{seconds:02d}"
-            await message.edit(content=content)
+            embed = Embed(title="TIMER", description=content)
+            await message.edit(embed=embed)
             start -= 1
             await asyncio.sleep(1)
         await message.delete()

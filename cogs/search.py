@@ -40,7 +40,6 @@ class Search(Cog, name="Basic"):
         base: str
         safesearch: str
 
-        # NSFW Filtering
         if filter_words.match(query) and not is_nsfw:
             raise searchexceptions.SafesearchFail("Query had NSFW.")
 
@@ -72,11 +71,8 @@ class Search(Cog, name="Basic"):
 
     async def _basic_search(self, ctx, query: str, category: str = "web") -> None:
         """Basic search formatting."""
-
-        # NOTE Customizable count not yet implemented.
         count: int = 5
 
-        # Safesearch variable
         is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, "is_nsfw") else False
 
         # Handling
@@ -114,7 +110,7 @@ class Search(Cog, name="Basic"):
             msg = (
                 f"Showing **{count}** results for `{query_display}`.\n\n"
                 f"**{first_title}** {first_url}\n{first_desc}\n\n"
-                f"{other_msg}\n\n_Powered by Qwant._"
+                f"{other_msg}\n\n_Powered by HotWired._"
             )
 
             msg = re.sub(r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\." r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)", r"<\1>", msg)
@@ -176,7 +172,7 @@ class Search(Cog, name="Basic"):
                     embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
                     embed.add_field(name="Type", value=anime["attributes"]["showType"])
                     embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
-                    embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by kitsu.io", icon_url=ctx.author.avatar_url_as(format="png"))
+                    embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url_as(format="png"))
                     try:
                         await ctx.send(f"**{title}** - <{url}>", embed=embed)
                     except Exception:
@@ -192,7 +188,7 @@ class Search(Cog, name="Basic"):
                             Status: {anime["attributes"]["status"]}
                             Aired: {aired}
                             Type: {anime['attributes']["showType"]}
-                            Powered by kitsu.io
+                            Powered by HotWired
                             ```
                             """
                         )
@@ -255,7 +251,7 @@ class Search(Cog, name="Basic"):
                                 Status: {manga["attributes"]["status"]}
                                 Aired: {aired}
                                 Type: {manga['attributes']["showType"]}
-                                Powered by kitsu.io
+                                Powered by HotWired
                                 ```
                                 """
                             )

@@ -80,7 +80,7 @@ class Fun(Cog):
             embed.set_image(url=n.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
-            await ctx.send("Hey motherfucker! Go use this command in a NSFW Channel, this ain't ur home.")
+            await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
         except n.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.nsfw_possible)}```")
         except n.errors.NothingFound:

@@ -217,12 +217,12 @@ class Games(Cog):
                 embed.set_footer(text="Powered By HotWired.")
                 await message.edit(embed=embed)
 
+        await guess_embed.delete()
         if guessed:
             embed = Embed(title="Hangman Stats", color=Color.dark_blue())
             embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
             embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
             embed.set_footer(text="Powered By HotWired.")
-            await guess_embed.delete()
             await message.edit(embed=embed)
             await ctx.send(embed=Embed(description="Congrats, you guessed the word! You win! :partying_face: ", color=Color.dark_green()))
         else:
@@ -230,7 +230,6 @@ class Games(Cog):
             embed.add_field(name="**❯❯ Hang Status**", value=display_hangman(tries), inline=False)
             embed.add_field(name="**❯❯ Word Completion Status**", value=f"**{word_completion}**", inline=False)
             embed.set_footer(text="Powered By HotWired.")
-            await guess_embed.delete()
             await message.edit(embed=embed)
             await ctx.send(
                 embed=Embed(description=f"Sorry, you ran out of tries. The word was {word}. Maybe next time! :frowning: ", color=Color.red())
