@@ -44,6 +44,7 @@ class Games(Cog):
     @command()
     async def hangman(self, ctx: Context) -> None:
         """Play Hangman game."""
+
         def display_hangman(tries: int) -> str:
             stages = [
                 # final state: head, torso, both arms, and both legs
