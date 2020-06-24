@@ -1,6 +1,5 @@
 import asyncio
 import os
-import textwrap
 from itertools import cycle
 
 import discord
@@ -11,9 +10,6 @@ from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = constants.COMMAND_PREFIX
-
-SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
-INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
 
@@ -42,52 +38,24 @@ async def on_ready() -> None:
     print(f"Logged in as: {client.user.name} : {client.user.id}")
 
 
-@client.event
-async def on_guild_join(guild: discord.Guild) -> None:
+# @client.event
+# async def on_command_error(ctx, error):
+#   if isinstance(error, commands.MissingRequiredArgument):
+#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
+#     await ctx.send(embed=embed)
 
-    hw = client.get_user(715545167649570977)
-    logchannel = client.get_channel(704197974577643550)
+#   if isinstance(error, commands.CommandNotFound):
+#     pass
 
-    embed = discord.Embed(
-        title="Greetings",
-        description=textwrap.dedent(
-            f"""
-            Thanks for adding HotWired in this server,
-            **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
-            The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
-            """
-        ),
-        color=0x2F3136,
-    )
+#   if isinstance(error, commands.MissingPermissions):
+#     embed = error_embed("You don't have Enough permissions to Execute this command!", "❌ERROR")
+#     await ctx.send(embed=embed)
 
-    embed.add_field(
-        name="General information",
-        value=textwrap.dedent(
-            f"""
-            **► __Bot Id__**: 715545167649570977
-            **► __Developer__**: **{constants.creator}**
-            **► __Prefix__**: {PREFIX}
-            """
-        ),
-    )
-    embed.add_field(
-        name="**Links**",
-        value=textwrap.dedent(
-            f"""
-            **►** [Support Server]({SUPPORT_SERVER})
-            **►** [Invite link]({INVITE})
-            """
-        ),
-    )
-
-    embed.set_thumbnail(url=hw.avatar_url)
-
-    await guild.system_channel.send(embed=embed)
-
-    await logchannel.send(
-        f"The bot has been added to **{guild.name}** , "
-        f"We've reached our **{len(client.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
-    )
+#   if isinstance(error, commands.BotMissingPermissions):
+#    embed = error_embed(
+#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
+#    )
+#    await ctx.send(embed=embed)
 
 
 def setup_bot(bot: Bot) -> None:
@@ -106,6 +74,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
+    bot.load_extension("cogs.translate")
 
     bot.run(TOKEN)
 

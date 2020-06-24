@@ -1,9 +1,5 @@
 import datetime
-import os
-import platform
-import sys
 import textwrap
-import traceback
 import typing as t
 
 from discord import Color, Embed, Member
@@ -13,12 +9,6 @@ from discord.ext.commands import Bot, Cog, Context, command
 class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-
-        # TODO: Get the dev-mode from constants.py
-        try:
-            self.dev_mode = platform.system() != "Linux" and sys.argv[1] != "-d"
-        except IndexError:
-            self.dev_mode = True
 
     @command(aliases=["server"])
     async def serverinfo(self, ctx: Context) -> None:
@@ -84,7 +74,8 @@ class Commands(Cog):
         embed.add_field(
             name="__**Server-related information:**__",
             value=textwrap.dedent(
-                f"""**Nickname:** {member.nick}
+                f"""
+                **Nickname:** {member.nick}
                 **Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}
                 **Top role:** {member.top_role.mention}
                 """
@@ -96,42 +87,6 @@ class Commands(Cog):
         embed.set_footer(text=f"ID: {member.id}")
 
         return await ctx.send(embed=embed)
-
-    @command(aliases=["cembed", "emb", "new"])
-    async def create(self, ctx: Context, *, msg: str) -> None:
-        """Create an embed."""
-        # TODO: This command is WIP
-        await ctx.send(msg)
-
-    @command(hidden=True)
-    async def load(self, ctx: Context, *, extension: str) -> None:
-        """Loads a cog."""
-        # TODO: Implement is_owner check here
-        try:
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
-            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-        else:
-            await ctx.send("\N{SQUARED OK}")
-
-    @command(name="reload", hidden=True)
-    async def _reload(self, ctx: Context, *, extension: str) -> None:
-        """Reloads a module."""
-        # TODO: Implement is_owner check here
-        try:
-            self.bot.unload_extension(f"cogs.{extension}")
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
-            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-        else:
-            await ctx.send("\N{SQUARED OK}")
-
-    @command(hidden=True)
-    async def restart(self, ctx: Context) -> None:
-        """Restart The bot."""
-        # TODO: Implement is_owner check here
-        await self.bot.logout()
-        os.system("python main.py")  # TODO: This might get changed
 
 
 def setup(bot: Bot) -> None:
