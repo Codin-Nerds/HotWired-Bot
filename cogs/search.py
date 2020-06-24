@@ -8,7 +8,7 @@ import textwrap
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, Error
+from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, errors
 
 from .search_utils import searchexceptions
 from .search_utils.regex import filter_words
@@ -20,9 +20,6 @@ class Search(Cog, name="Basic"):
     def __init__(self, bot: Bot) -> None:
         # Main Stuff
         self.bot = bot
-        self.info = bot.logging.info
-        self.warn = bot.logging.warn
-        self.debug = bot.logging.debug
         self.emoji = "\U0001F50D"
         self.scrape_token = os.getenv("SCRAPESTACK")
 
@@ -52,22 +49,20 @@ class Search(Cog, name="Basic"):
             safesearch = "2"
 
         # Search URL Building
-        # api.qwant.com/api/search/web?count=5&q=test&safesearch=2&...
         search_url = f"{base}/search/{category}" f"?count={count}" f"&q={query}" f"&safesearch={safesearch}" "&t=web" "&locale=en_US" "&uiv=4"
 
         # Scrape or not
         if self.scrape_token != "":
             search_url = "http://api.scrapestack.com/scrape" f"?access_key={self.scrape_token}" f"&url={quote_plus(search_url)}"
 
-        self.debug(search_url, name="_search_logic")
-
         # Searching
         headers = {"User-Agent": ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0")}
-        async with self.request.get(search_url, headers=headers) as resp:
-            to_parse = await resp.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(search_url, headers=headers) as resp:
+                to_parse = await resp.json()
 
-            # Sends results
-            return to_parse["data"]["result"]["items"]
+                # Sends results
+                return to_parse["data"]["result"]["items"]
 
     async def _basic_search(self, ctx, query: str, category: str = "web") -> None:
         """Basic search formatting."""
@@ -115,8 +110,6 @@ class Search(Cog, name="Basic"):
 
             msg = re.sub(r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\." r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)", r"<\1>", msg)
 
-            # Sends message
-            self.info(f"**New Search** - `{ctx.author}` in `{ctx.guild}`\n\n{msg}", name="New Search")
             await ctx.send(msg)
 
     @command()
@@ -128,13 +121,13 @@ class Search(Cog, name="Basic"):
         await self._basic_search(ctx, query, category)
 
     @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: Error) -> None:
+    async def on_command_error(self, ctx: Context, error: errors) -> None:
         """Listener makes no command fallback to searching."""
         fallback = (CommandNotFound, CheckFailure)
 
         if isinstance(error, fallback):
             try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix) :])
+                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])
             except searchexceptions.SafesearchFail:
                 await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 
@@ -154,7 +147,8 @@ class Search(Cog, name="Basic"):
                     query = utils.escape_markdown(query)
 
                     if not resp:
-                        return await ctx.send(f"No results for `{query}`.")
+                        await ctx.send(f"No results for `{query}`.")
+                        return
 
                     anime = resp[0]
                     title = f'{anime["attributes"]["canonicalTitle"]}'

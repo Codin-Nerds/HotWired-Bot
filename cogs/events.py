@@ -75,7 +75,7 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
-        logchannel = self.client.get_channel(constants.log_channel)
+        logchannel = self.bot.get_channel(constants.log_channel)
 
         embed = Embed(
             title="Greetings",
@@ -95,7 +95,7 @@ class Events(Cog):
             name="General information",
             value=textwrap.dedent(
                 f"""
-                    **► __Bot Id__**: {self.client.user.id}
+                    **► __Bot Id__**: {self.bot.user.id}
                     **► __Developer__**: **{constants.creator}**
                     **► __Prefix__**: {PREFIX}
                 """
@@ -118,12 +118,12 @@ class Events(Cog):
             pass
 
         await logchannel.send(
-            f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.client.guilds)}th** server! :champagne_glass: "
+            f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.bot.guilds)}th** server! :champagne_glass: "
         )
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
-        logchannel = self.client.get_channel(constants.log_channel)
+        logchannel = self.bot.get_channel(constants.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 

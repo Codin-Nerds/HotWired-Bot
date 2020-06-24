@@ -1,14 +1,12 @@
 import asyncio
 import textwrap
 import time
-import typing as t
 
 from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
 from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
 
 from .utils import constants
-from .utils.embed_handler import status_embed
 
 
 class Custom(Cog):
@@ -53,25 +51,6 @@ class Custom(Cog):
         message = await ctx.send(embed=embed)
         for reaction in options:
             await message.add_reaction(reaction)
-
-    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
-    @command()
-    async def members(self, ctx: Context) -> None:
-        """Returns the number of members in a server."""
-        await ctx.send(embed=Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple()))
-
-    @command()
-    async def status(self, ctx: Context, member: t.Optional[Member] = None) -> None:
-        """Returns the status of a member."""
-        if member is None:
-            member = ctx.author
-
-        if member.id in constants.owner_ids:
-            embed = status_embed(member, description="None")
-        else:
-            embed = status_embed(member)
-
-        await ctx.send(embed=embed)
 
     # TODO : add github logo thumnail to embed, and some more content. like about ig.
     @command(aliases=["git"])

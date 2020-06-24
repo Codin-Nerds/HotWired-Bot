@@ -117,17 +117,17 @@ class Fun(Cog):
                     em.set_image(url=js["file"])
                     await ctx.send(embed=em)
                 else:
-                    raise ServiceError(f"could not fetch cute cat :( (http {r.status})")
+                    await ctx.send(f"Couldn't Fetch cute cats :( [status : {r.status}]")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
-        """http.cat images - >>httpcat <http code>."""
+        """http.cat images."""
         if http_id in constants.http_codes:
             httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
         else:
-            raise BadArgument("Specified HTTP code invalid")
+            await ctx.send("Invalid HTTP Code Specified")
 
     @command()
     async def fox(self, ctx: Context) -> None:
@@ -135,9 +135,9 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
-                embed = discord.Embed(title="Fox", color=0x690E8)
-                embed.set_image(url=picture["image"])
-                await ctx.send(embed=embed)
+        embed = discord.Embed(title="Fox", color=0x690E8)
+        embed.set_image(url=picture["image"])
+        await ctx.send(embed=embed)
 
     @command()
     async def dog(self, ctx: Context) -> None:
@@ -167,7 +167,7 @@ class Fun(Cog):
                         shibe_em.set_image(url=shibe_url)
                         await ctx.send(embed=shibe_em)
                 else:
-                    raise ServiceError(f"could not fetch pupper :( (http {shibe_get.status})")
+                    await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
     @command()
     async def lizard(self, ctx) -> None:
@@ -180,7 +180,7 @@ class Fun(Cog):
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
-                    raise ServiceError(f"something went boom (http {lizr.status})")
+                    await ctx.send(f"Something went Boom! [status : {lizr.status}]")
 
     @command()
     async def why(self, ctx: Context) -> None:
@@ -192,7 +192,7 @@ class Fun(Cog):
                     why_em = discord.Embed(title=f"{ctx.author.name} wonders...", description=why_js["why"], colour=0x690E8,)
                     await ctx.send(embed=why_em)
                 else:
-                    raise ServiceError(f"something went boom (http {why.status})")
+                    await ctx.send(f"Something went Boom! [status : {why.status}]")
 
     @command(aliases=["rhash", "robothash", "rh", "rohash"])
     async def robohash(self, ctx: Context, *, meme: str) -> None:
@@ -203,7 +203,7 @@ class Fun(Cog):
             e.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=e)
         except Exception as e:
-            raise ServiceError(f"something broke: {e!s}")
+            await ctx.send(f"Something Broke. LOL [{e!s}]")
 
     async def get_answer(self, ans: str) -> str:
         if ans == "yes":
@@ -213,7 +213,7 @@ class Fun(Cog):
         elif ans == "maybe":
             return "maaaaaaybe?"
         else:
-            raise BadArgument("internal error: invalid answer lmaoo")
+            return "Internal Error: Invalid answer LMAOO"
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
@@ -223,11 +223,11 @@ class Fun(Cog):
                 if meme.status == 200:
                     mj = await meme.json()
                     ans = await self.get_answer(mj["answer"])
-                    em = discord.Embed(title=ans, description="And the answer to" f" {question} is this", colour=0x690E8,)
+                    em = discord.Embed(title=ans, description=f"And the answer to {question} is this:", colour=0x690E8,)
                     em.set_image(url=mj["image"])
                     await ctx.send(embed=em)
                 else:
-                    raise ServiceError(f"oof (http {meme.status})")
+                    await ctx.send(f"OMFG! [STATUS : {meme.status}]")
 
     @command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
     async def joke(self, ctx: Context) -> None:
@@ -239,7 +239,7 @@ class Fun(Cog):
                     res = res.encode("utf-8").decode("utf-8")
                     await ctx.send(f"`{res}`")
                 else:
-                    raise ServiceError(f"rip dad (http {jok.status})")
+                    await ctx.send(f"RIP Dad! :'( [STATUS : {jok.status}]")
 
     @command(aliases=["bofh", "techproblem"])
     async def excuse(self, ctx: Context) -> None:
@@ -249,11 +249,12 @@ class Fun(Cog):
         Source: http://pages.cs.wisc.edu/~ballard/bofh
         """
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://pages.cs.wisc.edu" "/~ballard/bofh/excuses") as r:
+            async with session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as r:
                 data = await r.text()
-                lines = data.split("\n")
-                line = random.choice(lines)
-                await ctx.send(f"`{line}`")
+        lines = data.split("\n")
+        embed = Embed(title="Excuses", description=random.choice(lines), color=Color.gold())
+
+        await ctx.send(embed=embed)
 
     @command()
     async def neko(self, ctx: Context) -> None:
@@ -306,21 +307,26 @@ class Fun(Cog):
                             latest_comic_num = data["num"]
 
                     help_embed = discord.Embed(
-                        title="HELP XKCD",
+                        title="XKCD HELP",
                         description=f"""
-                        {constants.COMMAND_PREFIX}xkcd latest (Get the latest comic)
-                        {constants.COMMAND_PREFIX}xkcd <num> (Enter a comic number | range 1 to {latest_comic_num})
-                        {constants.COMMAND_PREFIX}xkcd random (Get a random comic)
+                        **{constants.COMMAND_PREFIX}xkcd latest** - (Get the latest comic)
+                        **{constants.COMMAND_PREFIX}xkcd <num>** - (Enter a comic number | range 1 to {latest_comic_num})
+                        **{constants.COMMAND_PREFIX}xkcd random** - (Get a random comic)
                         """,
                     )
                     await ctx.send(embed=help_embed)
 
     @command()
-    async def slap(self, ctx: Context, member: discord.Member) -> None:
+    async def slap(self, ctx: Context, member: discord.Member = None) -> None:
         """Slap a User."""
-        actor = ctx.author.mention if ctx.author == member else "him/her self LMAO"
-        embed = Embed(title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {actor}!", color=Color.blurple(),)
-        embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+        if member == ctx.author.mention or member is None:
+            embed = Embed(title="Slap In The Face!", description=f"{ctx.author.mentioj} got slapped him/her self LMAO!", color=Color.blurple(),)
+            embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+        else:
+            embed = Embed(
+                title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!", color=Color.blurple()
+            )
+            embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
         await ctx.send(embed=embed)
 
     @command()
@@ -330,9 +336,14 @@ class Fun(Cog):
             "https://media.giphy.com/media/13HXKG2HGN8aPK/giphy.gif",
             "https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif",
         ]
-        actor = ctx.author.mention if ctx.author is not None or not member else "him/her self LMAO"
-        embed = Embed(title="Punch In The Face!", description=f"{member.mention} got punched in the face by {actor}!", color=Color.blurple(),)
-        embed.set_image(url=random.choice(img_links))
+        if member == ctx.author.mention or member is None:
+            embed = Embed(title="Punch In The Face!", description=f"{ctx.author.mention} punched him/her self LMAO!", color=Color.blurple(),)
+            embed.set_image(url=random.choice(img_links))
+        else:
+            embed = Embed(
+                title="Punch In The Face!", description=f"{member.mention} got punched in the face by {ctx.author.mention}!", color=Color.blurple()
+            )
+            embed.set_image(url=random.choice(img_links))
         await ctx.send(embed=embed)
 
     @command()
@@ -385,7 +396,7 @@ class Fun(Cog):
             )
         await ctx.send(embed=embed)
         # TODO : Add points after db integration
-        # TODO: Adding points here should either do something or they shouldn't be mentioned as user will expect them to do something
+        # TODO: Adding points here should increase their rank in leaderboard.
 
     @cookie.error
     async def cookie_error(self, ctx: Context, error: Exception) -> None:
@@ -394,8 +405,8 @@ class Fun(Cog):
             await ctx.send(embed=embed)
 
 
-# TODO: kiss, hug, pat => commands to be added
-# cuddle hug insult kiss lick nom pat poke slap stare highfive bite greet punch handholding tickle kill hold pats wave boop
+# TODO: kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite
+#  greet punch handholding tickle kill hold pats wave boop
 
 
 def setup(bot: Bot) -> None:

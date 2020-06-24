@@ -17,7 +17,6 @@ status = [
     "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
     "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
     f"Ping me using {PREFIX}help",
-    "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
     "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
 ]
 

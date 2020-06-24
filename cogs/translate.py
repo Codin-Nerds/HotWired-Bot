@@ -22,7 +22,6 @@ class Translator(Cog):
             embed = Embed(description="Language Not Found!", color=Color.red())
         else:
             embed = Embed(title="Language Code", description=f"Language : **{language}**\nCode : **{code}**", color=Color.blurple())
-
         await ctx.send(embed=embed)
 
     @command(aliases=["linfo"])
