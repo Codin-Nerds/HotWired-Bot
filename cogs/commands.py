@@ -1,126 +1,134 @@
-import asyncio
 import datetime
-import os
-import platform
-import random
-import string
-import sys
-import traceback
+import textwrap
+import typing as t
+from .utils import constants
+from collections import Counter
 
-import discord
-from discord.ext import commands
+from discord import Color, Embed, Member
+from discord.ext.commands import Bot, Cog, Context, command
+from .utils.embed_handler import status_embed
 
 
-class Commands(commands.Cog):
-    def __init__(self, client):
-        self.client = client
-        try:
-            self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
-        except IndexError:
-            self.dev_mode = True
+class Commands(Cog):
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
 
-    @commands.command(name='serverinfo', aliases=['server'])
-    async def serverinfo(self, ctx):
+    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
+    @command()
+    async def members(self, ctx: Context) -> None:
+        """Returns the number of members in a server."""
+        member_by_status = Counter(str(m.status) for m in ctx.guild.members)
+        bots = len([member for member in ctx.guild.members if member.bot])
+        type = f"""
+                Humans: {ctx.guild.member_count - bots}
+                Bots: {bots}
+            """
+        status = f"""
+                <:online:346921745279746048> {member_by_status["online"]}
+                <:away:346921747330891780> {member_by_status["idle"]}
+                <:dnd:346921781786836992> {member_by_status["dnd"]}
+                <:offline:346921814435430400> {member_by_status["offline"]}
+            """
+        embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
+        embed.add_field(name="**❯❯ Member Status**", value=status)
+        embed.add_field(name="**❯❯ Member Type**", value=type)
+        embed.set_author(name=f"SERVER : {ctx.guild.name}")
+
+        await ctx.send(embed=embed)
+
+    @command()
+    async def status(self, ctx: Context, member: t.Optional[Member] = None) -> None:
+        """Returns the status of a member."""
+        if member is None:
+            member = ctx.author
+
+        if member.id in constants.owner_ids:
+            embed = status_embed(member, description="None")
+        else:
+            embed = status_embed(member)
+
+        await ctx.send(embed=embed)
+
+    @command(aliases=["server"])
+    async def serverinfo(self, ctx: Context) -> None:
         """Get information about the server."""
 
-        embed = discord.Embed(colour=discord.Color.gold())
+        embed = Embed(colour=Color.gold())
         embed.title = f"{ctx.guild.name}'s stats and information."
         embed.description = ctx.guild.description if ctx.guild.description else None
-        embed.add_field(name='__**General information:**__',
-                        value=f'**Owner:** {ctx.guild.owner}\n'
-                              f'**Created at:** {datetime.datetime.strftime(ctx.guild.created_at, "%A %d %B %Y at %H:%M")}\n'
-                              f'**Members:** {ctx.guild.member_count} | '
-                              f'**Nitro Tier:** {ctx.guild.premium_tier} | '
-                              f'**Boosters:** {ctx.guild.premium_subscription_count}\n'
-                              f'**File Size:** {round(ctx.guild.filesize_limit / 1048576)} MB | '
-                              f'**Bitrate:** {round(ctx.guild.bitrate_limit / 1000)} kbps | '
-                              f'**Emoji:** {ctx.guild.emoji_limit}\n')
+        embed.add_field(
+            name="__**General information:**__",
+            value=textwrap.dedent(
+                f"""
+                **Owner:** {ctx.guild.owner}
+                **Created at:** {datetime.datetime.strftime(ctx.guild.created_at, "%A %d %B %Y at %H:%M")}
+                **Members:** {ctx.guild.member_count}
+                **Nitro Tier:** {ctx.guild.premium_tier} | **Boosters:** {ctx.guild.premium_subscription_count}
+                **File Size:** {round(ctx.guild.filesize_limit / 1048576)} MB
+                **Bitrate:** {round(ctx.guild.bitrate_limit / 1000)} kbps
+                **Emoji:** {ctx.guild.emoji_limit}
+                """
+            ),
+        )
 
-        embed.add_field(name='__**Channels:**__',
-                        value=f'**AFK timeout:** {int(ctx.guild.afk_timeout / 60)}m | '
-                              f'**AFK channel:** {ctx.guild.afk_channel}\n'
-                              f'**Text channels:** {len(ctx.guild.text_channels)} | '
-                              f'**Voice channels:** {len(ctx.guild.voice_channels)}\n', inline=False)
+        embed.add_field(
+            name="__**Channels:**__",
+            value=textwrap.dedent(
+                f"""
+                **AFK timeout:** {int(ctx.guild.afk_timeout / 60)}m | **AFK channel:** {ctx.guild.afk_channel}
+                **Text channels:** {len(ctx.guild.text_channels)} | **Voice channels:** {len(ctx.guild.voice_channels)}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.set_footer(text=f'ID: {ctx.guild.id}')
+        embed.set_footer(text=f"ID: {ctx.guild.id}")
 
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
+        return
 
-    @commands.command(name='userinfo', aliases=['user'])
-    async def userinfo(self, ctx, *, member: discord.Member = None):
+    @command(aliases=["user"])
+    async def userinfo(self, ctx: Context, *, member: t.Optional[Member] = None) -> None:
         """
         Get information about you, or a specified member.
 
         `member`: The member to get information from. Can be a Mention, Name or ID.
         """
 
-        if member is None:
+        if not member:
             member = ctx.author
 
-        embed = discord.Embed(colour=discord.Color.gold())
+        embed = Embed(colour=Color.gold())
         embed.title = f"{member}'s stats and information."
-        embed.add_field(name='__**General information:**__',
-                        value=f'**Discord Name:** {member}\n'
-                              f'**Created at:** {datetime.datetime.strftime(member.created_at, "%A %d %B %Y at %H:%M")}\n', inline=False)
+        embed.add_field(
+            name="__**General information:**__",
+            value=textwrap.dedent(
+                f"""
+                **Discord Name:** {member}
+                **Created at:** {datetime.datetime.strftime(member.created_at, "%A %d %B %Y at %H:%M")}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.add_field(name='__**Server-related information:**__',
-                        value=f'**Nickname:** {member.nick}\n'
-                              f'**Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}\n'
-                              f'**Top role:** {member.top_role.mention}', inline=False)
+        embed.add_field(
+            name="__**Server-related information:**__",
+            value=textwrap.dedent(
+                f"""
+                **Nickname:** {member.nick}
+                **Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}
+                **Top role:** {member.top_role.mention}
+                """
+            ),
+            inline=False,
+        )
 
-        embed.set_thumbnail(url=member.avatar_url_as(format='png'))
-        embed.set_footer(text=f'ID: {member.id}')
+        embed.set_thumbnail(url=member.avatar_url_as(format="png"))
+        embed.set_footer(text=f"ID: {member.id}")
 
-        return await ctx.send(embed=embed)
-
-    @commands.command(hidden=True)
-    async def spam(self, ctx, times=100000, text=None):
-        def randomString(stringLength=8):
-            letters = string.ascii_lowercase
-            return ''.join(random.choice(letters) for i in range(stringLength))
-        if text is None:
-            num = random.randint(4, 16)
-            for i in range(times):
-                await ctx.send(randomString(num))
-                await asyncio.sleep(1)
-        else:
-            num = random.randint(4, 16)
-            for i in range(times):
-                await ctx.send(text)
-                await asyncio.sleep(1)
-
-    @commands.command(aliases=['cembed', 'emb', 'new'])
-    async def create(self, ctx, *, msg):
-        """Create an embed."""
-        await ctx.send(msg)
-
-    @commands.command(hidden=True)
-    async def load(self, ctx, *, extension):
-        """Loads a cog."""
-        try:
-            self.bot.load_extension(f'cogs.{extension}')
-        except Exception:
-            await ctx.send(f'```py\n{traceback.format_exc()}\n```')
-        else:
-            await ctx.send('\N{SQUARED OK}')
-
-    @commands.command(name='reload', hidden=True)
-    async def _reload(self, ctx, *, extension):
-        """Reloads a module."""
-        try:
-            self.bot.unload_extension(f'cogs.{extension}')
-            self.bot.load_extension(f'cogs.{extension}')
-        except Exception:
-            await ctx.send(f'```py\n{traceback.format_exc()}\n```')
-        else:
-            await ctx.send('\N{SQUARED OK}')
-
-    @commands.command(hidden=True)
-    async def restart(self, ctx):
-        """Restart The bot."""
-        await self.bot.logout()
-        os.system("python main.py")
+        await ctx.send(embed=embed)
+        return
 
 
-def setup(client):
-    client.add_cog(Commands(client))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Commands(bot))
