@@ -387,25 +387,53 @@ class Blackjack_players(menus.Menu):
         self.players = [author]
         self.money_dict = {author.id: author_money}
         self.cost = cost
+        self.current_state = 0
 
     def reaction_check(self, payload) -> bool:
         return payload.message_id == self.message.id and payload.user_id != self.bot.user.id
 
+    async def update(self, payload):
+        button = self.buttons[payload.emoji]
+        if not self._running:
+            return
+
+        try:
+            if button.lock:
+                async with self._lock:
+                    if self._running:
+                        await button(self, payload)
+            else:
+                await button(self, payload)
+        except Exception as error:
+            embed = discord.Embed(color=0xFF0000)
+            embed.set_author(name = str(self.ctx.author), icon_url = str(self.ctx.author.avatar_url))
+            embed.title = f"{self.ctx.author.id} caused an error in connect 4"
+            embed.description = f"{type(error).__name__} : {error}"
+            if self.ctx.guild:
+                embed.description += f"\nin {self.ctx.guild} ({self.ctx.guild.id})\n   in {self.ctx.channel.name} ({self.ctx.channel.id})"
+            elif isinstance(ctx.channel,discord.DMChannel):
+                embed.description += f"\nin a Private Channel ({self.ctx.channel.id})"
+            else:
+                embed.description += f"\nin the Group {self.ctx.channel.name} ({self.ctx.channel.id})"
+            tb = "".join(traceback.format_tb(error.__traceback__))
+            embed.description += f"```\n{tb}```"
+            embed.set_footer(text = f"{self.bot.user.name} Logging", icon_url = self.ctx.me.avatar_url_as(static_format="png"))
+            embed.timestamp = datetime.utcnow()
+            try:
+                await self.bot.log_channel.send(embed = embed)
+            except:
+                await self.bot.log_channel.send("Please check the logs for connect 4")
+                raise error
+
     async def send_initial_message(self, ctx, channel) -> Message:
         self.time = 120
-        self.updater.start()
         return await ctx.send(embed=self.get_embed())
 
-    @tasks.loop(seconds=5)
     async def updater(self) -> None:
         self.time -= 5
         await self.message.edit(embed=self.get_embed())
         if self.time == 0:
             self.stop()
-
-    @updater.before_loop
-    async def waiter(self) -> None:
-        await asyncio.sleep(5)
 
     def get_embed(self) -> Embed:
         r = "\n -"
@@ -427,27 +455,45 @@ class Blackjack_players(menus.Menu):
 
     @menus.button("\U000023ed\N{variation selector-16}")
     async def skipper(self, payload) -> None:
-        self.stop()
+        self.time = 5
+        self.current_state = -1
+        await self.updater()
 
     async def prompt(self, ctx) -> tuple:
         await self.start(ctx, wait=True)
         return self.players, self.money_dict
 
     def stop(self) -> None:
-        self.updater.stop()
+        self.current_state = -1
         super().stop()
 
 
 class Games(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.blackjack_list = []
+        self.blackjack_updater.start()
+
+    def cog_unload(self):
+        self.blackjack_updater.cancel()
+
+    @tasks.loop(seconds=5)
+    async def blackjack_updater(self):
+        new = []
+        for black in self.blackjack_list:
+            if black.current_state == 1:
+                await black.updater()
+            elif black.current_state == -1:
+                continue
+            new.append(black)
+        self.blackjack_list = new
 
     @command(ignore_extra=True)
     async def blackjack(self, ctx: Context, cost: int = 5) -> None:
         """
         Rules: if it's your turn, press the button corresponding to the column in which you want to place the card.
         If you want to split (play on one more column, up to a max of 3, press :regional_indicator_3:).  If you want to stop, press :x:.
-        To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value, 
+        To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value,
         except for faces, which are worth 10 points, and the Ace, which is worth either 1 or 11).
         An Ace plus a face is called a blackjack and beats a 21
         """
@@ -461,7 +507,7 @@ class Games(Cog):
     @command(aliases=["c4"])
     async def connect4(self, ctx: Context, member: Member) -> None:
         """Play connect 4 with a friend"""
-        winner = await connect4(ctx.author, member, clear_reactions_after=True).prompt(ctx)
+        winner = await Connect4(ctx.author, member, clear_reactions_after=True).prompt(ctx)
         if winner:
             await ctx.send(f"{winner.mention} won !")
         else:
