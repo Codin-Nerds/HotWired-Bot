@@ -4,7 +4,7 @@ import typing as t
 from collections import defaultdict
 
 from discord import Color, Embed, Member, TextChannel
-from discord.errors import HTTPException, BadArgument
+from discord.errors import HTTPException
 from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
 
 
@@ -16,10 +16,11 @@ class EmbedData(t.NamedTuple):
 
 
 class JsonEmbedParser:
+    """This class is used for converting json into embed and vice versa."""
+
     def __init__(self, ctx: Context, json_dict: dict) -> None:
         self.ctx = ctx
-        self.raw_json = json_dict
-        self.json = JsonEmbedParser.fill_empty_values(json_dict)
+        self.json = JsonEmbedParser.process_dict(json_dict)
 
     @classmethod
     async def from_str(cls: "JsonEmbedParser", ctx: Context, json_string: str) -> t.Union["JsonEmbedParser", bool]:
@@ -54,6 +55,7 @@ class JsonEmbedParser:
             json_code = json_code.replace("```json", "")
             json_code = json_code.replace("```", "")
 
+        # Parse the code into JSON
         try:
             return json.loads(json_code)
         except json.JSONDecodeError as e:
@@ -79,7 +81,7 @@ class JsonEmbedParser:
             return False
 
     @staticmethod
-    def fill_empty_values(json_dct: dict) -> defaultdict:
+    def process_dict(json_dct: dict) -> dict:
         """Set all values to Embed.Empty to avoid keyerrors."""
         try:
             content = json_dct["content"]
@@ -87,62 +89,27 @@ class JsonEmbedParser:
             content = ""
 
         try:
-            new_json = defaultdict(lambda: Embed.Empty, json_dct["embed"])
+            new_json = json_dct["embed"]
         except KeyError:
-            new_json = defaultdict(lambda: Embed.Empty, json_dct)
+            new_json = json_dct
 
-        # Some of the values needs to be subscriptable, set those explicitly here
-        subscriptable = ["image", "thumbnail", "author", "footer"]
-        for param in subscriptable:
-            try:
-                new_json[param] = defaultdict(lambda: Embed.Empty, new_json[param])
-            except TypeError:
-                new_json[param] = defaultdict(lambda: Embed.Empty)
-            except ValueError as e:
-                raise BadArgument(e)
+        # Set default type to "rich"
+        if "type" not in new_json:
+            new_json["type"] = "rich"
 
-        try:
-            for index, field in enumerate(new_json["fields"]):
-                field = defaultdict(lambda: Embed.Empty, field)
-                if field["inline"] is Embed.Empty:
-                    field["inline"] = False
-                new_json["fields"][index] = field
-        except TypeError:
-            new_json["fields"] = []
+        # TODO: Correctly implement timestampts
+        # Current override will cause errors in make_json
+        if "timestamp" in new_json:
+            new_json["timestamp"] = Embed.Empty
 
         return {"content": content, "embed": new_json}
 
     def make_embed(self) -> EmbedData:
-        jsonc = self.json["embed"]
-
-        content = self.json["content"]
-
-        embed = Embed()
-        embed.title = jsonc["title"]
-        embed.description = jsonc["description"]
-        embed.colour = jsonc["color"]
-        embed.url = jsonc["url"]
-        # TODO: Fix timestamp
-        # embed.timestamp = datetime.datetime.utcformattimestamp()
-
-        # Setting URLs with no value would result in HTTPException on send
-        if jsonc["image"]["url"] is not Embed.Empty:
-            embed.set_image(url=jsonc["image"]["url"])
-        if jsonc["thumbnail"]["url"] is not Embed.Empty:
-            embed.set_thumbnail(url=jsonc["thumbnail"]["url"])
-        # Author's name can't be Embed.Empty (it will result in string "Embed.Empty" as the name)
-        if jsonc["author"]["name"] is not Embed.Empty:
-            embed.set_author(name=jsonc["author"]["name"], url=jsonc["author"]["url"], icon_url=jsonc["author"]["icon_url"])
-
-        embed.set_footer(text=jsonc["footer"]["text"], icon_url=jsonc["footer"]["icon_url"])
-
-        for field in jsonc["fields"]:
-            embed.add_field(name=field["name"], value=field["value"], inline=field["inline"])
-
-        return EmbedData(content, embed)
+        embed = Embed.from_dict(self.json["embed"])
+        return EmbedData(self.json["content"], embed)
 
     def make_json(self) -> str:
-        return json.dumps(self.raw_json)
+        return json.dumps(self.json)
 
 
 class Embeds(Cog):
@@ -308,7 +275,7 @@ class Embeds(Cog):
     # endregion
     # region: json
 
-    @embed_group.command(aliases=["json_load", "from_json", "json"])
+    @embed_group.command(aliases=["json_load", "from_json", "json", "import"])
     async def load(self, ctx: Context, *, json_code: str) -> None:
         """Generate Embed from given JSON code"""
         embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
@@ -318,7 +285,7 @@ class Embeds(Cog):
         else:
             await ctx.send("Invalid embed JSON")
 
-    @embed_group.command(aliases=["json_dump", "to_json", "get_json"])
+    @embed_group.command(aliases=["json_dump", "to_json", "get_json", "export"])
     async def dump(self, ctx: Context) -> None:
         embed_parser = JsonEmbedParser.from_embed(ctx, self.embeds[ctx.author])
         json = embed_parser.make_json()
