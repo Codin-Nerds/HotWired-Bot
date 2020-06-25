@@ -2,10 +2,24 @@ import json
 import textwrap
 import typing as t
 from collections import defaultdict
+from ast import literal_eval
 
 from discord import Color, Embed, Member, TextChannel
 from discord.errors import HTTPException
-from discord.ext.commands import Bot, Cog, ColourConverter, Context, group
+from discord.ext.commands import Bot, Cog, ColourConverter, Context, group, Converter
+
+
+# TODO; Move this into converters file
+class Unicode(Converter):
+    """Convert raw input into unicode formatted string"""
+
+    async def convert(self, ctx: Context, message: str) -> str:
+        """
+        This accepts any string with raw unicode and converts it into proper unicode.
+
+        It uses literal eval to process the string safely and turn it into proper unicode.
+        """
+        return literal_eval(f"'{message}'")
 
 
 class EmbedData(t.NamedTuple):
@@ -132,25 +146,25 @@ class Embeds(Cog):
     # region: basic embed settings (title, description, footer, image, color)
 
     @embed_group.command(aliases=["set_title"])
-    async def title(self, ctx: Context, *, title: str) -> None:
+    async def title(self, ctx: Context, *, title: Unicode) -> None:
         """Set Title for the Embed."""
         self.embeds[ctx.author].embed.title = title
         await ctx.send("Embeds title updated.")
 
     @embed_group.command(aliases=["set_description"])
-    async def description(self, ctx: Context, *, description: str) -> None:
+    async def description(self, ctx: Context, *, description: Unicode) -> None:
         """Set Description for the Embed."""
         self.embeds[ctx.author].embed.description = description
         await ctx.send("Embeds description updated.")
 
     @embed_group.command(aliases=["add_description"])
-    async def append_description(self, ctx: Context, *, description: str) -> None:
+    async def append_description(self, ctx: Context, *, description: Unicode) -> None:
         """Add text into Description of the Embed."""
         self.embeds[ctx.author].embed.description += description
         await ctx.send("Embeds description appended.")
 
     @embed_group.command(aliases=["set_footer"])
-    async def footer(self, ctx: Context, *, footer: str) -> None:
+    async def footer(self, ctx: Context, *, footer: Unicode) -> None:
         """Set Footer for the Embed."""
         self.embeds[ctx.author].embed.set_footer(text=footer)
         await ctx.send("Embeds footer updated.")
@@ -216,7 +230,7 @@ class Embeds(Cog):
         await ctx.send("This command is not meant to be used on its own!")
 
     @field_group.command(name="add")
-    async def field_add(self, ctx: Context, *, title: t.Optional[str] = None) -> None:
+    async def field_add(self, ctx: Context, *, title: t.Optional[Unicode] = None) -> None:
         """Create new field in Embed."""
         self.embeds[ctx.author].embed.add_field(name=title, value="")
         self.embed_fields[ctx.author] += 1
@@ -233,7 +247,7 @@ class Embeds(Cog):
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
 
     @field_group.command(name="description", aliases=["set_description", "value", "set_value"])
-    async def field_description(self, ctx: Context, ID: int, *, description: str) -> None:
+    async def field_description(self, ctx: Context, ID: int, *, description: Unicode) -> None:
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
@@ -243,7 +257,7 @@ class Embeds(Cog):
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
 
     @field_group.command(name="append_description", aliases=["add_description"])
-    async def field_append_description(self, ctx: Context, ID: int, *, description: str) -> None:
+    async def field_append_description(self, ctx: Context, ID: int, *, description: Unicode) -> None:
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
@@ -253,7 +267,7 @@ class Embeds(Cog):
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
 
     @field_group.command(name="title", aliases=["set_title", "name", "set_name"])
-    async def field_title(self, ctx: Context, ID: int, *, title: str) -> None:
+    async def field_title(self, ctx: Context, ID: int, *, title: Unicode) -> None:
         """Set a title for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
