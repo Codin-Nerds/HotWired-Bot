@@ -37,12 +37,7 @@ class Ciphers(commands.Cog):
             return await ctx.send(f"I need some text to shift by {shift} places!")
 
         # If the shift is higher than 25 then this would convert the shift to a value that is lower than 25
-        if shift >= 26:
-            while shift >= 26:
-                shift %= 26
-        elif shift <= -26:
-            while shift <= -26:
-                shift %= -26
+        shift %= 26
 
         shifted_characters = list(map(lambda m: m[shift:] + m[:shift], self.character_set))
         translation_rules = str.maketrans("".join(self.character_set), "".join(shifted_characters))
