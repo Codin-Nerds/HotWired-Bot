@@ -113,6 +113,8 @@ async def human_readable_datetime_parser(ctx, time, dt=True, show_all=False, var
     Varient 0 example: 3 hours 50 min
     Varient 1 example: 3:50:02
     """
+    if varient not in [0, 1]:
+        raise ValueError(f"varient must be 0 or 1, not {varient}")
     now = datetime.utcnow()
 
     if dt is False:
