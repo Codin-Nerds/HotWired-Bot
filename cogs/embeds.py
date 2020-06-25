@@ -149,7 +149,7 @@ class Embeds(Cog):
         """Commands for configuring the Embed messages."""
         await ctx.send("This command is not meant to be used on its own!")
 
-    # region: basic embed settings (title, description, footer, image, color)
+    # region: basic embed settings (title, description, footer, image, color, message)
 
     @embed_group.command(aliases=["set_title"])
     async def title(self, ctx: Context, *, title: Unicode) -> None:
@@ -190,6 +190,12 @@ class Embeds(Cog):
         """
         self.embeds[ctx.author].embed.colour = color
         await ctx.send("Embeds color updated.")
+
+    @embed_group.command(aliases=["content", "msg"])
+    async def message(self, ctx: Context, *, message: str) -> None:
+        """Set message content for the Embed."""
+        self.embeds[ctx.author] = EmbedData(message, self.embeds[ctx.author].embed)
+        await ctx.send("Message content updated.")
 
     # endregion
     # region: author settings
@@ -327,6 +333,7 @@ class Embeds(Cog):
 
     @embed_group.command(aliases=["json_dump", "to_json", "get_json", "export"])
     async def dump(self, ctx: Context) -> None:
+        """Export JSON from current Embed."""
         embed_parser = JsonEmbedParser.from_embed(ctx, self.embeds[ctx.author])
         json = embed_parser.make_json()
         await ctx.send(f"```json\n{json}```")
