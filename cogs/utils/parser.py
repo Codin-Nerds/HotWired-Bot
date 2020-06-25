@@ -62,7 +62,7 @@ async def human_readable_number(number):
 
     suffix = ['', 'k', 'm', 'b', 't', "q"][pow_ten]
 
-    if (number*(1000 * pow_ten)) > 1000:
+    if pow_ten:
         return f"{round(number,2)}{suffix}"
     else:
         return f"{round(number)}{suffix}"
