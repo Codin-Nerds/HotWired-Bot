@@ -1,24 +1,53 @@
 import datetime
-import os
-import platform
-import sys
 import textwrap
-import traceback
 import typing as t
+from .utils import constants
+from collections import Counter
 
 from discord import Color, Embed, Member
 from discord.ext.commands import Bot, Cog, Context, command
+from .utils.embed_handler import status_embed
 
 
 class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-        # TODO: Get the dev-mode from constants.py
-        try:
-            self.dev_mode = platform.system() != "Linux" and sys.argv[1] != "-d"
-        except IndexError:
-            self.dev_mode = True
+    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
+    @command()
+    async def members(self, ctx: Context) -> None:
+        """Returns the number of members in a server."""
+        member_by_status = Counter(str(m.status) for m in ctx.guild.members)
+        bots = len([member for member in ctx.guild.members if member.bot])
+        type = f"""
+                Humans: {ctx.guild.member_count - bots}
+                Bots: {bots}
+            """
+        status = f"""
+                <:online:346921745279746048> {member_by_status["online"]}
+                <:away:346921747330891780> {member_by_status["idle"]}
+                <:dnd:346921781786836992> {member_by_status["dnd"]}
+                <:offline:346921814435430400> {member_by_status["offline"]}
+            """
+        embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
+        embed.add_field(name="**❯❯ Member Status**", value=status)
+        embed.add_field(name="**❯❯ Member Type**", value=type)
+        embed.set_author(name=f"SERVER : {ctx.guild.name}")
+
+        await ctx.send(embed=embed)
+
+    @command()
+    async def status(self, ctx: Context, member: t.Optional[Member] = None) -> None:
+        """Returns the status of a member."""
+        if member is None:
+            member = ctx.author
+
+        if member.id in constants.owner_ids:
+            embed = status_embed(member, description="None")
+        else:
+            embed = status_embed(member)
+
+        await ctx.send(embed=embed)
 
     @command(aliases=["server"])
     async def serverinfo(self, ctx: Context) -> None:
@@ -55,7 +84,8 @@ class Commands(Cog):
 
         embed.set_footer(text=f"ID: {ctx.guild.id}")
 
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
+        return
 
     @command(aliases=["user"])
     async def userinfo(self, ctx: Context, *, member: t.Optional[Member] = None) -> None:
@@ -84,7 +114,8 @@ class Commands(Cog):
         embed.add_field(
             name="__**Server-related information:**__",
             value=textwrap.dedent(
-                f"""**Nickname:** {member.nick}
+                f"""
+                **Nickname:** {member.nick}
                 **Joined server:** {datetime.datetime.strftime(member.joined_at, "%A %d %B %Y at %H:%M")}
                 **Top role:** {member.top_role.mention}
                 """
@@ -95,43 +126,8 @@ class Commands(Cog):
         embed.set_thumbnail(url=member.avatar_url_as(format="png"))
         embed.set_footer(text=f"ID: {member.id}")
 
-        return await ctx.send(embed=embed)
-
-    @command(aliases=["cembed", "emb", "new"])
-    async def create(self, ctx: Context, *, msg: str) -> None:
-        """Create an embed."""
-        # TODO: This command is WIP
-        await ctx.send(msg)
-
-    @command(hidden=True)
-    async def load(self, ctx: Context, *, extension: str) -> None:
-        """Loads a cog."""
-        # TODO: Implement is_owner check here
-        try:
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
-            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-        else:
-            await ctx.send("\N{SQUARED OK}")
-
-    @command(name="reload", hidden=True)
-    async def _reload(self, ctx: Context, *, extension: str) -> None:
-        """Reloads a module."""
-        # TODO: Implement is_owner check here
-        try:
-            self.bot.unload_extension(f"cogs.{extension}")
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
-            await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-        else:
-            await ctx.send("\N{SQUARED OK}")
-
-    @command(hidden=True)
-    async def restart(self, ctx: Context) -> None:
-        """Restart The bot."""
-        # TODO: Implement is_owner check here
-        await self.bot.logout()
-        os.system("python main.py")  # TODO: This might get changed
+        await ctx.send(embed=embed)
+        return
 
 
 def setup(bot: Bot) -> None:

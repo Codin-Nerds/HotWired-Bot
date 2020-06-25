@@ -6,7 +6,7 @@ from .utils import constants
 
 class Support(Cog):
     def __init__(self, bot: Bot) -> None:
-        bot.client = bot
+        self.bot = bot
 
     @command()
     async def invite(self, ctx: Context) -> None:

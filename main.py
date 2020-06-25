@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import textwrap
 from itertools import cycle
 
 import asyncpg
@@ -120,7 +119,6 @@ class Bot(commands.Bot):
 
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True, owner_id=688275913535914014)
-
 
 if __name__ == "__main__":
     bot.run(TOKEN)
