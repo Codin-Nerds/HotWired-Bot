@@ -14,10 +14,7 @@ class Ciphers(commands.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        if self.bot.is_ready():
-            return True
-        else:
-            return False
+        return self.bot.is_ready():
 
     @commands.command(cls=Command,
                       description="Shifts the letters within a message",
