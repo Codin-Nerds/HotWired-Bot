@@ -136,7 +136,7 @@ async def human_readable_datetime_parser(ctx, time, dt=True, show_all=False, var
     for id_index, (delta_name, dis_name) in enumerate(unit_list.items()):
         time_quanity = int(getattr(time, delta_name))
 
-        if varient is 1:
+        if varient:
             if len([quan for quan in processed if quan != 0]) > 2:
                 continue
             elif time_quanity is 0 and (show_all == 2 and id_index in [0, 1, 2, 3]):
