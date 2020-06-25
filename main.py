@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from itertools import cycle
+import textwrap
 
 import asyncpg
 import discord
