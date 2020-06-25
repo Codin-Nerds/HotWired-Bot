@@ -6,7 +6,7 @@ import textwrap
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, errors
+from discord.ext.commands import Bot, Cog, Context, command
 
 from .search_utils import searchexceptions
 from .search_utils.regex import filter_words
@@ -61,7 +61,7 @@ class Search(Cog, name="Basic"):
                 # Sends results
                 return to_parse["data"]["result"]["items"]
 
-    async def _basic_search(self, ctx, query: str, category: str = "web") -> None:
+    async def _basic_search(self, ctx, query: str, category: str) -> None:
         """Basic search formatting."""
         count: int = 5
 
@@ -117,16 +117,20 @@ class Search(Cog, name="Basic"):
             return
         await self._basic_search(ctx, query, category)
 
-    @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: errors) -> None:
-        """Listener makes no command fallback to searching."""
-        fallback = (CommandNotFound, CheckFailure)
+    # @Cog.listener()
+    # async def on_command_error(self, ctx: Context, error: errors) -> None:
+    #     """Listener makes no command fallback to searching."""
+    #     fallback = (CommandNotFound, CheckFailure)
 
-        if isinstance(error, fallback):
-            try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])
-            except searchexceptions.SafesearchFail:
-                await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
+    #     if isinstance(error, fallback):
+    #         try:
+    #             await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])
+    #         except searchexceptions.SafesearchFail:
+    #             await ctx.send(
+    #                 """
+    #                 Please try again in an NSFW channel.
+    #                 """
+    #             )
 
     @command()
     async def anime(self, ctx: Context, *, query: str) -> None:
