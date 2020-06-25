@@ -51,7 +51,13 @@ class Bot(commands.Bot):
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
-            self.pool = await asyncpg.create_pool(database=os.getenv("DATABASE_NAME", "chaotic"), host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")), max_size=int(os.getenv("POOL_MAX", "100")), user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"))
+            self.pool = await asyncpg.create_pool(
+                database=os.getenv("DATABASE_NAME", "chaotic"),
+                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+                max_size=int(os.getenv("POOL_MAX", "100")),
+                user=os.getenv("DATABASE_USER"),
+                password=os.getenv("DATABASE_PASSWORD"),
+            )
             self.change_status.start()
             self.fist_on_ready = False
             self.hw = self.get_user(715545167649570977)
