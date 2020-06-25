@@ -12,6 +12,8 @@ from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
 
+PREFIX = constants.COMMAND_PREFIX
+
 extensions = [
     "cogs.codesandbox",
     "cogs.commands",
@@ -38,7 +40,7 @@ class Bot(commands.Bot):
             [
                 "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
                 "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-                f"Ping me using {constants.COMMAND_PREFIX}help",
+                f"Ping me using {PREFIX}help",
                 "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
                 "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
             ]
@@ -78,7 +80,7 @@ class Bot(commands.Bot):
                 f"""
                 Thanks for adding HotWired in this server,
                 **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
-                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{constants.COMMAND_PREFIX}help**
+                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
                 """
             ),
             color=0x2F3136,
@@ -90,7 +92,7 @@ class Bot(commands.Bot):
                 f"""
                 **► __Bot Id__**: 715545167649570977
                 **► __Developer__**: **{constants.creator}**
-                **► __Prefix__**: {constants.COMMAND_PREFIX}
+                **► __Prefix__**: {PREFIX}
                 """
             ),
         )
@@ -114,7 +116,7 @@ class Bot(commands.Bot):
         )
 
 
-bot = Bot(commands.when_mentioned_or(constants.COMMAND_PREFIX), case_insensitive=True)
+bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
 
 if __name__ == "__main__":
     bot.run(TOKEN)
