@@ -1,7 +1,5 @@
-import os
 import re
 from typing import List
-from urllib.parse import quote_plus
 from .utils import constants
 import textwrap
 
@@ -21,7 +19,6 @@ class Search(Cog, name="Basic"):
         # Main Stuff
         self.bot = bot
         self.emoji = "\U0001F50D"
-        self.scrape_token = os.getenv("SCRAPESTACK")
 
         # Markdown converter
         self.tomd = html2text.HTML2Text()
@@ -49,11 +46,11 @@ class Search(Cog, name="Basic"):
             safesearch = "2"
 
         # Search URL Building
-        search_url = f"{base}/search/{category}" f"?count={count}" f"&q={query}" f"&safesearch={safesearch}" "&t=web" "&locale=en_US" "&uiv=4"
+        search_url = f"{base}/search/{category}?count={count}&q={query}&safesearch={safesearch}&t=web&locale=en_US&uiv=4"
 
         # Scrape or not
-        if self.scrape_token != "":
-            search_url = "http://api.scrapestack.com/scrape" f"?access_key={self.scrape_token}" f"&url={quote_plus(search_url)}"
+        # if self.scrape_token != "":
+        #     search_url = f"http://api.scrapestack.com/scrape?access_key={self.scrape_token}&url={quote_plus(search_url)}"
 
         # Searching
         headers = {"User-Agent": ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0")}
