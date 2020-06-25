@@ -320,7 +320,7 @@ class Fun(Cog):
     async def slap(self, ctx: Context, member: discord.Member = None) -> None:
         """Slap a User."""
         if member == ctx.author.mention or member is None:
-            embed = Embed(title="Slap In The Face!", description=f"{ctx.author.mentioj} got slapped him/her self LMAO!", color=Color.blurple(),)
+            embed = Embed(title="Slap In The Face!", description=f"{ctx.author.mention} got slapped him/her self LMAO!", color=Color.blurple(),)
             embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
         else:
             embed = Embed(
