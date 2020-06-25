@@ -1,11 +1,9 @@
 import base64
 import hashlib
-import re
 import string
 
 from discord.ext import commands
 
-import cogs.utils.parser as parser
 from assets.context import Command, argument, example, usage_info
 
 
