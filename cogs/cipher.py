@@ -24,22 +24,14 @@ class Ciphers(commands.Cog):
                                          "of the message it would try and find it at the end")
                       ],
                       examples=[argument("Hello", "Returns Khoor"), argument("10 Hello", "Returns Rovvy")])
-    async def shift(self, ctx, *, message):
-        message = message.split()
-        shift = await parser.back_front_parser(message, is_list=True)
-
-        for pos_neg in ["-", ""]:
-            if re.findall(f"{pos_neg}\d+", " ".join(shift)):
-                shift = re.findall(f"{pos_neg}\d+", " ".join(shift))[0]
-                break
-        if not shift or isinstance(shift, list) or shift not in message:
-            shift = 3
-            message = " ".join(message)
-        else:
-            location = message.index(shift)
-            del message[location]
-            shift = int(shift)
-            message = " ".join(message)
+    async def shift(self, ctx, shift: typing.Optional[int], *, message):
+        if not shift:
+            M = message.split()
+            try:
+                shift = int(M[-1])
+                message = " ".join(M[:-1])
+            except ValueError:
+                shift = 3
 
         if not message:
             return await ctx.send(f"I need some text to shift by {shift} places!")
