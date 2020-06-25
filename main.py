@@ -4,6 +4,7 @@ import os
 import textwrap
 from itertools import cycle
 
+import asyncpg
 import discord
 from discord.ext import commands, tasks
 
@@ -50,6 +51,7 @@ class Bot(commands.Bot):
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
+            self.pool = await asyncpg.create_pool(database=os.getenv("DATABASE_NAME", "chaotic"), host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")), max_size=int(os.getenv("POOL_MAX", "100")), user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"))
             self.change_status.start()
             self.fist_on_ready = False
             self.hw = self.get_user(715545167649570977)
@@ -59,6 +61,10 @@ class Bot(commands.Bot):
                 self.load_extension(ext)
         else:
             await self.log_channel.send("I'm ready (again)")
+
+    async def close(self) -> None:
+        await super().close()
+        await self.pool.close()
 
     @tasks.loop(hours=3)
     async def change_status(self) -> None:
