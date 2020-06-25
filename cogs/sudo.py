@@ -61,7 +61,7 @@ class Sudo(Cog):
         if ctx.author.id in constants.devs:
             await ctx.message.add_reaction("✅")
             print("Shutting Down!")
-            await self.client.logout()
+            await self.bot.logout()
 
     @sudo.command()
     @check(is_owner)
@@ -90,7 +90,7 @@ class Sudo(Cog):
     @check(is_owner)
     async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
-        await self.client.logout()
+        await self.bot.logout()
         os.system("python main.py")
 
     @sudo.command()
@@ -373,13 +373,6 @@ class Sudo(Cog):
             )
 
         await ctx.send(embed=embed)
-
-    def cog_check(self, ctx: Context) -> bool:
-        """Only allow owner to invoke the commands in this cog."""
-        if ctx.author.id not in [688275913535914014]:
-            return False
-        else:
-            return True
 
 
 def setup(bot: Bot) -> None:

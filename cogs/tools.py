@@ -19,7 +19,7 @@ class Tools(Cog):
         if match:
             embed = Embed(
                 title="Non-Character Detected",
-                description=("Only unicode characters can be processed, but a custom Discord emoji " "was found. Please remove it and try again."),
+                description="Only unicode characters can be processed, but a custom Discord emoji " "was found. Please remove it and try again.",
             )
             embed.colour = Color.red()
             await ctx.send(embed=embed)

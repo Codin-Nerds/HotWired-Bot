@@ -439,4 +439,12 @@ word_list = [
     "hybrid",
     "buffet",
     "lively",
+    "broody",
+    "nasty",
+    "bold",
+    "helper",
+    "porter",
+    "funeral",
+    "gasoline",
+    "wire",
 ]

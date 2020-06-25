@@ -1,6 +1,6 @@
 from discord import Member
 from discord.ext.commands import Context, NoPrivateMessage
-from constants import owner_ids
+from cogs.utils.constants import owner_ids
 
 
 def owner(ctx: Context) -> bool:

@@ -10,7 +10,7 @@ class Translator(Cog):
         self.bot = bot
 
     @command(aliases=["lcode"])
-    async def lang_code(self, ctx: Context, language: str) -> None:
+    async def lang_code(self, ctx: Context, *, language: str) -> None:
         def get_key(val: str) -> str:
             for key, value in constants.LANGUAGES.items():
                 if val == value:
@@ -22,11 +22,10 @@ class Translator(Cog):
             embed = Embed(description="Language Not Found!", color=Color.red())
         else:
             embed = Embed(title="Language Code", description=f"Language : **{language}**\nCode : **{code}**", color=Color.blurple())
-
         await ctx.send(embed=embed)
 
     @command(aliases=["linfo"])
-    async def getinfo(self, ctx: Context, sentence: str) -> None:
+    async def getinfo(self, ctx: Context, *, sentence: str) -> None:
         detection = translator.detect(sentence)
 
         embed = Embed(title="Sentence Info", color=Color.dark_orange())
@@ -36,7 +35,7 @@ class Translator(Cog):
         await ctx.send(embed=embed)
 
     @command()
-    async def translate(self, ctx: Context, destination_language: str = "en", source_language: str = "en", *, sentence: str = "Hello World") -> None:
+    async def translate(self, ctx: Context, source_language: str = "en", destination_language: str = "en", *, sentence: str = "Hello World") -> None:
         translation = translator.translate(sentence, dest=destination_language, src=source_language)
         embed = Embed(
             title="Translation",
