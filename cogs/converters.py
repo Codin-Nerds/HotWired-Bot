@@ -4,6 +4,7 @@ import textwrap
 
 from discord import Embed
 from discord.ext.commands import Bot, Cog, Context, command
+from .utils import constants
 
 
 class Converters(Cog):
@@ -44,7 +45,7 @@ class Converters(Cog):
 
             await ctx.send(embed=embed)
         except ValueError:
-            await ctx.send(f"Invalid sequence. Example usage : `{self.bot.config['PREFIX']}unascii 104 101 121`")
+            await ctx.send(f"Invalid sequence. Example usage : `{constants.COMMAND_PREFIX}unascii 104 101 121`")
 
     @command()
     async def byteconvert(self, ctx: Context, value: int, unit: str = "Mio") -> None:
@@ -78,11 +79,12 @@ class Converters(Cog):
 
         if algo not in self.hash_algos:
             # TODO: `self.algos` doesn't seem to be defined
-            matches = "\n".join([supported for supported in self.algos if algo in supported][:10])
+            matches = "\n".join([supported for supported in self.hash_algos if algo in supported][:10])
             message = f"`{algorithm}` not available."
             if matches:
                 message += f" Did you mean:\n{matches}"
-            return await ctx.send(message)
+            await ctx.send(message)
+            return
 
         try:
             hash_object = getattr(hashlib, algo)(text.encode("utf-8"))

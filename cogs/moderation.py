@@ -47,7 +47,7 @@ class UserID(UserConverter):
     When possible try to convert user into `Member` but if not, use `User` instead.
     """
 
-    async def convert(self, ctx: Context, argument: str) -> User:
+    async def convert(self, ctx: Context, argument: str) -> Member:
         """Convert the `argument` into `Member` or `User`."""
         with suppress(BadArgument):
             # Try to use UserConverter first
@@ -402,7 +402,7 @@ class Moderation(Cog):
             )
             await ctx.send(embed=embed, delete_after=10)
 
-    async def cog_check(self, ctx: Context) -> None:
+    async def cog_check(self, ctx: Context) -> t.Union[None, bool]:
         """Make sure these commands can't be executed from DMs."""
         if ctx.guild is None:
             raise NoPrivateMessage

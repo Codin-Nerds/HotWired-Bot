@@ -170,7 +170,7 @@ class Pages:
     async def show_help(self) -> None:
         """shows this message"""
         messages = ["Welcome to the interactive paginator!\n"]
-        messages.append("This interactively allows you to see pages of text by navigating with " "reactions. They are as follows:\n")
+        messages.append("This interactively allows you to see pages of text by navigating with reactions. They are as follows:\n")
         for (emoji, func) in self.reaction_emojis:
             messages.append(f"{emoji} {func.__doc__}")
         embed = self.embed.copy()
@@ -259,7 +259,7 @@ class TextPages(Pages):
 
         super().__init__(ctx, entries=paginator.pages, per_page=1, show_entry_count=False)
 
-    def get_page(self, page: int) -> t.List[str]:
+    def get_page(self, page: int) -> str:
         return self.entries[page - 1]
 
     def get_embed(self, entries: t.List[str], page: int, *, first=False) -> None:
