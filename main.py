@@ -11,10 +11,6 @@ from discord.ext import commands, tasks
 from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
-PREFIX = constants.COMMAND_PREFIX
-
-SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
-INVITE = "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=980675863&scope=bot"
 
 extensions = [
     "cogs.codesandbox",
@@ -42,7 +38,7 @@ class Bot(commands.Bot):
             [
                 "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
                 "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-                f"Ping me using {PREFIX}help",
+                f"Ping me using {constants.COMMAND_PREFIX}help",
                 "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
                 "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
             ]
@@ -60,8 +56,7 @@ class Bot(commands.Bot):
             )
             self.change_status.start()
             self.fist_on_ready = False
-            self.hw = self.get_user(715545167649570977)
-            self.log_channel = self.get_channel(704197974577643550)
+            self.log_channel = self.get_channel(constants.log_channel)
             await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
             for ext in extensions:
                 self.load_extension(ext)
@@ -83,7 +78,7 @@ class Bot(commands.Bot):
                 f"""
                 Thanks for adding HotWired in this server,
                 **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
-                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
+                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{constants.COMMAND_PREFIX}help**
                 """
             ),
             color=0x2F3136,
@@ -95,7 +90,7 @@ class Bot(commands.Bot):
                 f"""
                 **► __Bot Id__**: 715545167649570977
                 **► __Developer__**: **{constants.creator}**
-                **► __Prefix__**: {PREFIX}
+                **► __Prefix__**: {constants.COMMAND_PREFIX}
                 """
             ),
         )
@@ -103,8 +98,8 @@ class Bot(commands.Bot):
             name="**Links**",
             value=textwrap.dedent(
                 f"""
-                **►** [Support Server]({SUPPORT_SERVER})
-                **►** [Invite link]({INVITE})
+                **►** [Support Server]({constants.discord_server})
+                **►** [Invite link]({constants.invite_link})
                 """
             ),
         )
@@ -119,7 +114,7 @@ class Bot(commands.Bot):
         )
 
 
-bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True, owner_id=688275913535914014)
+bot = Bot(commands.when_mentioned_or(constants.COMMAND_PREFIX), case_insensitive=True)
 
 if __name__ == "__main__":
     bot.run(TOKEN)
