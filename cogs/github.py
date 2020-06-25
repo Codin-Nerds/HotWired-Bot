@@ -9,6 +9,7 @@ BAD_RESPONSES = {
 }
 
 
+# TODO : add gitlab commands too ig.
 class Github(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
