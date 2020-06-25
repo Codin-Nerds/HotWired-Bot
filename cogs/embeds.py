@@ -19,7 +19,13 @@ class Unicode(Converter):
 
         It uses literal eval to process the string safely and turn it into proper unicode.
         """
-        return literal_eval(f"'{message}'")
+        try:
+            if "\n" in message:
+                message = r"\n".join(message.split("\n"))
+            return literal_eval(f"'{message}'")
+        except SyntaxError as e:
+            print(e)
+            return message
 
 
 class EmbedData(t.NamedTuple):
@@ -123,7 +129,7 @@ class JsonEmbedParser:
         return EmbedData(self.json["content"], embed)
 
     def make_json(self) -> str:
-        return json.dumps(self.json)
+        return json.dumps(self.json, indent=2)
 
 
 class Embeds(Cog):
@@ -251,17 +257,27 @@ class Embeds(Cog):
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
-            embed.set_field_at(ID, name=embed.fields[ID].name, value=description)
+            embed.set_field_at(
+                ID,
+                name=embed.fields[ID].name,
+                value=description,
+                inline=embed.fields[ID].inline
+            )
             await ctx.send(f"Embeds field **#{ID}** description updated.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
 
-    @field_group.command(name="append_description", aliases=["add_description"])
+    @field_group.command(name="append_description", aliases=["add_description", "add_value"])
     async def field_append_description(self, ctx: Context, ID: int, *, description: Unicode) -> None:
         """Set a description for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
-            embed.set_field_at(ID, name=embed.fields[ID].name, value=embed.fields[ID].value + description)
+            embed.set_field_at(
+                ID,
+                name=embed.fields[ID].name,
+                value=embed.fields[ID].value + description,
+                inline=embed.fields[ID].inline
+            )
             await ctx.send(f"Embeds field **#{ID}** description appended.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -271,7 +287,12 @@ class Embeds(Cog):
         """Set a title for embeds field #`ID`."""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
-            embed.set_field_at(ID, name=title, value=embed.fields[ID].value)
+            embed.set_field_at(
+                ID,
+                name=title,
+                value=embed.fields[ID].value,
+                inline=embed.fields[ID].inline
+            )
             await ctx.send(f"Embeds field **#{ID}** description updated.")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -281,7 +302,12 @@ class Embeds(Cog):
         """Choose if embed field #`ID` should be inline or not"""
         if ID >= 0 and ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
-            embed.set_field_at(ID, name=embed.fields[ID].name, value=embed.fields[ID].value, inline=inline_status)
+            embed.set_field_at(
+                ID,
+                name=embed.fields[ID].name,
+                value=embed.fields[ID].value,
+                inline=inline_status
+            )
             await ctx.send(f"Embeds field **#{ID}** is now {'' if inline_status else 'not'} inline")
         else:
             await ctx.send(f"Embeds field **#{ID}** doesn't exist.")
@@ -306,7 +332,7 @@ class Embeds(Cog):
         await ctx.send(f"```json\n{json}```")
 
     # endregion
-    # region: showing, sending embed
+    # region: showing, sending, resetting
 
     async def send_embed(self, author: Member, channel: TextChannel) -> bool:
         try:
@@ -344,6 +370,11 @@ class Embeds(Cog):
             await self.send_embed(ctx.author, channel)
         else:
             await ctx.send("Sorry, you can't send the embed here. You're missing **Manage Messages** permission")
+
+    @embed_group.command()
+    async def reset(self, ctx: Context) -> None:
+        self.embeds[ctx.author] = EmbedData("", Embed())
+        await ctx.send("Your saved embed was reset.")
 
     # endregion
 
