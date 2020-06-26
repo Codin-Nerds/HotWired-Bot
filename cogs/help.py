@@ -7,13 +7,14 @@ import discord.utils
 
 from .utils import constants
 
+
 class HelpSource(menus.ListPageSource):
     def __init__(self, signature: Function, filter_commands: Coroutine, prefix: str, author: discord.User, cogs: dict) -> None:
         self.get_command_signature = signature
         self.filter_commands = filter_commands
         self.prefix = prefix
         self.menu_author = author
-        super().__init__([(cog, cogs[cog]) for cog in sorted(cogs, key=lambda cog: cog.qualified_name if cog else "ZZ")], per_page = 1)
+        super().__init__([(cog, cogs[cog]) for cog in sorted(cogs, key=lambda cog: cog.qualified_name if cog else "ZZ")], per_page=1)
 
     async def format_page(self, menu: menus.MenuPages, cog_tuple: tuple) -> discord.Embed:
         cog, commands = cog_tuple
@@ -39,6 +40,7 @@ class HelpSource(menus.ListPageSource):
         embed.set_footer(text=f"Page {menu.current_page + 1}/{self.get_max_pages()}")
         return embed
 
+
 class Help(commands.HelpCommand):
     def get_command_signature(self, command: commands.Command) -> str:
         basis = f"{command.qualified_name}"
@@ -58,7 +60,7 @@ class Help(commands.HelpCommand):
     async def send_bot_help(self, mapping: dict) -> None:
         ctx = self.context
         pages = menus.MenuPages(
-            source = HelpSource(
+            source=HelpSource(
                 self.get_command_signature,
                 self.filter_commands,
                 ctx.prefix,
@@ -103,7 +105,7 @@ class Help(commands.HelpCommand):
             colour=ctx.bot.colors["blue"],
         )
         if command.aliases:
-            embed.add_field(name="Aliases :", value= "\n".join(command.aliases))
+            embed.add_field(name="Aliases :", value="\n".join(command.aliases))
         embed.set_author(
             name=str(ctx.message.author),
             icon_url=str(ctx.message.author.avatar_url),
@@ -125,7 +127,7 @@ class Help(commands.HelpCommand):
         ctx = self.context
         prefix = ctx.prefix
         embed = discord.Embed(
-            title = f"Help for group {prefix}{self.get_command_signature(group)}",
+            title=f"Help for group {prefix}{self.get_command_signature(group)}",
             description=(
                 "Command syntax : `<Those arguments are required>`. `[Those aren't]`\n"
                 f"{group.help}"
@@ -141,7 +143,7 @@ class Help(commands.HelpCommand):
         embed.set_author(
             name=str(ctx.message.author),
             icon_url=str(ctx.message.author.avatar_url),
-            )
+        )
         embed.set_thumbnail(url=str(ctx.bot.user.avatar_url))
         if group.hidden:
             embed.set_footer(
@@ -155,9 +157,11 @@ class Help(commands.HelpCommand):
             )
         await ctx.send(embed=embed)
 
+
 def setup(bot: commands.Bot) -> None:
     bot.old_help_command = bot.help_command
-    bot.help_command = Help(verify_checks = False, command_attrs = {'hidden':True})
+    bot.help_command = Help(verify_checks=False, command_attrs={'hidden': True})
+
 
 def teardown(bot: commands.Bot) -> None:
     bot.help_command = bot.old_help_command
