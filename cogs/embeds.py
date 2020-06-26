@@ -13,19 +13,44 @@ from discord.ext.commands import Bot, Cog, ColourConverter, Context, group, Conv
 class Unicode(Converter):
     """Convert raw input into unicode formatted string"""
 
-    async def convert(self, ctx: Context, message: str) -> str:
+    def process_unicode(self, message: str) -> str:
         """
         This accepts any string with raw unicode and converts it into proper unicode.
 
         It uses literal eval to process the string safely and turn it into proper unicode.
         """
-        try:
-            if "\n" in message:
-                message = r"\n".join(message.split("\n"))
-            return literal_eval(f"'{message}'")
-        except SyntaxError as e:
-            print(e)
-            return message
+
+        # Only process individual lines to avoid EOL in expression
+        lines = message.split("\n")
+        for index, line in enumerate(lines):
+            try:
+                # Replace ''' which would exit the string
+                # even though it won't be allowed by literal_eval, it is still better
+                # to replace it as it will properly evaluate even strings with that.
+                line = line.replace("'''", "`<ESCAPE STRING>`")
+                line = literal_eval(f"'''{line}'''")
+                line = line.replace("`<ESCAPE STRING>`", "'''")
+                lines[index] = line
+            except SyntaxError as e:
+                print(line)
+                print(f"String deemed unsafe -> {e}")
+
+        return "\n".join(lines)
+
+    def outside_delimeter(self, string: str, delimeter: str, operation: t.Callable) -> str:
+        """Apply given operation to text outside of delimeted section"""
+        splitted = string.split(delimeter)
+        for index, string_part in enumerate(splitted):
+            # Not inside of a delimeted section
+            if index % 2 == 0:
+                splitted[index] = operation(string_part)
+
+        return delimeter.join(splitted)
+
+    async def convert(self, ctx: Context, message: str) -> str:
+        # TODO: don't replace unicode characters within code blocks
+        operation = lambda x: self.outside_delimeter(x, "`", self.process_unicode)
+        return self.outside_delimeter(message, "```", operation)
 
 
 class EmbedData(t.NamedTuple):
