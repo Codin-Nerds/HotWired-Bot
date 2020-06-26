@@ -5,9 +5,9 @@ from discord import Color
 DEV_MODE = True
 
 log_channel = 704197974577643550
-owner_ids = [688275913535914014, 306876636526280705]
+owner_ids = [688275913535914014, 306876636526280705]  # here too.
 creator = "The-Codin-Hole team"
-devs = [710400991761137666, 688275913535914014, 306876636526280705]
+devs = [688275913535914014, 306876636526280705]  # add faholan's id.
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
