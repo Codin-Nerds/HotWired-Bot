@@ -4,7 +4,7 @@ from collections import defaultdict
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Bot, Cog, Context, command, errors
 
-from assets.words import word_list
+from bot.assets.words import word_list
 
 from .utils import constants
 

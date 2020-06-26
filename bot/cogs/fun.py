@@ -10,13 +10,13 @@ from random import choice, randint
 from discord import Color, Embed, Message
 from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, is_nsfw, errors
 
-from cogs.utils.errors import ServiceError
+from bot.cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
 import nekos as n
 
 
-file = open("assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
+file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()
 file.close()
 

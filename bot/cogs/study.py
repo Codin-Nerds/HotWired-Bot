@@ -2,8 +2,8 @@ import discord
 from discord.ext.commands import Bot, Cog, Context, command
 import aiohttp
 import textwrap
-from utils.mathscrape import get_math_results
-from utils.wolframscrape import get_wolfram_data
+from bot.utils.mathscrape import get_math_results
+from bot.utils.wolframscrape import get_wolfram_data
 from .urbandict_utils.urbandictpages import UrbanDictionaryPages
 
 

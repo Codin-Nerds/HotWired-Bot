@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from cogs.utils import constants
+from bot.cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = constants.COMMAND_PREFIX
@@ -58,29 +58,28 @@ async def on_ready() -> None:
 
 
 def setup_bot(bot: Bot) -> None:
-    bot.load_extension("cogs.codesandbox")
-    # bot.load_extension("cogs.coding")
-    bot.load_extension("cogs.commands")
-    bot.load_extension("cogs.converters")
-    bot.load_extension("cogs.common")
-    bot.load_extension("cogs.emotes")
-    bot.load_extension("cogs.events")
-    bot.load_extension("cogs.fun")
-    bot.load_extension("cogs.games")
-    bot.load_extension("cogs.infog")
-    bot.load_extension("cogs.moderation")
-    # bot.load_extension("cogs.search")
-    bot.load_extension("cogs.study")
-    bot.load_extension("cogs.sudo")
-    bot.load_extension("cogs.support")
-    bot.load_extension("cogs.tools")
-    bot.load_extension("cogs.embeds")
-    bot.load_extension("cogs.translate")
+    bot.load_extension("bot.cogs.codesandbox")
+    # bot.load_extension("bot.cogs.coding")
+    bot.load_extension("bot.cogs.commands")
+    bot.load_extension("bot.cogs.converters")
+    bot.load_extension("bot.cogs.common")
+    bot.load_extension("bot.cogs.emotes")
+    bot.load_extension("bot.cogs.events")
+    bot.load_extension("bot.cogs.fun")
+    bot.load_extension("bot.cogs.games")
+    bot.load_extension("bot.cogs.infog")
+    bot.load_extension("bot.cogs.moderation")
+    # bot.load_extension("bot.cogs.search")
+    bot.load_extension("bot.cogs.study")
+    bot.load_extension("bot.cogs.sudo")
+    bot.load_extension("bot.cogs.support")
+    bot.load_extension("bot.cogs.tools")
+    bot.load_extension("bot.cogs.embeds")
+    bot.load_extension("bot.cogs.translate")
 
     bot.run(TOKEN)
 
 
 client.loop.create_task(change_status())
 
-if __name__ == "__main__":
-    setup_bot(client)
+setup_bot(client)

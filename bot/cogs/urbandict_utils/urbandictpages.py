@@ -4,7 +4,7 @@ import typing as t
 import discord
 from discord.ext.commands import Context
 
-from cogs.utils.paginator import Pages
+from bot.cogs.utils.paginator import Pages
 
 
 class UrbanDictionaryPages(Pages):
