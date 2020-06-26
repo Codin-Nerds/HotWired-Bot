@@ -255,7 +255,6 @@ class Embeds(Cog):
             author_icon = author_icon.avatar_url_as(format="png")
 
         embed = self.embeds[ctx.author].embed
-
         embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=author_icon)
         await ctx.send("Embeds author icon updated.")
 
