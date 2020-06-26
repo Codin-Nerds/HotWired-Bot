@@ -48,7 +48,7 @@ class Unicode(Converter):
         return delimeter.join(splitted)
 
     async def convert(self, ctx: Context, message: str) -> str:
-        # TODO: don't replace unicode characters within code blocks
+        # don't replace unicode characters within code blocks
         operation = lambda x: self.outside_delimeter(x, "`", self.process_unicode)
         return self.outside_delimeter(message, "```", operation)
 
