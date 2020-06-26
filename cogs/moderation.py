@@ -7,7 +7,7 @@ from datetime import datetime
 from functools import wraps
 
 import discord
-from discord import Color, Embed, Guild, Member, NotFound, Role, User
+from discord import Color, Embed, Guild, Member, NotFound, Role, User, TextChannel
 from discord.errors import Forbidden
 from discord.ext.commands import BadArgument, Bot, Cog, Context, Converter, Greedy, NoPrivateMessage, UserConverter, command, has_permissions
 
@@ -226,11 +226,13 @@ class Moderation(Cog):
 
         total_members = len(members)
         if total_members == 0:
-            return await ctx.send("No members to ban.")
+            await ctx.send("No members to ban.")
+            return
 
         confirm = await ctx.prompt(f"This will ban **{Plural(total_members):member}**. Are you sure?", reacquire=False)
         if not confirm:
-            return await ctx.send("Aborting.")
+            await ctx.send("Aborting.")
+            return
 
         failed = 0
         for member in members:
@@ -276,9 +278,12 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int) -> None:
+    async def clear(self, ctx: Context, amount: int, target: User = None) -> None:
         """Clear specified number of messages."""
-        await ctx.channel.purge(limit=amount + 1)
+        if target is None:
+            await ctx.message.channel.purge(limit=amount)
+        else:
+            await ctx.message.channel.purge(limit=amount, check=lambda message: message.author == target)
 
         embed = Embed(
             description=textwrap.dedent(
@@ -292,6 +297,52 @@ class Moderation(Cog):
         message = await ctx.send(ctx.author.mention, embed=embed)
         await asyncio.sleep(2.5)
         await message.delete()
+
+    @command()
+    @has_permissions(manage_messages=True)
+    async def shift(self, ctx, count: int, target: TextChannel, copy: bool = False) -> None:
+        """Copy or Move specified messages amount to specified channel"""
+        messages = []
+        async for message in ctx.message.channel.history(limit=count):
+            embed = Embed(description=message.content, color=Color.green())
+            embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+            embed.timestamp = message.created_at
+            messages.append(embed)
+
+            if not copy:
+                await message.delete()
+
+        await target.send(f'Message source : {ctx.message.channel.mention}.')
+
+        for embed in reversed(messages):
+            await target.send(embed=embed)
+
+    @command()
+    @has_permissions(kick_members=True)
+    async def dm(self, ctx: Context, members: Greedy[Member], *, message: str) -> None:
+        embed = Embed(
+            title="Notice!",
+            description=message,
+            color=Color.dark_magenta()
+        )
+        embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+
+        for member in members:
+            await member.send(embed=embed)
+
+    @command()
+    @has_permissions(kick_members=True)
+    async def dmall(self, ctx: Context, *, message: str) -> None:
+        embed = Embed(
+            title="Notice!",
+            description=message,
+            color=Color.dark_magenta()
+        )
+        embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+
+        for member in ctx.guild.members:
+            with suppress(Forbidden):
+                await member.send(embed=embed)
 
     @command()
     @has_permissions(manage_roles=True)
