@@ -116,11 +116,11 @@ basic_search_categories = ["web", "videos", "music", "files", "images", "it", "m
 
 # Emojis class
 class Emojis:
-    issue = "<:IssueOpen:629695470327037963>"
-    issue_closed = "<:IssueClosed:629695470570307614>"
-    pull_request = "<:PROpen:629695470175780875>"
-    pull_request_closed = "<:PRClosed:629695470519713818>"
-    merge = "<:PRMerged:629695470570176522>"
+    issue = "<:IssueOpen:725770366714380410>"
+    issue_closed = "<:IssueClosed:725770497039663114>"
+    pull_request = "<:PROpen:725770558582554744>"
+    pull_request_closed = "<:PRClosed:725770652354609234>"
+    merge = "<:PRMerged:725770703600615435>"
 
 
 class Infraction(Enum):

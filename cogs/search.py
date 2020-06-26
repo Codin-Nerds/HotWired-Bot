@@ -6,7 +6,7 @@ import textwrap
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, errors
+from discord.ext.commands import Bot, Cog, Context, command
 
 from .search_utils import searchexceptions
 from .search_utils.regex import filter_words
@@ -48,10 +48,6 @@ class Search(Cog, name="Basic"):
         # Search URL Building
         search_url = f"{base}/search/{category}?count={count}&q={query}&safesearch={safesearch}&t=web&locale=en_US&uiv=4"
 
-        # Scrape or not
-        # if self.scrape_token != "":
-        #     search_url = f"http://api.scrapestack.com/scrape?access_key={self.scrape_token}&url={quote_plus(search_url)}"
-
         # Searching
         headers = {"User-Agent": ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0")}
         async with aiohttp.ClientSession() as session:
@@ -61,7 +57,7 @@ class Search(Cog, name="Basic"):
                 # Sends results
                 return to_parse["data"]["result"]["items"]
 
-    async def _basic_search(self, ctx, query: str, category: str = "web") -> None:
+    async def _basic_search(self, ctx, query: str, category: str) -> None:
         """Basic search formatting."""
         count: int = 5
 
@@ -69,7 +65,6 @@ class Search(Cog, name="Basic"):
 
         # Handling
         async with ctx.typing():
-
             # Searches
             results = await self._search_logic(query, is_nsfw, category)
             count = len(results)
@@ -116,17 +111,6 @@ class Search(Cog, name="Basic"):
             await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(constants.basic_search_categories)}```")
             return
         await self._basic_search(ctx, query, category)
-
-    @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: errors) -> None:
-        """Listener makes no command fallback to searching."""
-        fallback = (CommandNotFound, CheckFailure)
-
-        if isinstance(error, fallback):
-            try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])
-            except searchexceptions.SafesearchFail:
-                await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 
     @command()
     async def anime(self, ctx: Context, *, query: str) -> None:

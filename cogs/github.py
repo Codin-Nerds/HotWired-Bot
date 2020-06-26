@@ -35,30 +35,40 @@ class Github(Cog):
 
         if "issues" in json_data.get("html_url"):
             if json_data.get("state") == "open":
+                title = "Issue Opened"
                 icon_url = Emojis.issue
             else:
+                title = "Issue Closed"
                 icon_url = Emojis.issue_closed
         else:
             async with self.session.get(merge_url) as m:
                 if json_data.get("state") == "open":
+                    title = "PR Opened"
                     icon_url = Emojis.pull_request
                 elif m.status == 204:
+                    title = "PR Merged"
                     icon_url = Emojis.merge
                 else:
+                    title = "PR Closed"
                     icon_url = Emojis.pull_request_closed
 
         issue_url = json_data.get("html_url")
-        description_text = f"[{repository}] #{number} {json_data.get('title')}"
         resp = Embed(
-            colour=Color.bright_green(),
-            description=f"{icon_url} [{description_text}]({issue_url})"
+            title=f"{icon_url} {title}",
+            colour=Color.gold(),
+            description=f"""
+                            Repository : **{user}/{repository}**
+                            Title : **{json_data.get('title')}**
+                            ID : **`{number}`**
+                            Link :  [Here]({issue_url})
+                        """
         )
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
 
-    @command(aliases=["ghrepo"])
+    @command()
     @cooldown(1, 5, type=BucketType.user)
-    async def github(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
+    async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
         """
         This command uses the GitHub API, and is limited
         to 1 use per 5 seconds to comply with the rules.
