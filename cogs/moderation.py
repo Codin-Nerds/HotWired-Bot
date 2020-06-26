@@ -312,7 +312,7 @@ class Moderation(Cog):
             if not copy:
                 await message.delete()
 
-        await target.send(f'Message source : {ctx.message.channel.mention}.')
+        await target.send(f'Message source : {ctx.channel.mention}.')
 
         for embed in reversed(messages):
             await target.send(embed=embed)
