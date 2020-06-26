@@ -1,5 +1,16 @@
 import typing as t
 
+import requests
+
+RESPONSES = {
+    200: True,
+    301: "Switching to a different endpoint",
+    400: "Bad Request",
+    401: "Not Authenticated",
+    404: "The resource you tried to access wasn’t found on the server.",
+    403: "The resource you’re trying to access is forbidden — you don’t have the right permissions to see it.",
+}
+
 
 def to_base(base: t.Literal[2, 8, 16], number: int) -> str:
     """Convert any passed integer into given base as string."""
@@ -29,3 +40,20 @@ def base_calculator(base: int, num1: str, num2: str, operator: t.Literal["+", "-
         return operations[operator](num1, num2)
     except ZeroDivisionError:
         return "N/A (ZERO DIVISION)"
+
+
+def get_math_results(equation: str) -> str:
+    """Use `api.mathjs.org` to calculate any given equation"""
+    params = {"expr": equation}
+    url = "http://api.mathjs.org/v4/"
+    r = requests.get(url, params=params)
+
+    try:
+        response = RESPONSES[r.status_code]
+    except KeyError:
+        response = "Invalid Equation"
+
+    if response is True:
+        return r.text
+    else:
+        return response
