@@ -107,6 +107,10 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
 
+    bot.load_extension("cogs.help")
+    # I still believe that it would be useful to, at least, have a dictionnary
+    # including all the extensions, for example in constants.py. That's quite a mess
+
     bot.run(TOKEN)
 
 
