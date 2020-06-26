@@ -320,6 +320,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     async def dm(self, ctx: Context, members: Greedy[Member], *, message: str) -> None:
+        """Dm a List of Specified User from Your Guild."""
         embed = Embed(
             title="Notice!",
             description=message,
@@ -333,6 +334,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     async def dmall(self, ctx: Context, *, message: str) -> None:
+        """Dm all Users from Your Guild."""
         embed = Embed(
             title="Notice!",
             description=message,
