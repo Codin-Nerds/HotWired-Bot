@@ -6,7 +6,7 @@ from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
 from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
 
-from .utils import constants
+from bot import constants
 
 
 class Common(Cog):
@@ -52,7 +52,7 @@ class Common(Cog):
         for reaction in options:
             await message.add_reaction(reaction)
 
-    # TODO : add github logo thumnail to embed, and some more content. like about ig.
+    # TODO : add github logo thumbnail to embed, and some more content. like about ig.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
         """GitHub repository"""

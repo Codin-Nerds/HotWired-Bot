@@ -7,7 +7,7 @@ from discord.ext.commands import Bot, Cog
 import re
 import aiohttp
 
-from .utils import constants
+from bot import constants
 
 PREFIX = constants.COMMAND_PREFIX
 

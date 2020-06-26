@@ -4,7 +4,8 @@ import textwrap
 
 from discord import Embed
 from discord.ext.commands import Bot, Cog, Context, command
-from .utils import constants
+
+from bot import constants
 
 
 class Converters(Cog):

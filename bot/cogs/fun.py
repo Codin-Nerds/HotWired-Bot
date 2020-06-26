@@ -1,20 +1,21 @@
+import os
 import random
 import textwrap
-import urllib
 import typing as t
-import aiohttp
-import os
-import discord
-from .utils import constants
+import urllib
 from random import choice, randint
-from discord import Color, Embed, Message
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, is_nsfw, errors
 
+import aiohttp
+import discord
+import nekos as n
+from discord import Color, Embed, Message
+from discord.ext.commands import (BadArgument, Bot, BucketType, Cog, Context,
+                                  command, cooldown, errors, is_nsfw)
+
+from bot import constants
 from bot.cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
-import nekos as n
-
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()

@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from bot.cogs.utils import constants
+from bot import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = constants.COMMAND_PREFIX

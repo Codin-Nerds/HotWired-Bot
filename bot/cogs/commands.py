@@ -1,11 +1,13 @@
 import datetime
 import textwrap
 import typing as t
-from .utils import constants
 from collections import Counter
 
 from discord import Color, Embed, Member
 from discord.ext.commands import Bot, Cog, Context, command
+
+from bot import constants
+
 from .utils.embed_handler import status_embed
 
 

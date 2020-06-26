@@ -1,7 +1,7 @@
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
-from .utils import constants
+from bot import constants
 
 
 class Support(Cog):

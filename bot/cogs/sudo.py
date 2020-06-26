@@ -11,7 +11,7 @@ from discord import Color, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Bot, Cog, Context, check, group
 
-from .utils import constants
+from bot import constants
 
 
 class Sudo(Cog):
