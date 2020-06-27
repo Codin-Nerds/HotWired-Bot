@@ -251,7 +251,7 @@ class Games(Cog):
 
     def del_hangman_player(self, player: Member, guild: Guild, channel: TextChannel) -> None:
         if self.is_playing_hangman(player, guild, channel):
-            self.hangman_players[guild.id][channel.id].remove[player]
+            self.hangman_players[guild][channel].remove[player]
         else:
             raise errors.BadArgument("Player is not in game!")
 

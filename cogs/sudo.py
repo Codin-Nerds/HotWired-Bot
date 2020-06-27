@@ -1,7 +1,6 @@
 import datetime
 import platform
 import textwrap
-import typing as t
 import traceback
 import os
 
@@ -10,8 +9,7 @@ import psutil
 from discord import Color, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Bot, Cog, Context, check, group
-
-from .utils import constants
+from assets.checks import is_sudo
 
 
 class Sudo(Cog):
@@ -45,26 +43,17 @@ class Sudo(Cog):
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
         if ctx.invoked_subcommand is None:
-            embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
-            await ctx.send(embed=embed)
-
-    async def is_owner(self, ctx: Context) -> t.Union[bool, None]:
-        if ctx.author.id in constants.devs:
-            return True
-        else:
-            embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
-            await ctx.send(embed=embed)
+            return
 
     @sudo.command()
-    @check(is_owner)
+    @check(is_sudo)
     async def shutoff(self, ctx: Context) -> None:
-        if ctx.author.id in constants.devs:
-            await ctx.message.add_reaction("✅")
-            print("Shutting Down!")
-            await self.bot.logout()
+        await ctx.message.add_reaction("✅")
+        print("Shutting Down!")
+        await self.bot.logout()
 
     @sudo.command()
-    @check(is_owner)
+    @check(is_sudo)
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
         try:
@@ -75,7 +64,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_owner)
+    @check(is_sudo)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
         try:
@@ -87,7 +76,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
+    @check(is_sudo)
     async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
         await self.bot.logout()

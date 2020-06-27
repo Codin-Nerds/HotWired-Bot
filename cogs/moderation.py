@@ -278,7 +278,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int, target: User = None) -> None:
+    async def clear(self, ctx: Context, amount: int, target: UserID = None) -> None:
         """Clear specified number of messages."""
         if target is None:
             await ctx.message.channel.purge(limit=amount)
@@ -303,7 +303,7 @@ class Moderation(Cog):
     async def shift(self, ctx, count: int, target: TextChannel, copy: bool = False) -> None:
         """Copy or Move specified messages amount to specified channel"""
         messages = []
-        async for message in ctx.message.channel.history(limit=count):
+        async for message in ctx.channel.history(limit=count):
             embed = Embed(description=message.content, color=Color.green())
             embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
             embed.timestamp = message.created_at
@@ -318,8 +318,8 @@ class Moderation(Cog):
             await target.send(embed=embed)
 
     @command()
-    @has_permissions(manage_messages=True)
-    async def dm(self, ctx: Context, members: Greedy[Member], *, message: str) -> None:
+    @has_permissions(administrator=True)
+    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], *, message: str) -> None:
         """Dm a List of Specified User from Your Guild."""
         embed = Embed(
             title="Notice!",
@@ -329,7 +329,15 @@ class Moderation(Cog):
         embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in members:
-            await member.send(embed=embed)
+            if isinstance(member, Role):
+                print("works")
+                for mem in member.members:
+                    print("for")
+                    await mem.send(embed=embed)
+                print("above return")
+                return
+            else:
+                await member.send(embed=embed)
 
     @command()
     @has_permissions(administrator=True)
@@ -347,27 +355,27 @@ class Moderation(Cog):
                 await member.send(embed=embed)
 
     @command()
-    @has_permissions(manage_roles=True)
+    @has_permissions(manage_channels=True)
     async def lock(self, ctx, channels: Greedy[TextChannel] = None, reason: str = 'Not Specified') -> None:
         """Disable @everyone's permission to send message on given channel or current channel if not specified."""
         if channels is None:
             channels = [ctx.channel]
-        for c in channels:
-            await c.set_permissions(c.guild.default_role, send_messages=False,
-                                    reason=f"Reason: {reason} | Requested by {ctx.author}.")
-            await c.send("🔒 Locked down this channel.")
+        for channel in channels:
+            await channel.set_permissions(channel.guild.default_role, send_messages=False,
+                                          reason=f"Reason: {reason} | Requested by {ctx.author}.")
+            await channel.send("🔒 Locked down this channel.")
         if not channels == [ctx.channel]:
             await ctx.send(f"Locked down {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
 
     @command()
-    @has_permissions(manage_roles=True)
+    @has_permissions(manage_channels=True)
     async def unlock(self, ctx, channels: Greedy[TextChannel] = None, reason: str = 'Not specified') -> None:
         """Reset @everyone's permission to send message on given channel or current channel if not specified."""
         if channels is None:
             channels = [ctx.channel]
-        for c in channels:
-            await c.set_permissions(c.guild.default_role, send_messages=None,
-                                    reason=f"Reason: {reason} | Requested by {ctx.author}.")
+        for channel in channels:
+            await channel.set_permissions(channel.guild.default_role, send_messages=None,
+                                          reason=f"Reason: {reason} | Requested by {ctx.author}.")
         await ctx.send(f"Unlocked {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
 
     @command()
@@ -375,14 +383,14 @@ class Moderation(Cog):
     async def slowmode(self, ctx, channels: Greedy[TextChannel] = None, seconds: int = 10, reason: str = "Not specified") -> None:
         """Set channel's slowmode delay, default = 10s."""
         if not (0 <= seconds <= 21600):
-            await ctx.send(":x: The duration is extreme or very low.")
+            await ctx.send(":x: Duration is out of bounds (0-21600 seconds)")
             return
 
         if channels is None:
-            channels = ctx.channel
+            channels = [ctx.channel]
 
-        for c in channels:
-            await c.edit(reason=f"Reason: {reason} | Requested by {ctx.author}.", slowmode_delay=seconds)
+        for channel in channels:
+            await channel.edit(reason=f"Reason: {reason} | Requested by {ctx.author}.", slowmode_delay=seconds)
         if seconds != 0:
             await ctx.send(f"✅ Set {len(channels)} channel{'s' if len(channels) > 1 else ''} with {seconds}sec slowmode.")
         else:
