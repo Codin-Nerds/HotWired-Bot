@@ -15,9 +15,9 @@ class Github(Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
-    @classmethod
-    def generate_description(cls, description: str, stars: str, forks: str, command: str) -> str:
-        return f"*{description}*\nStars: {stars} Forks: {forks}\n Command: {command}"
+    @staticmethod
+    def generate_description(description: str, stars: str, forks: str, command: str) -> str:
+        return f"**{description}**\nStars: {stars} Forks: {forks}\n Command: {command}"
 
     @command()
     @cooldown(1, 5, type=BucketType.user)
