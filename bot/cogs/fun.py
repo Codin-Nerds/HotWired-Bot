@@ -13,7 +13,7 @@ from discord.ext.commands import (BadArgument, Bot, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
 from bot import constants
-from bot.cogs.utils.errors import ServiceError
+from bot.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
 

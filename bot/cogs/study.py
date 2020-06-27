@@ -6,8 +6,8 @@ import aiohttp
 import discord
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot.cogs.utils.paginator import Pages
 from bot.utils.math import get_math_results
+from bot.utils.paginator import Pages
 from bot.utils.wolframscrape import get_wolfram_data
 
 
