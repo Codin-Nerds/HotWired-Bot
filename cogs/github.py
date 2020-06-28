@@ -2,6 +2,7 @@ from discord import Embed, Color
 from discord.ext.commands import Cog, Context, command, Bot, cooldown, BucketType
 from .utils.constants import Emojis
 import aiohttp
+import textwrap
 
 BAD_RESPONSES = {
     404: "Issue/pull request not Found! Please enter a valid PR Number!",
@@ -15,10 +16,6 @@ class Github(Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
-    @staticmethod
-    def generate_description(description: str, stars: str, forks: str, command: str) -> str:
-        return f"**{description}**\nStars: {stars} Forks: {forks}\n Command: {command}"
-
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def issue(self, ctx: Context, number: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
@@ -30,7 +27,7 @@ class Github(Cog):
             json_data = await resp.json()
 
         if resp.status in BAD_RESPONSES:
-            await ctx.send(f"ERROR CODE : [{str(resp.status)}] {BAD_RESPONSES.get(resp.status)}")
+            await ctx.send(f"ERROR: [ {BAD_RESPONSES.get(resp.status)}")
             return
 
         if "issues" in json_data.get("html_url"):
@@ -41,11 +38,11 @@ class Github(Cog):
                 title = "Issue Closed"
                 icon_url = Emojis.issue_closed
         else:
-            async with self.session.get(merge_url) as m:
+            async with self.session.get(merge_url) as merge:
                 if json_data.get("state") == "open":
                     title = "PR Opened"
                     icon_url = Emojis.pull_request
-                elif m.status == 204:
+                elif merge.status == 204:
                     title = "PR Merged"
                     icon_url = Emojis.merge
                 else:
@@ -56,12 +53,12 @@ class Github(Cog):
         resp = Embed(
             title=f"{icon_url} {title}",
             colour=Color.gold(),
-            description=f"""
+            description=textwrap.dedent(f"""
                             Repository : **{user}/{repository}**
                             Title : **{json_data.get('title')}**
                             ID : **`{number}`**
                             Link :  [Here]({issue_url})
-                        """
+                        """)
         )
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
@@ -75,24 +72,24 @@ class Github(Cog):
         """
         embed = Embed(color=Color.blue())
         async with await self.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
-            r = await resp.json()
+            response = await resp.json()
 
         if resp.status in BAD_RESPONSES:
             await ctx.send(f"ERROR CODE : [{str(resp.status)}] {BAD_RESPONSES.get(resp.status)}")
             return
 
-        if r["message"]:
-            await ctx.send(f"ERROR : {r['message']}")
-        if r["description"] == "":
+        if response["message"]:
+            await ctx.send(f"ERROR : {response['message']}")
+        if response["description"] == "":
             desc = "No description provided."
         else:
-            desc = r["description"]
+            desc = response["description"]
 
-        stars = r["stargazers_count"]
-        forks = r["forks_count"]
-        cmd = f'git clone {r["clone_url"]}'
+        stars = response["stargazers_count"]
+        forks = response["forks_count"]
+        cmd = f'git clone {response["clone_url"]}'
         embed.title = f"{repo} on GitHub"
-        embed.description = self.generate_description(desc, stars, forks, cmd)
+        embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
 
         await ctx.send(embed=embed)
 
