@@ -14,7 +14,7 @@ PREFIX = constants.COMMAND_PREFIX
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
 
-client.frist_on_ready = False # Really, would be much nicer to have the subclass
+client.first_on_ready = False #  Really, would be much nicer to have the subclass
 
 status = [
     "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
@@ -40,7 +40,7 @@ async def on_ready() -> None:
     print(f"Logged in as: {client.user.name} : {client.user.id}")
     if client.first_on_ready:
         client.first_on_ready = False
-        client.pool = await asyncpg.create_pool(database="@Jana", host="127.0.0.1", min_size=20, max_size=100) # @Jana
+        client.pool = await asyncpg.create_pool(database="@Jana", host="127.0.0.1", min_size=20, max_size=100) #  @Jana : link to the connection credentials
 
 # @client.event
 # async def on_command_error(ctx, error):
