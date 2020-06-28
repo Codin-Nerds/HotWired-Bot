@@ -75,6 +75,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.sudo")
     bot.load_extension("cogs.support")
     bot.load_extension("cogs.tools")
+    bot.load_extension("cogs.embeds")
     bot.load_extension("cogs.translate")
 
     bot.run(TOKEN)
