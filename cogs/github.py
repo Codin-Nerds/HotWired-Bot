@@ -27,7 +27,7 @@ class Github(Cog):
             json_data = await resp.json()
 
         if resp.status in BAD_RESPONSES:
-            await ctx.send(f"ERROR: [ {BAD_RESPONSES.get(resp.status)}")
+            await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
 
         if "issues" in json_data.get("html_url"):
@@ -53,12 +53,14 @@ class Github(Cog):
         resp = Embed(
             title=f"{icon_url} {title}",
             colour=Color.gold(),
-            description=textwrap.dedent(f"""
-                            Repository : **{user}/{repository}**
-                            Title : **{json_data.get('title')}**
-                            ID : **`{number}`**
-                            Link :  [Here]({issue_url})
-                        """)
+            description=textwrap.dedent(
+                f"""
+                Repository : **{user}/{repository}**
+                Title : **{json_data.get('title')}**
+                ID : **`{number}`**
+                Link :  [Here]({issue_url})
+                """
+            )
         )
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
@@ -67,19 +69,20 @@ class Github(Cog):
     @cooldown(1, 5, type=BucketType.user)
     async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
         """
-        This command uses the GitHub API, and is limited
-        to 1 use per 5 seconds to comply with the rules.
+        Show info about a given GitHub repository.
+
+        This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
         embed = Embed(color=Color.blue())
         async with await self.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
             response = await resp.json()
 
         if resp.status in BAD_RESPONSES:
-            await ctx.send(f"ERROR CODE : [{str(resp.status)}] {BAD_RESPONSES.get(resp.status)}")
+            await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
 
         if response["message"]:
-            await ctx.send(f"ERROR : {response['message']}")
+            await ctx.send(f"ERROR: {response['message']}")
         if response["description"] == "":
             desc = "No description provided."
         else:
