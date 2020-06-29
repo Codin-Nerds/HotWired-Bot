@@ -1,6 +1,7 @@
 import asyncio
 import textwrap
 import time
+import aiohttp
 
 from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
@@ -12,6 +13,7 @@ from .utils import constants
 class Common(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     # TODO : Add custom command support after db integration
     @command()
@@ -51,6 +53,40 @@ class Common(Cog):
         message = await ctx.send(embed=embed)
         for reaction in options:
             await message.add_reaction(reaction)
+
+    @command()
+    async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
+        """{PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        if question_and_choices is None:
+            await ctx.send(f"Usage: {constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
+            return
+
+        if "|" in question_and_choices:
+            delimiter = "|"
+        else:
+            delimiter = ","
+        question_and_choices = question_and_choices.split(delimiter)
+
+        if len(question_and_choices) == 1:
+            return await ctx.send("Not enough choices supplied")
+        elif len(question_and_choices) >= 31:
+            return await ctx.send("Too many choices")
+
+        question, *choices = question_and_choices
+        choices = [x.lstrip() for x in choices]
+
+        header = {"Content-Type": "application/json"}
+        payload = {
+            "title": question,
+            "options": choices,
+            "multi": False
+        }
+
+        async with self.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
+            data = await r.json()
+
+        id = data["id"]
+        await ctx.send(f"http://www.strawpoll.me/{id}")
 
     # TODO : add github logo thumnail to embed, and some more content. like about ig.
     @command(aliases=["git"])
