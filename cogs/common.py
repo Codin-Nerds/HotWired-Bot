@@ -56,7 +56,7 @@ class Common(Cog):
 
     @command()
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
-        """{PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        f"""{constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
         if question_and_choices is None:
             await ctx.send(f"Usage: {constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
             return
@@ -88,7 +88,7 @@ class Common(Cog):
         id = data["id"]
         await ctx.send(f"http://www.strawpoll.me/{id}")
 
-    # TODO : add github logo thumnail to embed, and some more content. like about ig.
+    # TODO : add github logo thumnail to embed, and some more content.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
         """GitHub repository"""
