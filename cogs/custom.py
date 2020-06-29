@@ -1,7 +1,7 @@
 import asyncio
-from io import BytesIO
+from pytz import utc
 import re
-from textwrap import dedent
+import textwrap
 
 import discord
 from discord.ext import commands
@@ -9,19 +9,19 @@ from discord.ext import commands
 
 class Custom(commands.Cog):
     """Create your own commands!"""
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.type_name = {"user": "member", "server": "guild"}
         self.type_dict = {"member": commands.MemberConverter, "channel": commands.TextChannelConverter, "role": commands.RoleConverter, "int": int}
 
-    async def cog_check(self, ctx: commands.Context):
+    async def cog_check(self, ctx: commands.Context) -> bool:
         if ctx.guild:
             return True
         raise commands.NoPrivateMessage("These commands are guild only")
 
     @commands.group(invoke_without_command=True)
-    async def custom(self, ctx: commands.Context):
-        pass #  TODO : add docstring, help and everything. Maybe a link in the web interface ?
+    async def custom(self, ctx: commands.Context) -> None:
+        pass  # TODO : add docstring, help and everything. Maybe a link in the web interface ?
 
     @custom.command()
     async def create(self, ctx: commands.Context) -> None:
@@ -47,10 +47,10 @@ class Custom(commands.Cog):
             if row:
                 return await ctx.send(f"A custom command named {name} already exists")
 
-        await ctx.send(f"So the name's {name}. What about the description (enter *) to skip this")
+        await ctx.send(f"So the name's {name}. What about the description (enter * to skip this)")
         try:
             description = await self.bot.wait_for("message", check=check)
-            description = dscription.content
+            description = description.content
         except asyncio.TimeoutError:
             return await ctx.send("You took too long to reply. I'm aborting this")
 
@@ -60,7 +60,7 @@ class Custom(commands.Cog):
         await ctx.send(
             "What arguments will this command take (separate them with spaces) ? You can annotate them "
             "using {name}:{type}\n"
-            "The types currently supported are : int, Role, Member, User, str (the default type)"
+            "The types currently supported are : int, Role, Member, Channel, str (the default type)"
         )
 
         try:
@@ -104,17 +104,70 @@ class Custom(commands.Cog):
             row = await db.fetchrow("SELECT * FROM public.custom WHERE guild_id=$1 AND name=$2", ctx.guild.id, name)
             if row:
                 return await ctx.send(f":x: There is already a custom command named {name}")
-            await db.execute("INSERT INTO public.custom VALUES ($1, $2, $3, $4, $5, $6)", ctx.guild.id, ctx.author.id, name, description, arguments, effect)
+            await db.execute(
+                "INSERT INTO public.custom VALUES ($1, $2, $3, $4, $5, $6)",
+                ctx.guild.id,
+                ctx.author.id,
+                name,
+                description,
+                arguments,
+                effect,
+            )
+        await ctx.send(f"Custom command {name} created successfully")
+
+    @custom.command()
+    async def delete(self, ctx: commands.Context, name: str) -> None:
+        async with self.bot.pool.acquire() as db:
+            row = await db.fetchrow(
+                "SELECT * FROM public.custom WHERE name=$1 AND guild_id=$2 AND owner_id=$3",
+                name,
+                ctx.guild.id,
+                ctx.author.id,
+            )
+            if not row:
+                return await ctx.send(f"I didn't find any command named {name}. Are you sure that it exists and you own it ?")
+            await db.execute(
+                "DELETE FROM public.custom WHERE name=$1 AND guild_id=$2 AND owner_id=$3",
+                name,
+                ctx.guild.id,
+                ctx.author.id,
+            )
+        await ctx.send(f"Custom command {name} successfully deleted")
+
+    @custom.command()
+    async def info(self, ctx: commands.Context, name: str) -> None:
+        async with self.bot.pool.acquire() as db:
+            command = await db.fetchrow("SELECT * FROM public.custom WHERE name=$1 AND guild_id=$2", name, ctx.guild.id)
+        if not command:
+            return await ctx.send(f"No custom command named {name} found in your guild")
+        embed = discord.Embed(
+            title=f"Informations about custom command {name}",
+            description=command["description"] if command["description"] else discord.Embed.Empty,
+            colour=0x00008b,
+        )
+        try:
+            owner = ctx.guild.get_member(command["owner_id"]) or await ctx.guikd.fetch_member(command["owner_id"])
+            embed.set_author(name=owner.display_name, icon_url=str(owner.avatar_url))
+        except discord.NotFound:
+            embed.set_author(name="Unclaimed command", icon_url=str(ctx.me.avatar_url))
+
+        embed.timestamp = command["created_at"].astimezone(utc)
+        await ctx.send(embed=embed)
 
     @commands.Cog.listener("on_message")
-    async def custom_invoke(self, message: discord.Message):
+    async def custom_invoke(self, message: discord.Message) -> None:
         """That heck invokes the custom commands"""
-        prefix = ">>" #  TODO : check the guild's custom prefix
+        prefix = await self.bot.get_prefix(message)
+
         if not message.content.startswith(prefix) or not message.guild:
             return
 
-        async with self.bot.db.acquire() as db:
-            command = await db.fetchrow("SELECT * FROM public.custom WHERE guild_id=$1 AND name=$2", message.guild.id, message.content[len(prefix):].split(" ")[0])
+        async with self.bot.pool.acquire() as db:
+            command = await db.fetchrow(
+                "SELECT * FROM public.custom WHERE guild_id=$1 AND name=$2",
+                message.guild.id,
+                message.content[len(prefix):].split(" ")[0],
+            )
             if not command:
                 return
 
@@ -127,8 +180,13 @@ class Custom(commands.Cog):
         to_compile = textwrap.dedent(
             f'''
             async def func(message, {arguments}):
-                return """{effect}""".format(author=message.author, guild=message.guild, server=message.guild, message=message.content, {arguments_format})
-            '''.strip("\n")
+                return """{effect}""".format(
+                    author=message.author,
+                    guild=message.guild,
+                    server=message.guild,
+                    message=message.content,
+                    {arguments_format}
+                )'''.strip("\n")
         )
 
         env = {}
@@ -136,7 +194,11 @@ class Custom(commands.Cog):
         try:
             exec(to_compile, env)
         except Exception:
-            return
+            try:
+                owner = self.bot.get_user(command["owner_id"]) or await self.bot.fetch_user(command["owner_id"])
+                return await message.channel.send(f"The custom command raised an error. Please contact {owner.mention} about that issue")
+            except discord.NotFound:
+                return await message.channel.send("The custom command raised an error")
 
         func = env["func"]
 
@@ -170,3 +232,7 @@ class Custom(commands.Cog):
                 await message.channel.send(f"The custom command raised an error. Please contact {owner.mention} about that issue")
             except discord.NotFound:
                 await message.channel.send("The custom command raised an error")
+
+
+def setup(bot):
+    bot.add_cog(Custom(bot))
