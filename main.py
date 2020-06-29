@@ -40,7 +40,13 @@ async def on_ready() -> None:
     print(f"Logged in as: {client.user.name} : {client.user.id}")
     if client.first_on_ready:
         client.first_on_ready = False
-        client.pool = await asyncpg.create_pool(database="@Jana", host="127.0.0.1", min_size=20, max_size=100) #  @Jana : link to the connection credentials
+        client.pool = await asyncpg.create_pool(
+            database=os.getenv("DATABASE_NAME"),
+            host="127.0.0.1", min_size=20,
+            max_size=100,
+            user=os.getenv("DATABASE_USER"),
+            password=os.getenv("DATABASE_PASSWORD"),
+        )
 
 # @client.event
 # async def on_command_error(ctx, error):

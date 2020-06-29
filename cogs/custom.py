@@ -21,7 +21,8 @@ class Custom(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def custom(self, ctx: commands.Context) -> None:
-        pass  # TODO : add docstring, help and everything. Maybe a link in the web interface ?
+        """Set of commands for creating custom commands"""
+        await ctx.send_help("custom")
 
     @custom.command()
     async def create(self, ctx: commands.Context) -> None:
