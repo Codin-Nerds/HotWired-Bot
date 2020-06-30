@@ -7,7 +7,7 @@ line 19), under Flake8, Mypy, Pydocstyle and Pylint.
 
 from inspect import Parameter
 import textwrap
-from typing import Optional
+from typing import Callable, Coroutine, Optional
 
 import discord
 from discord.ext import commands, menus
@@ -19,20 +19,18 @@ class HelpSource(menus.ListPageSource):
 
     def __init__(
             self,
-            signature,
-            filter_commands,
-            prefix,
-            author,
-            bot_id,
-            perms,
-            cogs) -> None:
+            signature: Callable,
+            filter_commands: Coroutine,
+            prefix: str,
+            author: discord.User,
+            bot_id: int,
+            cogs: dict) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
         self.prefix = prefix
         self.menu_author = author
         self.bot_id = bot_id
-        self.bot_perms = perms
         super().__init__(
             [(cog, cogs[cog]) for cog in sorted(
                 cogs,
@@ -41,7 +39,10 @@ class HelpSource(menus.ListPageSource):
             per_page=1,
         )
 
-    async def format_page(self, menu, cog_tuple) -> discord.Embed:
+    async def format_page(
+            self,
+            menu: menus.Menu,
+            cog_tuple: tuple) -> discord.Embed:
         """Format the pages."""
         cog, command_list = cog_tuple
         embed = discord.Embed(
@@ -69,7 +70,7 @@ class HelpSource(menus.ListPageSource):
                 inline=False,
             )
         embed.set_footer(
-            text=f"Page {menu.current_page + 1}/{self.get_max_pages()}"
+            text=f"Page {menu.current_page+1}/{self.get_max_pages()}"
         )
         return embed
 
@@ -103,7 +104,6 @@ class Help(commands.HelpCommand):
                 ctx.prefix,
                 ctx.author,
                 ctx.bot.user.id,
-                ctx.bot.invite_permissions,
                 mapping),
             clear_reactions_after=True,
         )
@@ -112,9 +112,7 @@ class Help(commands.HelpCommand):
     async def send_cog_help(self, cog: commands.Cog) -> None:
         """Send help for a cog."""
         ctx = self.context
-        prefix = discord.utils.escape_markdown(
-            await ctx.bot.get_m_prefix(ctx.message, False),
-        )
+        prefix = ctx.prefix
         embed = discord.Embed(
             title=cog.qualified_name,
             description=textwrap.dedent(
@@ -124,7 +122,7 @@ class Help(commands.HelpCommand):
                 {cog.description}
                 """
             ),
-            colour=discord.Color.blue(),
+            color=discord.Color.blue(),
         )
         embed.set_author(
             name=str(ctx.message.author),
@@ -146,16 +144,14 @@ class Help(commands.HelpCommand):
     async def send_command_help(self, command: commands.Command) -> None:
         """Send help for a command."""
         ctx = self.context
-        prefix = discord.utils.escape_markdown(
-            await ctx.bot.get_m_prefix(ctx.message, False),
-        )
+        prefix = ctx.prefix
         embed = discord.Embed(
             title=f"{prefix}{self.get_command_signature(command)}",
             description=(
                 "Help syntax : `<Required arguments`. "
                 f"`[Optional arguments]`\n{command.help}"
             ),
-            colour=discord.Color.blue(),
+            color=discord.Color.blue(),
         )
         if command.aliases:
             embed.add_field(name="Aliases :", value="\n".join(command.aliases))
@@ -179,9 +175,7 @@ class Help(commands.HelpCommand):
     async def send_group_help(self, group: commands.Group) -> None:
         """Send help for a group."""
         ctx = self.context
-        prefix = discord.utils.escape_markdown(
-            await ctx.bot.get_m_prefix(ctx.message, False),
-        )
+        prefix = ctx.prefix
         embed = discord.Embed(
             title=(
                 f"Help for group {prefix}"
@@ -191,7 +185,7 @@ class Help(commands.HelpCommand):
                 "Help syntax : `<Required arguments>`. "
                 f"`[Optional arguments]`\n{group.help}"
             ),
-            colour=discord.Color.blue(),
+            color=discord.Color.blue(),
         )
         for command in await self.filter_commands(group.commands, sort=True):
             embed.add_field(
