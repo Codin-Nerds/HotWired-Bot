@@ -9,6 +9,7 @@ from discord.ext.commands import Bot
 from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = "hi"
 PREFIX = constants.COMMAND_PREFIX
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
@@ -78,7 +79,10 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.embeds")
     bot.load_extension("cogs.translate")
 
-    bot.run(TOKEN)
+    try:
+        bot.run(TOKEN)
+    except AttributeError:
+        raise Exception("No bot token was specified.")
 
 
 client.loop.create_task(change_status())
