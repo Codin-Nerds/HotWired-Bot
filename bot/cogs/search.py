@@ -1,15 +1,25 @@
 import re
 from typing import List
-from .utils import constants
+from bot import constants
 import textwrap
 
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, CheckFailure, Cog, CommandNotFound, Context, command, errors
+from discord.ext.commands import Bot, Cog, Context, command
 
 from .search_utils import searchexceptions
-from .search_utils.regex import filter_words
+
+with open("bot/assets/filter_words.txt", "r") as f:
+    filter_words = f.readlines()
+
+regexp = ""
+for filter_word in filter_words:
+    filter_word = filter_word.replace("\n", "")
+    regexp += f"{filter_word}|"
+regexp = regexp[:-1]
+
+filter_words = re.compile(regexp, re.I)
 
 
 class Search(Cog, name="Basic"):
@@ -30,12 +40,11 @@ class Search(Cog, name="Basic"):
 
     async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
         """Uses scrapestack and the Qwant API to find search results."""
-        # Typing
-        base: str
-        safesearch: str
-
-        if filter_words.match(query) and not is_nsfw:
-            raise searchexceptions.SafesearchFail("Query had NSFW.")
+        if not is_nsfw:
+            filter = filter_words.search(query)
+            if filter:
+                # TODO: Log this
+                raise searchexceptions.SafesearchFail("Query had NSFW.")
 
         base = "https://api.qwant.com/api"
 
@@ -48,10 +57,6 @@ class Search(Cog, name="Basic"):
         # Search URL Building
         search_url = f"{base}/search/{category}?count={count}&q={query}&safesearch={safesearch}&t=web&locale=en_US&uiv=4"
 
-        # Scrape or not
-        # if self.scrape_token != "":
-        #     search_url = f"http://api.scrapestack.com/scrape?access_key={self.scrape_token}&url={quote_plus(search_url)}"
-
         # Searching
         headers = {"User-Agent": ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0")}
         async with aiohttp.ClientSession() as session:
@@ -61,36 +66,35 @@ class Search(Cog, name="Basic"):
                 # Sends results
                 return to_parse["data"]["result"]["items"]
 
-    async def _basic_search(self, ctx, query: str, category: str = "web") -> None:
+    async def _basic_search(self, ctx: Context, query: str, category: str = "web") -> None:
         """Basic search formatting."""
-        count: int = 5
-
         is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, "is_nsfw") else False
 
-        # Handling
         async with ctx.typing():
-
             # Searches
-            results = await self._search_logic(query, is_nsfw, category)
+            try:
+                results = await self._search_logic(query, is_nsfw, category)
+            except searchexceptions.SafesearchFail:
+                await ctx.send(f":x: Sorry {ctx.author.mention}, your message contains filtered words, I've removed this message.")
+                await ctx.message.delete()
+                return
             count = len(results)
 
-            # Escapes all nasties for displaying
+            # Ignore markdown when displaying
             query_display = utils.escape_mentions(query)
             query_display = utils.escape_markdown(query_display)
 
             # Return if no results
-            try:
-                results[0]
-            except IndexError:
+            if count == 0:
                 await ctx.send(f"No results found for `{query_display}`.")
                 return
 
-            # Gets the first entry's stuff
+            # Gets the first entry's data
             first_title = self.tomd.handle(results[0]["title"]).rstrip("\n")
             first_url = results[0]["url"]
             first_desc = self.tomd.handle(results[0]["desc"]).rstrip("\n")
 
-            # Builds the substring for each of the other results.
+            # Builds the substring for each of the other result.
             other_results: List[str] = []
             for r in results[1:count]:
                 title = self.tomd.handle(r["title"]).rstrip("\n")
@@ -99,11 +103,19 @@ class Search(Cog, name="Basic"):
             other_msg: str = "\n".join(other_results)
 
             # Builds message
-            msg = (
-                f"Showing **{count}** results for `{query_display}`.\n\n"
-                f"**{first_title}** {first_url}\n{first_desc}\n\n"
-                f"{other_msg}\n\n_Powered by HotWired._"
-            )
+            msg = (textwrap.dedent(
+                f"""
+                Showing **{count}** results for `{query_display}`.
+
+
+                **{first_title}** {first_url}
+                {first_desc}
+
+                {other_msg}
+
+                _Powered by HotWired._
+                """
+            ))
 
             msg = re.sub(r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\." r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)", r"<\1>", msg)
 
@@ -116,17 +128,6 @@ class Search(Cog, name="Basic"):
             await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(constants.basic_search_categories)}```")
             return
         await self._basic_search(ctx, query, category)
-
-    @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: errors) -> None:
-        """Listener makes no command fallback to searching."""
-        fallback = (CommandNotFound, CheckFailure)
-
-        if isinstance(error, fallback):
-            try:
-                await self._basic_search(ctx, ctx.message.content[len(ctx.prefix):])
-            except searchexceptions.SafesearchFail:
-                await ctx.send("**Sorry!** That query included language we cannot accept in a non-NSFW channel. Please try again in an NSFW channel.")
 
     @command()
     async def anime(self, ctx: Context, *, query: str) -> None:
