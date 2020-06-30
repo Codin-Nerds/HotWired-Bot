@@ -59,7 +59,7 @@ async def on_ready() -> None:
 
 def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.codesandbox")
-    # bot.load_extension("cogs.coding")
+    bot.load_extension("cogs.coding")
     bot.load_extension("cogs.comics")
     bot.load_extension("cogs.commands")
     bot.load_extension("cogs.converters")
