@@ -5,7 +5,17 @@ import aiohttp
 
 from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
+from discord.ext.commands import (
+    BadArgument,
+    Bot,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    has_permissions,
+    CommandError
+)
 
 from .utils import constants
 
@@ -118,6 +128,23 @@ class Common(Cog):
             start -= 1
             await asyncio.sleep(1)
         await message.delete()
+
+    @command()
+    @cooldown(1, 10, BucketType.user)
+    async def urlshorten(self, ctx: Context, url='') -> None:
+        '''Shorten a URL.'''
+        async with ctx.typing():
+            if not url:
+                raise CommandError(message='Required argument missing: `url`.')
+            if not url.startswith("https://"):
+                raise CommandError(message=f'Invalid argument: `{url}`. Argument must be a valid URL.')
+
+            async with self.session.get(f'https://is.gd/create.php?format=simple&url={url}') as r:
+                if r.status != 200:
+                    raise CommandError(message='Error retrieving shortened URL, please try again in a minute.')
+                data = await r.text()
+
+        await ctx.send(data)
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
