@@ -6,6 +6,7 @@ import aiohttp
 import discord
 from bs4 import BeautifulSoup
 from discord.ext.commands import Bot, Cog, Context, command
+from discord import Embed, Color
 
 from utils.mathscrape import get_math_results
 from utils.wolframscrape import get_wolfram_data
@@ -184,6 +185,71 @@ class Study(Cog):
 
         result_text = "*, *".join(result)
         await search_msg.edit(content=f"Synonyms for **{search_term}**: *{result_text}*")
+
+    base_url = "https://en.wikipedia.org/w/api.php"
+    headers = {"user-agent": "HotWired-Bot"}
+    footer_icon = (
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wikimedia-logo.png"
+        "/600px-Wikimedia-logo.png"
+    )
+
+    @command(aliases=["wiki"])
+    async def wikipedia(self, ctx: Context, *, query: str) -> None:
+        """Get information from Wikipedia."""
+        payload = {}
+        payload["action"] = "query"
+        payload["titles"] = query.replace(" ", "_")
+        payload["format"] = "json"
+        payload["formatversion"] = "2"  # Cleaner json results
+        payload["prop"] = "extracts"  # Include extract in returned results
+        payload["exintro"] = "1"  # Only return summary paragraph(s) before main content
+        payload["redirects"] = "1"  # Follow redirects
+        payload["explaintext"] = "1"  # Make sure it's plaintext (not HTML)
+
+        conn = aiohttp.TCPConnector()
+
+        async with aiohttp.ClientSession(connector=conn) as session:
+            async with session.get(
+                self.base_url, params=payload, headers=self.headers
+            ) as res:
+                result = await res.json()
+
+        try:
+            # Get the last page. Usually this is the only page.
+            for page in result["query"]["pages"]:
+                title = page["title"]
+                description = page["extract"].strip().replace("\n", "\n\n")
+                url = "https://en.wikipedia.org/wiki/{}".format(title.replace(" ", "_"))
+
+            if len(description) > 1500:
+                description = description[:1500].strip()
+                description += "... [(read more)]({})".format(url)
+
+            embed = discord.Embed(
+                title=f"Wikipedia: {title}",
+                description=u"\u2063\n{}\n\u2063".format(description),
+                color=discord.Color.blue(),
+                url=url
+            )
+            embed.set_footer(
+                text="Wikipedia", icon_url=self.footer_icon
+            )
+            await ctx.send(embed=embed)
+
+        except KeyError:
+            await ctx.send(
+                embed=Embed(
+                    description=f"I'm sorry, I couldn't find \"{query}\" on Wikipedia",
+                    color=Color.red()
+                )
+            )
+        except discord.Forbidden:
+            await ctx.send(
+                embed=Embed(
+                    description=f"I'm not allowed to do embeds here...\n{url}",
+                    color=Color.gold()
+                )
+            )
 
 
 def setup(bot: Bot) -> None:
