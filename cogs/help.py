@@ -6,6 +6,7 @@ line 19), under Flake8, Mypy, Pydocstyle and Pylint.
 """
 
 from inspect import Parameter
+import textwrap
 from typing import Optional
 
 import discord
@@ -24,7 +25,7 @@ class HelpSource(menus.ListPageSource):
             author,
             bot_id,
             perms,
-            cogs):
+            cogs) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
@@ -40,24 +41,20 @@ class HelpSource(menus.ListPageSource):
             per_page=1,
         )
 
-    async def format_page(self, menu, cog_tuple):
+    async def format_page(self, menu, cog_tuple) -> discord.Embed:
         """Format the pages."""
         cog, command_list = cog_tuple
-        link = discord.utils.oauth_url(
-            str(self.bot_id),
-            permissions=discord.Permissions(self.bot_perms),
-        )
         embed = discord.Embed(
             title=(
                 "Help for "
                 f"{cog.qualified_name if cog else 'unclassified commands'}"
             ),
-            description=(
-                "Command syntax : `<Those arguments are required>`. `"
-                '[Those aren\'t]`\n[Everything to know about my glorious self]'
-                f'({link} "Invite link")'
-                f"\nThe prefix for this channel is `{self.prefix}`\n"
-                f"{cog.description if cog else ''}"
+            description=textwrap.dedent(
+                f"""
+                Help syntax : `<Required argument>`. `[Optional argument]`
+                Command prefix: `{self.prefix}`
+                {cog.description if cog else ""}
+                """
             ),
             color=0xffff00,
         )
@@ -72,7 +69,7 @@ class HelpSource(menus.ListPageSource):
                 inline=False,
             )
         embed.set_footer(
-            text=f"Page {menu.current_page+1}/{self.get_max_pages()}"
+            text=f"Page {menu.current_page + 1}/{self.get_max_pages()}"
         )
         return embed
 
@@ -120,12 +117,14 @@ class Help(commands.HelpCommand):
         )
         embed = discord.Embed(
             title=cog.qualified_name,
-            description=(
-                "Command syntax : `<Those arguments are required>`. "
-                f"`[Those aren't]`\nThe prefix for this channel is `{prefix}`"
-                f"\n{cog.description}"
+            description=textwrap.dedent(
+                f"""
+                Help syntax : `<Required argument>`. `[Optional argument]`
+                Command prefix: `{self.prefix}`
+                {cog.description}
+                """
             ),
-            colour=ctx.bot.colors["blue"],
+            colour=discord.Color.blue(),
         )
         embed.set_author(
             name=str(ctx.message.author),
@@ -139,7 +138,7 @@ class Help(commands.HelpCommand):
                 inline=False,
             )
         embed.set_footer(
-            text=f"Are you interested in {cog.qualified_name} ?",
+            text=f"Are you interested in {cog.qualified_name}?",
             icon_url=str(ctx.bot.user.avatar_url),
         )
         await ctx.send(embed=embed)
@@ -153,10 +152,10 @@ class Help(commands.HelpCommand):
         embed = discord.Embed(
             title=f"{prefix}{self.get_command_signature(command)}",
             description=(
-                "Command syntax : `<Those arguments are required>`. "
-                f"`[Those aren't]`\n{command.help}"
+                "Help syntax : `<Required arguments`. "
+                f"`[Optional arguments]`\n{command.help}"
             ),
-            colour=ctx.bot.colors["blue"],
+            colour=discord.Color.blue(),
         )
         if command.aliases:
             embed.add_field(name="Aliases :", value="\n".join(command.aliases))
@@ -167,12 +166,12 @@ class Help(commands.HelpCommand):
         embed.set_thumbnail(url=str(ctx.bot.user.avatar_url))
         if command.hidden:
             embed.set_footer(
-                text=f"Wow, you found {command.name} !",
+                text=f"Wow, you found {command.name}!",
                 icon_url=str(ctx.bot.user.avatar_url),
             )
         else:
             embed.set_footer(
-                text=f"Are you interested in {command.name} ?",
+                text=f"Are you interested in {command.name}?",
                 icon_url=str(ctx.bot.user.avatar_url),
             )
         await ctx.send(embed=embed)
@@ -189,10 +188,10 @@ class Help(commands.HelpCommand):
                 f"{self.get_command_signature(group)}"
             ),
             description=(
-                "Command syntax : `<Those arguments are required>`. "
-                f"`[Those aren't]`\n{group.help}"
+                "Help syntax : `<Required arguments>`. "
+                f"`[Optional arguments]`\n{group.help}"
             ),
-            colour=ctx.bot.colors["blue"],
+            colour=discord.Color.blue(),
         )
         for command in await self.filter_commands(group.commands, sort=True):
             embed.add_field(
@@ -207,12 +206,12 @@ class Help(commands.HelpCommand):
         embed.set_thumbnail(url=str(ctx.bot.user.avatar_url))
         if group.hidden:
             embed.set_footer(
-                text=f"Wow, you found {group.name} !",
+                text=f"Wow, you found {group.name}!",
                 icon_url=str(ctx.bot.user.avatar_url),
             )
         else:
             embed.set_footer(
-                text=f"Are you interested in {group.name} ?",
+                text=f"Are you interested in {group.name}?",
                 icon_url=str(ctx.bot.user.avatar_url),
             )
         await ctx.send(embed=embed)
