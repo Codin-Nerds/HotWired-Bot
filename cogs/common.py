@@ -54,7 +54,7 @@ class Common(Cog):
         for reaction in options:
             await message.add_reaction(reaction)
 
-    @command()
+    @command(aliases=["spoll"])
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
         f"""{constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
         if question_and_choices is None:
