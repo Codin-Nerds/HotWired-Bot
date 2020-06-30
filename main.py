@@ -9,7 +9,6 @@ from discord.ext.commands import Bot
 from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
-TOKEN = "hi"
 PREFIX = constants.COMMAND_PREFIX
 
 client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
