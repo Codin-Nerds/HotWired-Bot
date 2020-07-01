@@ -207,9 +207,16 @@ class Coding(Cog):
             if lang in quickmap:
                 lang = quickmap[lang]  # search the existence of language
 
-            if lang in self.bot.default:
-                lang = self.bot.default[lang]
-            if lang not in self.bot.languages:  # if lang not found
+            if lang in constants.default:
+                lang = constants.default[lang]
+
+            async with aiohttp.ClientSession() as client_session:
+                async with client_session.get("https://tio.run/languages.json") as response:
+                    if response.status != 200:
+                        print("Couldn't reach languages.json :(")
+                    languages = tuple(sorted(await response.json()))
+
+            if lang not in languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` not available."
