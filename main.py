@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from itertools import cycle
-import textwrap
 
 import asyncpg
 import discord
@@ -50,7 +49,7 @@ class Bot(commands.Bot):
     async def on_ready(self) -> None:
         if self.first_on_ready:
             self.pool = await asyncpg.create_pool(
-                database=os.getenv("DATABASE_NAME", "chaotic"),
+                database=os.getenv("DATABASE_NAME"),
                 host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
                 max_size=int(os.getenv("POOL_MAX", "100")),
                 user=os.getenv("DATABASE_USER"),
@@ -72,48 +71,6 @@ class Bot(commands.Bot):
     @tasks.loop(hours=3)
     async def change_status(self) -> None:
         await self.change_presence(activity=discord.Game(name=next(self.status)))
-
-    async def on_guild_join(self, guild: discord.Guild) -> None:
-        embed = discord.Embed(
-            title="Greetings",
-            description=textwrap.dedent(
-                f"""
-                Thanks for adding HotWired in this server,
-                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
-                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
-                """
-            ),
-            color=0x2F3136,
-        )
-
-        embed.add_field(
-            name="General information",
-            value=textwrap.dedent(
-                f"""
-                **► __Bot Id__**: 715545167649570977
-                **► __Developer__**: **{constants.creator}**
-                **► __Prefix__**: {PREFIX}
-                """
-            ),
-        )
-        embed.add_field(
-            name="**Links**",
-            value=textwrap.dedent(
-                f"""
-                **►** [Support Server]({constants.discord_server})
-                **►** [Invite link]({constants.invite_link})
-                """
-            ),
-        )
-
-        embed.set_thumbnail(url=self.hw.avatar_url)
-
-        await guild.system_channel.send(embed=embed)
-
-        await self.logchannel.send(
-            f"The bot has been added to **{guild.name}** ,"
-            "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
-        )
 
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
