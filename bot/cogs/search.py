@@ -66,7 +66,7 @@ class Search(Cog, name="Basic"):
                 # Sends results
                 return to_parse["data"]["result"]["items"]
 
-    async def _basic_search(self, ctx: Context, query: str, category: str = "web") -> None:
+    async def _basic_search(self, ctx, query: str, category: str) -> None:
         """Basic search formatting."""
         is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, "is_nsfw") else False
 

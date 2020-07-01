@@ -22,6 +22,8 @@ GPUtil = "==1.4.0"
 html2text = "*"
 "nekos.py" = "*"
 googletrans = "*"
+html5lib = "*"
+asyncpg = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,85 +1,80 @@
-import asyncio
+from __future__ import annotations
+
 import os
 from itertools import cycle
 
+# import asyncpg
 import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext import commands, tasks
 
 from bot import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
+
 PREFIX = constants.COMMAND_PREFIX
 
-client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
-
-status = [
-    "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-    f"Ping me using {PREFIX}help",
-    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+extensions = [
+    "bot.cogs.codesandbox",
+    "bot.cogs.commands",
+    "bot.cogs.converters",
+    "bot.cogs.common",
+    "bot.cogs.emotes",
+    "bot.cogs.events",
+    "bot.cogs.fun",
+    "bot.cogs.games",
+    "bot.cogs.infog",
+    "bot.cogs.moderation",
+    "bot.cogs.study",
+    "bot.cogs.sudo",
+    "bot.cogs.support",
+    "bot.cogs.tools",
+    "bot.cogs.search",
+    # "bot.cogs.coding"
 ]
 
 
-async def change_status() -> None:
-    await client.wait_until_ready()
-    msgs = cycle(status)
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.status = cycle(
+            [
+                "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+                "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+                f"Ping me using {PREFIX}help",
+                "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+                "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+            ]
+        )
+        self.first_on_ready = True
 
-    while not client.is_closed():
-        current_status = next(msgs)
-        await client.change_presence(activity=discord.Game(name=current_status))
-        await asyncio.sleep(10800)
+    async def on_ready(self) -> None:
+        if self.first_on_ready:
+            # self.pool = await asyncpg.create_pool(
+            #     database=os.getenv("DATABASE_NAME"),
+            #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+            #     max_size=int(os.getenv("POOL_MAX", "100")),
+            #     user=os.getenv("DATABASE_USER"),
+            #     password=os.getenv("DATABASE_PASSWORD"),
+            # )
+            self.change_status.start()
+            self.fist_on_ready = False
+            self.log_channel = self.get_channel(constants.log_channel)
+            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
+            for ext in extensions:
+                self.load_extension(ext)
+        else:
+            await self.log_channel.send("I'm ready (again)")
+
+    async def close(self) -> None:
+        await super().close()
+        # await self.pool.close()
+
+    @tasks.loop(hours=3)
+    async def change_status(self) -> None:
+        await self.change_presence(activity=discord.Game(name=next(self.status)))
 
 
-@client.event
-async def on_ready() -> None:
-    print("Bot is Ready.")
-    print(f"Logged in as: {client.user.name} : {client.user.id}")
+bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
 
-
-# @client.event
-# async def on_command_error(ctx, error):
-#   if isinstance(error, commands.MissingRequiredArgument):
-#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.CommandNotFound):
-#     pass
-
-#   if isinstance(error, commands.MissingPermissions):
-#     embed = error_embed("You don't have Enough permissions to Execute this command!", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.BotMissingPermissions):
-#    embed = error_embed(
-#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
-#    )
-#    await ctx.send(embed=embed)
-
-
-def setup_bot(bot: Bot) -> None:
-    bot.load_extension("bot.cogs.codesandbox")
-    # bot.load_extension("bot.cogs.coding")
-    bot.load_extension("bot.cogs.commands")
-    bot.load_extension("bot.cogs.converters")
-    bot.load_extension("bot.cogs.common")
-    bot.load_extension("bot.cogs.emotes")
-    bot.load_extension("bot.cogs.events")
-    bot.load_extension("bot.cogs.fun")
-    bot.load_extension("bot.cogs.games")
-    bot.load_extension("bot.cogs.infog")
-    bot.load_extension("bot.cogs.moderation")
-    bot.load_extension("bot.cogs.search")
-    bot.load_extension("bot.cogs.study")
-    bot.load_extension("bot.cogs.sudo")
-    bot.load_extension("bot.cogs.support")
-    bot.load_extension("bot.cogs.tools")
-    bot.load_extension("bot.cogs.embeds")
-    bot.load_extension("bot.cogs.translate")
-
+if __name__ == "__main__":
     bot.run(TOKEN)
-
-
-client.loop.create_task(change_status())
-
-setup_bot(client)

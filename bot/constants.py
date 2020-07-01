@@ -4,7 +4,15 @@ from discord import Color
 
 DEV_MODE = True
 
-log_channel = 704197974577643550
+log_channel = 727555822183252010
+contact_channel = 727555857776246804
+support_channel = 727555808820461638
+bug_report_channel = 727555765480456282
+suggestions_channel = 727555826289737748
+complaints_channel = 727555849958195360
+venting_channel = 727555871864782939
+
+
 owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
@@ -28,6 +36,9 @@ admin_invite_link = (
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 
 COMMAND_PREFIX = ">>"
+
+paste_link = "https://pastebin.com"
+paste_link_2 = "https://hastebin.com"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
