@@ -341,7 +341,17 @@ nsfw_sublist = [
     "dirtysmall",
     "cumsluts",
     "GirlsFinishingTheJob",
-    "impressedbycum"
+    "impressedbycum",
+    "wetfetish",
+    "NSFW_GIFS",
+    "Ass",
+    "BigAsses",
+    "NSFW_HTML5",
+    "peegonewild",
+    "iWantToFuckHer",
+    "curvy",
+    "petite",
+    "OnOff",
 ]
 
 aww_sublist = [

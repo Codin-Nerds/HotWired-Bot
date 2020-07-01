@@ -59,7 +59,7 @@ class Reddit(Cog):
         if len(randompost.selftext) > 0:
             description = randompost.selftext
         elif len(randompost.selftext) > 2048:
-            description = f"{randompost.selftext[:2500]} Read more..."
+            description = f"{randompost.selftext[:2000]} Read more..."
         else:
             description = "",
         embed = Embed(
@@ -96,7 +96,7 @@ class Reddit(Cog):
         if len(randompost.selftext) > 0:
             description = randompost.selftext
         elif len(randompost.selftext) > 2048:
-            description = f"{randompost.selftext[:2500]} Read more..."
+            description = f"{randompost.selftext[:2000]} Read more..."
         else:
             description = "",
         embed = Embed(
@@ -133,7 +133,7 @@ class Reddit(Cog):
         if len(randompost.selftext) > 0:
             description = randompost.selftext
         elif len(randompost.selftext) > 2048:
-            description = f"{randompost.selftext[:2500]} Read more..."
+            description = f"{randompost.selftext[:2000]} Read more..."
         else:
             description = "",
         embed = Embed(
@@ -231,7 +231,7 @@ class Reddit(Cog):
         if len(randompost.selftext) > 0:
             description = randompost.selftext
         elif len(randompost.selftext) > 2048:
-            description = f"{randompost.selftext[:2500]} Read more..."
+            description = f"{randompost.selftext[:2000]} Read more..."
         else:
             description = "",
         embed = Embed(
@@ -266,9 +266,9 @@ class Reddit(Cog):
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
-            description = randompost.selftext
+            description = f"{randompost.selftext}"
         elif len(randompost.selftext) > 2048:
-            description = f"{randompost.selftext[:2500]} Read more..."
+            description = f"{randompost.selftext[:2000]} Read more..."
         else:
             description = "",
         embed = Embed(
