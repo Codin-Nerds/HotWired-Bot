@@ -25,6 +25,74 @@ class Fun(Cog):
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
+        self.session = aiohttp.ClientSession()
+
+    @command()
+    async def joke(self, ctx: Context) -> None:
+        """Sends a random joke."""
+        async with self.session.get("https://mrwinson.me/api/jokes/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                joke = data["joke"]
+                await ctx.send(
+                    embed=Embed(
+                        description=joke,
+                        color=Color.gold()
+                    )
+                )
+            else:
+                await ctx.send("Lmao! Something went boom! :(")
+
+    @command()
+    async def duck(self, ctx: Context) -> None:
+        """Get a random picture of a duck."""
+        async with self.session.get("https://random-d.uk/api/v2/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(
+                    embed=embed
+                )
+            else:
+                await ctx.send("Lmao! Something went boom! :(")
+
+    @command()
+    async def koala(self, ctx: Context) -> None:
+        """Get a random picture of a koala."""
+        async with self.session.get("https://some-random-api.ml/img/koala") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(
+                    embed=embed
+                )
+            else:
+                await ctx.send("Lmao! Something went boom! :(")
+
+    @command()
+    async def panda(self, ctx: Context) -> None:
+        """Get a random picture of a panda."""
+        async with self.session.get("https://some-random-api.ml/img/panda",) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(
+                    embed=embed
+                )
+            else:
+                await ctx.send("Lmao! Something went boom! :(")
 
     @command()
     async def catfact(self, ctx: Context) -> None:
@@ -224,7 +292,7 @@ class Fun(Cog):
                     await ctx.send(f"OMFG! [STATUS : {meme.status}]")
 
     @command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
-    async def joke(self, ctx: Context) -> None:
+    async def dadjoke(self, ctx: Context) -> None:
         """Dad joke simulator 3017, basically"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as jok:
