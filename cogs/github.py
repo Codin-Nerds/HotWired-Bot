@@ -1,8 +1,11 @@
-from discord import Embed, Color
-from discord.ext.commands import Cog, Context, command, Bot, cooldown, BucketType
-from .utils.constants import Emojis
-import aiohttp
 import textwrap
+
+import aiohttp
+from discord import Color, Embed
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
+
+from .utils.constants import Emojis
 
 BAD_RESPONSES = {
     404: "Issue/pull request not Found! Please enter a valid PR Number!",
@@ -16,10 +19,10 @@ class Github(Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
-    @command()
+    @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
     async def issue(self, ctx: Context, number: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
-        """Command to retrieve issues from a GitHub repository."""
+        """Command to retrieve issues or PRs from a GitHub repository."""
         url = f"https://api.github.com/repos/{user}/{repository}/issues/{number}"
         merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{number}/merge"
 
