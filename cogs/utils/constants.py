@@ -29,6 +29,9 @@ SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 
 COMMAND_PREFIX = ">>"
 
+paste_link = "https://pastebin.com"
+paste_link_2 = "https://hastebin.com"
+
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
 # Magic 8-Ball responses
