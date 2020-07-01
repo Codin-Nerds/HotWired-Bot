@@ -216,6 +216,164 @@ http_codes = [
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
 
 
+meme_sublist = [
+    "memes",
+    "dankmemes",
+    "meme",
+    "dankmeme",
+    "Tinder",
+    "me_irl",
+    "meirl",
+    "DeepFriedMemes",
+    "ComedyCemetery",
+    "FellowKids",
+    "wholesomememes"
+]
+
+funny_sublist = [
+    "blackmagicfuckery",
+    "OldSchoolCool",
+    "nevertellmetheodds",
+    "WatchPeopleDieInside",
+    "BeAmazed",
+    "mildlyinteresting",
+    "MurderedByWords"
+    "reactiongifs",
+    "hmmm",
+    "cursedimages",
+    "nostalgia",
+    "gifsthatkeepongiving",
+    "Unexpected",
+    "fakehistoryporn"
+]
+
+tech_sublist = [
+    "technology"
+    "Android",
+    "iphone",
+    "mac",
+    "sysadmin",
+    "hackintosh"
+    "techsupportgore",
+    "linux",
+    "Python",
+    "Windows10"
+]
+
+vid_sublist = [
+    "instant_regret",
+    "Unexpected",
+    "holdmyredbull",
+    "videos",
+    "Perfectfit",
+    "WhyWereTheyFilming",
+    "sportsarefun",
+    "youtubehaiku",
+    "gifs"
+]
+
+nsfw_sublist = [
+    "gonewild",
+    "nsfw",
+    "RealGirls",
+    "NSFW_GIF",
+    "holdthemoan",
+    "BustyPetite",
+    "LegalTeens",
+    "cumsluts",
+    "PetiteGoneWild",
+    "realmoms",
+    "milf",
+    "gonewild30plus",
+    "legalteens",
+    "collegesluts",
+    "gonewild18",
+    "fauxbait",
+    "realgirls",
+    "amateur",
+    "nsfw_amateurs",
+    "funwithfriends",
+    "camsluts",
+    "streamersgonewild",
+    "ratemynudebody",
+    "goneerotic",
+    "gwpublic",
+    "gonewildcouples",
+    "gwcumsluts",
+    "gonewildcurvy",
+    "BigBoobsGW",
+    "mycleavage",
+    "AsiansGoneWild",
+    "latinasgw",
+    "indiansgonewild",
+    "workgonewild",
+    "GoneWildScrubs",
+    "NSFW_Snapchat",
+    "snapleaks",
+    "wifesharing",
+    "hotwife"
+    "slutwife",
+    "wouldyoufuckmywife",
+    "yogapants",
+    "boobies",
+    "boobs",
+    "tits",
+    "breastenvy",
+    "BustyPetite",
+    "hugeboobs",
+    "stacked",
+    "2busty2hide",
+    "pokies",
+    "nipples",
+    "lactation",
+    "stockings",
+    "legs",
+    "tightshorts",
+    "pussy",
+    "innie",
+    "LabiaGW",
+    "godpussy",
+    "hairypussy",
+    "breakingtheseal",
+    "SexyTummies",
+    "thick",
+    "SlimThick",
+    "dirtysmall",
+    "cumsluts",
+    "GirlsFinishingTheJob",
+    "impressedbycum"
+]
+
+aww_sublist = [
+    "AnimalsBeingJerks",
+    "NatureIsFuckingLit",
+    "WhatsWrongWithYourDog",
+    "StartledCats",
+    "natureismetal",
+    "guineapigs",
+    "Rabbits"
+]
+
+sci_sublist = [
+    "askscience",
+    "Physics",
+    "shittyrobots",
+    "chemicalreactiongifs",
+    "chemistry",
+    "nasa",
+    "EverythingScience",
+    "spaceporn"
+]
+
+relation_sublist = [
+    "relationship_advice",
+    "Tinder",
+    "dating_advice",
+    "DeadBedrooms",
+    "family"
+]
+
+
 class Infraction(Enum):
     warning = Color.gold()
     kick = Color.gold()

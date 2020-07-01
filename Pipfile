@@ -23,6 +23,7 @@ html2text = "*"
 "nekos.py" = "*"
 googletrans = "*"
 html5lib = "*"
+praw = "*"
 
 [requires]
 python_version = "3.8"

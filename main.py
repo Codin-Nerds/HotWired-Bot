@@ -70,6 +70,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.infog")
     bot.load_extension("cogs.malware_protection")
     bot.load_extension("cogs.moderation")
+    bot.load_extension("cogs.reddit")
     # bot.load_extension("cogs.search")
     bot.load_extension("cogs.study")
     bot.load_extension("cogs.sudo")
