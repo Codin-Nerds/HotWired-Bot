@@ -1,87 +1,122 @@
-import asyncio
+from __future__ import annotations
+
 import os
 from itertools import cycle
+import textwrap
 
+import asyncpg
 import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext import commands, tasks
 
 from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
+
 PREFIX = constants.COMMAND_PREFIX
 
-client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
-
-status = [
-    "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-    f"Ping me using {PREFIX}help",
-    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+extensions = [
+    "cogs.codesandbox",
+    "cogs.commands",
+    "cogs.converters",
+    "cogs.custom",
+    "cogs.emotes",
+    "cogs.events",
+    "cogs.fun",
+    "cogs.games",
+    "cogs.infog",
+    "cogs.moderation",
+    "cogs.study",
+    "cogs.sudo",
+    "cogs.support",
+    "cogs.tools",
 ]
+# "cogs.coding"
 
 
-async def change_status() -> None:
-    await client.wait_until_ready()
-    msgs = cycle(status)
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.status = cycle(
+            [
+                "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+                "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+                f"Ping me using {PREFIX}help",
+                "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+                "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+            ]
+        )
+        self.first_on_ready = True
 
-    while not client.is_closed():
-        current_status = next(msgs)
-        await client.change_presence(activity=discord.Game(name=current_status))
-        await asyncio.sleep(10800)
+    async def on_ready(self) -> None:
+        if self.first_on_ready:
+            self.pool = await asyncpg.create_pool(
+                database=os.getenv("DATABASE_NAME", "chaotic"),
+                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+                max_size=int(os.getenv("POOL_MAX", "100")),
+                user=os.getenv("DATABASE_USER"),
+                password=os.getenv("DATABASE_PASSWORD"),
+            )
+            self.change_status.start()
+            self.fist_on_ready = False
+            self.log_channel = self.get_channel(constants.log_channel)
+            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
+            for ext in extensions:
+                self.load_extension(ext)
+        else:
+            await self.log_channel.send("I'm ready (again)")
+
+    async def close(self) -> None:
+        await super().close()
+        await self.pool.close()
+
+    @tasks.loop(hours=3)
+    async def change_status(self) -> None:
+        await self.change_presence(activity=discord.Game(name=next(self.status)))
+
+    async def on_guild_join(self, guild: discord.Guild) -> None:
+        embed = discord.Embed(
+            title="Greetings",
+            description=textwrap.dedent(
+                f"""
+                Thanks for adding HotWired in this server,
+                **HotWired** is a multi purpose discord bot that has Moderation commands, Fun commands, Music commands and many more!.
+                The bot is still in dev so you can expect more commands and features.To get a list of commands , please use **{PREFIX}help**
+                """
+            ),
+            color=0x2F3136,
+        )
+
+        embed.add_field(
+            name="General information",
+            value=textwrap.dedent(
+                f"""
+                **► __Bot Id__**: 715545167649570977
+                **► __Developer__**: **{constants.creator}**
+                **► __Prefix__**: {PREFIX}
+                """
+            ),
+        )
+        embed.add_field(
+            name="**Links**",
+            value=textwrap.dedent(
+                f"""
+                **►** [Support Server]({constants.discord_server})
+                **►** [Invite link]({constants.invite_link})
+                """
+            ),
+        )
+
+        embed.set_thumbnail(url=self.hw.avatar_url)
+
+        await guild.system_channel.send(embed=embed)
+
+        await self.logchannel.send(
+            f"The bot has been added to **{guild.name}** ,"
+            "We've reached our **{len(self.guilds)}th** server! <:PogChamp:528969510519046184> :champagne_glass: "
+        )
 
 
-@client.event
-async def on_ready() -> None:
-    print("Bot is Ready.")
-    print(f"Logged in as: {client.user.name} : {client.user.id}")
-
-
-# @client.event
-# async def on_command_error(ctx, error):
-#   if isinstance(error, commands.MissingRequiredArgument):
-#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.CommandNotFound):
-#     pass
-
-#   if isinstance(error, commands.MissingPermissions):
-#     embed = error_embed("You don't have Enough permissions to Execute this command!", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.BotMissingPermissions):
-#    embed = error_embed(
-#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
-#    )
-#    await ctx.send(embed=embed)
-
-
-def setup_bot(bot: Bot) -> None:
-    bot.load_extension("cogs.codesandbox")
-    # bot.load_extension("cogs.coding")
-    bot.load_extension("cogs.commands")
-    bot.load_extension("cogs.converters")
-    bot.load_extension("cogs.common")
-    bot.load_extension("cogs.emotes")
-    bot.load_extension("cogs.events")
-    bot.load_extension("cogs.fun")
-    bot.load_extension("cogs.games")
-    bot.load_extension("cogs.infog")
-    bot.load_extension("cogs.malware_protection")
-    bot.load_extension("cogs.moderation")
-    # bot.load_extension("cogs.search")
-    bot.load_extension("cogs.study")
-    bot.load_extension("cogs.sudo")
-    bot.load_extension("cogs.support")
-    bot.load_extension("cogs.tools")
-    bot.load_extension("cogs.embeds")
-    bot.load_extension("cogs.translate")
-
-    bot.run(TOKEN)
-
-
-client.loop.create_task(change_status())
+bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
 
 if __name__ == "__main__":
-    setup_bot(client)
+    bot.run(TOKEN)
