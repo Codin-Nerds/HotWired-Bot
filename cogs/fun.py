@@ -3,7 +3,6 @@ import textwrap
 import urllib
 import typing as t
 import aiohttp
-import os
 import discord
 from .utils import constants
 from random import choice, randint
@@ -14,11 +13,6 @@ from cogs.utils.errors import ServiceError
 
 from .endpoints.endpoints import nekos
 import nekos as n
-
-
-file = open("assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
-excuses = file.readlines()
-file.close()
 
 
 class Fun(Cog):

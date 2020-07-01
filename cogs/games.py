@@ -143,15 +143,10 @@ class Games(Cog):
             except errors.BadArgument:
                 await ctx.send(f"Active games by {ctx.author.mention} found. Use `>>hangexit` to exit!")
 
-        while not guessed and tries > 0:
+        while not guessed and tries > 0 and self.is_playing_hangman(ctx.author, ctx.guild, ctx.channel):
             input = await self.bot.wait_for("message", check=check)
             guess = input.content.upper()
-            # TODO : Repair this exit statement
-            if guess == ">>HANGEXIT":
-                try:
-                    self.del_hangman_player(ctx.author, ctx.guild, ctx.channel)
-                except errors.BadArgument:
-                    await ctx.send(f"No active games by {ctx.author.mention} found!")
+
             await input.delete()
 
             if len(guess) == 1 and guess.isalpha():
@@ -237,8 +232,15 @@ class Games(Cog):
                 embed=Embed(description=f"Sorry, you ran out of tries. The word was {word}. Maybe next time! :frowning: ", color=Color.red())
             )
 
+    @command()
+    async def hangexit(self, ctx: Context) -> None:
+        try:
+            self.del_hangman_player(ctx.author, ctx.guild, ctx.channel)
+        except errors.BadArgument:
+            await ctx.send(f"No active games by {ctx.author.mention} found!")
+
     def is_playing_hangman(self, player: Member, guild: Guild, channel: TextChannel) -> bool:
-        if player.id in self.hangman_players[guild][channel]:
+        if player in self.hangman_players[guild][channel]:
             return True
         else:
             return False
@@ -251,7 +253,7 @@ class Games(Cog):
 
     def del_hangman_player(self, player: Member, guild: Guild, channel: TextChannel) -> None:
         if self.is_playing_hangman(player, guild, channel):
-            self.hangman_players[guild][channel].remove[player]
+            self.hangman_players[guild][channel].remove(player)
         else:
             raise errors.BadArgument("Player is not in game!")
 

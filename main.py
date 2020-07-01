@@ -68,6 +68,7 @@ def setup_bot(bot: Bot) -> None:
     bot.load_extension("cogs.fun")
     bot.load_extension("cogs.games")
     bot.load_extension("cogs.infog")
+    bot.load_extension("cogs.malware_protection")
     bot.load_extension("cogs.moderation")
     # bot.load_extension("cogs.search")
     bot.load_extension("cogs.study")
