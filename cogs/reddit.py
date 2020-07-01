@@ -1,5 +1,5 @@
 from discord import Embed, Color
-from discord.ext.commands import Cog, Bot, command, Context, is_nsfw
+from discord.ext.commands import Cog, Bot, Context, is_nsfw, group
 import praw
 import os
 import random
@@ -17,13 +17,17 @@ class Reddit(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @command()
+    @group()
+    async def reddit(self, ctx: Context) -> None:
+        """Administrative information."""
+        pass
+
+    @reddit.command()
     async def memes(self, ctx: Context) -> None:
-        name = random.choice(constants.meme_sublist)
+        name = random.choice(constants.reddit["meme"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         embed = Embed(
@@ -47,13 +51,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def funny(self, ctx: Context) -> None:
-        name = random.choice(constants.funny_sublist)
+        name = random.choice(constants.reddit["funny"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
@@ -84,13 +87,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def technology(self, ctx: Context) -> None:
-        name = random.choice(constants.tech_sublist)
+        name = random.choice(constants.reddit["tech"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
@@ -121,13 +123,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def videos(self, ctx: Context) -> None:
-        name = random.choice(constants.vid_sublist)
+        name = random.choice(constants.reddit["vid"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
@@ -158,14 +159,13 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     @is_nsfw()
     async def nsfw(self, ctx: Context) -> None:
-        name = random.choice(constants.nsfw_sublist)
+        name = random.choice(constants.reddit["nsfw"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         embed = Embed(
@@ -189,13 +189,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def aww(self, ctx: Context) -> None:
-        name = random.choice(constants.aww_sublist)
+        name = random.choice(constants.reddit["aww"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         embed = Embed(
@@ -219,13 +218,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def science(self, ctx: Context) -> None:
-        name = random.choice(constants.sci_sublist)
+        name = random.choice(constants.reddit["sci"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
@@ -256,13 +254,12 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @reddit.command()
     async def relation(self, ctx: Context) -> None:
-        name = random.choice(constants.relation_sublist)
+        name = random.choice(constants.reddit["relation`"])
         subreddit = reddit.subreddit(name)
 
-        hotposts = subreddit.hot(limit=100)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=100))
 
         randompost = random.choice(postlist)
         if len(randompost.selftext) > 0:
@@ -293,12 +290,11 @@ class Reddit(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command(aliases=["new"])
-    async def newpost(self, ctx: Context, subreddit: str) -> None:
+    @reddit.command()
+    async def new(self, ctx: Context, subreddit: str) -> None:
         """sends you the fresh posts from a subreddit"""
         subreddit = reddit.subreddit(f'{subreddit}')
-        newposts = subreddit.new(limit=10)
-        postlist = list(newposts)
+        postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
 
         if randompost.over_18:
@@ -364,12 +360,11 @@ class Reddit(Cog):
                 )
                 await ctx.send(embed=embed)
 
-    @command()
-    async def hotpost(self, ctx: Context, subreddit: str) -> None:
+    @reddit.command()
+    async def hot(self, ctx: Context, subreddit: str) -> None:
         """sends you the hottest posts from a subreddit"""
         subreddit = reddit.subreddit(f'{subreddit}')
-        hotposts = subreddit.hot(limit=10)
-        postlist = list(hotposts)
+        postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
 
         if randompost.over_18:
