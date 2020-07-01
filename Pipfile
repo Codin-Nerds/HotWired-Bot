@@ -27,7 +27,7 @@ googletrans = "*"
 python_version = "3.8"
 
 [scripts]
-start="python -u ./main.py"
+start="python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 autoformat = "black ."
