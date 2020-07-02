@@ -19,7 +19,7 @@ class Reddit(Cog):
 
     @group()
     async def reddit(self, ctx: Context) -> None:
-        """Administrative information."""
+        """Reddit commands."""
         pass
 
     @reddit.command()
