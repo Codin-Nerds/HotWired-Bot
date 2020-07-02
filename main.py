@@ -6,6 +6,7 @@ from itertools import cycle
 import asyncpg
 import discord
 from discord.ext import commands, tasks
+from discord import Embed, Color
 
 from cogs.utils import constants
 
@@ -17,13 +18,14 @@ extensions = [
     "cogs.codesandbox",
     "cogs.commands",
     "cogs.converters",
-    "cogs.custom",
+    "cogs.common",
     "cogs.emotes",
     "cogs.events",
     "cogs.fun",
     "cogs.games",
     "cogs.infog",
     "cogs.moderation",
+    "cogs.nasa",
     "cogs.study",
     "cogs.sudo",
     "cogs.support",
@@ -56,9 +58,14 @@ class Bot(commands.Bot):
                 password=os.getenv("DATABASE_PASSWORD"),
             )
             self.change_status.start()
-            self.fist_on_ready = False
+            self.first_on_ready = False
             self.log_channel = self.get_channel(constants.log_channel)
-            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
+
+            embed = Embed(
+                description=f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}",
+                color=Color.gold()
+            )
+            await self.log_channel.send(embed=embed)
             for ext in extensions:
                 self.load_extension(ext)
         else:
