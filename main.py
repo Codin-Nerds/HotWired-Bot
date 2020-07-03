@@ -29,7 +29,6 @@ extensions = [
     "cogs.support",
     "cogs.tools",
 ]
-# "cogs.coding"
 
 
 class Bot(commands.Bot):
