@@ -123,6 +123,22 @@ class Common(Cog):
             embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
 
+    @command()
+    async def shorten(self, ctx: Context, *, link: str) -> None:
+        '''Makes a link shorter using the tinyurl api'''
+        url = link.strip("<>")
+        url = 'http://tinyurl.com/api-create.php?url=' + url
+        async with self.session.get(url) as resp:
+            shortened_link = await resp.text()
+        emb = Embed(color=Color.blurple())
+        emb.add_field(name="Original Link", value=link, inline=False)
+        emb.add_field(name="Shortened Link", value=shortened_link, inline=False)
+        await ctx.send(embed=emb)
+        try:
+            await ctx.message.delete()
+        except Forbidden:
+            pass
+
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Common(bot))
