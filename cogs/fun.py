@@ -25,6 +25,7 @@ class Fun(Cog):
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
+        self.session = aiohttp.ClientSession()
 
     @command()
     async def catfact(self, ctx: Context) -> None:
@@ -397,6 +398,32 @@ class Fun(Cog):
         if isinstance(error, BadArgument):
             embed = Embed(title="❌ERROR", description="You can only get a cookie **Once Every 2 Hours**.", color=Color.red(),)
             await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def tweet(self, ctx: Context, username: str, *, text: str) -> None:
+        """Tweet as someone."""
+        async with ctx.typing():
+            async with self.session.get("https://nekobot.xyz/api/imagegen?type=tweet"
+                                        f"&username={username}"
+                                        f"&text={text}") as r:
+                res = await r.json()
+
+            embed = Embed(color=Color.dark_green())
+            embed.set_image(url=res["message"])
+        await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def clyde(self, ctx: Context, *, text: str) -> None:
+        """Make clyde say something."""
+        async with ctx.typing():
+            async with self.session.get(f"https://nekobot.xyz/api/imagegen?type=clyde&text={text}") as r:
+                res = await r.json()
+
+            embed = discord.Embed(color=Color.dark_green())
+            embed.set_image(url=res["message"])
+        await ctx.send(embed=embed)
 
 
 # TODO: kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite
