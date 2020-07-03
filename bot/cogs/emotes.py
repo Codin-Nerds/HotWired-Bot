@@ -1,11 +1,10 @@
 import io
 import re
-import textwrap
 import typing as t
 
 import discord
 import requests
-from discord.ext.commands import Bot, Cog, Context, command
+from discord.ext.commands import BadArgument, Bot, Cog, Context, command
 from discord.utils import get
 
 from bot import constants
@@ -20,7 +19,9 @@ class EmoteNotFoundException(Exception):
 
 
 class Emote:
-    def __init__(self, emote_type: str, emote_id: str, emote_channel: t.Union[None, str]) -> None:
+    content_re = re.compile(r"^\b(twitch|bttv|ffz)\b\s([\w\d]+)(?:\s(.+))?$", re.I | re.M)
+
+    def __init__(self, emote_type: str, emote_id: str, emote_channel: t.Optional[str]) -> None:
         self.emote_type = emote_type
         self.emote_id = emote_id
         self.emote_channel = emote_channel
@@ -43,6 +44,7 @@ class Emote:
                 api_url = "https://api.betterttv.net/2/emotes"
             else:
                 api_url = f"https://api.betterttv.net/2/channels/{self.emote_channel}"
+
             api_res = requests.get(api_url).json()
             for emote in api_res["emotes"]:
                 if emote["id"] == self.emote_id:
@@ -58,27 +60,25 @@ class Emote:
             img = requests.get(f"https://cdn.frankerfacez.com/emoticon/{self.emote_id}/4").content
         return io.BytesIO(img)
 
-    @staticmethod
-    def get_emote(cmd) -> "Emote":
-        cmd_re = re.compile(r"^\b(twitch|bttv|ffz)\b\s([\w\d]+)(?:\s(.+))?$", re.I | re.M)
-        cmd_match = re.match(cmd_re, cmd)
+    @classmethod
+    def get_emote(cls, content) -> "Emote":
+        content_match = re.match(Emote.content_re, content)
 
-        if not cmd_match:
-            raise InvalidCommandException()
+        if not content_match:
+            raise BadArgument()
 
-        emote_type = cmd_match[1].lower()
-        emote_id = cmd_match[2].strip().lower()
+        emote_type = content_match[1].lower()
+        emote_id = content_match[2].strip().lower()
 
         emote_channel = None
         if emote_type == "bttv":
-            emote_channel = cmd_match[3]
+            emote_channel = content_match[3]
             if not emote_channel:
-                raise InvalidCommandException()
+                raise BadArgument()
             emote_channel = emote_channel.lower()
 
         try:
-            emote = Emote(emote_type, emote_id, emote_channel)
-            return emote
+            return cls(emote_type, emote_id, emote_channel)
         except (KeyError, IndexError):
             raise EmoteNotFoundException()
 
@@ -87,6 +87,7 @@ class Emotes(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    # TODO: Remove this when error handler will be implemented
     async def send_error(self, ctx: Context, error: str) -> None:
         """Sends the Error of Any functions as an Embed."""
         help_message = f"Type `{constants.COMMAND_PREFIX}help` for further assistance"
@@ -94,59 +95,39 @@ class Emotes(Cog):
         embed.add_field(name=f"Error: {error}", value=help_message)
         await ctx.send(embed=embed)
 
-    @command(aliases=["addemote", "emotehow"])
-    async def emote_add_help(self, ctx: Context) -> None:
-        """Shows help on how to add emotes."""
-        add_emote = textwrap.dedent(
-            f"""
-            Adds a twitch emote to the server\n\n
-            **Usage:**\n
-            `{constants.COMMAND_PREFIX}add_emote twitch <emote_id>`\n
-            `{constants.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`\n
-            `{constants.COMMAND_PREFIX}add_emote frf <emote_id>`\n\n
-            To get an emote visit [twitchemotes.com](https://twitchemotes.com),
-            [betterttv.com](https://betterttv.com/emotes/shared), or
-            [frankerfacez.com](https://www.frankerfacez.com/emoticons/) and find
-            an emote you like!.\n
-            The channel name for BetterTTV emotes is found in the top right section
-            of the web page for the emote\n
-            The the ID of the emote is found at the end of the URL for a specific emote.\n
-            twitchemotes.com/emotes/__**120232**__\n
-            betterttv.com/emotes/__**5771aa498bbc1e572cb7ae4d**__\n
-            frankerfacez.com/emoticon/__**261802**__-4Town
-            """
-        )
-        emote = textwrap.dedent(
-            f"""
-            Send an animated emote
-
-            **How To:**
-            `{constants.COMMAND_PREFIX}emote <emote_name>`
-
-            Supply emote names as a comma-separated list to send multiple emotes in a single message
-            """
-        )
-        embed = discord.Embed(colour=discord.Colour.dark_gold())
-        embed.add_field(name=f"{constants.COMMAND_PREFIX}add_emote", value=add_emote)
-        embed.add_field(name=f"{constants.COMMAND_PREFIX}emote", value=emote)
-        await ctx.send(embed=embed)
-
     @command()
     async def add_emote(self, ctx: Context, *, content: str) -> None:
-        """Adding Emotes."""
-        server = ctx.message.guild
+        """
+        Add an emote to server
 
+        **Usage:**
+        `{constants.COMMAND_PREFIX}add_emote twitch <emote_id>`
+        `{constants.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`
+        `{constants.COMMAND_PREFIX}add_emote frf <emote_id>`
+
+        To get an emote visit:
+        [twitchemotes.com](https://twitchemotes.com)
+        [betterttv.com](https://betterttv.com/emotes/shared)
+        [frankerfacez.com](https://www.frankerfacez.com/emoticons/)
+        and find an emote you like!.
+
+        The channel name for BetterTTV emotes is found in the top right section of the web page for the emote
+        The the ID of the emote is found at the end of the URL for a specific emote.
+        twitchemotes.com/emotes/__**120232**__
+        betterttv.com/emotes/__**5771aa498bbc1e572cb7ae4d**__
+        frankerfacez.com/emoticon/__**261802**__-4Town
+        """
         try:
             emote = Emote.get_emote(content)
-        except InvalidCommandException:
-            await self.send_error(ctx, "Invalid command")
+        except BadArgument:
+            await self.send_error(ctx, "Invalid argument")
             return
         except EmoteNotFoundException:
             await self.send_error(ctx, "Emote not found")
             return
 
-        await server.create_custom_emoji(name=emote.name, image=emote.image.read())
-        discord_emote = get(server.emojis, name=emote.name)
+        await ctx.guild.create_custom_emoji(name=emote.name, image=emote.image.read())
+        discord_emote = get(ctx.guild.emojis, name=emote.name)
         emote_string = f"<:{discord_emote.name}:{discord_emote.id}>"
         if discord_emote.animated:
             emote_string = f"<a:{discord_emote.name}:{discord_emote.id}>"
@@ -154,14 +135,17 @@ class Emotes(Cog):
 
     @command()
     async def emote(self, ctx: Context, *, content: str) -> None:
-        """Using the Emotes."""
-        server = ctx.message.guild
+        """
+        Send an emote.
+
+        Supply emote names as a comma-separated list to send multiple emotes in a single message
+        """
         names = content.split(",")
 
         emote_string = ""
         for name in names:
-            emote = get(server.emojis, name=name)
-            if emote is None:
+            emote = get(ctx.guild.emojis, name=name)
+            if not emote:
                 await self.send_error(ctx, f"Emote {name} not found")
                 return
             if emote.animated:
