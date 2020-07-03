@@ -20,7 +20,7 @@ DATABASE = {
 class Bot(Bot):
     def __init__(self, extensions: list, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        # self.extensions = extensions
+        self.extension_list = extensions
         self.initial_call = True
 
     async def on_ready(self) -> None:
@@ -41,8 +41,12 @@ class Bot(Bot):
             await self.log_channel.send(embed=embed)
 
             # Load all extensions
-            for ext in self.extensions:
-                self.load_extension(ext)
+            for extension in self.extension_list:
+                try:
+                    print(f"Cog {extension} loaded.")
+                    self.load_extension(extension)
+                except Exception as e:
+                    print(f"Cog {extension} failed to load with {type(e)}: {e}")
         else:
             embed = Embed(
                 title="Bot Connection",
