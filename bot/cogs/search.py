@@ -1,14 +1,13 @@
 import re
-from typing import List
-from bot import constants
 import textwrap
+from typing import List
 
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, Cog, Context, command
+from discord.ext.commands import Bot, Cog, CommandError, Context, command
 
-from .search_utils import searchexceptions
+from bot import constants
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
@@ -20,6 +19,11 @@ for filter_word in filter_words:
 regexp = regexp[:-1]
 
 filter_words = re.compile(regexp, re.I)
+
+
+class SafesearchFail(CommandError):
+    """Thrown when a query contains NSFW content."""
+    pass
 
 
 class Search(Cog, name="Basic"):
@@ -44,7 +48,7 @@ class Search(Cog, name="Basic"):
             filter = filter_words.search(query)
             if filter:
                 # TODO: Log this
-                raise searchexceptions.SafesearchFail("Query had NSFW.")
+                raise SafesearchFail("Query had NSFW.")
 
         base = "https://api.qwant.com/api"
 
@@ -74,7 +78,7 @@ class Search(Cog, name="Basic"):
             # Searches
             try:
                 results = await self._search_logic(query, is_nsfw, category)
-            except searchexceptions.SafesearchFail:
+            except SafesearchFail:
                 await ctx.send(f":x: Sorry {ctx.author.mention}, your message contains filtered words, I've removed this message.")
                 await ctx.message.delete()
                 return
