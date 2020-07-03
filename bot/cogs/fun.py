@@ -13,9 +13,8 @@ from discord.ext.commands import (BadArgument, Bot, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
 from bot import constants
-from bot.utils.errors import ServiceError
+from bot.utils.errors import ServiceError\
 
-from .endpoints.endpoints import nekos
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()
@@ -261,7 +260,7 @@ class Fun(Cog):
     async def neko(self, ctx: Context) -> None:
         """Shows a neko."""
         async with aiohttp.ClientSession() as session:
-            async with session.get(nekos["sfw"]) as neko:
+            async with session.get(constants.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
                     neko_em = discord.Embed(colour=0x690E8)
