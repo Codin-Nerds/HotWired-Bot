@@ -126,9 +126,9 @@ class Sudo(Cog):
         """
         Change the status of the bot
 
-        `status playing <new status>` - Change playing status
-        `status watching <new status>` - Change watching status
-        `status listening <new status>` - Change listening status
+        `botstatus playing <new status>` - Change playing status
+        `botstatus watching <new status>` - Change watching status
+        `botstatus listening <new status>` - Change listening status
         """
         if ctx.invoked_subcommand is None:
             pass
