@@ -4,13 +4,12 @@ from discord import Color
 
 DEV_MODE = True
 
-log_channel = 727555822183252010
-contact_channel = 727555857776246804
-support_channel = 727555808820461638
-bug_report_channel = 727555765480456282
-suggestions_channel = 727555826289737748
-complaints_channel = 727555849958195360
-venting_channel = 727555871864782939
+log_channel = 728570503169704014
+contact_channel = 728570526443896934
+support_channel = 728570540998262834
+bug_report_channel = 728570578507923526
+suggestions_channel = 728570594899132456
+complaints_channel = 728570619985264650
 
 
 owner_ids = [688275913535914014, 306876636526280705]
@@ -33,7 +32,7 @@ admin_invite_link = (
     "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
 )
 
-SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
+SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
 COMMAND_PREFIX = ">>"
 

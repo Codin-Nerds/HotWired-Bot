@@ -25,16 +25,16 @@ class Support(Cog):
         embed = Embed(
             title="Need Support? OR Want to give Feedback?",
             description="If you have any **problems with the bot** or "
-            "if you have any **suggestions/feedback** be sure to join the Support Server!"
-            f"❯❯ [Support Server]({constants.discord_server})"
-            f"❯❯ [Invite Link]({constants.invite_link})",
+            "if you have any **suggestions/feedback** be sure to use the support commands or join the Support Server!"
+            f"\n❯❯ [Support Server]({constants.discord_server})"
+            f"\n❯❯ [Invite Link]({constants.invite_link})",
             color=Color.dark_green(),
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
     @command()
-    async def contact(self, ctx: Context, message: str = "Contact Notification!") -> None:
+    async def contact(self, ctx: Context, *, message: str = "Contact Notification!") -> None:
         """Contact the Developers for something important."""
         contact_channel = self.bot.get_channel(constants.contact_channel)
 
@@ -50,7 +50,7 @@ class Support(Cog):
         await contact_channel.send(embed=embed)
 
     @command()
-    async def bug(self, ctx: Context, message: str = "Bug Report!") -> None:
+    async def bug(self, ctx: Context, *, message: str = "Bug Report!") -> None:
         """Report the developers about a Bug."""
         bug_report_channel = self.bot.get_channel(constants.bug_report_channel)
 
@@ -66,7 +66,7 @@ class Support(Cog):
         await bug_report_channel.send(embed=embed)
 
     @command()
-    async def support_msg(self, ctx: Context, message: str = "Support Required!") -> None:
+    async def support_msg(self, ctx: Context, *, message: str = "Support Required!") -> None:
         """Send a support message to the developers."""
         support_channel = self.bot.get_channel(constants.support_channel)
 
@@ -81,8 +81,19 @@ class Support(Cog):
         )
         await support_channel.send(embed=embed)
 
+        embed = Embed(
+            title="Problem's still there?",
+            description="If you still have **problems with the bot**"
+            ", Join the Support Server immediately! The developers surely would be hapy to help ya!"
+            f"\n❯❯ [Support Server]({constants.SUPPORT_SERVER})"
+            f"\n❯❯ [Invite Link]({constants.invite_link})",
+            color=Color.dark_green(),
+        )
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
+        await ctx.send(embed=embed)
+
     @command()
-    async def suggestions(self, ctx: Context, message: str) -> None:
+    async def suggestions(self, ctx: Context, *, message: str) -> None:
         """Send a new idea or suggestion to the developers."""
         suggestions_channel = self.bot.get_channel(constants.suggestions_channel)
 
@@ -98,7 +109,7 @@ class Support(Cog):
         await suggestions_channel.send(embed=embed)
 
     @command()
-    async def complaints(self, ctx: Context, message: str) -> None:
+    async def complaints(self, ctx: Context, *, message: str) -> None:
         """Send a complaint to the developers."""
         complaints_channel = self.bot.get_channel(constants.complaints_channel)
 
@@ -113,21 +124,16 @@ class Support(Cog):
         )
         await complaints_channel.send(embed=embed)
 
-    @command()
-    async def vent(self, ctx: Context, message: str = "Duh!") -> None:
-        """Send a random to the developers."""
-        venting_channel = self.bot.get_channel(constants.venting_channel)
-
         embed = Embed(
-            title="Randomness!",
-            description=message,
-            color=Color.dark_blue()
+            title="Problem's still there?",
+            description="If you still have **problems with the bot**"
+            ", Join the Support Server immediately! The developers surely would be hapy to help ya!"
+            f"\n❯❯ [Support Server]({constants.SUPPORT_SERVER})"
+            f"\n❯❯ [Invite Link]({constants.invite_link})",
+            color=Color.dark_green(),
         )
-        embed.add_field(
-            name="Author",
-            value=ctx.author.id
-        )
-        await venting_channel.send(embed=embed)
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: Bot) -> None:
