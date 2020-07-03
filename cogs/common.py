@@ -1,6 +1,7 @@
 import asyncio
 import textwrap
 import time
+import aiohttp
 
 from contextlib import suppress
 from discord import Color, Embed, Forbidden, Member
@@ -12,6 +13,7 @@ from .utils import constants
 class Common(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     # TODO : Add custom command support after db integration
     @command()
@@ -122,6 +124,20 @@ class Common(Cog):
             )
             embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
+
+    @command()
+    async def paste(self, ctx: Context, *, text: str) -> None:
+        """Creates a Paste out of the text specified."""
+        async with self.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
+            key = (await resp.json())['key']
+            file_paste = 'https://www.hasteb.in/' + key
+
+            await ctx.send(f"FILE PASTE : {file_paste}")
+
+    def _clean_code(self, code: str) -> str:
+        if code.startswith("```") and code.endswith("```"):
+            return "\n".join(code.split("\n")[1:-1])
+        return code.strip("\n")
 
 
 def setup(bot: Bot) -> None:
