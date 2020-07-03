@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from itertools import cycle
+from yaml import safe_load
 
 import asyncpg
 import discord
@@ -17,7 +18,7 @@ extensions = [
     "cogs.codesandbox",
     "cogs.commands",
     "cogs.converters",
-    "cogs.custom",
+    "cogs.common",
     "cogs.emotes",
     "cogs.events",
     "cogs.fun",
@@ -45,6 +46,9 @@ class Bot(commands.Bot):
             ]
         )
         self.first_on_ready = True
+
+        with open('assets/languages.yml', 'r') as file:
+            self.default = safe_load(file)
 
     async def on_ready(self) -> None:
         if self.first_on_ready:

@@ -84,10 +84,10 @@ class Coding(Cog):
         stats option displays more information on execution consumption
         wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
         <code> may be normal code, but also an attached file,
-        or a link from [hastebin](https://hastebin.com) or [Github gist](https://gist.github.com)
+        or a link from [hastebin](https://hasteb.in) or [Github gist](https://gist.github.com)
         If you use a link, your command must end with this syntax:
         `link=<link>` (no space around `=`)
-        for instance : `do run python link=https://hastebin.com/resopedahe.py`
+        for instance : `run python link=https://hastebin.com/resopedahe.py`
         The link may be the raw version, and with/without the file extension
         If the output exceeds 40 lines or Discord max message length, it will be put
         in a new hastebin and the link will be returned.
@@ -99,7 +99,7 @@ class Coding(Cog):
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compler is needed
+        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compiler is needed
 
         lang = language.strip("`").lower()  # strip the "`" characters to obtain code
         options_amount = len(options)
@@ -199,6 +199,7 @@ class Coding(Cog):
 
             if lang in self.bot.default:
                 lang = self.bot.default[lang]
+
             if lang not in self.bot.languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
@@ -206,7 +207,8 @@ class Coding(Cog):
                 if matches:
                     message = message + f" Did you mean:\n{matches}"  # provide a suggestion.
 
-                return await ctx.send(message)
+                await ctx.send(message)
+                return
 
             if options["--wrapped"]:
                 if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):

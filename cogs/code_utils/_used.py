@@ -11,7 +11,7 @@ def get_raw(link: str) -> str:
     link = link.strip("<>/")  # Allow for no-embed links
 
     authorized = (
-        "https://hastebin.com",
+        "https://hasteb.in",
         "https://gist.github.com",
         "https://gist.githubusercontent.com",
     )
@@ -21,13 +21,13 @@ def get_raw(link: str) -> str:
 
     domain = link.split("/")[2]
 
-    if domain == "hastebin.com":
+    if domain == "hasteb.in":
         if "/raw/" in link:
             return link
         token = link.split("/")[-1]
         if "." in token:
             token = token[: token.rfind(".")]  # removes extension
-        return f"https://hastebin.com/raw/{token}"
+        return f"https://hasteb.in/raw/{token}"
     else:
         # Github uses redirection so raw -> usercontent and no raw -> normal
         # We still need to ensure we get a raw version after this potential redirection
@@ -40,10 +40,10 @@ async def paste(text: str) -> str:
     """Return an online bin of given text."""
 
     async with aiohttp.ClientSession() as aioclient:
-        post = await aioclient.post("https://hastebin.com/documents", data=text)
+        post = await aioclient.post("https://hasteb.in/documents", data=text)
         if post.status == 200:
             response = await post.text()
-            return f"https://hastebin.com/{response[8:-2]}"
+            return f"https://hasteb.in/{response[8:-2]}"
 
         # Fallback bin
         post = await aioclient.post("https://bin.drlazor.be", data={"val": text})
@@ -53,7 +53,6 @@ async def paste(text: str) -> str:
 
 def typing(func: Coroutine) -> Coroutine:
     """Keep typing until `func` is complete."""
-
     @functools.wraps(func)
     async def wrapped(*args, **kwargs) -> Coroutine:
         context = args[0] if isinstance(args[0], Context) else args[1]
