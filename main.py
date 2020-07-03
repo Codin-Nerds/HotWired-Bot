@@ -17,12 +17,13 @@ extensions = [
     "cogs.codesandbox",
     "cogs.commands",
     "cogs.converters",
-    "cogs.custom",
+    "cogs.common",
     "cogs.emotes",
     "cogs.events",
     "cogs.fun",
     "cogs.games",
     "cogs.infog",
+    "cogs.malware_protection",
     "cogs.moderation",
     "cogs.study",
     "cogs.sudo",
@@ -56,7 +57,7 @@ class Bot(commands.Bot):
                 password=os.getenv("DATABASE_PASSWORD"),
             )
             self.change_status.start()
-            self.fist_on_ready = False
+            self.first_on_ready = False
             self.log_channel = self.get_channel(constants.log_channel)
             await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
             for ext in extensions:
