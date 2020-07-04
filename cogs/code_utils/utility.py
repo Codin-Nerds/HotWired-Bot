@@ -1,13 +1,9 @@
-import functools
-from typing import Coroutine
-
 import aiohttp
-from discord.ext.commands import BadArgument, Context
+from discord.ext.commands import BadArgument
 
 
 def get_raw(link: str) -> str:
     """Returns the url for raw version on a hastebin-like."""
-
     link = link.strip("<>/")  # Allow for no-embed links
 
     authorized = (
@@ -17,7 +13,7 @@ def get_raw(link: str) -> str:
     )
 
     if not any([link.startswith(url) for url in authorized]):
-        raise BadArgument(message=f"I only accept links from {', '.join(authorized)}. (Starting with 'https').")
+        raise BadArgument(message=f"Links accepted only from {', '.join(authorized)}.")
 
     domain = link.split("/")[2]
 
@@ -38,7 +34,6 @@ def get_raw(link: str) -> str:
 
 async def paste(text: str) -> str:
     """Return an online bin of given text."""
-
     async with aiohttp.ClientSession() as aioclient:
         post = await aioclient.post("https://hasteb.in/documents", data=text)
         if post.status == 200:
@@ -49,14 +44,3 @@ async def paste(text: str) -> str:
         post = await aioclient.post("https://bin.drlazor.be", data={"val": text})
         if post.status == 200:
             return post.url
-
-
-def typing(func: Coroutine) -> Coroutine:
-    """Keep typing until `func` is complete."""
-    @functools.wraps(func)
-    async def wrapped(*args, **kwargs) -> Coroutine:
-        context = args[0] if isinstance(args[0], Context) else args[1]
-        async with context.typing():
-            await func(*args, **kwargs)
-
-    return wrapped
