@@ -208,7 +208,6 @@ class Coding(Cog):
 
             if lang in self.bot.default:
                 lang = self.bot.default[lang]
-                await ctx.send(self.bot.languages)
 
             if lang not in self.bot.languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])

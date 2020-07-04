@@ -48,8 +48,6 @@ class Bot(commands.Bot):
         )
         self.first_on_ready = True
 
-        self.languages = ()
-
         with open('assets/languages.yml', 'r') as file:
             self.default = safe_load(file)
 
