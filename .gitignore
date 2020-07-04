@@ -15,9 +15,3 @@ __pycache__/
 
 # Ignore spyder Files
 .spyproject/
-
-# ignore ds store files
-.DS_STORE
-
-# ignore databases
-*.sqlite3
