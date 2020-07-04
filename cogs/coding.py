@@ -5,16 +5,18 @@ import sys
 import urllib.parse
 from hashlib import algorithms_available as algorithms
 from io import BytesIO
+import aiohttp
+from .utils import constants
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 
-import aiohttp
 import discord
-import stackexchange as se
-from discord.ext import commands, Bot
+import stackexchange
+from stackexchange import Site
+from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
-from discord.ext.commands import Cog, Context
+from discord.ext.commands import Cog, Context, Bot
 from discord.utils import escape_mentions
 
 from .code_utils import _doc, _ref
@@ -31,6 +33,8 @@ class Coding(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.STACKEXCHANGE = os.getenv("STACKEXCHANGE")
+        self.session = aiohttp.ClientSession()
 
     def get_h2_content(self, tag: NavigableString) -> str:
         """Returns content between two h2 tags."""
@@ -73,7 +77,13 @@ class Coding(Cog):
     }
 
     # TODO: lua, java, javascript, asm, c#
-    documented = {"c": _doc.c_doc, "cpp": _doc.cpp_doc, "haskell": _doc.haskell_doc, "python": _doc.python_doc}
+    documented = {
+        "c": _doc.c_doc,
+        "cpp": _doc.cpp_doc,
+        "haskell": _doc.haskell_doc,
+        "python": _doc.python_doc,
+        "rust": _doc.rust_doc,
+    }
 
     @commands.command(
         help="""
@@ -84,10 +94,10 @@ class Coding(Cog):
         stats option displays more information on execution consumption
         wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
         <code> may be normal code, but also an attached file,
-        or a link from [hastebin](https://hasteb.in) or [Github gist](https://gist.github.com)
+        or a link from [hastebin](https://hastebin.com) or [Github gist](https://gist.github.com)
         If you use a link, your command must end with this syntax:
         `link=<link>` (no space around `=`)
-        for instance : `run python link=https://hastebin.com/resopedahe.py`
+        for instance : `do run python link=https://hastebin.com/resopedahe.py`
         The link may be the raw version, and with/without the file extension
         If the output exceeds 40 lines or Discord max message length, it will be put
         in a new hastebin and the link will be returned.
@@ -99,7 +109,7 @@ class Coding(Cog):
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compiler is needed
+        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compler is needed
 
         lang = language.strip("`").lower()  # strip the "`" characters to obtain code
         options_amount = len(options)
@@ -197,18 +207,23 @@ class Coding(Cog):
             if lang in quickmap:
                 lang = quickmap[lang]  # search the existence of language
 
-            if lang in self.bot.default:
-                lang = self.bot.default[lang]
+            if lang in constants.default:
+                lang = constants.default[lang]
 
-            if lang not in self.bot.languages:  # if lang not found
+            async with aiohttp.ClientSession() as client_session:
+                async with client_session.get("https://tio.run/languages.json") as response:
+                    if response.status != 200:
+                        print("Couldn't reach languages.json :(")
+                    languages = tuple(sorted(await response.json()))
+
+            if lang not in languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` not available."
                 if matches:
                     message = message + f" Did you mean:\n{matches}"  # provide a suggestion.
 
-                await ctx.send(message)
-                return
+                return await ctx.send(message)
 
             if options["--wrapped"]:
                 if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):
@@ -270,7 +285,7 @@ class Coding(Cog):
         lang = language.strip("`")  # ugh, strip away the ugly characters
 
         if not lang.lower() in self.referred:
-            await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list references` for available ones.")
+            await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list references` for available ones.")
             return
 
         await self.referred[lang.lower()](ctx, query.strip("`"))
@@ -283,7 +298,7 @@ class Coding(Cog):
         lang = language.strip("`")  # same thingy again
 
         if not lang.lower() in self.documented:
-            await ctx.send(f"{lang} not available. See `{self.bot.config['PREFIX']}list documentations` for available ones.")
+            await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list documentations` for available ones.")
             return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))
@@ -321,7 +336,7 @@ class Coding(Cog):
 
                 for tag in contents:
                     h2 = tuple(soup.find(attrs={"name": tuple(tag.children)[0].get("href")[1:]}).parents)[0]
-                    emb.add_field(name=tag.string, value=self.get_h2_content(h2))
+                    emb.add_field(name=tag.string.strip(), value="\n".join([i for i in self.get_h2_content(h2).split("\n") if i]), inline=False)
 
                 await ctx.send(embed=emb)
 
@@ -331,14 +346,15 @@ class Coding(Cog):
     async def stack(self, ctx: Context, siteName: str, *, query: str) -> None:
         """Queries given StackExchange website and gives you top results. siteName is case-sensitive."""
 
-        if siteName[0].islower() or siteName not in dir(se):
-            await ctx.send(f"{siteName} does not appear to be in the StackExchange network." " Check the case and the spelling.")
+        if siteName[0].islower() or siteName not in dir(stackexchange):
+            await ctx.send(f"{siteName} does not appear to be in the StackExchange network. Check the case and the spelling.")
+            await ctx.send(dir(stackexchange))
 
-        site = se.Site(getattr(se, siteName), self.bot.config["SE_KEY"])
+        site = Site(getattr(stackexchange, siteName), self.STACKEXCHANGE)
         site.impose_throttling = True
         site.throttle_stop = False
 
-        qs = site.search(intitle=query)[:3]
+        qs = site.search(intitle=query)[:5]
         if qs:
             emb = discord.Embed(title=query)
             emb.set_thumbnail(url=f"http://s2.googleusercontent.com/s2/favicons?domain_url={site.domain}")
@@ -349,7 +365,7 @@ class Coding(Cog):
                 q = site.question(q.id, filter="!b1MME4lS1P-8fK")
                 emb.add_field(
                     name=f"`{len(q.answers)} answers` Score : {q.score}",
-                    value=f"[{q.title}](https://{site.domain}/q/{q.id}" f' "{q.up_vote_count}🔺|{q.down_vote_count}🔻")',
+                    value=f"[{q.title}](https://{site.domain}/q/{q.id}" f'"{q.up_vote_count}🔺|{q.down_vote_count}🔻")',
                     inline=False,
                 )
 
@@ -370,7 +386,7 @@ class Coding(Cog):
 
         if group == "languages":
             emb = discord.Embed(
-                title=f"Available for {group}: {len(self.bot.languages)}",
+                title=f"Available for {group}",  # {len(data)}
                 description="View them on [tio.run](https://tio.run/#), or in [JSON format](https://tio.run/languages.json)",
             )
             await ctx.send(embed=emb)

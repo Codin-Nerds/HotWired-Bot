@@ -25,6 +25,7 @@ class Fun(Cog):
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
+        self.session = aiohttp.ClientSession()
 
     @command()
     async def catfact(self, ctx: Context) -> None:
@@ -251,6 +252,18 @@ class Fun(Cog):
         await ctx.send(embed=embed)
 
     @command()
+    async def inspireme(self, ctx: Context) -> None:
+        """Fetch a random "inspirational message" from the bot."""
+        try:
+            async with self.session.get("http://inspirobot.me/api?generate=true") as page:
+                picture = await page.text(encoding="utf-8")
+                embed = discord.Embed()
+                embed.set_image(url=picture)
+                await ctx.send(embed=embed)
+        except Exception:
+            await ctx.send("Oops, there was a problem!")
+
+    @command()
     async def neko(self, ctx: Context) -> None:
         """Shows a neko."""
         async with aiohttp.ClientSession() as session:
@@ -262,53 +275,6 @@ class Fun(Cog):
                     await ctx.send(embed=neko_em)
                 else:
                     raise ServiceError(f"ERROR CODE: {neko.status})")
-
-    @command()
-    async def xkcd(self, ctx: Context, comic_type: str = "latest") -> None:
-        """Get your favorite xkcd comics."""
-        comic_type = comic_type.lower()
-
-        if comic_type not in ["latest", "random"]:
-            url = f"https://xkcd.com/{comic_type}/info.0.json"
-        else:
-            url = "https://xkcd.com/info.0.json"
-
-        if comic_type == "random":
-            async with aiohttp.ClientSession() as session:
-                async with session.get("https://xkcd.com/info.0.json") as r:
-                    data = await r.json()
-                random_comic = random.randint(1, data["num"])
-
-                url = f"https://xkcd.com/{random_comic}/info.0.json"
-
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as r:
-                if r.status == 200:
-                    data = await r.json()
-                    day, month, year = data["day"], data["month"], data["year"]
-                    comic_num = data["num"]
-
-                    embed = discord.Embed(title=data["title"], description=data["alt"], color=Color.blurple())
-                    embed.set_image(url=data["img"])
-                    embed.set_footer(text=f"Comic date : [{day}/{month}/{year}] | Comic Number - {comic_num}")
-
-                    await ctx.send(embed=embed)
-                else:
-                    url = "https://xkcd.com/info.0.json"
-                    async with aiohttp.ClientSession() as csession:
-                        async with csession.get(url) as req:
-                            data = await req.json()
-                            latest_comic_num = data["num"]
-
-                    help_embed = discord.Embed(
-                        title="XKCD HELP",
-                        description=f"""
-                        **{constants.COMMAND_PREFIX}xkcd latest** - (Get the latest comic)
-                        **{constants.COMMAND_PREFIX}xkcd <num>** - (Enter a comic number | range 1 to {latest_comic_num})
-                        **{constants.COMMAND_PREFIX}xkcd random** - (Get a random comic)
-                        """,
-                    )
-                    await ctx.send(embed=help_embed)
 
     @command()
     async def slap(self, ctx: Context, member: discord.Member = None) -> None:

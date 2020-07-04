@@ -1,17 +1,11 @@
 from enum import Enum
 
 from discord import Color
+from yaml import safe_load
 
 DEV_MODE = True
 
-log_channel = 728570503169704014
-contact_channel = 728570526443896934
-support_channel = 728570540998262834
-bug_report_channel = 728570578507923526
-suggestions_channel = 728570594899132456
-complaints_channel = 728570619985264650
-
-
+log_channel = 704197974577643550
 owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
@@ -221,6 +215,10 @@ http_codes = [
 
 # Search Engine categories
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
+
+
+with open('cogs/utils/languages.yml', 'r') as file:
+    default = safe_load(file)
 
 
 class Infraction(Enum):

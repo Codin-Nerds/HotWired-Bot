@@ -118,3 +118,41 @@ async def haskell_doc(ctx: Context, text: str) -> None:
             embed.add_field(name=f"Results for `{text}` :", value="\n".join(content), inline=False)
 
             await ctx.send(embed=embed)
+
+
+async def rust_doc(ctx, text: str) -> None:
+    """Get the doc.rust-lang.org results based on your query"""
+
+    text = text.strip('`')
+    if text.startswith("std::"):
+        text = text[5:]
+
+    url = "https://doc.rust-lang.org/stable/std/all.html"
+
+    async with aiohttp.ClientSession() as client_session:
+        async with client_session.get(url) as response:
+            if response.status != 200:
+                return await ctx.send('An error occurred (status code: {response.status}). Retry later.')
+
+            soup = BeautifulSoup(str(await response.text()), 'lxml')
+
+            def soup_match(tag) -> None:
+                return all(string in tag.text for string in text.strip().split()) and tag.name == 'li'
+
+            elements = soup.find_all(soup_match, limit=10)
+            links = [tag.select_one("a") for tag in elements]
+            links = [link for link in links if link is not None]
+
+            if not links:
+                return await ctx.send("No results")
+
+            content = [f"[{a.string}](https://doc.rust-lang.org/stable/std/{a.get('href')})" for a in links]
+
+            emb = discord.Embed(title="Rust docs")
+            emb.set_thumbnail(
+                url='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d'
+                    '5/Rust_programming_language_black_logo.svg/240px-Rust_programming_language_black_logo.svg.png'
+            )
+            emb.add_field(name=f'Results for `{text}` :', value='\n'.join(content), inline=False)
+
+            await ctx.send(embed=emb)

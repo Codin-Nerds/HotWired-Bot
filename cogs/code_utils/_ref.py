@@ -107,7 +107,7 @@ async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
 
             for tag in sectors[1:]:
                 content = "\n".join([markdownify(p) for p in tag.find_all(lambda x: x.name in ["p", "pre"])])
-                embed.add_field(name=tag.find("h2").text, value=content[:1024])
+                embed.add_field(name=tag.find("h2").text, value=content[:1024], inline=False)
 
             return await ctx.send(embed=embed)
 
