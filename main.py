@@ -1,88 +1,103 @@
-import asyncio
+from __future__ import annotations
+
 import os
 from itertools import cycle
+from yaml import safe_load
+import aiohttp
 
+import asyncpg
 import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext import commands, tasks
 
 from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
+
 PREFIX = constants.COMMAND_PREFIX
 
-client = commands.Bot(commands.when_mentioned_or(PREFIX), case_insensitivity=True, owner_id=688275913535914014)
-
-status = [
-    "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-    "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-    f"Ping me using {PREFIX}help",
-    "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+extensions = [
+    "cogs.codesandbox",
+    "cogs.coding",
+    "cogs.comics",
+    "cogs.commands",
+    "cogs.converters",
+    "cogs.common",
+    "cogs.embeds",
+    "cogs.emotes",
+    "cogs.events",
+    "cogs.fun",
+    "cogs.games",
+    "cogs.infog",
+    "cogs.malware_protection",
+    "cogs.moderation",
+    "cogs.search",
+    "cogs.study",
+    "cogs.sudo",
+    "cogs.support",
+    "cogs.tools",
+    "cogs.translate",
 ]
 
 
-async def change_status() -> None:
-    await client.wait_until_ready()
-    msgs = cycle(status)
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.status = cycle(
+            [
+                "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+                "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+                f"Ping me using {PREFIX}help",
+                "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+                "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+            ]
+        )
+        self.first_on_ready = True
 
-    while not client.is_closed():
-        current_status = next(msgs)
-        await client.change_presence(activity=discord.Game(name=current_status))
-        await asyncio.sleep(10800)
+        self.languages = ()
 
+        with open('assets/languages.yml', 'r') as file:
+            self.default = safe_load(file)
 
-@client.event
-async def on_ready() -> None:
-    print("Bot is Ready.")
-    print(f"Logged in as: {client.user.name} : {client.user.id}")
+    async def on_ready(self) -> None:
+        if self.first_on_ready:
+            self.pool = await asyncpg.create_pool(
+                database=os.getenv("DATABASE_NAME"),
+                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+                max_size=int(os.getenv("POOL_MAX", "100")),
+                user=os.getenv("DATABASE_USER"),
+                password=os.getenv("DATABASE_PASSWORD"),
+            )
+            self.change_status.start()
+            self.fist_on_ready = False
+            self.log_channel = self.get_channel(constants.log_channel)
+            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
+            for ext in extensions:
+                self.load_extension(ext)
+        else:
+            await self.log_channel.send("I'm ready (again)")
 
+    async def close(self) -> None:
+        await super().close()
+        await self.pool.close()
 
-# @client.event
-# async def on_command_error(ctx, error):
-#   if isinstance(error, commands.MissingRequiredArgument):
-#     embed = error_embed(f"Please pass in All Required Arguments. for more help on that command,use__ **{PREFIX}help {ctx.command.name}**", "❌ERROR")
-#     await ctx.send(embed=embed)
+    @tasks.loop(hours=3)
+    async def change_status(self) -> None:
+        await self.change_presence(activity=discord.Game(name=next(self.status)))
 
-#   if isinstance(error, commands.CommandNotFound):
-#     pass
+    @tasks.loop(hours=0.01)
+    async def update_languages(self) -> None:
+        async with aiohttp.ClientSession() as client_session:
+            async with client_session.get("https://tio.run/languages.json") as response:
+                if response.status != 200:
+                    print(f"Error: (status code: {response.status}).")
+                print(await response.json())
+                languages = tuple(sorted(await response.json()))
 
-#   if isinstance(error, commands.MissingPermissions):
-#     embed = error_embed("You don't have Enough permissions to Execute this command!", "❌ERROR")
-#     await ctx.send(embed=embed)
-
-#   if isinstance(error, commands.BotMissingPermissions):
-#    embed = error_embed(
-#         "The Bot does not have Enough permissions to Execute this command! Please Give the required permissions", "❌ERROR"
-#    )
-#    await ctx.send(embed=embed)
-
-
-def setup_bot(bot: Bot) -> None:
-    bot.load_extension("cogs.codesandbox")
-    bot.load_extension("cogs.coding")
-    bot.load_extension("cogs.comics")
-    bot.load_extension("cogs.commands")
-    bot.load_extension("cogs.converters")
-    bot.load_extension("cogs.common")
-    bot.load_extension("cogs.emotes")
-    bot.load_extension("cogs.events")
-    bot.load_extension("cogs.fun")
-    bot.load_extension("cogs.games")
-    bot.load_extension("cogs.infog")
-    bot.load_extension("cogs.malware_protection")
-    bot.load_extension("cogs.moderation")
-    bot.load_extension("cogs.search")
-    bot.load_extension("cogs.study")
-    bot.load_extension("cogs.sudo")
-    bot.load_extension("cogs.support")
-    bot.load_extension("cogs.tools")
-    bot.load_extension("cogs.embeds")
-    bot.load_extension("cogs.translate")
-
-    bot.run(TOKEN)
+                if self.languages != languages:
+                    self.languages = languages
 
 
-client.loop.create_task(change_status())
+bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
 
 if __name__ == "__main__":
-    setup_bot(client)
+    bot.run(TOKEN)

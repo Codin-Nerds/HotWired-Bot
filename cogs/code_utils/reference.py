@@ -15,7 +15,7 @@ def markdownify(html: str) -> str:
     return MarkdownConverter(bullets="•").convert(html)
 
 
-async def _process_mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
+async def mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
     """Get tag formatted content from given url from developers.mozilla.org."""
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
@@ -40,7 +40,7 @@ async def html_ref(ctx: Context, text: str) -> None:
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    output = await _process_mozilla_doc(ctx, url)
+    output = await mozilla_doc(ctx, url)
     if not isinstance(output, str):
         # Error message already sent
         return
@@ -57,7 +57,7 @@ async def _http_ref(part: str, ctx: Context, text: str) -> None:
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    output = await _process_mozilla_doc(ctx, url)
+    output = await mozilla_doc(ctx, url)
     if not isinstance(output, str):
         # Error message already sent
         return
@@ -153,7 +153,6 @@ async def sql_ref(ctx: Context, text: str) -> Message:
 
 async def haskell_ref(ctx: Context, text: str) -> Message:
     """Displays information on given Haskell topic."""
-
     text = text.strip("`")
 
     snake = "_".join(text.split(" "))
