@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 from itertools import cycle
-from yaml import safe_load
 import aiohttp
+from yaml import safe_load
 
 import asyncpg
 import discord
@@ -54,7 +54,7 @@ class Bot(commands.Bot):
     async def on_ready(self) -> None:
         if self.first_on_ready:
             self.pool = await asyncpg.create_pool(
-                database=os.getenv("DATABASE_NAME"),
+                database=os.getenv("DATABASE_NAME", "chaotic"),
                 host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
                 max_size=int(os.getenv("POOL_MAX", "100")),
                 user=os.getenv("DATABASE_USER"),
@@ -77,7 +77,7 @@ class Bot(commands.Bot):
     async def change_status(self) -> None:
         await self.change_presence(activity=discord.Game(name=next(self.status)))
 
-    @tasks.loop(hours=0.01)
+    @tasks.loop(hours=1)
     async def update_languages(self) -> None:
         async with aiohttp.ClientSession() as client_session:
             async with client_session.get("https://tio.run/languages.json") as response:
