@@ -4,7 +4,7 @@ from discord import Color
 
 DEV_MODE = True
 
-log_channel = 727555822183252010
+log_channel = 728570503169704014
 contact_channel = 727555857776246804
 support_channel = 727555808820461638
 bug_report_channel = 727555765480456282
