@@ -18,7 +18,6 @@ def _to_tio_string(couple: list) -> bytes:
 
 
 class Tio:
-    '''Thanks to FrenchMasterSword For the TIO Wrapper.'''
     def __init__(self, language: str, code: str, inputs: str = "", compilerFlags: list = [], commandLineOptions: list = [], args: list = [],) -> None:
         self.backend = "https://tio.run/cgi-bin/run/api/"
         self.json = "https://tio.run/languages.json"
