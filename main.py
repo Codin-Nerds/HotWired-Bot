@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 from itertools import cycle
+from yaml import safe_load
+import aiohttp
 
 import asyncpg
 import discord
@@ -15,9 +17,10 @@ PREFIX = constants.COMMAND_PREFIX
 
 extensions = [
     "cogs.codesandbox",
+    "cogs.coding",
     "cogs.commands",
     "cogs.converters",
-    "cogs.custom",
+    "cogs.common",
     "cogs.emotes",
     "cogs.events",
     "cogs.fun",
@@ -29,7 +32,6 @@ extensions = [
     "cogs.support",
     "cogs.tools",
 ]
-# "cogs.coding"
 
 
 class Bot(commands.Bot):
@@ -45,6 +47,11 @@ class Bot(commands.Bot):
             ]
         )
         self.first_on_ready = True
+
+        self.languages = ()
+
+        with open('assets/languages.yml', 'r') as file:
+            self.default = safe_load(file)
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
@@ -71,6 +78,18 @@ class Bot(commands.Bot):
     @tasks.loop(hours=3)
     async def change_status(self) -> None:
         await self.change_presence(activity=discord.Game(name=next(self.status)))
+
+    @tasks.loop(hours=0.01)
+    async def update_languages(self) -> None:
+        async with aiohttp.ClientSession() as client_session:
+            async with client_session.get("https://tio.run/languages.json") as response:
+                if response.status != 200:
+                    print(f"Error: (status code: {response.status}).")
+                print(await response.json())
+                languages = tuple(sorted(await response.json()))
+
+                if self.languages != languages:
+                    self.languages = languages
 
 
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
