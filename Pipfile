@@ -24,6 +24,8 @@ html2text = "*"
 googletrans = "*"
 html5lib = "*"
 asyncpg = "*"
+py-stackexchange = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.8"

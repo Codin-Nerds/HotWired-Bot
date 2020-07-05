@@ -1,10 +1,13 @@
 import asyncio
 import textwrap
 import time
-
 from contextlib import suppress
+
+import aiohttp
 from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import BadArgument, Bot, BucketType, Cog, Context, command, cooldown, has_permissions
+from discord.ext.commands import (BadArgument, Bot, BucketType, Cog,
+                                  CommandError, Context, command, cooldown,
+                                  has_permissions)
 
 from bot import constants
 
@@ -12,6 +15,7 @@ from bot import constants
 class Common(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     # TODO : Add custom command support after db integration
     @command()
@@ -52,7 +56,41 @@ class Common(Cog):
         for reaction in options:
             await message.add_reaction(reaction)
 
-    # TODO : add github logo thumbnail to embed, and some more content. like about ig.
+    @command(aliases=["spoll"])
+    async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
+        f"""{constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        if question_and_choices is None:
+            await ctx.send(f"Usage: {constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
+            return
+
+        if "|" in question_and_choices:
+            delimiter = "|"
+        else:
+            delimiter = ","
+        question_and_choices = question_and_choices.split(delimiter)
+
+        if len(question_and_choices) == 1:
+            return await ctx.send("Not enough choices supplied")
+        elif len(question_and_choices) >= 31:
+            return await ctx.send("Too many choices")
+
+        question, *choices = question_and_choices
+        choices = [x.lstrip() for x in choices]
+
+        header = {"Content-Type": "application/json"}
+        payload = {
+            "title": question,
+            "options": choices,
+            "multi": False
+        }
+
+        async with self.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
+            data = await r.json()
+
+        id = data["id"]
+        await ctx.send(f"http://www.strawpoll.me/{id}")
+
+    # TODO : add github logo thumnail to embed, and some more content.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
         """GitHub repository"""
@@ -82,6 +120,23 @@ class Common(Cog):
             start -= 1
             await asyncio.sleep(1)
         await message.delete()
+
+    @command()
+    @cooldown(1, 10, BucketType.user)
+    async def urlshorten(self, ctx: Context, url='') -> None:
+        '''Shorten a URL.'''
+        async with ctx.typing():
+            if not url:
+                raise CommandError(message='Required argument missing: `url`.')
+            if not url.startswith("https://"):
+                raise CommandError(message=f'Invalid argument: `{url}`. Argument must be a valid URL.')
+
+            async with self.session.get(f'https://is.gd/create.php?format=simple&url={url}') as r:
+                if r.status != 200:
+                    raise CommandError(message='Error retrieving shortened URL, please try again in a minute.')
+                data = await r.text()
+
+        await ctx.send(data)
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:

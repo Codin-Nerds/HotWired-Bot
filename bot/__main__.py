@@ -25,8 +25,9 @@ extensions = [
     "bot.cogs.tools",
     "bot.cogs.search",
     "bot.cogs.malware_protection",
-    "bot.cogs.embeds"
-    # "bot.cogs.coding"
+    "bot.cogs.embeds",
+    "bot.cogs.comics",
+    "bot.cogs.coding"
 ]
 
 bot = Bot(

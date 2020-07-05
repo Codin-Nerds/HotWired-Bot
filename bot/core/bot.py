@@ -56,7 +56,7 @@ class Bot(Bot):
             )
             await self.log_channel.send(embed=embed)
 
-        print("I'm ready")
+        print("Bot is ready")
 
     async def close(self) -> None:
         await super().close()
