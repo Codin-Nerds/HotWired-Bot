@@ -41,9 +41,123 @@ class Games(Cog):
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
 
+    @command(aliases=["guess", "guessgame"])
+    async def guessthenumber(self, ctx: Context, minimum: int = 1, maximum: int = 20) -> None:
+        """Play guess the number."""
+
+        def check(message: Message) -> bool:
+            return message.author == ctx.author and message.channel == ctx.channel
+
+
+        if minimum > maximum:
+            await ctx.send("Max limit cannot be smaller than Min limit.")
+        elif maximum - minimum < 10:
+            await ctx.send("The Max and Min limits difference must be atleast 10!")
+        else:
+            rand = random.randint(minimum, maximum)
+            tries = 5
+            guessed = False
+
+            embed = Embed(title="Let's play Guess the number!", color=Color.dark_green())
+            embed.add_field(name="**❯❯ Range**", value=f"{minimum} > {maximum}", inline=False)
+            embed.add_field(name="**❯❯ Tries Left**", value=f"**{tries}**", inline=False)
+            embed.add_field(name="**❯❯ Guess Status**", value="**Not Yet Guessed**", inline=False)
+            embed.set_footer(text="Powered By HotWired.")
+            message = await ctx.send(embed=embed)
+
+            while not guessed and tries > 0:
+                input = await self.bot.wait_for("message", check=check)
+                guess = input.content
+
+                await input.delete()
+
+                if guess.isdigit():
+                    guess_num = int(guess)
+                    if guess_num == rand:
+                        guessed = True
+                    elif guess_num > rand:
+                        tries -= 1
+
+                        embed = Embed(title="Let's play Guess the number!", color=Color.gold())
+                        embed.add_field(name="**❯❯ Range**", value=f"{minimum} > {maximum}", inline=False)
+                        embed.add_field(name="**❯❯ Tries Left**", value=f"**{tries}**", inline=False)
+                        embed.add_field(name="**❯❯ Guess Status**", value="**Guess is higher than the Number**", inline=False)
+                        embed.set_footer(text="Powered By HotWired.")
+                        await message.edit(embed=embed)
+
+                    elif guess_num < rand:
+                        tries -= 1
+
+                        embed = Embed(title="Let's play Guess the number!", color=Color.gold())
+                        embed.add_field(name="**❯❯ Range**", value=f"{minimum} > {maximum}", inline=False)
+                        embed.add_field(name="**❯❯ Tries Left**", value=f"**{tries}**", inline=False)
+                        embed.add_field(name="**❯❯ Guess Status**", value="**Guess is lower than the Number**", inline=False)
+                        embed.set_footer(text="Powered By HotWired.")
+                        await message.edit(embed=embed)
+                else:
+                    await ctx.send("Numbers only allowed!")
+
+            if guessed:
+                await ctx.send(embed=Embed(description="Congrats, you guessed the Number! You win! :partying_face: ", color=Color.dark_green()))
+            else:
+                await ctx.send(
+                    embed=Embed(description=f"Sorry, you ran out of tries. The number was {rand}. Maybe next time! :frowning: ", color=Color.red())
+                )
+
+    @commands.command(aliases=["ms"])
+	async def minesweeper(self, ctx: Context, width: int = 10, height: int = 10, difficulty: int = 30) -> None:
+		"""Play minesweeper"""
+        grid = tuple([['' for i in range(width)] for j in range(height)])
+        num = ('0⃣','1⃣','2⃣','3⃣','4⃣','5⃣','6⃣','7⃣','8⃣')
+        msg = ''
+
+        if not (1 <= difficulty <= 100):
+            await ctx.send("Please enter difficulty in terms of percentage (1-100).")
+            return
+        if width <= 0 or height <= 0:
+            await ctx.send("Invalid width or height value.")
+            return
+        if width * height > 198:
+            return await ctx.channel.send("Your grid size is too big.")
+            return
+        if width * height <= 4:
+            await ctx.send("Your grid size is too small.")
+            return
+
+        # set bombs in random location
+        for y in range(0, height):
+            for x in range(0, width):
+                if randint(0, 100) <= difficulty:
+                    grid[y][x] = '💣'
+
+		# now set the number emojis
+        for y in range(0, height):
+            for x in range(0, width):
+                if grid[y][x] != '💣':
+                    grid[y][x] = num[sum((
+                        grid[y - 1][x - 1] == '💣' if y - 1 >= 0 and x - 1 >= 0 else False,
+                        grid[y - 1][x] == '💣' if y - 1 >= 0 else False,
+                        grid[y - 1][x + 1] == '💣' if y - 1 >= 0 and x + 1 < width else False,
+                        grid[y][x - 1] == '💣' if x - 1 >= 0 else False,
+                        grid[y][x + 1] == '💣' if x + 1 < width else False,
+                        grid[y + 1][x - 1] == '💣' if y + 1 < height and x - 1 >= 0 else False,
+                        grid[y + 1][x] == '💣' if y + 1 < height else False,
+                        grid[y + 1][x + 1] == '💣' if y + 1 < height and x + 1 < width else False
+                    ))]
+        await ctx.send(grid[y][x])
+
+        for i in grid:
+	        for tile in i:
+		        msg += '||' + tile + '|| '
+	        msg += '\n'
+        await ctx.send(msg)
+
     @command()
     async def hangman(self, ctx: Context) -> None:
         """Play Hangman game."""
+
+        def check(message: Message) -> bool:
+            return message.author == ctx.author and message.channel == ctx.channel
 
         def display_hangman(tries: int) -> str:
             stages = [
@@ -119,9 +233,6 @@ class Games(Cog):
                     ```""",
             ]
             return stages[tries]
-
-        def check(message: Message) -> bool:
-            return message.author == ctx.author and message.channel == ctx.channel
 
         word = random.choice(word_list).upper()
         word_completion = "#" * len(word)

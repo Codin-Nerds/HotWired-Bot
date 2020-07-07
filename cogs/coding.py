@@ -214,7 +214,7 @@ class Coding(Cog):
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
-                    message = message + f" Maybe you meant {matches}?"  # provide a suggestion.
+                    message += f" Maybe you meant {matches}?"  # provide a suggestion.
 
                 await ctx.send(message)
                 return
