@@ -89,7 +89,7 @@ class Coding(Cog):
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compler is needed
+        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compiler is needed
 
         lang = language.strip("`").lower()  # strip the "`" characters to obtain code
         options_amount = len(options)
@@ -194,7 +194,7 @@ class Coding(Cog):
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
-                    message = message + f" Maybe you meant {matches}?"  # provide a suggestion.
+                    message += f" Maybe you meant {matches}?"  # provide a suggestion.
 
                 return await ctx.send(message)
 
