@@ -25,6 +25,7 @@ googletrans = "*"
 html5lib = "*"
 py-stackexchange = "*"
 pre-commit = "*"
+asyncpg = "*"
 
 [requires]
 python_version = "3.8"
