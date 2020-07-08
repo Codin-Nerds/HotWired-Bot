@@ -5,7 +5,7 @@ from itertools import cycle
 import aiohttp
 from yaml import safe_load
 
-import asyncpg
+# import asyncpg
 import discord
 from discord.ext import commands, tasks
 
@@ -17,7 +17,7 @@ PREFIX = constants.COMMAND_PREFIX
 
 extensions = [
     "cogs.codesandbox",
-    "cogs.coding",
+    # "cogs.coding",
     "cogs.commands",
     "cogs.converters",
     "cogs.common",
@@ -53,14 +53,14 @@ class Bot(commands.Bot):
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
-            self.pool = await asyncpg.create_pool(
-                database=os.getenv("DATABASE_NAME", "chaotic"),
-                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
-                max_size=int(os.getenv("POOL_MAX", "100")),
-                user=os.getenv("DATABASE_USER"),
-                password=os.getenv("DATABASE_PASSWORD"),
-            )
-            self.change_status.start()
+            # self.pool = await asyncpg.create_pool(
+            #     database=os.getenv("DATABASE_NAME", "chaotic"),
+            #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+            #     max_size=int(os.getenv("POOL_MAX", "100")),
+            #     user=os.getenv("DATABASE_USER"),
+            #     password=os.getenv("DATABASE_PASSWORD"),
+            # )
+            # self.change_status.start()
             self.first_on_ready = False
             self.log_channel = self.get_channel(constants.log_channel)
             await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
@@ -71,7 +71,7 @@ class Bot(commands.Bot):
 
     async def close(self) -> None:
         await super().close()
-        await self.pool.close()
+        # await self.pool.close()
 
     @tasks.loop(hours=3)
     async def change_status(self) -> None:
