@@ -238,7 +238,8 @@ talk_games = {
         ".accidentally be responsible for the death of a child or accidentally be responsible for the deaths of three adults?",
         ".your shirts be always two sizes too big or one size too small?",
         ".live in the wilderness far from civilization or live on the streets of a city as a homeless person?",
-        ".the general public think you are a horrible person but your family be very proud of you or your family think you are a horrible person but the general public be very proud of you?",
+        ".the general public think you are a horrible person but your family be very proud of you or your family think you are a "
+        "horrible person but the general public be very proud of you?",
         ".live your entire life in a virtual reality where all your wishes are granted or in the real world?",
         ".be alone for the rest of your life or always be surrounded by annoying people?",
         ".never use social media sites / apps again or never watch another movie or TV show?",
@@ -274,10 +275,12 @@ talk_games = {
         ".get one free round trip international plane ticket every year or be able to fly domestic anytime for free?",
         ".be balding but fit or overweight with a full head of hair?",
         ".be able to be free from junk mail or free from email spam for the rest of your life?",
-        ".be fluent in all languages and never be able to travel or be able to travel anywhere for a year but never be able to learn a word of a different language?",
+        ".be fluent in all languages and never be able to travel or be able to travel anywhere for a year but never be able to "
+        "learn a word of a different language?",
         ".have an unlimited international first class ticket or never have to pay for food at restaurants?",
         ".see what was behind every closed door or be able to guess the combination of every safe on the first try?",
-        ".live in virtual reality where you are all powerful or live in the real world and be able to go anywhere but not be able to interact with anyone or anything?",
+        ".live in virtual reality where you are all powerful or live in the real world and be able to go anywhere but not "
+        "be able to interact with anyone or anything?",
         ".never be able to eat meat or never be able to eat vegetables?",
         ".give up watching TV / movies for a year or give up playing games for a year?",
         ".always be able to see 5 minutes into the future or always be able to see 100 years into the future?",
@@ -291,24 +294,31 @@ talk_games = {
         ".not be able to open any closed doors (locked or unlocked) or not be able to close any open doors?",
         ".give up all drinks except for water or give up eating anything that was cooked in an oven?",
         ".have to read aloud every word you read or sing everything you say out loud?",
-        ".have whatever you are thinking appear above your head for everyone to see or have absolutely everything you do live streamed for anyone to see?",
-        ".be put in a maximum security federal prison with the hardest of the hardened criminals for one year or be put in a relatively relaxed prison where wall street types are held for ten years?",
-        ".have a clown only you can see that follows you everywhere and just stands silently in a corner watching you without doing or saying anything or have a real life stalker who dresses like the Easter bunny that everyone can see?",
+        ".have whatever you are thinking appear above your head for everyone to see or have absolutely everything you do live streamed "
+        "for anyone to see?",
+        ".be put in a maximum security federal prison with the hardest of the hardened criminals for one year or be put in a relatively "
+        "relaxed prison where wall street types are held for ten years?",
+        ".have a clown only you can see that follows you everywhere and just stands silently in a corner watching you without doing or "
+        "saying anything or have a real life stalker who dresses like the Easter bunny that everyone can see?",
         ".kill one innocent person or five people who committed minor crimes?",
         ".have a completely automated home or a self-driving car?",
         ".work very hard at a rewarding job or hardly have to work at a job that isn’t rewarding?",
         ".be held in high regard by your parents or your friends?",
         ".be an amazing painter or a brilliant mathematician?",
         ".be reincarnated as a fly or just cease to exist after you die?",
-        ".be able to go to any theme park in the world for free for the rest of your life or eat for free at any drive through restaurant for the rest of your life?",
-        ".be only able to watch the few movies with a rotten tomatoes score of 95-100% or only be able to watch the majority of movies with a rotten tomatoes score of 94% and lower?",
+        ".be able to go to any theme park in the world for free for the rest of your life or eat for free at any drive through restaurant "
+        "for the rest of your life?",
+        ".be only able to watch the few movies with a rotten tomatoes score of 95-100% or only be able to watch the majority of movies with a"
+        " rotten tomatoes score of 94% and lower?",
         ".never lose your phone again or never lose your keys again?",
         ".have one real get out of jail free card or a key that opens any door?",
         ".have a criminal justice system that actually works and is fair or an administrative government that is free of corruption?",
         ".have real political power but be relatively poor or be ridiculously rich and have no political power?",
         ".have the power to gently nudge anyone’s decisions or have complete puppet master control of five people?",
-        ".have everyone laugh at your jokes but not find anyone else’s jokes funny or have no one laugh at your jokes but you still find other people’s jokes funny?",
-        ".be the absolute best at something that no one takes seriously or be well above average but not anywhere near the best at something well respected?",
+        ".have everyone laugh at your jokes but not find anyone else’s jokes funny or have no one laugh at your jokes but you still find "
+        "other people’s jokes funny?",
+        ".be the absolute best at something that no one takes seriously or be well above average but not anywhere near the best at something "
+        "well respected?",
         ".lose the ability to read or lose the ability to speak?",
         ".live under a sky with no stars at night or live under a sky with no clouds during the day?",
         ".humans go to the moon again or go to mars?",
@@ -488,7 +498,8 @@ talk_games = {
     ],
     "truths": [
         "What was the last thing you searched for on your phone?",
-        "If you had to choose between going naked or having your thoughts appear in thought bubbles above your head for everyone to read, which would you choose?",
+        "If you had to choose between going naked or having your thoughts appear in thought bubbles above your head for everyone to read, "
+        "which would you choose?",
         "After you've dropped a piece of food, what's the longest time you've left it on the ground and then ate it?",
         "Have you ever played Cards Against Humanity with your parents?",
         "What's the first thing you would do if you woke up one day as the opposite sex?",
@@ -720,7 +731,8 @@ talk_games = {
         "Do you write in a diary?",
         "Who would you hate to see naked?",
         "How long have you gone without a shower?",
-        "If you could only text one person for the rest of your life, but you could never talk to that person face to face, who would that be?",
+        "If you could only text one person for the rest of your life, but you could never talk to that person face to face, "
+        "who would that be?",
         "How long have you gone without brushing your teeth?",
         "What's one thing you would never eat on a first date?",
         "What have you seen that you wish you could unsee?",
@@ -793,7 +805,8 @@ talk_games = {
         "If I was a food, what would I be, and how would you eat me?",
         "Would you choose a wild, hot relationship or a calm and stable one?",
         "If you had one week to live and you had to marry someone in this room, who would it be?",
-        "If you only had 24 hours to live and you could do anything with anyone in this room, who would it be and what would you do with that person?",
+        "If you only had 24 hours to live and you could do anything with anyone in this room, who would it be and what would "
+        "you do with that person?",
         "What's your biggest turn-on?",
         "And biggest turn-off?",
         "Would you go out with me if I was the last person on earth?",
