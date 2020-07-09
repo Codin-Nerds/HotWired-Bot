@@ -7,7 +7,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import setup as s
+import os
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 from .utils import constants
@@ -229,7 +229,7 @@ class Study(commands.Cog):
 
         temp_msg = await ctx.reply("Sending query, please wait.")
 
-        appid = s.WOLFRAM_APPID
+        appid = os.getenv("WOLFRAM_APPID")
 
         try:
             result = await self.get_query(query, appid)
@@ -271,6 +271,8 @@ class Study(commands.Cog):
 
         embed = discord.Embed(description=link)
         embed.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author}")
+        embed.set_thumbnail(url="https://content.wolfram.com/uploads/sites/10/2016/12/wa-logo-stacked-med.jpg")
+        embed.set_image(url="attachment://wolf.png")
 
         await ctx.safe_delete_msgs([temp_msg])
         out_msg = await ctx.send(file_data=data, file_name="wolf.png", embed=embed)
