@@ -9,8 +9,6 @@ from io import BytesIO
 
 import aiohttp
 import discord
-from bs4 import BeautifulSoup
-from bs4.element import NavigableString
 from discord.ext import commands, tasks
 from discord.ext.commands import Bot, Cog, Context
 from discord.utils import escape_mentions
@@ -41,25 +39,6 @@ class Coding(Cog):
 
                 if self.languages != languages:
                     self.languages = languages
-
-    def get_h2_content(self, tag: NavigableString) -> str:
-        """Returns content between two h2 tags."""
-        bs_siblings = tag.next_siblings
-        siblings = []
-
-        # get only tag elements, before the next h2
-        for element in bs_siblings:
-            if type(element) == NavigableString:
-                continue
-            if element.name == "h2":
-                break
-            siblings.append(element.text)  # get the text of the elemets before the next h2
-        content = "\n".join(siblings)
-
-        if len(content) >= 1024:
-            content = content[:1021] + "..."
-
-        return content
 
     wrapping = {
         "c": "#include <stdio.h>\nint main() {code}",
@@ -293,42 +272,6 @@ class Coding(Cog):
                 return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))
-
-    @commands.command()
-    async def manual(self, ctx: Context, *, page: str) -> None:
-        """Returns the manual's page for a linux command."""
-        base_url = f"https://man.cx/{page}"
-        url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
-
-        async with ctx.typing():
-            async with self.session.get(url) as response:
-                if response.status != 200:
-                    await ctx.send("An error occurred (status code: {response.status}). Retry later.")
-                    return
-
-                    soup = BeautifulSoup(await response.text(), "lxml")
-
-                    nameTag = soup.find("h2", string="NAME\n")
-
-                    if not nameTag:
-                        return await ctx.send(f"No manual entry for `{page}`. (Debian)")
-
-                    contents = soup.find_all("nav", limit=2)[1].find_all("li", limit=3)[1:]
-
-                    if contents[-1].string == "COMMENTS":
-                        contents.remove(-1)
-
-                    title = self.get_h2_content(nameTag)
-
-                    emb = discord.Embed(title=title, url=f"https://man.cx/{page}")
-                    emb.set_author(name="Linux man pages")
-                    emb.set_thumbnail(url="https://www.debian.org/logos/openlogo-nd-100.png")
-
-                    for tag in contents:
-                        h2 = tuple(soup.find(attrs={"name": tuple(tag.children)[0].get("href")[1:]}).parents)[0]
-                        emb.add_field(name=tag.string.strip(), value="\n".join([i for i in self.get_h2_content(h2).split("\n") if i]), inline=False)
-
-        await ctx.send(embed=emb)
 
     @commands.command(name="list")
     async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
