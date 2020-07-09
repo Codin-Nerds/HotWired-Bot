@@ -10,8 +10,14 @@ __pycache__/
 # Ignore enviromental vars (contains private information)
 .env
 
-# Ignore enviromental vars in Py File(contains private information)
-setup.py
-
 # Ignore intellij Files
 .idea
+
+# Ignore spyder Files
+.spyproject/
+
+# ignore ds store files
+.DS_STORE
+
+# ignore databases
+*.sqlite3

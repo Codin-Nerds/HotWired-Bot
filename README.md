@@ -18,17 +18,69 @@ Features
 
 * Perfect Event management
 * Perfect Moderation for Your server
+    * Ban
+    * Kick
+    * Clear messages
+    * Clear Bot Messages
+    * Clear Specific Messages
+    * Hack Ban
+    * Soft Ban
 * No Paid Options, Everything for Free!
 * Extra Options and stats for Server owners or admins.
-* No web dashboard, management made easy through discord
+    * Eval License
+    * Captcha Verification
+    * Verified License
+* With web dashboard, management made easy through discord, and Dahboard
 * Inbuilt Compiler for programmers, **160+ Languages**!
+    * Python
+    * C++
+    * Java
+    * Julia
+    * Ruby
+    * And Many More.. Just Choose you Language!
 * Inbuilt documentation and reference support, No more leaving Discord. **Yay!**
+    * Assembly
+    * Bash / Debian
+    * Java
+    * Python
+    * Cpp preference
+    * Javascript
+    * SQL
+    * More Doc support Coming Soon.
 * A Fast repl for Python inside the bot.
 * Study and Study Helper Commands
+    * Equation solver
+    * Wolfram Alpha
+    * Ncatlab Integration
+    * Latex rendering and Others Coming Soon.
 * A perfectly crafted arsenal for the programmers
+    * Number base Converter, Supports Octal, Hex, Binary, and Base10
+    * Number base Calulator : Performs operation between Various Base numbers
+    * Cryptography tools
+    * Inbuilt Hashing and De-Hashing
+    * Ascii and De-ascii Converter
+    * Character info using Unicode and UTF-8
 * Another Perfectly crafted Arsenal for The hackers
 * Some Fun Commands Too!
+    * Random Cat pictures
+    * Random Dog pictures
+    * Random Lizard pictures
+    * Random Fox pictures
+    * Random Cat Facts
+    * Random Nekos
+    * Robohash
+    * Excuse Generator
+    * Dad Jokes
+    * Chuck norris Joke
+    * Memes and XKCD Coming soon!
 * Bored? Play Games through our bot.
+    * Hangman
+    * Guess the Number
+    * Battleship
+    * Connect4
+    * BlackJack
+    * Riddles
+    * More Games coming Soon!
 * Get a coding Sandbox inside Discord.
 * Make your Custom commands!
 * Various inbuilt custom commands From the Creator.

@@ -18,10 +18,20 @@ GPUtil = "==1.4.0"
 flake8 = "*"
 pre-commit = "*"
 pillow = "*"
+html2text = "*"
+"nekos.py" = "*"
+googletrans = "*"
+html5lib = "*"
+py-stackexchange = "*"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
+start="python -u ./main.py"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+autoformat = "black ."
+
+[pipenv]
+allow_prereleases = true

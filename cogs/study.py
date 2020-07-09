@@ -2,15 +2,22 @@ import asyncio
 import json
 from io import BytesIO
 from urllib import parse
+import re
+import textwrap
+import typing as t
 
 import aiohttp
 import discord
-from discord.ext import commands
+from bs4 import BeautifulSoup
+from discord.ext.commands import Bot, Cog, Context, command, execute
+from discord import Embed, Color
 
 import os
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 from .utils import constants
+
+from .urbandict_utils.urbandictpages import UrbanDictionaryPages
 
 
 url = 'http://api.mathjs.org/v4/'
@@ -21,16 +28,13 @@ WEB = "https://www.wolframalpha.com/"
 FONT = ImageFont.truetype("assets/wolf_font.ttf", 15, encoding="unic")
 
 
-class Study(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+class Study(Cog):
+    def __init__(self, bot) -> None:
+        self.bot = bot
+        self.session = aiohttp.ClientSession()
 
-    @commands.command()
-    async def pcalc(self, ctx):
-        pass
-
-    @commands.command()
-    async def calc(self, ctx: commands.Context, *equations: str) -> None:
+    @command()
+    async def calc(self, ctx: Context, *equations: str) -> None:
         """Calculate an equation."""
         if not equations:
             await ctx.reply("Please give me something to evaluate. See help for usage details.")
@@ -76,11 +80,11 @@ class Study(commands.Cog):
             await ctx.send(embed=embed)
             ctr += 1
 
-    def build_web_url(self, query: str):
+    def build_web_url(self, query: str) -> str:
         """Returns the url for Wolfram Alpha search for this query."""
         return f"{WEB}input/?i={parse.quote_plus(query)}"
 
-    async def get_query(self, query: str, appid: str, **kwargs):
+    async def get_query(self, query: str, appid: str, **kwargs) -> dict:
         """Fetches the provided query from the Wolfram Alpha computation engine."""
         params = {
             "input": query,
@@ -97,7 +101,7 @@ class Study(commands.Cog):
                 data = await r.read()
                 return json.loads(data.decode('utf8'))
 
-    async def assemble_pod_image(self, atoms, dimensions):
+    async def assemble_pod_image(self, atoms: str, dimensions: tuple) -> Image:
         """Draws the given atoms onto a canvas of the given dimensions."""
         im = Image.new('RGB', dimensions, color=(255, 255, 255))
         draw = ImageDraw.Draw(im)
@@ -109,7 +113,7 @@ class Study(commands.Cog):
                 im.paste(atom["image"], atom["coord"])
         return im
 
-    async def glue_pods(self, flat_pods):
+    async def glue_pods(self, flat_pods) -> list:
         """Turns a complete list of flattened pods into a list of images, split appropriately."""
         indent_width = 10
         image_border = 5
@@ -147,7 +151,7 @@ class Study(commands.Cog):
             split_images.append(await self.assemble_pod_image(*split))
         return split_images
 
-    async def flatten_pods(self, pod_data, level=0, text=False, text_field="plaintext"):
+    async def flatten_pods(self, pod_data: str, level: int = 0, text: bool = False, text_field: str = "plaintext") -> list:
         """Takes the list of pods formatted as in wolf output and returns flattened pods."""
         flat_pods = []
         for pod in pod_data:
@@ -161,7 +165,7 @@ class Study(commands.Cog):
                 flat_pods.extend(await self.flatten_pods(pod["subpods"], level=level + 1, text=text))
         return flat_pods
 
-    async def handle_image(self, image_data):
+    async def handle_image(self, image_data: dict) -> Image:
         """Takes an image dict as given by the wolf. Retrieves, trims and returns an Image object."""
         target = image_data["src"]
         async with aiohttp.ClientSession() as session:
@@ -170,14 +174,14 @@ class Study(commands.Cog):
         image = Image.open(BytesIO(response))
         return self.smart_trim(image, border=10)
 
-    def smart_trim(self, im, border=0):
+    def smart_trim(self, im: Image, border: int = 0) -> Image:
         bg = Image.new(im.mode, im.size, border)
         diff = ImageChops.difference(im, bg)
         bbox = diff.getbbox()
         if bbox:
             return im.crop(bbox)
 
-    async def pods_to_filedata(self, pod_data):
+    async def pods_to_filedata(self, pod_data: str) -> list:
         flat_pods = await self.flatten_pods(pod_data)
         images = await self.glue_pods(flat_pods)
         output_data = []
@@ -188,7 +192,7 @@ class Study(commands.Cog):
             output_data.append(output)
         return output_data
 
-    async def pods_to_textdata(self, pod_data):
+    async def pods_to_textdata(self, pod_data: str) -> list:
         flat_pods = await self.flatten_pods(pod_data, text=True)
         tabchar = "​ "
         tab = tabchar * 2
@@ -208,7 +212,7 @@ class Study(commands.Cog):
                 current_lines.append(f"{tab * (level + 1)}{text}")
         return fields
 
-    def triage_pods(self, pod_list):
+    def triage_pods(self, pod_list: list) -> tuple:
         if "primary" in pod_list[0] and pod_list[0]["primary"]:
             return ([pod_list[0]], pod_list[1:])
         else:
@@ -218,13 +222,13 @@ class Study(commands.Cog):
                 important.append(pod_list[1])
             extra = [pod for pod in pod_list[1:] if pod not in important]
             return (important, extra)
-        
-    @commands.command()
-    @commands.execute("flags", flags=["text"])
-    async def cmd_query(self, ctx, *query):
+
+    @command()
+    @execute("flags", flags=["text"])
+    async def wolfram(self, ctx, *query) -> None:
         """Get the Answer to the Query."""
         if query == "":
-            await ctx.send(f"Please submit a valid query! Like, `{constants.COMMAND_PREFIX}ask differentiate x+y^2 with respect to x`.")
+            await ctx.send(f"Please submit a valid query! Like, `{constants.COMMAND_PREFIX}wolfram differentiate x+y^2 with respect to x`.")
             return
 
         temp_msg = await ctx.reply("Sending query, please wait.")
@@ -236,20 +240,24 @@ class Study(commands.Cog):
         except Exception:
             await ctx.send("An unknown exception occurred while fetching query.")
             return
+
         if not result:
             await ctx.soft_delete(temp_msg)
             await ctx.send("Failed to get a response.")
             return
+
         if "queryresult" not in result:
             await ctx.soft_delete(temp_msg)
             await ctx.send("Did not get a valid response.")
             return
 
         link = f"[Display results online and refine query]({self.build_web_url(ctx.arg_str)})"
+
         if not result["queryresult"]["success"] or result["queryresult"]["numpods"] == 0:
             desc = f"Wolfram Alpha doesn't understand your query!\n Perhaps try rephrasing your question?\n{link}"
             embed = discord.Embed(description=desc)
             embed.set_footer(icon_url=ctx.author.avatar_url, text="Requested by {ctx.author}")
+
             await ctx.soft_delete(temp_msg)
             await ctx.offer_delete(await ctx.reply(embed=embed))
             return
@@ -258,8 +266,10 @@ class Study(commands.Cog):
             fields = await self.pods_to_textdata(result["queryresult"]["pods"])
             embed = discord.Embed(description=link)
             embed.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author}")
+
             await ctx.emb_add_fields(embed, fields)
             await ctx.soft_delete(temp_msg)
+
             out_msg = await ctx.send(embed=embed)
             await ctx.offer_delete(out_msg)
             return
@@ -320,6 +330,207 @@ class Study(commands.Cog):
         for output in output_data:
             output.close()
 
+    @command(aliases=["dict"])
+    async def urban(self, ctx: Context, *, word: str) -> None:
+        """Searches urban dictionary."""
+        url = "http://api.urbandictionary.com/v0/define"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params={"term": word}) as resp:
+                if resp.status != 200:
+                    await ctx.send(f"An error occurred: {resp.status} {resp.reason}.")
+                    embed = discord.Embed(
+                        title="Response Error Occured!",
+                        description=textwrap.dedent(
+                            f"""
+                            Status Code: {resp.status}
+                            Reason: {resp.reason}
+                            """
+                        ),
+                        color=discord.Color.red(),
+                    )
+                    await ctx.send(embed=embed)
+                    return
 
-def setup(client):
-    client.add_cog(Study(client))
+                js = await resp.json()
+                data = js.get("list", [])
+                if not data:
+                    embed = discord.Embed(description="No results found, sorry.", color=discord.Color.red())
+                    await ctx.send(embed=embed)
+                    return
+
+        pages = UrbanDictionaryPages(ctx, data)
+        await pages.paginate()
+
+    async def _get_soup_object(self, url: str) -> t.Union[None, BeautifulSoup]:
+        try:
+            async with self.session.request("GET", url) as response:
+                return BeautifulSoup(await response.text(), "html.parser")
+        except Exception:
+            return None
+
+    @command()
+    async def antonym(self, ctx: Context, *, word: str) -> None:
+        """Displays antonyms for a given word."""
+        search_msg = await ctx.send("Searching...")
+        search_term = word.split(" ", 1)[0]
+        result = await self._antonym(ctx, search_term)
+        if not result:
+            return await search_msg.edit(content="This word is not in the dictionary.")
+
+        result_text = "*, *".join(result)
+        await search_msg.edit(content=f"Antonyms for **{search_term}**: *{result_text}*")
+
+    async def _antonym(self, ctx: Context, word: str) -> list:
+        data = await self._get_soup_object(f"http://www.thesaurus.com/browse/{word}")
+        if not data:
+            return await ctx.send("Error fetching data.")
+        section = data.find_all("ul", {"class": "css-1ytlws2 et6tpn80"})
+        try:
+            section[1]
+        except IndexError:
+            return
+        spans = section[1].findAll("li")
+        antonyms = [span.text for span in spans[:50]]
+        return antonyms
+
+    @command()
+    async def define(self, ctx: Context, *, word: str) -> None:
+        """Displays definitions of a given word."""
+        search_msg = await ctx.send("Searching...")
+        search_term = word.split(" ", 1)[0]
+        result = await self._definition(ctx, search_term)
+        str_buffer = ""
+        if not result:
+            return await search_msg.edit(content="This word is not in the dictionary.")
+        for key in result:
+            str_buffer += f"\n**{key}**: \n"
+            counter = 1
+            j = False
+            for val in result[key]:
+                if val.startswith("("):
+                    str_buffer += f"{str(counter)}. *{val})* "
+                    counter += 1
+                    j = True
+                else:
+                    if j:
+                        str_buffer += f"{val}\n"
+                        j = False
+                    else:
+                        str_buffer += f"{str(counter)}. {val}\n"
+                        counter += 1
+        await search_msg.edit(content=str_buffer)
+
+    async def _definition(self, ctx: Context, word: str) -> dict:
+        data = await self._get_soup_object(f"http://wordnetweb.princeton.edu/perl/webwn?s={word}")
+        if not data:
+            return await ctx.send("Error fetching data.")
+        types = data.findAll("h3")
+        lists = data.findAll("ul")
+        out = {}
+        if not lists:
+            return
+        for a in types:
+            reg = str(lists[types.index(a)])
+            meanings = []
+            for x in re.findall(r">\s\((.*?)\)\s<", reg):
+                if "often followed by" in x:
+                    pass
+                elif len(x) > 5 or " " in str(x):
+                    meanings.append(x)
+            name = a.text
+            out[name] = meanings
+        return out
+
+    async def _synonym(self, ctx: Context, word: str) -> list:
+        data = await self._get_soup_object(f"http://www.thesaurus.com/browse/{word}")
+        if not data:
+            return await ctx.send("Error fetching data.")
+        section = data.find_all("ul", {"class": "css-1ytlws2 et6tpn80"})
+        try:
+            section[1]
+        except IndexError:
+            return
+        spans = section[0].findAll("li")
+        synonyms = [span.text for span in spans[:50]]
+        return synonyms
+
+    @command()
+    async def synonym(self, ctx: Context, *, word: str) -> None:
+        """Displays synonyms for a given word."""
+        search_msg = await ctx.send("Searching...")
+        search_term = word.split(" ", 1)[0]
+        result = await self._synonym(ctx, search_term)
+        if not result:
+            return await search_msg.edit(content="This word is not in the dictionary.")
+
+        result_text = "*, *".join(result)
+        await search_msg.edit(content=f"Synonyms for **{search_term}**: *{result_text}*")
+
+    base_url = "https://en.wikipedia.org/w/api.php"
+    headers = {"user-agent": "HotWired-Bot"}
+    footer_icon = (
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wikimedia-logo.png"
+        "/600px-Wikimedia-logo.png"
+    )
+
+    @command(aliases=["wiki"])
+    async def wikipedia(self, ctx: Context, *, query: str) -> None:
+        """Get information from Wikipedia."""
+        payload = {}
+        payload["action"] = "query"
+        payload["titles"] = query.replace(" ", "_")
+        payload["format"] = "json"
+        payload["formatversion"] = "2"  # Cleaner json results
+        payload["prop"] = "extracts"  # Include extract in returned results
+        payload["exintro"] = "1"  # Only return summary paragraph(s) before main content
+        payload["redirects"] = "1"  # Follow redirects
+        payload["explaintext"] = "1"  # Make sure it's plaintext (not HTML)
+
+        conn = aiohttp.TCPConnector()
+
+        async with aiohttp.ClientSession(connector=conn) as session:
+            async with session.get(
+                self.base_url, params=payload, headers=self.headers
+            ) as res:
+                result = await res.json()
+
+        try:
+            # Get the last page. Usually this is the only page.
+            for page in result["query"]["pages"]:
+                title = page["title"]
+                description = page["extract"].strip().replace("\n", "\n\n")
+                url = "https://en.wikipedia.org/wiki/{}".format(title.replace(" ", "_"))
+
+            if len(description) > 1500:
+                description = description[:1500].strip()
+                description += "... [(read more)]({})".format(url)
+
+            embed = discord.Embed(
+                title=f"Wikipedia: {title}",
+                description=u"\u2063\n{}\n\u2063".format(description),
+                color=discord.Color.blue(),
+                url=url
+            )
+            embed.set_footer(
+                text="Wikipedia", icon_url=self.footer_icon
+            )
+            await ctx.send(embed=embed)
+
+        except KeyError:
+            await ctx.send(
+                embed=Embed(
+                    description=f"I'm sorry, I couldn't find \"{query}\" on Wikipedia",
+                    color=Color.red()
+                )
+            )
+        except discord.Forbidden:
+            await ctx.send(
+                embed=Embed(
+                    description=f"I'm not allowed to do embeds here...\n{url}",
+                    color=Color.gold()
+                )
+            )
+
+
+def setup(bot: Bot) -> None:
+    bot.add_cog(Study(bot))
