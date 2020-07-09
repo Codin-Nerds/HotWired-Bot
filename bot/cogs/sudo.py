@@ -41,18 +41,18 @@ class Sudo(Cog):
         else:
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
-    @group(hidden=True)
-    async def sudo(self, ctx: Context) -> None:
-        """Administrative information."""
-        if ctx.invoked_subcommand is None:
-            embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
-            await ctx.send(embed=embed)
-
     async def is_owner(self, ctx: Context) -> t.Union[bool, None]:
         if ctx.author.id in constants.devs:
             return True
         else:
             embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
+            await ctx.send(embed=embed)
+
+    @group(hidden=True)
+    async def sudo(self, ctx: Context) -> None:
+        """Administrative information."""
+        if ctx.invoked_subcommand is None:
+            embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
             await ctx.send(embed=embed)
 
     @sudo.command()
