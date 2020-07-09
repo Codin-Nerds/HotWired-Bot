@@ -9,14 +9,11 @@ from io import BytesIO
 
 import aiohttp
 import discord
-import stackexchange
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from discord.ext import commands, tasks
 from discord.ext.commands import Bot, Cog, Context
-from discord.ext.commands.cooldowns import BucketType
 from discord.utils import escape_mentions
-from stackexchange import Site
 
 from bot import constants
 from bot.cogs.code_utils import documentation, reference
@@ -31,7 +28,6 @@ class Coding(Cog):
     """To test code and check docs."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.STACKEXCHANGE = os.getenv("STACKEXCHANGE")
         self.session = aiohttp.ClientSession()
 
     @tasks.loop(hours=1)
@@ -299,7 +295,7 @@ class Coding(Cog):
         await self.documented[lang.lower()](ctx, query.strip("`"))
 
     @commands.command()
-    async def man(self, ctx: Context, *, page: str) -> None:
+    async def manual(self, ctx: Context, *, page: str) -> None:
         """Returns the manual's page for a linux command."""
         base_url = f"https://man.cx/{page}"
         url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
@@ -334,36 +330,8 @@ class Coding(Cog):
 
         await ctx.send(embed=emb)
 
-    @commands.cooldown(1, 8, BucketType.user)
-    @commands.command(aliases=["stack"])
-    async def overflow(self, ctx: Context, *, query: str) -> None:
-        """Queries Stackoverflow and gives you top results."""
-
-        async with ctx.typing():
-            site = Site(stackexchange.StackOverflow, self.STACKEXCHANGE)
-            site.impose_throttling = True
-            site.throttle_stop = False
-
-            qs = site.search(intitle=query)[:5]
-            if qs:
-                emb = discord.Embed(title=query)
-                emb.set_thumbnail(url=f"http://s2.googleusercontent.com/s2/favicons?domain_url={site.domain}")
-
-                for q in qs:
-                    # Fetch question's data, include vote_counts and answers
-                    q = site.question(q.id, filter="!b1MME4lS1P-8fK")
-                    emb.add_field(
-                        name=f"`{len(q.answers)} answers` Score : {q.score}",
-                        value=f"[{q.title}](https://{site.domain}/q/{q.id}",
-                        inline=False,
-                    )
-
-                await ctx.send(embed=emb)
-            else:
-                await ctx.send("No results Found! Sorry.")
-
-    @commands.command()
-    async def list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
+    @commands.command(name="list")
+    async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
         """Lists available choices for other commands."""
 
         choices = {
