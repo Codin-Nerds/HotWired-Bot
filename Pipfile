@@ -26,6 +26,7 @@ html5lib = "*"
 asyncpg = "*"
 py-stackexchange = "*"
 lxml = "*"
+bleach = "*"
 
 [requires]
 python_version = "3.8"
