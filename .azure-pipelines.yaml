@@ -1,34 +1,24 @@
 trigger:
   - master
 
+pool:
+  vmImage: "ubuntu-20.04"
 
-jobs:
-  - job: 'Install_Dependencies'
+  jobs:
+    - job: 'Install Packages & Lint'
+      steps:
+        - task: UsePythonVersion@0
+          displayName: Use python 3.8.3
+          inputs:
+            versionSpec: '3.8.3'
 
-    pool:
-      vmImage: "ubuntu-20.04"
+        - script: |
+            python -m pip install --upgrade pip setuptools wheel pipenv
+            python -m pipenv sync --dev
 
-    steps:
-      - task: UsePythonVersion@0
+          displayName: "Installing dependencies"
 
-        displayName: Use python 3.8.3
+        - script: |
+            pipenv run lint
 
-        inputs:
-          versionSpec: '3.8.3'
-
-      - script: |
-          python -m pip install --upgrade pip setuptools wheel pipenv
-          python -m pipenv sync --dev
-
-        displayName: Install Dependencies
-
-  - job: 'Check_Code_Style'
-
-    dependsOn: 'Install_Dependencies'
-
-    steps:
-
-      - script: |
-          python -m pipenv run lint
-
-        displayName: "Check code style with flake8"
+          displayName: "Check code style with flake8"
