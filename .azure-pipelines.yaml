@@ -7,11 +7,18 @@ trigger:
   - master
 
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: "ubuntu-20.04"
 
 steps:
+  - task: UsePythonVersion@0
+    displayName: "Set Python Version"
+    name: PythonVersion
+    inputs:
+      versionSpec: "3.8.2"
+      addToPath: true
+
   - script: |
-      python -m pip install pipenv
+      python -m pip install pipenv bdist_wheel
       pipenv sync -d
 
     displayName: "Installing dependencies"
