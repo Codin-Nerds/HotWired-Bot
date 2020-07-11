@@ -23,7 +23,7 @@ jobs:
         displayName: Install Dependencies
 
   - job: 'Check_Code_Style'
-
+    dependsOn: 'Install_Dependencies'
     steps:
 
       - script: |
