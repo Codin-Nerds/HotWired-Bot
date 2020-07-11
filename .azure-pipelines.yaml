@@ -19,6 +19,6 @@ jobs:
         displayName: "Installing dependencies"
 
       - script: |
-          pipenv run lint
+          python -m pipenv run lint
 
         displayName: "Check code style with flake8"
