@@ -6,6 +6,7 @@ pool:
 
 steps:
   - task: UsePythonVersion@0
+    displayName: Use python 3.8.3
     inputs:
       versionSpec: '3.8.3'
 
