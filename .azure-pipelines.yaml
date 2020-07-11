@@ -23,10 +23,12 @@ jobs:
         displayName: Install Dependencies
 
   - job: 'Check_Code_Style'
+
     dependsOn: 'Install_Dependencies'
+
     steps:
 
       - script: |
-          pipenv run lint
+          python -m pipenv run lint
 
         displayName: "Check code style with flake8"
