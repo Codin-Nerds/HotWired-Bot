@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
   - master
 
@@ -11,8 +6,8 @@ pool:
 
 steps:
   - script: |
-      python -m pip install pipenv
-      pipenv install --system --dev
+      python -m pip install --upgrade pip setuptools wheel pipenv
+      pipenv sync -d
 
     displayName: "Installing dependencies"
 
