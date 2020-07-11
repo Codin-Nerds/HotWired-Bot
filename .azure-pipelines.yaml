@@ -11,7 +11,7 @@ pool:
 
 steps:
   - script: |
-      python -m pip install pipenv bdist_wheel
+      python -m pip install pipenv
       pipenv sync -d
 
     displayName: "Installing dependencies"
