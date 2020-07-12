@@ -22,6 +22,9 @@ from .urbandict_utils.urbandictpages import UrbanDictionaryPages
 
 url = 'http://api.mathjs.org/v4/'
 
+nlab_url = "https://ncatlab.org{}"
+search_target = "https://ncatlab.org/nlab/search?query={}"
+
 ENDPOINT = "http://api.wolframalpha.com/v2/query?"
 WEB = "https://www.wolframalpha.com/"
 
@@ -251,7 +254,7 @@ class Study(Cog):
             await ctx.send("Did not get a valid response.")
             return
 
-        link = f"[Display results online and refine query]({self.build_web_url(ctx.arg_str)})"
+        link = f"[Display results online and refine query]({self.build_web_url(query)})"
 
         if not result["queryresult"]["success"] or result["queryresult"]["numpods"] == 0:
             desc = f"Wolfram Alpha doesn't understand your query!\n Perhaps try rephrasing your question?\n{link}"
@@ -290,26 +293,26 @@ class Study(Cog):
 
         if extra:
             try:
-                await ctx.bot.add_reaction(out_msg, ctx.bot.objects["emoji_more"])
+                await self.bot.add_reaction(out_msg, self.bot.objects["emoji_more"])
             except discord.Forbidden:
                 pass
             except discord.HTTPException:
                 pass
             else:
-                res = await ctx.bot.wait_for_reaction(
+                res = await self.bot.wait_for_reaction(
                     message=out_msg,
                     user=ctx.author,
-                    emoji=ctx.bot.objects["emoji_more"],
+                    emoji=self.bot.objects["emoji_more"],
                     timeout=300
                 )
                 if res is None:
                     try:
-                        await ctx.bot.remove_reaction(out_msg, ctx.bot.objects["emoji_more"], ctx.me)
+                        await self.bot.remove_reaction(out_msg, self.bot.objects["emoji_more"], ctx.me)
                     except discord.NotFound:
                         pass
                     except Exception:
                         pass
-                elif res.reaction.emoji == ctx.bot.objects["emoji_more"]:
+                elif res.reaction.emoji == self.bot.objects["emoji_more"]:
                     temp_msg = await ctx.send("Processing results, please wait.")
 
                     output_data[0].seek(0)
@@ -530,6 +533,163 @@ class Study(Cog):
                     color=Color.gold()
                 )
             )
+
+    async def soup_site(self, target: str) -> BeautifulSoup:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(target, allow_redirects=False) as resp:
+                text = await resp.read()
+        return BeautifulSoup(text, 'html.parser')
+
+    async def search_page_parse(self, soup: BeautifulSoup) -> tuple:
+        in_title = []
+        in_body = []
+        header_soups = soup.find_all("h2")
+        if "No pages contain" in header_soups[0].contents[0]:
+            return ([], [])
+        if len(header_soups) > 2:
+            return None
+        elif len(header_soups) == 2:
+            in_title = self.parse_results(header_soups[0])
+            in_body = self.parse_results(header_soups[1])
+        elif len(header_soups) == 0:
+            return ([], [])
+        else:
+            in_title = []
+            in_body = self.parse_results(header_soups[0])
+        return (in_title, in_body)
+
+    def parse_results(self, soup: BeautifulSoup) -> str:
+        links = soup.nextSibling.nextSibling.findAll("a")
+        results = ((a.contents[0], a.attrs["href"]) for a in links)
+        return results
+
+    async def search_for(self, string: str) -> None:
+        soup = await self.soup_site(search_target.format(parse.quote_plus(string)))
+        if "Search results" not in soup.find("title").contents:
+            return None
+        await self.search_page_parse(soup)
+        return
+
+    def field_pager(self, strings: list) -> list:
+        pages = []
+        this_page = []
+        this_length = 0
+
+        for string in strings:
+            this_length += len(string) + 1
+            if this_length > 1000:
+                pages.append("\n".join(this_page))
+                this_page = []
+                this_length = len(string) + 1
+
+            this_page.append(string)
+
+        if this_page:
+            pages.append("\n".join(this_page))
+
+        return pages
+
+    @command()
+    async def nlink(self, ctx: Context, arguments: str) -> None:
+        """{prefix}nlink <page>."""
+        direct_page = nlab_url.format("/nlab/show/{}".format(parse.quote_plus(arguments)))
+        await ctx.reply(direct_page if arguments else nlab_url[:-2])
+        return
+
+    @command(aliases=["nlab"])
+    async def ncatlab(self, ctx: Context, arguments: str) -> None:
+        """{prefix}ncatlab <search>."""
+        direct_page = nlab_url.format("/nlab/show/{}".format(parse.quote_plus(arguments)))
+
+        if not arguments:
+            await ctx.reply("Give me something to search for!")
+            return
+
+        loading_emoji = ctx.aemoji_mention(self.bot.objects["emoji_loading"])
+
+        out_msg = await ctx.reply(f"Querying ncatlab, please wait. {loading_emoji}")
+
+        url = search_target.format(parse.quote_plus(arguments))
+
+        soup = await self.soup_site(url)
+        direct_soup = await self.soup_site(direct_page)
+
+        direct_found = False if not direct_soup.find("title") or "Page not found" in direct_soup.find("title").contents[0] else True
+        direct_str = f"\nDirect page found at: [{arguments}]({direct_page})" if direct_found else ""
+
+        title = soup.find("title")
+        if title is None or "Search results" not in title.contents[0]:
+            await self.bot.edit_message(out_msg, "Nlab redirected the search to the following page:\n{}".format(soup.find("a").attrs["href"]))
+            return
+
+        parsed = await self.search_page_parse(soup)
+        if not parsed:
+            await self.bot.edit_message(out_msg, "I don't understand the search results. Read them yourself at:\n{}".format(url))
+            return
+
+        in_title, in_body = parsed
+
+        in_title_fields = []
+        if in_title:
+            in_title = list(in_title)
+            in_title_links = [f"[{link[0]}]({nlab_url.format(link[1])})" for link in in_title]
+            in_title_fields_raw = self.field_pager(in_title_links)
+
+            base_title = f"{len(in_title)} result{'' if len(in_title) == 1 else 's'} where query appeared in title."
+            if len(in_title_fields_raw) == 1:
+                in_title_fields = [(base_title, in_title_fields_raw[0], 0)]
+            else:
+                page_num = len(in_title_fields_raw)
+                in_title_fields = [(f"{base_title} (Page {i + 1}/{page_num})", page, 0) for i, page in enumerate(in_title_fields_raw)]
+
+        in_body_fields = []
+        if in_body:
+            in_body = list(in_body)
+            in_body_links = [f"[{link[0]}]({nlab_url.format(link[1])})" for link in in_body]
+            in_body_fields_raw = self.field_pager(in_body_links)
+
+            base_title = f"{len(in_body)} result{'' if len(in_body) == 1 else 's'} where query appeared in body."
+            if len(in_body_fields_raw) == 1:
+                in_body_fields = [(base_title, in_body_fields_raw[0], 0)]
+            else:
+                page_num = len(in_body_fields_raw)
+                in_body_fields = [(f"{base_title} (Page {i + 1}/{page_num})", page, 0) for i, page in enumerate(in_body_fields_raw)]
+
+        if not in_title and not in_body:
+            await out_msg.edit(f"No results found at {url}")
+            return
+
+        embed_pages = []
+        embed_pages.extend([[field] for field in in_title_fields[:-1]])
+
+        middle_page = []
+        if in_title_fields:
+            middle_page.append(in_title_fields[-1])
+        if in_body_fields:
+            middle_page.append(in_body_fields[0])
+        if middle_page:
+            embed_pages.append(middle_page)
+
+        embed_pages.extend([[field] for field in in_body_fields[1:]])
+
+        params = {
+            "title": f"Search results for {arguments}",
+            "description": f"From {url}{direct_str}",
+            "color": Color.blue()
+        }
+
+        embeds = []
+        for page in embed_pages:
+            page_embed = Embed(**params)
+            await ctx.emb_add_fields(page_embed, page)
+            embeds.append(page_embed)
+
+        try:
+            await self.bot.delete_message(out_msg)
+        except discord.NotFound:
+            pass
+        # TODO: implement pagination here!
+        await ctx.pager(embeds, embed=True)
 
 
 def setup(bot: Bot) -> None:
