@@ -46,8 +46,10 @@ class Fun(Cog):
     async def textcat(self, ctx: Context) -> None:
         """Sends a random textcat"""
         try:
-            embed = Embed(color=0x690E8)
-            embed.set_image(url=nekos.textcat())
+            embed = Embed(
+                description=nekos.textcat(),
+                color=0x690E8
+            )
             await ctx.send(embed=embed)
         except nekos.errors.NothingFound:
             await ctx.send("Couldn't Fetch Textcat! :(")
@@ -56,8 +58,10 @@ class Fun(Cog):
     async def whydoes(self, ctx: Context) -> None:
         """Sends a random why?__"""
         try:
-            embed = Embed(color=0x690E8)
-            embed.set_image(url=nekos.why())
+            embed = Embed(
+                description=nekos.why(),
+                color=0x690E8
+            )
             await ctx.send(embed=embed)
         except nekos.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "WHY!" :(')
@@ -66,8 +70,10 @@ class Fun(Cog):
     async def fact(self, ctx: Context) -> None:
         """Sends a random fact"""
         try:
-            embed = Embed(color=0x690E8)
-            embed.set_image(url=nekos.fact())
+            embed = Embed(
+                description=nekos.fact(),
+                color=0x690E8
+            )
             await ctx.send(embed=embed)
         except nekos.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "Fact" :(')
