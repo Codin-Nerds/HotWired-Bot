@@ -6,8 +6,9 @@ import aiohttp
 import discord
 from bs4 import BeautifulSoup
 from discord import Color, Embed
-from discord.ext.commands import Bot, Cog, Context, command
+from discord.ext.commands import Cog, Context, command
 
+from bot.core.bot import Bot
 from bot.utils.math import get_math_results
 from bot.utils.paginator import Pages
 from bot.utils.wolframscrape import get_wolfram_data

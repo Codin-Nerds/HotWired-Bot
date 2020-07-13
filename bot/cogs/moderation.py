@@ -9,10 +9,11 @@ from functools import wraps
 import discord
 from discord import Color, Embed, Guild, Member, NotFound, Role, User
 from discord.errors import Forbidden
-from discord.ext.commands import (BadArgument, Bot, Cog, Context, Converter,
-                                  Greedy, NoPrivateMessage, UserConverter,
-                                  command, has_permissions)
+from discord.ext.commands import (BadArgument, Cog, Context, Converter, Greedy,
+                                  NoPrivateMessage, UserConverter, command,
+                                  has_permissions)
 
+from bot.core.bot import Bot
 from bot.utils.formats import Plural
 
 

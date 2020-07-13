@@ -1,6 +1,8 @@
-from discord import Embed, Color
-from discord.ext.commands import command, Cog, Bot, Context
+from discord import Color, Embed
+from discord.ext.commands import Cog, Context, command
 from googletrans import Translator, config
+
+from bot.core.bot import Bot
 
 translator = Translator()
 

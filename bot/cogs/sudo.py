@@ -1,17 +1,18 @@
 import datetime
+import os
 import platform
 import textwrap
-import typing as t
 import traceback
-import os
+import typing as t
 
 import GPUtil
 import psutil
 from discord import Color, Embed
 from discord import __version__ as discord_version
-from discord.ext.commands import Bot, Cog, Context, check, group
+from discord.ext.commands import Cog, Context, check, group
 
 from bot import config
+from bot.core.bot import Bot
 
 
 class Sudo(Cog):

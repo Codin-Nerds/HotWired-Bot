@@ -4,10 +4,11 @@ import typing as t
 
 import discord
 import requests
-from discord.ext.commands import BadArgument, Bot, Cog, Context, command
+from discord.ext.commands import BadArgument, Cog, Context, command
 from discord.utils import get
 
 from bot import config
+from bot.core.bot import Bot
 
 
 class InvalidCommandException(Exception):

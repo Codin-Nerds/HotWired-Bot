@@ -1,7 +1,7 @@
-from discord.ext.commands import Bot
+from bot.core.bot import Bot
 
-from .hangman import Hangman
 from .games import Games
+from .hangman import Hangman
 
 
 def setup(bot: Bot) -> None:

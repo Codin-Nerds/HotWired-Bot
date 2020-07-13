@@ -10,10 +10,11 @@ from io import BytesIO
 import aiohttp
 import discord
 from discord.ext import commands, tasks
-from discord.ext.commands import Bot, Cog, Context
+from discord.ext.commands import Cog, Context
 from discord.utils import escape_mentions
 
 from bot import config
+from bot.core.bot import Bot
 
 from . import documentation, reference
 from .tiorun import Tio

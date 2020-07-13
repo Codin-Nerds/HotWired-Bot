@@ -5,9 +5,10 @@ from typing import List
 import aiohttp
 import html2text
 from discord import Embed, utils
-from discord.ext.commands import Bot, Cog, CommandError, Context, command
+from discord.ext.commands import Cog, CommandError, Context, command
 
 from bot import config
+from bot.core.bot import Bot
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()

@@ -9,12 +9,12 @@ import aiohttp
 import discord
 import nekos as n
 from discord import Color, Embed, Message
-from discord.ext.commands import (BadArgument, Bot, BucketType, Cog, Context,
+from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
 from bot import config
-from bot.utils.errors import ServiceError\
-
+from bot.core.bot import Bot
+from bot.utils.errors import ServiceError
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()

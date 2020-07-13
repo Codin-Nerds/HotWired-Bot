@@ -1,7 +1,8 @@
 from discord import Color, Embed
-from discord.ext.commands import Bot, Cog, Context, command
+from discord.ext.commands import Cog, Context, command
 
 from bot import config
+from bot.core.bot import Bot
 
 
 class Support(Cog):

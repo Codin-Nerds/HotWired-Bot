@@ -1,12 +1,14 @@
+import asyncio
+import inspect
 import io
 import textwrap
 import traceback
 from contextlib import redirect_stdout
-import asyncio
-import inspect
 
 from discord import Forbidden, HTTPException
-from discord.ext.commands import Bot, Cog, Context, command, is_owner, CommandError
+from discord.ext.commands import Cog, CommandError, Context, command, is_owner
+
+from bot.core.bot import Bot
 
 
 class CodeSandbox(Cog):

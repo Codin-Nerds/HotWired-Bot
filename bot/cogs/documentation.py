@@ -1,14 +1,16 @@
 import json
 import os
-import bleach
 import urllib
 
 import aiohttp
+import bleach
 import stackexchange
 from discord import Color, Embed
-from discord.ext.commands import Bot, Cog, Context, command, cooldown
-from discord.ext.commands.cooldowns import BucketType
 from discord.errors import HTTPException
+from discord.ext.commands import Cog, Context, command, cooldown
+from discord.ext.commands.cooldowns import BucketType
+
+from bot.core.bot import Bot
 
 StackExchangeToken = os.getenv("STACKEXCHANGE")
 

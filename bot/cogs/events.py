@@ -1,13 +1,13 @@
-import traceback
-import textwrap
-
-from discord import Color, Embed, Message, Guild
-from discord.ext.commands import Bot, Cog
-
 import re
+import textwrap
+import traceback
+
 import aiohttp
+from discord import Color, Embed, Guild, Message
+from discord.ext.commands import Cog
 
 from bot import config
+from bot.core.bot import Bot
 
 PREFIX = config.COMMAND_PREFIX
 

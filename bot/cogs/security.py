@@ -3,9 +3,10 @@ from os.path import splitext
 
 import aiohttp
 from discord import Color, Embed, Message, NotFound
-from discord.ext.commands import Bot, Cog
+from discord.ext.commands import Cog
 
 from bot import config
+from bot.core.bot import Bot
 
 FILE_EMBED_DESCRIPTION = (
     f"""

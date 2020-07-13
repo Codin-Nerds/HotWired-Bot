@@ -1,12 +1,15 @@
 import json
 import textwrap
 import typing as t
-from collections import defaultdict
 from ast import literal_eval
+from collections import defaultdict
 
 from discord import Color, Embed, Member, TextChannel
 from discord.errors import HTTPException
-from discord.ext.commands import Bot, Cog, ColourConverter, Context, group, Converter
+from discord.ext.commands import (Cog, ColourConverter, Context, Converter,
+                                  group)
+
+from bot.core.bot import Bot
 
 
 # TODO; Move this into converters file

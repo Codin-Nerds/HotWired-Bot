@@ -1,4 +1,6 @@
-from discord.ext.commands import Bot, Cog, Context, command
+from discord.ext.commands import Cog, Context, command
+
+from bot.core.bot import Bot
 
 
 class Infog(Cog):

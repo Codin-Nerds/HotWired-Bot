@@ -1,4 +1,4 @@
-from discord.ext.commands import Bot
+from bot.core.bot import Bot
 
 from .coding import Coding
 

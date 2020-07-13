@@ -3,9 +3,10 @@ import textwrap
 import typing as t
 from collections import Counter
 
-from discord import Color, Embed, Member, Status, User, Guild, ActivityType
-from discord.ext.commands import Bot, Cog, Context, command
+from discord import ActivityType, Color, Embed, Guild, Member, Status, User
+from discord.ext.commands import Cog, Context, command
 
+from bot.core.bot import Bot
 
 STATUSES = {
     Status.dnd: "DND 🔴",
