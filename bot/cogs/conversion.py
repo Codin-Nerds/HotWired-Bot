@@ -9,7 +9,7 @@ from bot import config
 from bot.core.bot import Bot
 
 
-class Converters(Cog):
+class Conversion(Cog):
     """This is a Cog for converting and encoding strings."""
 
     def __init__(self, bot: Bot) -> None:
@@ -131,4 +131,4 @@ class Converters(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(Converters(bot))
+    bot.add_cog(Conversion(bot))

@@ -11,7 +11,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 extensions = [
     "bot.cogs.codesandbox",
     "bot.cogs.commands",
-    "bot.cogs.converters",
+    "bot.cogs.conversion",
     "bot.cogs.common",
     "bot.cogs.emotes",
     "bot.cogs.events",
