@@ -2,73 +2,19 @@ import asyncio
 import textwrap
 import typing as t
 from collections import Counter
-from contextlib import suppress
 from datetime import datetime
 from functools import wraps
 
 import discord
-from discord import Color, Embed, Guild, Member, NotFound, Role, User
+from discord import Color, Embed, Member, NotFound, Role, User
 from discord.errors import Forbidden
-from discord.ext.commands import (BadArgument, Cog, Context, Converter, Greedy,
-                                  NoPrivateMessage, UserConverter, command,
-                                  has_permissions)
+from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
+                                  command, has_permissions)
 
 from bot.core.bot import Bot
+from bot.core.converters import ActionReason, ProcessedMember
+from bot.utils.errors import MemberNotFound
 from bot.utils.formats import Plural
-
-
-class MemberNotFound(NotFound):
-    pass
-
-
-async def get_member(guild: Guild, user: User) -> Member:
-    member = guild.get_member(user.id)
-    if not member:
-        try:
-            member = await guild.fetch_member(user.id)
-        except NotFound:
-            raise MemberNotFound(f"No member with ID: {user.id} on guild {guild.id}")
-    return member
-
-
-class ActionReason(Converter):
-    """Make sure reason length is within 512 characters."""
-
-    async def convert(self, ctx: Context, argument: str) -> str:
-        """Add ID to the reason and make sure it's withing length."""
-        reason = f"[ID: {ctx.author.id}]: {argument}"
-        if len(reason) > 512:
-            reason_max = 512 - len(reason) + len(argument)
-            raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
-        return argument
-
-
-class UserID(UserConverter):
-    """
-    Try to convert any accepted string into `Member` or `User`.
-
-    When possible try to convert user into `Member` but if not, use `User` instead.
-    """
-
-    async def convert(self, ctx: Context, argument: str) -> Member:
-        """Convert the `argument` into `Member` or `User`."""
-        with suppress(BadArgument):
-            # Try to use UserConverter first
-            user = await super().convert(ctx, argument)
-            try:
-                return await get_member(ctx.guild, user)
-            except MemberNotFound:
-                return user
-
-        # If UserConverter failed, try to fetch user as ID
-        try:
-            user = await ctx.bot.fetch_user(int(argument))
-            try:
-                return await get_member(ctx.guild, user)
-            except MemberNotFound:
-                return user
-        except ValueError:
-            raise BadArgument(f"{argument} is not a valid user or user ID")
 
 
 def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
@@ -92,7 +38,7 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
 
             if isinstance(user, User):
                 try:
-                    member = await get_member(ctx.guild, user)
+                    member = await ProcessedMember.get_member(ctx.guild, user)
                 except MemberNotFound:
                     # Skip checks in case of bad member
                     await func(self, ctx, *args, **kwargs)
@@ -134,7 +80,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     @follow_roles()
-    async def kick(self, ctx: Context, member: Member, *, reason: str = "No specific reason.") -> None:
+    async def kick(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
         """Kick a User."""
         if not isinstance(member, Member):
             embed = Embed(
@@ -186,7 +132,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     @follow_roles()
-    async def ban(self, ctx: Context, member: UserID, *, reason: str = "No specific reason.") -> None:
+    async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
         """Ban a User."""
         server_embed = discord.Embed(
             title="User Banned",
@@ -222,7 +168,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(ban_members=True)
-    async def multiban(self, ctx: Context, members: Greedy[UserID], *, reason: str = None) -> None:
+    async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
         """Bans multiple members from the server."""
         if reason is None:
             reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
@@ -246,7 +192,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, *, user: UserID) -> None:
+    async def unban(self, ctx: Context, *, user: ProcessedMember) -> None:
         """Unban a User."""
         try:
             await ctx.guild.unban(user)

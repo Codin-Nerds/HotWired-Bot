@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord import NotFound
 
 
 class PostException(Exception):
@@ -28,4 +29,9 @@ class ConfigError(Exception):
 class WeatherException(Exception):
     """Raised when there is an error attempting to access weather data."""
 
+    pass
+
+
+class MemberNotFound(NotFound):
+    """Raised when search for Member has failed and no member was found."""
     pass
