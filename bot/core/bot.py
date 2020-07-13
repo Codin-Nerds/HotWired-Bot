@@ -60,4 +60,6 @@ class Bot(Bot):
 
     async def close(self) -> None:
         await super().close()
-        await self.pool.close()
+        # In case bot doesn't get to on_ready
+        if hasattr(self, "pool"):
+            await self.pool.close()
