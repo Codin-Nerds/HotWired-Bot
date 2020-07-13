@@ -1,0 +1,5 @@
+[tool.black]
+# Length of characters allowed per line
+line-length = 150
+# Don't add a comma in the end of every list, tuple, dictionary etc
+include_trailing_comma = false
