@@ -45,7 +45,9 @@ class Coding(Cog):
                 continue
             if element.name == "h2":
                 break
-            siblings.append(element.text)  # get the text of the elemets before the next h2
+            siblings.append(
+                element.text
+            )  # get the text of the elemets before the next h2
         content = "\n".join(siblings)
 
         if len(content) >= 1024:
@@ -104,12 +106,19 @@ class Coding(Cog):
         """,
         brief="Execute code in a given programming language",
     )
-    async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
+    async def run(
+        self, ctx: Context, language: str, *, code: str = ""
+    ) -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compiler is needed
+        options = {
+            "--stats": False,
+            "--wrapped": False,
+        }  # the flags to be used when the compiler is needed
 
-        lang = language.strip("`").lower()  # strip the "`" characters to obtain code
+        lang = language.strip(
+            "`"
+        ).lower()  # strip the "`" characters to obtain code
         options_amount = len(options)
 
         # Setting options and removing them from the beginning of the command
@@ -140,7 +149,9 @@ class Coding(Cog):
                 compilerFlags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))  # cli options
+                commandLineOptions.extend(
+                    line[21:].strip("`").split(" ")
+                )  # cli options
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -153,16 +164,24 @@ class Coding(Cog):
         text = None
 
         async with ctx.typing():
-            if ctx.message.attachments:  # if file is sent instead of raw code in codeblocks
+            if (
+                ctx.message.attachments
+            ):  # if file is sent instead of raw code in codeblocks
                 file = ctx.message.attachments[0]
-                if file.size > 20000:  # check the size of file exceeding max limit
+                if (
+                    file.size > 20000
+                ):  # check the size of file exceeding max limit
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith("link="):  # if link is sent instead of file or codeblocks
-                base_url = urllib.parse.quote_plus(code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]")
+            elif code.split(" ")[-1].startswith(
+                "link="
+            ):  # if link is sent instead of file or codeblocks
+                base_url = urllib.parse.quote_plus(
+                    code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]"
+                )
 
                 url = get_raw(base_url)  # extract the raw url
 
@@ -170,10 +189,14 @@ class Coding(Cog):
                     if response.status == 404:
                         return await ctx.send("Nothing found. Check your link")
                     elif response.status != 200:
-                        return await ctx.send("An error occurred. Retry later.")
+                        return await ctx.send(
+                            "An error occurred. Retry later."
+                        )
                     text = await response.text()
                     if len(text) > 20000:
-                        return await ctx.send("Code must be shorter than 20,000 characters.")
+                        return await ctx.send(
+                            "Code must be shorter than 20,000 characters."
+                        )
 
             elif code.strip("`"):  # strip the raw code, if codeblock
                 text = code.strip("`")
@@ -184,7 +207,9 @@ class Coding(Cog):
 
             # Ensures code isn't empty after removing options
             if text is None:
-                raise commands.MissingRequiredArgument(ctx.command.clean_params["code"])
+                raise commands.MissingRequiredArgument(
+                    ctx.command.clean_params["code"]
+                )
 
             quickmap = {
                 "asm": "assembly",
@@ -208,17 +233,27 @@ class Coding(Cog):
                 lang = self.bot.default[lang]
 
             if lang not in self.bot.languages:  # if lang not found
-                matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
+                matches = "\n".join(
+                    [
+                        language
+                        for language in self.bot.languages
+                        if lang in language
+                    ][:10]
+                )
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
-                    message = message + f" Maybe you meant {matches}?"  # provide a suggestion.
+                    message = (
+                        message + f" Maybe you meant {matches}?"
+                    )  # provide a suggestion.
 
                 await ctx.send(message)
                 return
 
             if options["--wrapped"]:
-                if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):
+                if not (
+                    any(map(lambda x: lang.split("-")[0] == x, self.wrapping))
+                ) or lang in ("cs-mono-shell", "cs-csi"):
                     return await ctx.send(f"`{lang}` cannot be wrapped")
 
                 for beginning in self.wrapping:
@@ -226,7 +261,14 @@ class Coding(Cog):
                         text = self.wrapping[beginning].replace("code", text)
                         break
 
-            tio = Tio(lang, text, compilerFlags=compilerFlags, inputs=inputs, commandLineOptions=commandLineOptions, args=args)
+            tio = Tio(
+                lang,
+                text,
+                compilerFlags=compilerFlags,
+                inputs=inputs,
+                commandLineOptions=commandLineOptions,
+                args=args,
+            )
             result = await tio.send()
 
             if not options["--stats"]:
@@ -240,8 +282,12 @@ class Coding(Cog):
                 link = await paste(result)
 
                 if link is None:
-                    return await ctx.send("Your output was too long, but I couldn't make an online bin out of it")
-                return await ctx.send(f"Output was too long (more than 2000 characters or 40 lines) so the hastebn link is: {link}")
+                    return await ctx.send(
+                        "Your output was too long, but I couldn't make an online bin out of it"
+                    )
+                return await ctx.send(
+                    f"Output was too long (more than 2000 characters or 40 lines) so the hastebn link is: {link}"
+                )
 
             zero = "\N{zero width space}"
             result = re.sub("```", f"{zero}`{zero}`{zero}`{zero}", result)
@@ -253,7 +299,11 @@ class Coding(Cog):
         await returned.add_reaction("🗑")
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
-            return user == ctx.author and str(reaction.emoji) == "🗑" and reaction.message.id == returned.id
+            return (
+                user == ctx.author
+                and str(reaction.emoji) == "🗑"
+                and reaction.message.id == returned.id
+            )
 
         try:
             await self.bot.wait_for("reaction_add", timeout=65.0, check=check)
@@ -263,25 +313,33 @@ class Coding(Cog):
             await returned.delete()
 
     @commands.command(aliases=["ref"])
-    async def reference(self, ctx: Context, language: str, *, query: str) -> None:
+    async def reference(
+        self, ctx: Context, language: str, *, query: str
+    ) -> None:
         """Returns element reference from given language."""
 
         lang = language.strip("`")
 
         async with ctx.typing():
             if not lang.lower() in self.referred:
-                await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list references` for available ones.")
+                await ctx.send(
+                    f"{lang} not available. See `{constants.COMMAND_PREFIX}list references` for available ones."
+                )
                 return
 
         await self.referred[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(aliases=["docs"])
-    async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
+    async def documentation(
+        self, ctx: Context, language: str, *, query: str
+    ) -> None:
         """Returns element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
-                await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list documentations` for available ones.")
+                await ctx.send(
+                    f"{lang} not available. See `{constants.COMMAND_PREFIX}list documentations` for available ones."
+                )
                 return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))
@@ -295,7 +353,9 @@ class Coding(Cog):
         async with ctx.typing():
             async with self.session.get(url) as response:
                 if response.status != 200:
-                    await ctx.send("An error occurred (status code: {response.status}). Retry later.")
+                    await ctx.send(
+                        "An error occurred (status code: {response.status}). Retry later."
+                    )
                     return
 
                     soup = BeautifulSoup(await response.text(), "lxml")
@@ -303,22 +363,50 @@ class Coding(Cog):
                     nameTag = soup.find("h2", string="NAME\n")
 
                     if not nameTag:
-                        return await ctx.send(f"No manual entry for `{page}`. (Debian)")
+                        return await ctx.send(
+                            f"No manual entry for `{page}`. (Debian)"
+                        )
 
-                    contents = soup.find_all("nav", limit=2)[1].find_all("li", limit=3)[1:]
+                    contents = soup.find_all("nav", limit=2)[1].find_all(
+                        "li", limit=3
+                    )[1:]
 
                     if contents[-1].string == "COMMENTS":
                         contents.remove(-1)
 
                     title = self.get_h2_content(nameTag)
 
-                    emb = discord.Embed(title=title, url=f"https://man.cx/{page}")
+                    emb = discord.Embed(
+                        title=title, url=f"https://man.cx/{page}"
+                    )
                     emb.set_author(name="Linux man pages")
-                    emb.set_thumbnail(url="https://www.debian.org/logos/openlogo-nd-100.png")
+                    emb.set_thumbnail(
+                        url="https://www.debian.org/logos/openlogo-nd-100.png"
+                    )
 
                     for tag in contents:
-                        h2 = tuple(soup.find(attrs={"name": tuple(tag.children)[0].get("href")[1:]}).parents)[0]
-                        emb.add_field(name=tag.string.strip(), value="\n".join([i for i in self.get_h2_content(h2).split("\n") if i]), inline=False)
+                        h2 = tuple(
+                            soup.find(
+                                attrs={
+                                    "name": tuple(tag.children)[0].get("href")[
+                                        1:
+                                    ]
+                                }
+                            ).parents
+                        )[0]
+                        emb.add_field(
+                            name=tag.string.strip(),
+                            value="\n".join(
+                                [
+                                    i
+                                    for i in self.get_h2_content(h2).split(
+                                        "\n"
+                                    )
+                                    if i
+                                ]
+                            ),
+                            inline=False,
+                        )
 
         await ctx.send(embed=emb)
 
@@ -349,7 +437,9 @@ class Coding(Cog):
     #             await ctx.send("No results Found! Sorry.")
 
     @commands.command()
-    async def list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
+    async def list(
+        self, ctx: Context, *, group: t.Optional[str] = None
+    ) -> None:
         """Lists available choices for other commands."""
 
         choices = {
@@ -367,13 +457,19 @@ class Coding(Cog):
             return
 
         if group not in choices:
-            emb = discord.Embed(title="Available commands", description=f"`languages`, `{'`, `'.join(choices)}`")
+            emb = discord.Embed(
+                title="Available commands",
+                description=f"`languages`, `{'`, `'.join(choices)}`",
+            )
             await ctx.send(embed=emb)
             return
 
         availables = choices[group]
         description = f"`{'`, `'.join([*availables])}`"
-        emb = discord.Embed(title=f"Available for {group}: {len(availables)}", description=description)
+        emb = discord.Embed(
+            title=f"Available for {group}: {len(availables)}",
+            description=description,
+        )
         await ctx.send(embed=emb)
 
 

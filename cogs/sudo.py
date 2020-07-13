@@ -1,17 +1,19 @@
 import datetime
+import os
 import platform
 import textwrap
-import typing as t
 import traceback
-import os
 
 import GPUtil
-import psutil
+
 from discord import Color, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Bot, Cog, Context, check, group
 
+import psutil
+
 from .utils import constants
+from assets.checks import is_bot_dev
 
 
 class Sudo(Cog):
@@ -22,6 +24,7 @@ class Sudo(Cog):
         self.process = psutil.Process()
         self.startTime = datetime.datetime.utcnow()
 
+    @staticmethod
     def get_size(_bytes: int, suffix: str = "B") -> str:
         """Convert sizes."""
         factor = 1024
@@ -37,7 +40,9 @@ class Sudo(Cog):
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
         if days:
-            return f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            return (
+                f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            )
         else:
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
@@ -45,26 +50,20 @@ class Sudo(Cog):
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
         if ctx.invoked_subcommand is None:
-            embed = Embed(description="Invalid sudo Command Passed!", color=Color.red())
-            await ctx.send(embed=embed)
-
-    async def is_owner(self, ctx: Context) -> t.Union[bool, None]:
-        if ctx.author.id in constants.devs:
-            return True
-        else:
-            embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
+            embed = Embed(
+                description="Invalid sudo Command Passed!", color=Color.red()
+            )
             await ctx.send(embed=embed)
 
     @sudo.command()
-    @check(is_owner)
     async def shutoff(self, ctx: Context) -> None:
         if ctx.author.id in constants.devs:
             await ctx.message.add_reaction("✅")
-            print("Shutting Down!")
+            print("Shutting Down...")
             await self.bot.logout()
 
     @sudo.command()
-    @check(is_owner)
+    @check(is_bot_dev)
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
         try:
@@ -75,7 +74,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_owner)
+    @check(is_bot_dev)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
         try:
@@ -87,7 +86,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
+    @check(is_bot_dev)
     async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
         await self.bot.logout()
@@ -126,8 +125,13 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ General**", value=general, inline=True)
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
         embed.add_field(name="**❯❯ Process**", value=process, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text=f"MIT License - {self.bot.user.name}, {datetime.datetime.utcnow().year}. Made by TheOriginalDude#0585.")
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Stats",
+            icon_url=self.bot.user.avatar_url,
+        )
+        embed.set_footer(
+            text=f"MIT License - {self.bot.user.name}, {datetime.datetime.utcnow().year}. Made by TheOriginalDude#0585."
+        )
 
         await ctx.send(embed=embed)
 
@@ -160,7 +164,8 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ Hardware**", value=hardware, inline=True)
         embed.add_field(name="**❯❯ Version**", value=version, inline=False)
         embed.set_author(
-            name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url,
+            name=f"{self.bot.user.name}'s System Data",
+            icon_url=self.bot.user.avatar_url,
         )
 
         await ctx.send(embed=embed)
@@ -180,7 +185,10 @@ class Sudo(Cog):
 
         embed = Embed(title="BOT BOOT INFO", color=Color.red())
         embed.add_field(name="**❯❯ Boot**", value=boot, inline=True)
-        embed.set_author(name=f"{self.bot.user.name}'s Boot Data", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Boot Data",
+            icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
@@ -204,7 +212,9 @@ class Sudo(Cog):
         )
 
         cpu_usage = "• CPU Usage Per Core:"
-        for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
+        for i, percentage in enumerate(
+            psutil.cpu_percent(percpu=True, interval=1)
+        ):
             cpu_usage += f"\n\t• Core **{i + 1}** : **{percentage}%**"
 
         cpu_usage += f"\n• Total CPU Usage: **{psutil.cpu_percent()}%**"
@@ -213,7 +223,10 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ Cores**", value=cores, inline=False)
         embed.add_field(name="**❯❯ Frequency**", value=frequency, inline=False)
         embed.add_field(name="**❯❯ CPU Usage**", value=cpu_usage, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s CPU Info", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s CPU Info",
+            icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
@@ -243,10 +256,15 @@ class Sudo(Cog):
         )
 
         embed = Embed(title="BOT MEMORY INFO", color=Color.red())
-        embed.add_field(name="**❯❯ Virtual Memory**", value=virtual_memory, inline=False)
-        embed.add_field(name="**❯❯ Swap Memory**", value=swap_memory, inline=False)
+        embed.add_field(
+            name="**❯❯ Virtual Memory**", value=virtual_memory, inline=False
+        )
+        embed.add_field(
+            name="**❯❯ Swap Memory**", value=swap_memory, inline=False
+        )
         embed.set_author(
-            name=f"{self.bot.user.name}'s Memory Info", icon_url=self.bot.user.avatar_url,
+            name=f"{self.bot.user.name}'s Memory Info",
+            icon_url=self.bot.user.avatar_url,
         )
 
         await ctx.send(embed=embed)
@@ -284,7 +302,11 @@ class Sudo(Cog):
             partitions.append(diskinfo)
 
         for ctr, partition_info in enumerate(partitions):
-            embed.add_field(name=f"**❯❯ Partition #{ctr}**", value=partition_info, inline=False)
+            embed.add_field(
+                name=f"**❯❯ Partition #{ctr}**",
+                value=partition_info,
+                inline=False,
+            )
             # TODO: Make sure False inline doesn't cause problems here
 
         # get IO statistics since boot
@@ -297,8 +319,13 @@ class Sudo(Cog):
             """
         )
 
-        embed.add_field(name="**❯❯ Disk IO Stats**", value=diskio_stats, inline=False)
-        embed.set_author(name=f"{self.bot.user.name}'s Disk Info", icon_url=self.bot.user.avatar_url)
+        embed.add_field(
+            name="**❯❯ Disk IO Stats**", value=diskio_stats, inline=False
+        )
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Disk Info",
+            icon_url=self.bot.user.avatar_url,
+        )
 
         await ctx.send(embed=embed)
 
@@ -342,10 +369,17 @@ class Sudo(Cog):
         )
 
         embed = Embed(title="BOT NET STATS", color=Color.red())
-        embed.add_field(name="**❯❯ Net Interface Stats**", value=net_interfaces, inline=False)
-        embed.add_field(name="**❯❯ Net IO Stats**", value=netio_stats, inline=False)
+        embed.add_field(
+            name="**❯❯ Net Interface Stats**",
+            value=net_interfaces,
+            inline=False,
+        )
+        embed.add_field(
+            name="**❯❯ Net IO Stats**", value=netio_stats, inline=False
+        )
         embed.set_author(
-            name=f"{self.bot.user.name}'s Network Info", icon_url=self.bot.user.avatar_url,
+            name=f"{self.bot.user.name}'s Network Info",
+            icon_url=self.bot.user.avatar_url,
         )
 
         await ctx.send(embed=embed)
@@ -369,7 +403,9 @@ class Sudo(Cog):
                 """
             )
             embed.add_field(
-                name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False,
+                name=f"**❯❯ GPU: {gpu.name}({gpu.id})**",
+                value=gpu_details,
+                inline=False,
             )
 
         await ctx.send(embed=embed)

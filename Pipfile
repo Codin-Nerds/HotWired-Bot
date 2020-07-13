@@ -8,6 +8,7 @@ flake8 = "~=3.8.3"
 pre-commit = "~=2.6.0"
 black = "~=19.10b0"
 flake8-annotations = "~=2.3.0"
+flake8-import-order = "~=0.18.1"
 
 [packages]
 asyncpg = "~=0.20.1"

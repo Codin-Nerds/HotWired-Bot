@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from itertools import cycle
+
 import aiohttp
-from yaml import safe_load
 
 # import asyncpg
 import discord
 from discord.ext import commands, tasks
+from yaml import safe_load
 
 from cogs.utils import constants
 
@@ -34,67 +36,79 @@ extensions = [
 ]
 
 
-class Bot(commands.Bot):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.status = cycle(
-            [
-                "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
-                "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
-                f"Ping me using {PREFIX}help",
-                "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
-                "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
-            ]
+class BaseBot(commands.Bot):
+    def __init__(self, *args, **kwargs,) -> None:
+        super().__init__(
+            *args, **kwargs,
         )
-        self.first_on_ready = True
-
-        with open("assets/languages.yml", "r") as file:
-            self.default = safe_load(file)
-
-    async def on_ready(self) -> None:
-        if self.first_on_ready:
-            # self.pool = await asyncpg.create_pool(
-            #     database=os.getenv("DATABASE_NAME", "chaotic"),
-            #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
-            #     max_size=int(os.getenv("POOL_MAX", "100")),
-            #     user=os.getenv("DATABASE_USER"),
-            #     password=os.getenv("DATABASE_PASSWORD"),
-            # )
-            self.change_status.start()
-            self.first_on_ready = False
-            self.log_channel = self.get_channel(constants.log_channel)
-            await self.log_channel.send(f"Bot is ready.\nLogged in as {self.user.name} : {self.user.id}")
-            for ext in extensions:
-                self.load_extension(ext)
-        else:
-            await self.log_channel.send("I'm ready (again)")
-
-    async def close(self) -> None:
-        await super().close()
-        # await self.pool.close()
-
-    @tasks.loop(hours=3)
-    async def change_status(self) -> None:
-        await self.change_presence(activity=discord.Game(name=next(self.status)))
-
-    @tasks.loop(hours=1)
-    async def update_languages(self) -> None:
-        async with aiohttp.ClientSession() as client_session:
-            async with client_session.get("https://tio.run/languages.json") as response:
-                if response.status != 200:
-                    print(f"Error: (status code: {response.status}).")
-                print(await response.json())
-                languages = tuple(sorted(await response.json()))
-
-                if self.languages != languages:
-                    self.languages = languages
+        # self.pool = await asyncpg.create_pool(
+        #     database=os.getenv("DATABASE_NAME", "chaotic"),
+        #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+        #     max_size=int(os.getenv("POOL_MAX", "100")),
+        #     user=os.getenv("DATABASE_USER"),
+        #     password=os.getenv("DATABASE_PASSWORD"),
+        # )
 
 
-bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
+Bot = BaseBot(commands.when_mentioned_or(PREFIX), case_insensitive=True,)
+
+
+Bot_statuses = cycle(
+    [
+        "😁Working At The Codin' Hole! Join me at https://discord.gg/aYF76yY",
+        "▶Check out My Creator's Youtube channel : https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ/",
+        f"Ping me using {PREFIX}help",
+        "Official Instagram of My Creator ❌ https://instagram.com/the.codin.hole/",
+        "Ready To Work and Get Worked! My Github 🔆 https://github.com/janaSunrise",
+    ]
+)
+
+
+@tasks.loop(hours=3)
+async def change_status() -> None:
+    await Bot.change_presence(activity=discord.Game(name=next(Bot_statuses)))
+
+
+@tasks.loop(seconds=1)
+async def update_languages(self,) -> None:
+    async with Bot.aio_session as client_session:
+        async with client_session.get(
+            "https://tio.run/languages.json"
+        ) as response:
+            if response.status != 200:
+                print(f"Error: (status code: {response.status}).")
+            print(await response.json())
+            languages = tuple(sorted(await response.json()))
+
+            if self.languages != languages:
+                self.languages = languages
+
+
+@Bot.event
+async def on_ready() -> None:
+
+    change_status.start()
+
+    log_channel = Bot.get_channel(constants.log_channel)
+
+    print(f"Bot is ready.\nLogged in as {Bot.user.name} : {Bot.user.id}")
+
+    embed = discord.Embed(
+        title="Bot Connection",
+        description="New connection initialized.",
+        color=discord.Color.green(),
+    )
+    embed.timestamp = datetime.utcnow()
+
+    await log_channel.send(embed=embed)
+
+    for ext in extensions:
+        Bot.load_extension(ext)
+
 
 if __name__ == "__main__":
     if TOKEN is not None:
-        bot.run(TOKEN)
+        Bot.run(TOKEN)
     else:
         print(
             """The token environment variable is None, are you
