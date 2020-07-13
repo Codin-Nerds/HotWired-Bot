@@ -3,72 +3,17 @@ import textwrap
 import typing as t
 from collections import Counter
 from datetime import datetime
-from functools import wraps
 
 import discord
-from discord import Color, Embed, Member, NotFound, Role, User
+from discord import Color, Embed, Member, NotFound, Role
 from discord.errors import Forbidden
 from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
                                   command, has_permissions)
 
 from bot.core.bot import Bot
 from bot.core.converters import ActionReason, ProcessedMember
-from bot.utils.errors import MemberNotFound
 from bot.utils.formats import Plural
-
-
-def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
-    """
-    Make sure user can target someone accordingly to role hierarchy.
-
-    `argument_number` states which argument corresponds to the selected user.
-    it should point to `Member` or `User` on guild
-    """
-
-    def wrap(func: t.Callable) -> t.Callable:
-        @wraps(func)
-        async def inner(self: Cog, ctx: Context, *args, **kwargs) -> None:
-            try:
-                user = kwargs[argument]
-            except KeyError:
-                try:
-                    user = args[argument]
-                except (IndexError, TypeError):
-                    raise ValueError(f"Specified argument '{argument}' not found.")
-
-            if isinstance(user, User):
-                try:
-                    member = await ProcessedMember.get_member(ctx.guild, user)
-                except MemberNotFound:
-                    # Skip checks in case of bad member
-                    await func(self, ctx, *args, **kwargs)
-                    return
-            elif isinstance(user, Member):
-                member = user
-            else:
-                raise ValueError("Specified argument is not `Member` or `User`")
-
-            actor = ctx.author
-            # Run the function in case actor has higher role then member, or is a guild owner
-            if actor == ctx.guild.owner or member.top_role <= actor.top_role:
-                await func(self, ctx, *args, **kwargs)
-            else:
-                embed = Embed(
-                    title="You can't target this user",
-                    description=textwrap.dedent(
-                        f"""
-                        {member.mention} has higher top role that yours.
-
-                        **❯❯ You can only target users with lower top role.**
-                        """
-                    ),
-                    color=discord.Color.red(),
-                )
-                await ctx.send(f"Sorry, {actor.mention}", embed=embed)
-
-        return inner
-
-    return wrap
+from bot.core.decorators import follow_roles
 
 
 class Moderation(Cog):
