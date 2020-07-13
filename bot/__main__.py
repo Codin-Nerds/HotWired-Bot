@@ -17,7 +17,6 @@ extensions = [
     "bot.cogs.events",
     "bot.cogs.fun",
     "bot.cogs.games",
-    "bot.cogs.infog",
     "bot.cogs.moderation",
     "bot.cogs.study",
     "bot.cogs.sudo",
