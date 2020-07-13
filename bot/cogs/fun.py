@@ -7,7 +7,7 @@ from random import choice, randint
 
 import aiohttp
 import discord
-import nekos as n
+import nekos
 from discord import Color, Embed, Message
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
@@ -47,9 +47,9 @@ class Fun(Cog):
         """Sends a random textcat"""
         try:
             embed = Embed(color=0x690E8)
-            embed.set_image(url=n.textcat())
+            embed.set_image(url=nekos.textcat())
             await ctx.send(embed=embed)
-        except n.errors.NothingFound:
+        except nekos.errors.NothingFound:
             await ctx.send("Couldn't Fetch Textcat! :(")
 
     @command()
@@ -57,9 +57,9 @@ class Fun(Cog):
         """Sends a random why?__"""
         try:
             embed = Embed(color=0x690E8)
-            embed.set_image(url=n.why())
+            embed.set_image(url=nekos.why())
             await ctx.send(embed=embed)
-        except n.errors.NothingFound:
+        except nekos.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "WHY!" :(')
 
     @command()
@@ -67,9 +67,9 @@ class Fun(Cog):
         """Sends a random fact"""
         try:
             embed = Embed(color=0x690E8)
-            embed.set_image(url=n.fact())
+            embed.set_image(url=nekos.fact())
             await ctx.send(embed=embed)
-        except n.errors.NothingFound:
+        except nekos.errors.NothingFound:
             await ctx.send('Couldn\'t Fetch any "Fact" :(')
 
     @command()
@@ -78,13 +78,13 @@ class Fun(Cog):
         """Sends a random image(sfw and nsfw)."""
         try:
             embed = Embed(color=0x690E8)
-            embed.set_image(url=n.img(type))
+            embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
             await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
-        except n.errors.InvalidArgument:
+        except nekos.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
-        except n.errors.NothingFound:
+        except nekos.errors.NothingFound:
             await ctx.send("Sorry, No Images Found.")
 
     @command()
