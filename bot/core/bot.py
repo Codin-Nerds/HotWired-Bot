@@ -5,7 +5,7 @@ import asyncpg
 from discord import Color, Embed
 from discord.ext.commands import Bot
 
-from bot import constants
+from bot import config
 
 DATABASE = {
     "host": "127.0.0.1",
@@ -31,7 +31,7 @@ class Bot(Bot):
             self.pool = await asyncpg.create_pool(**DATABASE)
 
             # Log new connection
-            self.log_channel = self.get_channel(constants.log_channel)
+            self.log_channel = self.get_channel(config.log_channel)
             embed = Embed(
                 title="Bot Connection",
                 description="New connection initialized.",

@@ -7,7 +7,7 @@ import html2text
 from discord import Embed, utils
 from discord.ext.commands import Bot, Cog, CommandError, Context, command
 
-from bot import constants
+from bot import config
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
@@ -128,8 +128,8 @@ class Search(Cog, name="Basic"):
     @command()
     async def search(self, ctx: Context, category: str, *, query: str) -> None:
         """Search online for general results."""
-        if category not in constants.basic_search_categories:
-            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(constants.basic_search_categories)}```")
+        if category not in config.basic_search_categories:
+            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(config.basic_search_categories)}```")
             return
         await self._basic_search(ctx, query, category)
 

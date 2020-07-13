@@ -7,15 +7,15 @@ from discord.ext.commands import Bot, Cog
 import re
 import aiohttp
 
-from bot import constants
+from bot import config
 
-PREFIX = constants.COMMAND_PREFIX
+PREFIX = config.COMMAND_PREFIX
 
 
 class Events(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.dev_mode = constants.DEV_MODE
+        self.dev_mode = config.DEV_MODE
         self.session = aiohttp.ClientSession()
 
     @staticmethod
@@ -75,7 +75,7 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
-        logchannel = self.bot.get_channel(constants.log_channel)
+        logchannel = self.bot.get_channel(config.log_channel)
 
         embed = Embed(
             title="Greetings",
@@ -96,7 +96,7 @@ class Events(Cog):
             value=textwrap.dedent(
                 f"""
                     **► __Bot Id__**: {self.bot.user.id}
-                    **► __Developer__**: **{constants.creator}**
+                    **► __Developer__**: **{config.creator}**
                     **► __Prefix__**: {PREFIX}
                 """
             ),
@@ -105,8 +105,8 @@ class Events(Cog):
             name="**Links**",
             value=textwrap.dedent(
                 f"""
-                    **►** [Support Server]({constants.discord_server})
-                    **►** [Invite link]({constants.invite_link})
+                    **►** [Support Server]({config.discord_server})
+                    **►** [Invite link]({config.invite_link})
                 """
             ),
         )
@@ -123,7 +123,7 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
-        logchannel = self.bot.get_channel(constants.log_channel)
+        logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 

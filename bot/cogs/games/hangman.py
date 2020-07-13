@@ -7,7 +7,7 @@ from os import path
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot import constants
+from bot import config
 
 DIR_PATH = path.dirname(__file__)
 # TODO: Define global hangman players
@@ -67,7 +67,7 @@ class HangmanGame:
                 self.tries -= 1
                 return 0
         else:
-            if guess == f"{constants.COMMAND_PREFIX}HANGEXIT":
+            if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
                 return False
             else:
                 return 2
@@ -119,7 +119,7 @@ class HangmanGame:
             )
             await self.channel.send(embed=guess_embed, delete_after=5)
         embed.set_footer(
-            text=f"{constants.COMMAND_PREFIX}hangexit to exit the game! | Powered By HotWired."
+            text=f"{config.COMMAND_PREFIX}hangexit to exit the game! | Powered By HotWired."
         )
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)

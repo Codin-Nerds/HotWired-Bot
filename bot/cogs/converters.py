@@ -5,7 +5,7 @@ import textwrap
 from discord import Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot import constants
+from bot import config
 
 
 class Converters(Cog):
@@ -46,7 +46,7 @@ class Converters(Cog):
 
             await ctx.send(embed=embed)
         except ValueError:
-            await ctx.send(f"Invalid sequence. Example usage : `{constants.COMMAND_PREFIX}unascii 104 101 121`")
+            await ctx.send(f"Invalid sequence. Example usage : `{config.COMMAND_PREFIX}unascii 104 101 121`")
 
     @command()
     async def byteconvert(self, ctx: Context, value: int, unit: str = "Mio") -> None:

@@ -9,7 +9,7 @@ from discord.ext.commands import (BadArgument, Bot, BucketType, Cog,
                                   CommandError, Context, command, cooldown,
                                   has_permissions)
 
-from bot import constants
+from bot import config
 
 
 class Common(Cog):
@@ -58,9 +58,9 @@ class Common(Cog):
 
     @command(aliases=["spoll"])
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
-        f"""{constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        f"""{config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
         if question_and_choices is None:
-            await ctx.send(f"Usage: {constants.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
+            await ctx.send(f"Usage: {config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
             return
 
         if "|" in question_and_choices:
@@ -97,7 +97,7 @@ class Common(Cog):
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
-                description=f"[Click Here]({constants.github_repo_link}) to visit the Open Source Repo of HotWired",
+                description=f"[Click Here]({config.github_repo_link}) to visit the Open Source Repo of HotWired",
                 color=Color.dark_blue(),
             )
         )

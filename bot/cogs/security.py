@@ -5,7 +5,7 @@ import aiohttp
 from discord import Color, Embed, Message, NotFound
 from discord.ext.commands import Bot, Cog
 
-from bot import constants
+from bot import config
 
 FILE_EMBED_DESCRIPTION = (
     f"""
@@ -14,7 +14,7 @@ FILE_EMBED_DESCRIPTION = (
     • Try shortening your message, if it exceeds 2000 character limit
     to fit within the character limit or use a pasting service (see below) \n
     • If you're showing code, you can use codeblocks or use a pasting service like :
-    {constants.paste_link} or {constants.paste_link_2}
+    {config.paste_link} or {config.paste_link_2}
     """
 )
 

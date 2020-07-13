@@ -12,7 +12,7 @@ from discord import Color, Embed, Message
 from discord.ext.commands import (BadArgument, Bot, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
-from bot import constants
+from bot import config
 from bot.utils.errors import ServiceError\
 
 
@@ -83,7 +83,7 @@ class Fun(Cog):
         except errors.NSFWChannelRequired:
             await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
         except n.errors.InvalidArgument:
-            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(constants.nsfw_possible)}```")
+            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
         except n.errors.NothingFound:
             await ctx.send("Sorry, No Images Found.")
 
@@ -123,7 +123,7 @@ class Fun(Cog):
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
         """http.cat images."""
-        if http_id in constants.http_codes:
+        if http_id in config.http_codes:
             httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
@@ -273,7 +273,7 @@ class Fun(Cog):
     async def neko(self, ctx: Context) -> None:
         """Shows a neko."""
         async with aiohttp.ClientSession() as session:
-            async with session.get(constants.nekos["sfw"]) as neko:
+            async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
                     neko_em = discord.Embed(colour=0x690E8)

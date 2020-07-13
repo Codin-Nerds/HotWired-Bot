@@ -3,7 +3,7 @@ import random
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot import constants
+from bot import config
 
 
 class Games(Cog):
@@ -27,11 +27,11 @@ class Games(Cog):
         reply_type = random.randint(1, 3)
 
         if reply_type == 1:
-            answer = random.choice(constants.POSITIVE_REPLIES)
+            answer = random.choice(config.POSITIVE_REPLIES)
         elif reply_type == 2:
-            answer = random.choice(constants.NEGATIVE_REPLIES)
+            answer = random.choice(config.NEGATIVE_REPLIES)
         elif reply_type == 3:
-            answer = random.choice(constants.ERROR_REPLIES)
+            answer = random.choice(config.ERROR_REPLIES)
 
         embed = Embed(title="Magic 8-ball", color=Color.blurple())
         embed.add_field(name="Question", value=question)

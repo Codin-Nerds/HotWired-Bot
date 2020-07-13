@@ -7,7 +7,7 @@ import requests
 from discord.ext.commands import BadArgument, Bot, Cog, Context, command
 from discord.utils import get
 
-from bot import constants
+from bot import config
 
 
 class InvalidCommandException(Exception):
@@ -90,7 +90,7 @@ class Emotes(Cog):
     # TODO: Remove this when error handler will be implemented
     async def send_error(self, ctx: Context, error: str) -> None:
         """Sends the Error of Any functions as an Embed."""
-        help_message = f"Type `{constants.COMMAND_PREFIX}help` for further assistance"
+        help_message = f"Type `{config.COMMAND_PREFIX}help` for further assistance"
         embed = discord.Embed(colour=discord.Colour.red())
         embed.add_field(name=f"Error: {error}", value=help_message)
         await ctx.send(embed=embed)
@@ -101,9 +101,9 @@ class Emotes(Cog):
         Add an emote to server
 
         **Usage:**
-        `{constants.COMMAND_PREFIX}add_emote twitch <emote_id>`
-        `{constants.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`
-        `{constants.COMMAND_PREFIX}add_emote frf <emote_id>`
+        `{config.COMMAND_PREFIX}add_emote twitch <emote_id>`
+        `{config.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`
+        `{config.COMMAND_PREFIX}add_emote frf <emote_id>`
 
         To get an emote visit:
         [twitchemotes.com](https://twitchemotes.com)

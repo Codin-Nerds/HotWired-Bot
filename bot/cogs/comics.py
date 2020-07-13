@@ -5,7 +5,7 @@ import aiohttp
 from discord import Embed, Color, File
 from bs4 import BeautifulSoup
 from discord.ext.commands import Cog, Bot, command, Context
-from bot import constants
+from bot import config
 
 
 class Comics(Cog):
@@ -155,9 +155,9 @@ class Comics(Cog):
                     help_embed = Embed(
                         title="XKCD HELP",
                         description=f"""
-                        **{constants.COMMAND_PREFIX}xkcd latest** - (Get the latest comic)
-                        **{constants.COMMAND_PREFIX}xkcd <num>** - (Enter a comic number | range 1 to {latest_comic_num})
-                        **{constants.COMMAND_PREFIX}xkcd random** - (Get a random comic)
+                        **{config.COMMAND_PREFIX}xkcd latest** - (Get the latest comic)
+                        **{config.COMMAND_PREFIX}xkcd <num>** - (Enter a comic number | range 1 to {latest_comic_num})
+                        **{config.COMMAND_PREFIX}xkcd random** - (Get a random comic)
                         """,
                     )
                     await ctx.send(embed=help_embed)

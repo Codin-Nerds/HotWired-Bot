@@ -13,7 +13,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Bot, Cog, Context
 from discord.utils import escape_mentions
 
-from bot import constants
+from bot import config
 
 from . import documentation, reference
 from .tiorun import Tio
@@ -192,8 +192,8 @@ class Coding(Cog):
             if lang in quickmap:
                 lang = quickmap[lang]
 
-            if lang in constants.default_languages:
-                lang = constants.default_languages[lang]
+            if lang in config.default_languages:
+                lang = config.default_languages[lang]
 
             if lang not in self.bot.languages:  # if lang not found
                 matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
@@ -258,7 +258,7 @@ class Coding(Cog):
 
         async with ctx.typing():
             if not lang.lower() in self.referred:
-                await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list references` for available ones.")
+                await ctx.send(f"{lang} not available. See `{config.COMMAND_PREFIX}list references` for available ones.")
                 return
 
         await self.referred[lang.lower()](ctx, query.strip("`"))
@@ -269,7 +269,7 @@ class Coding(Cog):
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
-                await ctx.send(f"{lang} not available. See `{constants.COMMAND_PREFIX}list documentations` for available ones.")
+                await ctx.send(f"{lang} not available. See `{config.COMMAND_PREFIX}list documentations` for available ones.")
                 return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))

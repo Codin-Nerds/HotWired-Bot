@@ -1,6 +1,6 @@
 from discord import Embed, Color
 from discord.ext.commands import command, Cog, Bot, Context
-from googletrans import Translator, constants
+from googletrans import Translator, config
 
 translator = Translator()
 
@@ -12,7 +12,7 @@ class Translator(Cog):
     @command(aliases=["lcode"])
     async def lang_code(self, ctx: Context, *, language: str) -> None:
         def get_key(val: str) -> str:
-            for key, value in constants.LANGUAGES.items():
+            for key, value in config.LANGUAGES.items():
                 if val == value:
                     return key
             return "Language Not found!"
@@ -31,7 +31,7 @@ class Translator(Cog):
         embed = Embed(title="Sentence Info", color=Color.dark_orange())
         embed.add_field(name="Language Code", value=detection.lang, inline=False)
         embed.add_field(name="Confidence", value=detection.confidence, inline=False)
-        embed.add_field(name="Language", value=constants.LANGUAGES[detection.lang], inline=False)
+        embed.add_field(name="Language", value=config.LANGUAGES[detection.lang], inline=False)
         await ctx.send(embed=embed)
 
     @command()
