@@ -9,10 +9,10 @@ from discord.ext.commands import Cog, Context, command
 from bot.core.bot import Bot
 
 STATUSES = {
-    Status.dnd: "DND 🔴",
-    Status.online: "ONLINE \U0001F7E2",
-    Status.idle: "IDLE 🌙",
-    Status.offline: "OFFLINE 💀",
+    Status.online: "ONLINE <:online:346921745279746048>",
+    Status.idle: "IDLE <:away:346921747330891780>",
+    Status.dnd: "DND <:dnd:346921781786836992>",
+    Status.offline: "OFFLINE <:offline:346921814435430400>",
 }
 
 
@@ -31,10 +31,10 @@ class Commands(Cog):
                 Bots: {bots}
             """
         status = f"""
-                <:online:346921745279746048> {member_by_status["online"]}
-                <:away:346921747330891780> {member_by_status["idle"]}
-                <:dnd:346921781786836992> {member_by_status["dnd"]}
-                <:offline:346921814435430400> {member_by_status["offline"]}
+                {STATUSES[Status.online]} {member_by_status["online"]}
+                {STATUSES[Status.idle]} {member_by_status["idle"]}
+                {STATUSES[Status.dnd]} {member_by_status["dnd"]}
+                {STATUSES[Status.offline]} {member_by_status["offline"]}
             """
         embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
         embed.add_field(name="**❯❯ Member Status**", value=status)
