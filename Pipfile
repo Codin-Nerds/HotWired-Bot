@@ -24,6 +24,9 @@ html2text = "*"
 googletrans = "*"
 html5lib = "*"
 py-stackexchange = "*"
+youtube-dl = "*"
+asyncpg = "*"
+pynacl = "*"
 
 [requires]
 python_version = "3.8"

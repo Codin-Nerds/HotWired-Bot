@@ -27,6 +27,7 @@ extensions = [
     "cogs.games",
     "cogs.infog",
     "cogs.moderation",
+    "cogs.music",
     "cogs.study",
     "cogs.sudo",
     "cogs.support",
