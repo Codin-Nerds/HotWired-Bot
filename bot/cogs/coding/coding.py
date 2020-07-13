@@ -14,9 +14,10 @@ from discord.ext.commands import Bot, Cog, Context
 from discord.utils import escape_mentions
 
 from bot import constants
-from bot.cogs.code_utils import documentation, reference
-from bot.cogs.code_utils.tiorun import Tio
-from bot.cogs.code_utils.utility import get_raw, paste
+
+from . import documentation, reference
+from .tiorun import Tio
+from .utility import get_raw, paste
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # TODO: add pagination to stack overflow results, reference, documentation, man pages
@@ -300,7 +301,3 @@ class Coding(Cog):
         description = f"`{'`, `'.join([*availables])}`"
         emb = discord.Embed(title=f"Available for {group}: {len(availables)}", description=description)
         await ctx.send(embed=emb)
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Coding(bot))
