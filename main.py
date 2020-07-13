@@ -5,7 +5,7 @@ from itertools import cycle
 import aiohttp
 from yaml import safe_load
 
-import asyncpg
+# import asyncpg
 import discord
 from discord.ext import commands, tasks
 
@@ -48,18 +48,18 @@ class Bot(commands.Bot):
         )
         self.first_on_ready = True
 
-        with open('assets/languages.yml', 'r') as file:
+        with open("assets/languages.yml", "r") as file:
             self.default = safe_load(file)
 
     async def on_ready(self) -> None:
         if self.first_on_ready:
-            self.pool = await asyncpg.create_pool(
-                database=os.getenv("DATABASE_NAME", "chaotic"),
-                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
-                max_size=int(os.getenv("POOL_MAX", "100")),
-                user=os.getenv("DATABASE_USER"),
-                password=os.getenv("DATABASE_PASSWORD"),
-            )
+            # self.pool = await asyncpg.create_pool(
+            #     database=os.getenv("DATABASE_NAME", "chaotic"),
+            #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
+            #     max_size=int(os.getenv("POOL_MAX", "100")),
+            #     user=os.getenv("DATABASE_USER"),
+            #     password=os.getenv("DATABASE_PASSWORD"),
+            # )
             self.change_status.start()
             self.first_on_ready = False
             self.log_channel = self.get_channel(constants.log_channel)
@@ -71,7 +71,7 @@ class Bot(commands.Bot):
 
     async def close(self) -> None:
         await super().close()
-        await self.pool.close()
+        # await self.pool.close()
 
     @tasks.loop(hours=3)
     async def change_status(self) -> None:
@@ -93,4 +93,13 @@ class Bot(commands.Bot):
 bot = Bot(commands.when_mentioned_or(PREFIX), case_insensitive=True)
 
 if __name__ == "__main__":
-    bot.run(TOKEN)
+    if TOKEN is not None:
+        bot.run(TOKEN)
+    else:
+        print(
+            """The token environment variable is None, are you
+            sure you added an environment variable called 'BOT_TOKEN'
+            inside of a .env file on the workspace directory? And are
+            you sure you are running this file with pipenv?
+            (pipenv run start from the command line)"""
+        )

@@ -2,6 +2,7 @@ from enum import Enum
 
 from discord import Color
 from yaml import safe_load
+import os
 
 DEV_MODE = True
 
@@ -12,8 +13,6 @@ bug_report_channel = 728570578507923526
 suggestions_channel = 728570594899132456
 complaints_channel = 728570619985264650
 
-
-owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
 
@@ -35,7 +34,8 @@ admin_invite_link = (
 
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 
-COMMAND_PREFIX = ">>"
+
+COMMAND_PREFIX = os.environ.get("COMMAND_PREFIX", ">>")
 
 paste_link = "https://pastebin.com"
 paste_link_2 = "https://hastebin.com"
@@ -224,7 +224,7 @@ http_codes = [
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
 
 
-with open('cogs/utils/languages.yml', 'r') as file:
+with open("cogs/utils/languages.yml", "r") as file:
     default = safe_load(file)
 
 

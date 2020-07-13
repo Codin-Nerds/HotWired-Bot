@@ -42,7 +42,7 @@ class Commands(Cog):
         if member is None:
             member = ctx.author
 
-        if member.id in constants.owner_ids:
+        if member.id in constants.devs:
             embed = status_embed(member, description="None")
         else:
             embed = status_embed(member)

@@ -1,7 +1,6 @@
 import asyncio
 import os
 import re
-import sys
 import urllib.parse
 from io import BytesIO
 import aiohttp
@@ -12,10 +11,12 @@ from bs4.element import NavigableString
 from contextlib import suppress
 
 import discord
-import stackexchange
-from stackexchange import Site
+
+# import stackexchange
+# from stackexchange import Site
 from discord.ext import commands
-from discord.ext.commands.cooldowns import BucketType
+
+# from discord.ext.commands.cooldowns import BucketType
 from discord.ext.commands import Cog, Context, Bot
 from discord.utils import escape_mentions
 
@@ -25,12 +26,9 @@ import typing as t
 from .code_utils.tiorun import Tio
 
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-# TODO: add pagination to stack overflow results, reference, documentation, man pages
-
-
 class Coding(Cog):
     """To test code and check docs."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.STACKEXCHANGE = os.getenv("STACKEXCHANGE")
@@ -324,33 +322,31 @@ class Coding(Cog):
 
         await ctx.send(embed=emb)
 
-    @commands.cooldown(1, 8, BucketType.user)
-    @commands.command(aliases=["stack"])
-    async def overflow(self, ctx: Context, *, query: str) -> None:
-        """Queries Stackoverflow and gives you top results."""
+    # @commands.cooldown(1, 8, BucketType.user)
+    # @commands.command(aliases=["stack"])
+    # async def overflow(self, ctx: Context, *, query: str) -> None:
+    #     """Queries Stackoverflow and gives you top results."""
 
-        async with ctx.typing():
-            site = Site(stackexchange.StackOverflow, self.STACKEXCHANGE)
-            site.impose_throttling = True
-            site.throttle_stop = False
+    #     async with ctx.typing():
+    #         site = Site(stackexchange.StackOverflow, self.STACKEXCHANGE)
+    #         site.impose_throttling = True
+    #         site.throttle_stop = False
 
-            qs = site.search(intitle=query)[:5]
-            if qs:
-                emb = discord.Embed(title=query)
-                emb.set_thumbnail(url=f"http://s2.googleusercontent.com/s2/favicons?domain_url={site.domain}")
+    #         qs = site.search(intitle=query)[:5]
+    #         if qs:
+    #             emb = discord.Embed(title=query)
+    #             emb.set_thumbnail(url=f"http://s2.googleusercontent.com/s2/favicons?domain_url={site.domain}")
 
-                for q in qs:
-                    # Fetch question's data, include vote_counts and answers
-                    q = site.question(q.id, filter="!b1MME4lS1P-8fK")
-                    emb.add_field(
-                        name=f"`{len(q.answers)} answers` Score : {q.score}",
-                        value=f"[{q.title}](https://{site.domain}/q/{q.id}",
-                        inline=False,
-                    )
+    #             for q in qs:
+    #                 # Fetch question's data, include vote_counts and answers
+    #                 q = site.question(q.id, filter="!b1MME4lS1P-8fK")
+    #                 emb.add_field(
+    #                     name=f"`{len(q.answers)} answers` Score : {q.score}", value=f"[{q.title}](https://{site.domain}/q/{q.id}", inline=False,
+    #                 )
 
-                await ctx.send(embed=emb)
-            else:
-                await ctx.send("No results Found! Sorry.")
+    #             await ctx.send(embed=emb)
+    #         else:
+    #             await ctx.send("No results Found! Sorry.")
 
     @commands.command()
     async def list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
