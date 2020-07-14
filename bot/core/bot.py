@@ -1,12 +1,8 @@
 import os
-from datetime import datetime
 
 import asyncpg
-from discord import Color, Embed
 from discord.ext.commands import Bot
 from loguru import logger
-
-from bot import config
 
 DATABASE = {
     "host": "127.0.0.1",
@@ -31,16 +27,6 @@ class Bot(Bot):
             # connect to the database
             self.pool = await asyncpg.create_pool(**DATABASE)
 
-            # Log new connection
-            self.log_channel = self.get_channel(config.log_channel)
-            embed = Embed(
-                title="Bot Connection",
-                description="New connection initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal()
-            )
-            await self.log_channel.send(embed=embed)
-
             # Load all extensions
             for extension in self.extension_list:
                 try:
@@ -48,18 +34,13 @@ class Bot(Bot):
                     logger.debug(f"Cog {extension} loaded.")
                 except Exception as e:
                     logger.error(f"Cog {extension} failed to load with {type(e)}: {e}")
-        else:
-            embed = Embed(
-                title="Bot Connection",
-                description="Connection re-initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal()
-            )
-            await self.log_channel.send(embed=embed)
 
-        logger.info("Bot is ready")
+            logger.info("Bot is ready")
+        else:
+            logger.info("Bot connection reinitialized")
 
     async def close(self) -> None:
+        logger.info("Closing bot connection")
         await super().close()
         # In case bot doesn't get to on_ready
         if hasattr(self, "pool"):
