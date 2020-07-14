@@ -54,7 +54,7 @@ class Reddit(Cog):
         """Reddit commands."""
         pass
 
-    @reddit.command()
+    @reddit.command(aliases=["meme"])
     async def memes(self, ctx: Context) -> None:
         name = random.choice(config.reddit["meme"])
         subreddit = reddit_client.subreddit(name)
@@ -81,7 +81,7 @@ class Reddit(Cog):
         if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
-    @reddit.command()
+    @reddit.command(aliases="tech")
     async def technology(self, ctx: Context) -> None:
         name = random.choice(config.reddit["tech"])
         subreddit = reddit_client.subreddit(name)
