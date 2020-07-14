@@ -24,12 +24,16 @@ html2text = "*"
 googletrans = "*"
 html5lib = "*"
 praw = "*"
+asyncpg = "*"
+py-stackexchange = "*"
+lxml = "*"
+bleach = "*"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
-start="python -u ./main.py"
+start="python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 autoformat = "black ."
