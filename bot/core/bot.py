@@ -1,9 +1,10 @@
 import os
 from datetime import datetime
-import asyncpg
 
+import asyncpg
 from discord import Color, Embed
 from discord.ext.commands import Bot
+from loguru import logger
 
 from bot import config
 
@@ -44,9 +45,9 @@ class Bot(Bot):
             for extension in self.extension_list:
                 try:
                     self.load_extension(extension)
-                    print(f"Cog {extension} loaded.")
+                    logger.debug(f"Cog {extension} loaded.")
                 except Exception as e:
-                    print(f"Cog {extension} failed to load with {type(e)}: {e}")
+                    logger.error(f"Cog {extension} failed to load with {type(e)}: {e}")
         else:
             embed = Embed(
                 title="Bot Connection",
@@ -56,7 +57,7 @@ class Bot(Bot):
             )
             await self.log_channel.send(embed=embed)
 
-        print("Bot is ready")
+        logger.info("Bot is ready")
 
     async def close(self) -> None:
         await super().close()
