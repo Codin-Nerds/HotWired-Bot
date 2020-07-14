@@ -19,7 +19,7 @@ repos:
         name: Flake8
         description: Run flake8 checks on the code
         additional_dependencies: [flake8-annotations]
-        entry: pipenv run flake8 --config flake8.cfg
+        entry: pipenv run flake8 --config tox.ini
         language: python
         types: [python]
         require_serial: true

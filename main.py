@@ -4,14 +4,11 @@ import os
 from datetime import datetime
 from itertools import cycle
 
-import aiohttp
+from cogs.utils import constants
 
 # import asyncpg
 import discord
 from discord.ext import commands, tasks
-from yaml import safe_load
-
-from cogs.utils import constants
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -41,13 +38,6 @@ class BaseBot(commands.Bot):
         super().__init__(
             *args, **kwargs,
         )
-        # self.pool = await asyncpg.create_pool(
-        #     database=os.getenv("DATABASE_NAME", "chaotic"),
-        #     host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
-        #     max_size=int(os.getenv("POOL_MAX", "100")),
-        #     user=os.getenv("DATABASE_USER"),
-        #     password=os.getenv("DATABASE_PASSWORD"),
-        # )
 
 
 Bot = BaseBot(commands.when_mentioned_or(PREFIX), case_insensitive=True,)
