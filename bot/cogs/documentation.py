@@ -5,6 +5,7 @@ import urllib
 import aiohttp
 import bleach
 import stackexchange
+from stackexchange import Site
 from discord import Color, Embed
 from discord.errors import HTTPException
 from discord.ext.commands import Cog, Context, command, cooldown
@@ -25,7 +26,7 @@ class Documentation(Cog):
     async def stack_overflow(self, ctx: Context, *, query: str) -> None:
         """Queries Stackoverflow and gives you top results."""
         async with ctx.typing():
-            site = stackexchange.Site(stackexchange.StackOverflow, StackExchangeToken)
+            site = Site(stackexchange.StackOverflow, StackExchangeToken)
             site.impose_throttling = True
             site.throttle_stop = False
 

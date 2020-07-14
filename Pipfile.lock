@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d718d466b43e11e5384dea16d22f6af38a6f3cc94faabf773a25c453d359c3fc"
+            "sha256": "e9e44a98d97ca9ddfd1c6244c0b32f0cae593f9970b530dbcc4ae8d32989ea23"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -161,11 +161,11 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:051a752188c3422558a1302be99b742a2dd9d7568419614104ae7e87233f9d63",
-                "sha256:3e1b107d6c865fc28f0f023456f193f2e916d14bca5a16c93fe440bef90c7c58"
+                "sha256:1ca15ed74605eb9bda3983a459872ee7def91ba0129d637e5cd527063876886b",
+                "sha256:fa88ae62a308dda8f40653152e8f484ea038751b8b8a47d456994aa096c2d617"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2020.7.7"
+            "version": "==2020.7.14"
         },
         "html2text": {
             "hashes": [
@@ -379,13 +379,6 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==2.0.1"
-        },
-        "stackexchange": {
-            "hashes": [
-                "sha256:ef38574485cf807a729dfe14571249a38e2378c35121d06f09b9eb891d57f2aa"
-            ],
-            "index": "pypi",
-            "version": "==0.5.0"
         },
         "tabulate": {
             "hashes": [
