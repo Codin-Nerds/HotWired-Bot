@@ -26,12 +26,14 @@ googletrans = "~=3.0.0"
 html5lib = "~=1.1"
 py-stackexchange = "~=2.2.7"
 "discord.py" = "~=1.3.4"
+lxml = "~=4.5.2"
+bleach = "~=3.1.5"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
-start="python -u ./main.py"
+start="python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 autoformat = "black ."
