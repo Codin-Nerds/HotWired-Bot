@@ -13,9 +13,7 @@ reddit_client = RedditAPI(
 )
 
 with open("bot/assets/reddit.json", "r") as f:
-    contents = f.read()
-
-reddit = json.loads(contents)
+    reddit = json.load(f)
 
 
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
