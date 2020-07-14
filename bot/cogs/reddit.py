@@ -54,7 +54,7 @@ class Reddit(Cog):
         """Reddit commands."""
         pass
 
-    @reddit.command()
+    @reddit.command(aliases=["meme"])
     async def memes(self, ctx: Context) -> None:
         name = random.choice(config.reddit["meme"])
         subreddit = reddit_client.subreddit(name)
