@@ -1,5 +1,4 @@
 from enum import Enum
-import json
 
 from discord import Color
 from yaml import safe_load
@@ -231,12 +230,6 @@ nekos = {
 
 with open('bot/assets/languages.yml', 'r') as file:
     default_languages = safe_load(file)
-
-
-with open("bot/assets/reddit.json", "r") as f:
-    contents = f.read()
-
-reddit = json.loads(contents)
 
 
 class Infraction(Enum):
