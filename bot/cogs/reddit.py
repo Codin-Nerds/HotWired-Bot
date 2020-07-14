@@ -2,10 +2,10 @@ from discord import Embed, Color
 from discord.ext.commands import Cog, Bot, Context, is_nsfw, group
 import random
 from bot import config
-import praw
+from praw import Reddit as RedditAPI
 import os
 
-reddit_client = praw.Reddit(
+reddit_client = RedditAPI(
     client_id=os.getenv("REDDIT_CLIENT_ID"),
     client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
     user_agent=os.getenv("REDDIT_USER_AGENT"),
@@ -13,12 +13,16 @@ reddit_client = praw.Reddit(
 )
 
 
-async def reddit_embed(subreddit: str, randompost: praw.Reddit.submission) -> Embed:
+async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
     embed = Embed(
-        title=randompost.title,
         colour=Color.green(),
         url=randompost.url
     )
+
+    if len(randompost.title) > 0 and len(randompost.title) < 256:
+        embed.title = randompost.title
+    elif len(randompost.title) > 256:
+        embed.title = f"{randompost.title[:200]}..."
 
     if len(randompost.selftext) > 0 and len(randompost.selftext) < 2048:
         embed.description = randompost.selftext
@@ -56,12 +60,13 @@ class Reddit(Cog):
 
     @reddit.command(aliases=["meme"])
     async def memes(self, ctx: Context) -> None:
+        """Get random memes."""
         name = random.choice(config.reddit["meme"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
+
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
@@ -69,11 +74,11 @@ class Reddit(Cog):
 
     @reddit.command()
     async def funny(self, ctx: Context) -> None:
+        """Get a funny picture."""
         name = random.choice(config.reddit["funny"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
 
         embed = await reddit_embed(subreddit, randompost)
@@ -83,11 +88,11 @@ class Reddit(Cog):
 
     @reddit.command(aliases=["tech"])
     async def technology(self, ctx: Context) -> None:
+        """Get a post about tech."""
         name = random.choice(config.reddit["tech"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
 
         embed = await reddit_embed(subreddit, randompost)
@@ -101,7 +106,6 @@ class Reddit(Cog):
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
 
         embed = await reddit_embed(subreddit, randompost)
@@ -112,12 +116,13 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def nsfw(self, ctx: Context) -> None:
+        """Get a nsfw picture."""
         name = random.choice(config.reddit["nsfw"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
+
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
@@ -125,6 +130,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def aww(self, ctx: Context) -> None:
+        """Get a random aww picture."""
         name = random.choice(config.reddit["aww"])
         subreddit = reddit_client.subreddit(name)
 
@@ -138,11 +144,11 @@ class Reddit(Cog):
 
     @reddit.command()
     async def science(self, ctx: Context) -> None:
+        """Get a science fact."""
         name = random.choice(config.reddit["sci"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
 
         embed = await reddit_embed(subreddit, randompost)
@@ -152,11 +158,11 @@ class Reddit(Cog):
 
     @reddit.command()
     async def relation(self, ctx: Context) -> None:
+        """Get a relation story."""
         name = random.choice(config.reddit["relation"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
-
         randompost = random.choice(postlist)
 
         embed = await reddit_embed(subreddit, randompost)
@@ -166,7 +172,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def new(self, ctx: Context, subreddit: str) -> None:
-        """sends you the fresh posts from a subreddit"""
+        """sends you the fresh posts from given subreddit."""
         subreddit = reddit_client.subreddit(f'{subreddit}')
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
@@ -180,25 +186,7 @@ class Reddit(Cog):
                     await ctx.send(randompost.title)
                     await ctx.send(randompost.url)
                 else:
-                    embed = Embed(
-                        title=randompost.title,
-                        url=randompost.url,
-                        colour=Color.green()
-                    )
-                    embed.set_image(url=randompost.url)
-                    embed.set_footer(
-                        text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired",
-                    )
-                    embed.set_author(
-                        name=f"u/{randompost.author.name}",
-                        icon_url=randompost.author.icon_img,
-                        url=f"https://www.reddit.com/user/{randompost.author.name}"
-                    )
-                    embed.add_field(
-                        name="SubReddit",
-                        value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
-                        inline=False
-                    )
+                    embed = await reddit_embed(subreddit, randompost)
                     await ctx.send(embed=embed)
 
             else:
@@ -213,30 +201,12 @@ class Reddit(Cog):
                 await ctx.send(randompost.title)
                 await ctx.send(randompost.url)
             else:
-                embed = Embed(
-                    title=randompost.title,
-                    url=randompost.url,
-                    colour=Color.green()
-                )
-                embed.set_image(url=randompost.url)
-                embed.set_footer(
-                    text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired",
-                )
-                embed.set_author(
-                    name=f"u/{randompost.author.name}",
-                    icon_url=randompost.author.icon_img,
-                    url=f"https://www.reddit.com/user/{randompost.author.name}"
-                )
-                embed.add_field(
-                    name="SubReddit",
-                    value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
-                    inline=False
-                )
+                embed = await reddit_embed(subreddit, randompost)
                 await ctx.send(embed=embed)
 
     @reddit.command()
     async def hot(self, ctx: Context, subreddit: str) -> None:
-        """sends you the hottest posts from a subreddit"""
+        """sends you the hottest posts from given subreddit."""
         subreddit = reddit_client.subreddit(f'{subreddit}')
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
@@ -251,25 +221,7 @@ class Reddit(Cog):
                     await ctx.send(randompost.url)
 
                 else:
-                    embed = Embed(
-                        title=randompost.title,
-                        url=randompost.url,
-                        colour=Color.green()
-                    )
-                    embed.set_image(url=randompost.url)
-                    embed.set_footer(
-                        text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired",
-                    )
-                    embed.set_author(
-                        name=f"u/{randompost.author.name}",
-                        icon_url=randompost.author.icon_img,
-                        url=f"https://www.reddit.com/user/{randompost.author.name}"
-                    )
-                    embed.add_field(
-                        name="SubReddit",
-                        value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
-                        inline=False
-                    )
+                    embed = await reddit_embed(subreddit, randompost)
                     await ctx.send(embed=embed)
             else:
                 await ctx.send(
@@ -284,25 +236,7 @@ class Reddit(Cog):
                 await ctx.send(randompost.url)
 
             else:
-                embed = Embed(
-                    title=randompost.title,
-                    url=randompost.url,
-                    colour=Color.green()
-                )
-                embed.set_image(url=randompost.url)
-                embed.set_footer(
-                    text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired",
-                )
-                embed.set_author(
-                    name=f"u/{randompost.author.name}",
-                    icon_url=randompost.author.icon_img,
-                    url=f"https://www.reddit.com/user/{randompost.author.name}"
-                )
-                embed.add_field(
-                    name="SubReddit",
-                    value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
-                    inline=False
-                )
+                embed = await reddit_embed(subreddit, randompost)
                 await ctx.send(embed=embed)
 
 

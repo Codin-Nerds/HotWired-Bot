@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 
 from discord import Color
 from yaml import safe_load
@@ -223,175 +224,6 @@ http_codes = [
 # Search Engine categories
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
 
-reddit = {
-    "meme": [
-        "memes",
-        "dankmemes",
-        "meme",
-        "dankmeme",
-        "Tinder",
-        "me_irl",
-        "meirl",
-        "DeepFriedMemes",
-        "ComedyCemetery",
-        "FellowKids",
-        "wholesomememes"
-    ],
-
-    "funny": [
-        "blackmagicfuckery",
-        "OldSchoolCool",
-        "nevertellmetheodds",
-        "WatchPeopleDieInside",
-        "BeAmazed",
-        "mildlyinteresting",
-        "MurderedByWords"
-        "reactiongifs",
-        "hmmm",
-        "cursedimages",
-        "nostalgia",
-        "gifsthatkeepongiving",
-        "Unexpected",
-        "fakehistoryporn"
-    ],
-
-    "tech": [
-        "technology"
-        "Android",
-        "iphone",
-        "mac",
-        "sysadmin",
-        "hackintosh"
-        "techsupportgore",
-        "linux",
-        "Python",
-        "Windows10"
-    ],
-
-    "vid": [
-        "instant_regret",
-        "Unexpected",
-        "holdmyredbull",
-        "videos",
-        "Perfectfit",
-        "WhyWereTheyFilming",
-        "sportsarefun",
-        "youtubehaiku",
-        "gifs"
-    ],
-
-    "nsfw": [
-        "gonewild",
-        "nsfw",
-        "RealGirls",
-        "NSFW_GIF",
-        "holdthemoan",
-        "BustyPetite",
-        "LegalTeens",
-        "cumsluts",
-        "PetiteGoneWild",
-        "realmoms",
-        "milf",
-        "gonewild30plus",
-        "legalteens",
-        "collegesluts",
-        "gonewild18",
-        "fauxbait",
-        "realgirls",
-        "amateur",
-        "nsfw_amateurs",
-        "funwithfriends",
-        "camsluts",
-        "streamersgonewild",
-        "ratemynudebody",
-        "goneerotic",
-        "gwpublic",
-        "gonewildcouples",
-        "gwcumsluts",
-        "gonewildcurvy",
-        "BigBoobsGW",
-        "mycleavage",
-        "AsiansGoneWild",
-        "latinasgw",
-        "indiansgonewild",
-        "workgonewild",
-        "GoneWildScrubs",
-        "NSFW_Snapchat",
-        "snapleaks",
-        "wifesharing",
-        "hotwife"
-        "slutwife",
-        "wouldyoufuckmywife",
-        "yogapants",
-        "boobies",
-        "boobs",
-        "tits",
-        "breastenvy",
-        "BustyPetite",
-        "hugeboobs",
-        "stacked",
-        "2busty2hide",
-        "pokies",
-        "nipples",
-        "lactation",
-        "stockings",
-        "legs",
-        "tightshorts",
-        "pussy",
-        "innie",
-        "LabiaGW",
-        "godpussy",
-        "hairypussy",
-        "breakingtheseal",
-        "SexyTummies",
-        "thick",
-        "SlimThick",
-        "dirtysmall",
-        "cumsluts",
-        "GirlsFinishingTheJob",
-        "impressedbycum",
-        "wetfetish",
-        "NSFW_GIFS",
-        "Ass",
-        "BigAsses",
-        "NSFW_HTML5",
-        "peegonewild",
-        "iWantToFuckHer",
-        "curvy",
-        "petite",
-        "OnOff",
-    ],
-
-    "aww": [
-        "AnimalsBeingJerks",
-        "NatureIsFuckingLit",
-        "WhatsWrongWithYourDog",
-        "StartledCats",
-        "natureismetal",
-        "guineapigs",
-        "Rabbits"
-    ],
-
-    "sci": [
-        "askscience",
-        "Physics",
-        "shittyrobots",
-        "chemicalreactiongifs",
-        "chemistry",
-        "nasa",
-        "EverythingScience",
-        "spaceporn"
-    ],
-
-    "relation": [
-        "relationship_advice",
-        "Tinder",
-        "dating_advice",
-        "DeadBedrooms",
-        "family"
-    ]
-}
-
 nekos = {
     "sfw": "https://nekos.life/api/neko",
 }
@@ -399,6 +231,12 @@ nekos = {
 
 with open('bot/assets/languages.yml', 'r') as file:
     default_languages = safe_load(file)
+
+
+with open("bot/assets/reddit.json", "r") as f:
+    contents = f.read()
+
+reddit = json.loads(contents)
 
 
 class Infraction(Enum):
