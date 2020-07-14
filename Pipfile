@@ -27,6 +27,7 @@ asyncpg = "*"
 py-stackexchange = "*"
 lxml = "*"
 bleach = "*"
+loguru = "*"
 
 [requires]
 python_version = "3.8"
