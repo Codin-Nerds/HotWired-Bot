@@ -27,6 +27,7 @@ extensions = [
     "bot.cogs.embeds",
     "bot.cogs.comics",
     "bot.cogs.coding",
+    "bot.cogs.documentation",
     "bot.cogs.reddit",
 ]
 
