@@ -16,18 +16,18 @@ aiohttp = "==3.6.2"
 beautifulsoup4 = "==4.9.1"
 discord = "==1.0.1"
 markdownify = "==0.4.1"
-stackexchange = "==0.5.0"
 tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 html2text = "*"
 "nekos.py" = "*"
-googletrans = "*"
 html5lib = "*"
+praw = "*"
 asyncpg = "*"
 py-stackexchange = "*"
 lxml = "*"
 bleach = "*"
 loguru = "*"
+aiogoogletrans = "*"
 
 [requires]
 python_version = "3.8"
@@ -36,7 +36,6 @@ python_version = "3.8"
 start="python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
-autoformat = "black ."
 
 [pipenv]
 allow_prereleases = true

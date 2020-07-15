@@ -65,7 +65,7 @@ class CodeSandbox(Cog):
                     self._last_result = ret
                     await ctx.send(f"```py\n{value}{ret}\n```")
 
-    @command(pass_context=True, hidden=True)
+    @command(hidden=True)
     @is_owner()
     async def repl(self, ctx: Context) -> None:
         """Launches an interactive REPL session."""
