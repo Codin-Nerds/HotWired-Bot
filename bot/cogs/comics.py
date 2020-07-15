@@ -17,7 +17,7 @@ class Comics(Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
-    @command(pass_context=True)
+    @command()
     async def ohno(self, ctx: Context) -> None:
         """Webcomic Name comics."""
 
@@ -40,7 +40,7 @@ class Comics(Cog):
             file = File(img, 'ohno.png')
             await ctx.send(file=file, embed=embed)
 
-    @command(pass_context=True)
+    @command()
     async def smbc(self, ctx: Context) -> None:
         """Saturday Morning comic."""
 
@@ -71,7 +71,7 @@ class Comics(Cog):
             file = File(img, 'smbc.png')
             await ctx.send(file=file, embed=embed)
 
-    @command(pass_context=True)
+    @command()
     async def pbf(self, ctx: Context) -> None:
         """The Perry Bible comic."""
 
@@ -94,7 +94,7 @@ class Comics(Cog):
             file = File(img, 'pbf.png')
             await ctx.send(file=file, embed=embed)
 
-    @command(pass_context=True)
+    @command()
     async def cah(self, ctx: Context) -> None:
         """Cyanide and Happiness comic."""
 
@@ -164,7 +164,7 @@ class Comics(Cog):
                     )
                     await ctx.send(embed=help_embed)
 
-    @command(pass_context=True)
+    @command()
     async def mrls(self, ctx: Context) -> None:
         """Mr. Lovenstein comic."""
 
@@ -187,7 +187,7 @@ class Comics(Cog):
             file = File(img, 'mrls.png')
             await ctx.send(file=file, embed=embed)
 
-    @command(pass_context=True)
+    @command()
     async def chainsaw(self, ctx: Context) -> None:
         """Chainsawsuit comic."""
 
@@ -210,7 +210,7 @@ class Comics(Cog):
             file = File(img, 'chainsawsuit.png')
             await ctx.send(file=file, embed=embed)
 
-    @command(pass_context=True)
+    @command()
     async def sarah(self, ctx: Context) -> None:
         """Sarah's Scribbles"""
 
