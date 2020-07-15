@@ -21,12 +21,12 @@ tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 html2text = "*"
 "nekos.py" = "*"
-googletrans = "*"
 html5lib = "*"
 asyncpg = "*"
 py-stackexchange = "*"
 lxml = "*"
 bleach = "*"
+aiogoogletrans = "*"
 
 [requires]
 python_version = "3.8"

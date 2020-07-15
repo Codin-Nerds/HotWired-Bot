@@ -27,7 +27,8 @@ extensions = [
     "bot.cogs.embeds",
     "bot.cogs.comics",
     "bot.cogs.coding",
-    "bot.cogs.documentation"
+    "bot.cogs.translate",
+    # "bot.cogs.documentation"
 ]
 
 bot = Bot(
