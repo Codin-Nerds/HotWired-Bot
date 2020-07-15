@@ -223,7 +223,6 @@ http_codes = [
 # Search Engine categories
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
 
-# Endpoint data, don't modify unless testing
 nekos = {
     "sfw": "https://nekos.life/api/neko",
 }
