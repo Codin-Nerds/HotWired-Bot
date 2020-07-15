@@ -43,8 +43,8 @@ class Bot(Bot):
             # Load all extensions
             for extension in self.extension_list:
                 try:
-                    print(f"Cog {extension} loaded.")
                     self.load_extension(extension)
+                    print(f"Cog {extension} loaded.")
                 except Exception as e:
                     print(f"Cog {extension} failed to load with {type(e)}: {e}")
         else:

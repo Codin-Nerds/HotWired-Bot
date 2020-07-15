@@ -12,9 +12,6 @@ reddit_client = RedditAPI(
     username=os.getenv("REDDIT_USERNAME")
 )
 
-with open("bot/assets/reddit.json", "r") as f:
-    reddit = json.load(f)
-
 
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
     embed = Embed(
@@ -52,6 +49,10 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
     return embed
 
 
+with open("bot/assets/subreddit.json", "r") as f:
+    subreddit = json.load(f)
+
+
 class Reddit(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -64,7 +65,7 @@ class Reddit(Cog):
     @reddit.command(aliases=["meme"])
     async def memes(self, ctx: Context) -> None:
         """Get random memes."""
-        name = random.choice(reddit["meme"])
+        name = random.choice(subreddit["meme"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -78,7 +79,7 @@ class Reddit(Cog):
     @reddit.command()
     async def funny(self, ctx: Context) -> None:
         """Get a funny picture."""
-        name = random.choice(reddit["funny"])
+        name = random.choice(subreddit["funny"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -92,7 +93,7 @@ class Reddit(Cog):
     @reddit.command(aliases=["tech"])
     async def technology(self, ctx: Context) -> None:
         """Get a post about tech."""
-        name = random.choice(reddit["tech"])
+        name = random.choice(subreddit["tech"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -105,7 +106,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def videos(self, ctx: Context) -> None:
-        name = random.choice(reddit["vid"])
+        name = random.choice(subreddit["vid"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -120,7 +121,7 @@ class Reddit(Cog):
     @is_nsfw()
     async def nsfw(self, ctx: Context) -> None:
         """Get a nsfw picture."""
-        name = random.choice(reddit["nsfw"])
+        name = random.choice(subreddit["nsfw"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -134,7 +135,7 @@ class Reddit(Cog):
     @reddit.command()
     async def aww(self, ctx: Context) -> None:
         """Get a random aww picture."""
-        name = random.choice(reddit["aww"])
+        name = random.choice(subreddit["aww"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -148,7 +149,7 @@ class Reddit(Cog):
     @reddit.command()
     async def science(self, ctx: Context) -> None:
         """Get a science fact."""
-        name = random.choice(reddit["sci"])
+        name = random.choice(subreddit["sci"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
@@ -162,7 +163,7 @@ class Reddit(Cog):
     @reddit.command()
     async def relation(self, ctx: Context) -> None:
         """Get a relation story."""
-        name = random.choice(reddit["relation"])
+        name = random.choice(subreddit["relation"])
         subreddit = reddit_client.subreddit(name)
 
         postlist = list(subreddit.hot(limit=100))
