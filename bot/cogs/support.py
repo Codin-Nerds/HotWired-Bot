@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, Context, command
 
 from bot import config
 from bot.core.bot import Bot
+import textwrap
 
 
 class Support(Cog):
@@ -25,10 +26,12 @@ class Support(Cog):
         """Get an invite link to the bots support server."""
         embed = Embed(
             title="Need Support? OR Want to give Feedback?",
-            description="If you have any **problems with the bot** or "
-            "if you have any **suggestions/feedback** be sure to use the support commands or join the Support Server!"
-            f"\n❯❯ [Support Server]({config.discord_server})"
-            f"\n❯❯ [Invite Link]({config.invite_link})",
+            description=textwrap.dedent(
+                "If you have any **problems with the bot** or "
+                "if you have any **suggestions/feedback** be sure to use the support commands or join the Support Server!"
+                f"\n❯❯ [Support Server]({config.discord_server})"
+                f"\n❯❯ [Invite Link]({config.invite_link})"
+            ),
             color=Color.dark_green(),
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)
@@ -84,10 +87,12 @@ class Support(Cog):
 
         embed = Embed(
             title="Problem's still there?",
-            description="If you still have **problems with the bot**"
-            ", Join the Support Server immediately! The developers surely would be hapy to help ya!"
-            f"\n❯❯ [Support Server]({config.SUPPORT_SERVER})"
-            f"\n❯❯ [Invite Link]({config.invite_link})",
+            description=textwrap.dedent(
+                "If you still have **problems with the bot**"
+                ", Join the Support Server now and our developers will happily help you"
+                f"\n❯❯ [Support Server]({config.SUPPORT_SERVER})"
+                f"\n❯❯ [Invite Link]({config.invite_link})"
+            ),
             color=Color.dark_green(),
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)
