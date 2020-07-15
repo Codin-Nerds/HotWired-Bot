@@ -29,11 +29,9 @@ class Bot(Bot):
 
             # Load all extensions
             for extension in self.extension_list:
-                try:
+                with logger.catch(message=f"Cog {extension} failed to load"):
                     self.load_extension(extension)
                     logger.debug(f"Cog {extension} loaded.")
-                except Exception as e:
-                    logger.error(f"Cog {extension} failed to load with {type(e)}: {e}")
 
             logger.info("Bot is ready")
         else:
