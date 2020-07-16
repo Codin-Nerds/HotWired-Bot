@@ -6,7 +6,7 @@ from discord import Embed, Member, User, Color
 from discord.ext.commands import Cog, Context
 
 from bot.core.converters import ProcessedMember
-from bot.utils.errors import MemberNotFound
+from bot.core.errors import MemberNotFound
 from loguru import logger
 
 

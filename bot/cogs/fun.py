@@ -14,7 +14,7 @@ from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
 
 from bot import config
 from bot.core.bot import Bot
-from bot.utils.errors import ServiceError
+from bot.core.errors import ServiceError
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()

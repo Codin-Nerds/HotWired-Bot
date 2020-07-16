@@ -7,7 +7,7 @@ from discord import Member, NotFound, User
 from discord.ext.commands import (BadArgument, Context, Converter,
                                   MemberConverter, UserConverter)
 
-from bot.utils.errors import MemberNotFound, UserNotFound
+from bot.core.errors import MemberNotFound, UserNotFound
 
 
 def _obtain_user_id(argument: str) -> t.Optional[int]:
@@ -64,6 +64,12 @@ class Unicode(Converter):
         # don't replace unicode characters within code blocks
         operation = lambda x: self.outside_delimeter(x, "`", self.process_unicode)
         return self.outside_delimeter(message, "```", operation)
+
+
+class Duration(Converter):
+    """"""
+    # TODO: Fully implement Duration converter
+    pass
 
 
 class ProcessedUser(UserConverter):
