@@ -5,10 +5,11 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
-from discord import Forbidden, HTTPException
-from discord.ext.commands import Cog, CommandError, Context, command, is_owner
-
 from bot.core.bot import Bot
+from bot.utils.checks import is_bot_dev
+
+from discord import Forbidden, HTTPException
+from discord.ext.commands import Cog, CommandError, Context, check, command
 
 
 class CodeSandbox(Cog):
@@ -21,7 +22,7 @@ class CodeSandbox(Cog):
             return "\n".join(code.split("\n")[1:-1])
         return code.strip("`\n")
 
-    @is_owner()  # TODO: Change this to use custom check
+    @check(is_bot_dev)  # TODO: Change this to use custom check
     @command(name="eval", hidden=True)
     async def _eval(self, ctx: Context, *, code: str) -> None:
         """Evaluate the passed code."""
@@ -65,52 +66,60 @@ class CodeSandbox(Cog):
                     self._last_result = ret
                     await ctx.send(f"```py\n{value}{ret}\n```")
 
-    @command(pass_context=True, hidden=True)
-    @is_owner()
+    @command(hidden=True)
+    @check(is_bot_dev)
     async def repl(self, ctx: Context) -> None:
         """Launches an interactive REPL session."""
 
         variables = {
-            'ctx': ctx,
-            'bot': self.bot,
-            'message': ctx.message,
-            'guild': ctx.guild,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            '_': None,
+            "ctx": ctx,
+            "bot": self.bot,
+            "message": ctx.message,
+            "guild": ctx.guild,
+            "channel": ctx.channel,
+            "author": ctx.author,
+            "_": None,
         }
 
         if ctx.channel.id in self.sessions:
-            raise CommandError(message=f'Error: duplicate REPL session in `{ctx.channel.name}`.')
+            raise CommandError(
+                message=f"Error: duplicate REPL session in `{ctx.channel.name}`."
+            )
 
         self.sessions.add(ctx.channel.id)
-        await ctx.send('Enter code to execute or evaluate. `exit()` or `quit` to exit.')
+        await ctx.send(
+            "Enter code to execute or evaluate. `exit()` or `quit` to exit."
+        )
 
         def check(m) -> bool:
-            return m.author.id == ctx.author.id and \
-                m.channel.id == ctx.channel.id and \
-                m.content.startswith('`')
+            return (
+                m.author.id == ctx.author.id
+                and m.channel.id == ctx.channel.id
+                and m.content.startswith("`")
+            )
 
         while True:
             try:
-                response = await self.bot.wait_for('message', check=check, timeout=10.0 * 60.0)
+                response = await self.bot.wait_for(
+                    "message", check=check, timeout=10.0 * 60.0
+                )
             except asyncio.TimeoutError:
-                await ctx.send('Exiting REPL session.')
+                await ctx.send("Exiting REPL session.")
                 self.sessions.remove(ctx.channel.id)
                 break
 
             cleaned = self.cleanup_code(response.content)
 
-            if cleaned in ('quit', 'exit', 'exit()'):
-                await ctx.send('Exiting.')
+            if cleaned in ("quit", "exit", "exit()"):
+                await ctx.send("Exiting.")
                 self.sessions.remove(ctx.channel.id)
                 return
 
             executor = exec
-            if cleaned.count('\n') == 0:
+            if cleaned.count("\n") == 0:
                 # single statement, potentially 'eval'
                 try:
-                    code = compile(cleaned, '<repl session>', 'eval')
+                    code = compile(cleaned, "<repl session>", "eval")
                 except SyntaxError:
                     pass
                 else:
@@ -118,12 +127,12 @@ class CodeSandbox(Cog):
 
             if executor is exec:
                 try:
-                    code = compile(cleaned, '<repl session>', 'exec')
+                    code = compile(cleaned, "<repl session>", "exec")
                 except SyntaxError as e:
                     await ctx.send(self.get_syntax_error(e))
                     continue
 
-            variables['message'] = response
+            variables["message"] = response
 
             fmt = None
             stdout = io.StringIO()
@@ -135,26 +144,26 @@ class CodeSandbox(Cog):
                         result = await result
             except Exception:
                 value = stdout.getvalue()
-                fmt = f'```py\n{value}{traceback.format_exc()}\n```'
+                fmt = f"```py\n{value}{traceback.format_exc()}\n```"
             else:
                 value = stdout.getvalue()
 
                 if result is not None:
-                    fmt = f'```py\n{value}{result}\n```'
-                    variables['_'] = result
+                    fmt = f"```py\n{value}{result}\n```"
+                    variables["_"] = result
                 elif value:
-                    fmt = f'```py\n{value}\n```'
+                    fmt = f"```py\n{value}\n```"
 
             try:
                 if fmt is not None:
                     if len(fmt) > 2000:
-                        await ctx.send('Content too big to be printed.')
+                        await ctx.send("Content too big to be printed.")
                     else:
                         await ctx.send(fmt)
             except Forbidden:
                 pass
             except HTTPException as e:
-                raise CommandError(message=f'Unexpected error: `{e}`')
+                raise CommandError(message=f"Unexpected error: `{e}`")
 
 
 def setup(bot: Bot) -> None:
