@@ -29,7 +29,7 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
 
 
 # TODO : add token protection, to stop playing with any type of discord tokens
-class MalwareProtection(Cog):
+class Security(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -62,4 +62,4 @@ class MalwareProtection(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(MalwareProtection(bot))
+    bot.add_cog(Security(bot))
