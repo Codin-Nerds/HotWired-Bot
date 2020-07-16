@@ -7,6 +7,7 @@ from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
+from loguru import logger
 
 FILE_EMBED_DESCRIPTION = (
     f"""
@@ -38,13 +39,21 @@ class MalwareProtection(Cog):
         """Find messages with blacklisted attachments."""
         if not message.attachments or not message.guild:
             return
-        elif not message.author.permissions_in(message.channel).manage_messages:
-            return
+        # elif message.author.permissions_in(message.channel).manage_messages:
+        #     return
+
         # TODO: Adjust the message and remove only filtered attachments instead of deleting the whole message
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
         is_blocked = file_extensions - set(whitelist)
 
         if is_blocked:
+            log_message = f"User <@{message.author.id}> posted a message on {message.guild.id} with protected attachments"
+
+            if message.author.permissions_in(message.channel).manage_messages:
+                logger.trace(f"{log_message}, but he has override roles.")
+                return
+
+            logger.debug(f"{log_message}.")
             embed = Embed(description=FILE_EMBED_DESCRIPTION, color=Color.dark_blue())
 
             with suppress(NotFound, ConnectionError):
