@@ -7,6 +7,7 @@ from discord.ext.commands import Cog, Context
 
 from bot.core.converters import ProcessedMember
 from bot.utils.errors import MemberNotFound
+from loguru import logger
 
 
 def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
@@ -33,6 +34,7 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                     member = await ProcessedMember.get_member(ctx.guild, user)
                 except MemberNotFound:
                     # Skip checks in case of bad member
+                    logger.debug("Skipping follow_role check, provided user isn't a valid Member.")
                     await func(self, ctx, *args, **kwargs)
                     return
             elif isinstance(user, Member):
@@ -43,8 +45,10 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
             actor = ctx.author
             # Run the function in case actor has higher role then member, or is a guild owner
             if actor == ctx.guild.owner or member.top_role <= actor.top_role:
+                logger.trace(f"User {member} has passed follow_role check.")
                 await func(self, ctx, *args, **kwargs)
             else:
+                logger.trace(f"User {member} has failed follow_role check.")
                 embed = Embed(
                     title="You can't target this user",
                     description=textwrap.dedent(
