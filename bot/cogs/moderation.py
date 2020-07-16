@@ -56,9 +56,9 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def bot_cleanup(self, ctx: Context, amount: int) -> None:
+    async def cleanup(self, ctx: Context, amount: int) -> None:
         """Cleanup messages from bot."""
-        await self._apply_bot_cleanup()
+        await self._apply_cleanup()
 
     # endregion
     # region: Strike Execution (private) functions
@@ -78,7 +78,7 @@ class Moderation(Cog):
     async def _apply_clean(self) -> None:
         pass
 
-    async def _apply_bot_cleanup(self) -> None:
+    async def _apply_cleanup(self) -> None:
         pass
 
     # endregion
