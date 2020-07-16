@@ -45,7 +45,7 @@ class Moderation(Cog):
     @follow_roles("member")
     @has_permissions(manage_roles=True)
     async def promote(self, ctx: Context, member: ProcessedMember, role: RoleConverter, *, reason: str = "No specific reason.") -> None:
-        """Promote given user,"""
+        """Promote user to any given role (less than yours)."""
         await self._apply_promotion()
 
     @command()
