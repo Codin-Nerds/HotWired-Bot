@@ -2,17 +2,17 @@ import asyncio
 import textwrap
 import typing as t
 from collections import Counter
+from contextlib import suppress
 from datetime import datetime
 
 import discord
 from discord import Color, Embed, Member, NotFound, Role
-from discord.errors import Forbidden
 from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
                                   command, has_permissions)
+from loguru import logger
 
 from bot.core.bot import Bot
 from bot.core.converters import ActionReason, ProcessedMember
-from bot.utils.formats import Plural
 from bot.core.decorators import follow_roles
 
 
@@ -73,6 +73,7 @@ class Moderation(Cog):
         await ctx.send(embed=server_embed)
         await member.send(embed=dm_embed)
         await member.kick(reason=reason)
+        logger.debug(f"User <@{ctx.author.id}> has kicked <@{member.id}> from {ctx.guild.id}")
 
     @command()
     @has_permissions(ban_members=True)
@@ -110,30 +111,28 @@ class Moderation(Cog):
         await ctx.send(embed=server_embed)
         await member.send(embed=dm_embed)
         await member.ban(reason=reason)
+        logger.debug(f"User <@{ctx.author.id}> has banned <@{member.id}> from {ctx.guild.id}")
 
     @command()
-    @has_permissions(ban_members=True)
+    @has_permissions(administrator=True)
     async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
         """Bans multiple members from the server."""
-        if reason is None:
-            reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
-
-        total_members = len(members)
-        if total_members == 0:
+        if len(members) == 0:
             return await ctx.send("No members to ban.")
 
-        confirm = await ctx.prompt(f"This will ban **{Plural(total_members):member}**. Are you sure?", reacquire=False)
-        if not confirm:
-            return await ctx.send("Aborting.")
-
-        failed = 0
+        banned_members = []
         for member in members:
-            try:
+            with suppress(discord.HTTPException):
+                # TODO: Make sure user has permission to ban given member
                 await ctx.guild.ban(member, reason=reason)
-            except discord.HTTPException:
-                failed += 1
+                banned_members.append(member)
 
-        await ctx.send(f"Banned {total_members - failed}/{total_members} members.")
+        banned_members_str = ", ".join(banned_member.mention for banned_member in banned_members)
+        log_banned_members = ", ".join(str(banned_member.id) for banned_member in banned_members)
+        failed_members = len(members) - (len(members) - len(banned_members))
+
+        await ctx.send(f"Banned members: {banned_members_str} ({failed_members} / {len(members)})")
+        logger.debug(f"User <@{ctx.author.id}> has multibanned users: [{log_banned_members}] from {ctx.guild.id}")
 
     @command()
     @has_permissions(ban_members=True)
@@ -155,6 +154,7 @@ class Moderation(Cog):
             )
             embed.set_thumbnail(url=user.avatar_url_as(format="png", size=256))
             await ctx.send(embed=embed)
+            logger.debug(f"User <@{ctx.author.id}> has unbanned <@{user.id}> from {ctx.guild.id}")
         except NotFound:
             embed = discord.Embed(
                 title="Ban not Found!",
@@ -167,6 +167,7 @@ class Moderation(Cog):
                 color=discord.Color.red(),
             )
             await ctx.send(embed=embed)
+            logger.trace(f"User <@{ctx.author.id}> has tried to unban non-banned <@{user.id}> from {ctx.guild.id}")
 
     @command()
     @has_permissions(manage_messages=True)
@@ -186,11 +187,13 @@ class Moderation(Cog):
         message = await ctx.send(ctx.author.mention, embed=embed)
         await asyncio.sleep(2.5)
         await message.delete()
+        logger.debug(f"User <@{ctx.author.id}> has cleared {amount} messages in <#{ctx.channel.id}> on {ctx.guild.id}")
 
     @command()
     @has_permissions(manage_roles=True)
     async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
         """Promote member to role."""
+        # TODO: Use custom check here
         if role >= ctx.author.top_role:
             embed = Embed(
                 title="Insufficient permissions",
@@ -198,15 +201,20 @@ class Moderation(Cog):
                 color=Color.red(),
             )
             await ctx.send(embed=embed)
+            logger.trace(
+                f"User <@{ctx.author.id}> has tried to promote <@{member.id}> to <@&{role.id}> on {ctx.guild.id} without permission"
+            )
             return
         if role in member.roles:
             embed = Embed(title="Error", description=f"{member.mention} already has the {role.mention} role!", color=Color.red())
             await ctx.send(embed=embed)
+            logger.trace(f"User <@{ctx.author.id}> has tried promote <@{member.id}> to <@&{role.id}> who already had a role on {ctx.guild.id}")
             return
 
         try:
             await member.add_roles(role)
-        except Forbidden:
+            logger.debug(f"User <@{ctx.author.id}> has promoted <@{member.id}> to <@&{role.id}> on {ctx.guild.id}")
+        except discord.errors.Forbidden:
             embed = Embed(
                 title="Insufficient permission",
                 description=textwrap.dedent(
@@ -220,6 +228,9 @@ class Moderation(Cog):
                 color=discord.Color.red(),
             )
             await ctx.send(embed=embed)
+            logger.trace(
+                f"User <@{ctx.author.id}> has tried promote <@{member.id}> to <@&{role.id}> on {ctx.guild.id} but bot didn't have permission"
+            )
             return
 
         embed = Embed(
@@ -294,6 +305,7 @@ class Moderation(Cog):
                 ),
                 color=discord.Color.red(),
             )
+            logger.debug(f"User <@{ctx.author.id}> has cleaned up {amount} bot messages")
             await ctx.send(embed=embed, delete_after=10)
 
     async def cog_check(self, ctx: Context) -> t.Union[None, bool]:
