@@ -232,7 +232,6 @@ basic_search_categories = [
     "maps",
 ]
 
-# Endpoint data, don't modify unless testing
 nekos = {
     "sfw": "https://nekos.life/api/neko",
 }

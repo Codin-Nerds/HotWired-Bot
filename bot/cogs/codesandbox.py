@@ -22,7 +22,7 @@ class CodeSandbox(Cog):
             return "\n".join(code.split("\n")[1:-1])
         return code.strip("`\n")
 
-    @check(is_bot_dev)  # TODO: Change this to use custom check
+    @check(is_bot_dev)
     @command(name="eval", hidden=True)
     async def _eval(self, ctx: Context, *, code: str) -> None:
         """Evaluate the passed code."""
