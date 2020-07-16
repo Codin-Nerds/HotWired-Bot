@@ -7,7 +7,7 @@ from bot.config import DEV_MODE
 
 log_file = "logs/bot.log"
 log_format = "<green>{time:YYYY-MM-DD hh:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name: <18}</cyan> | <level>{message}</level>"
-log_level = "DEBUG" if DEV_MODE else "INFO"
+log_level = "TRACE" if DEV_MODE else "INFO"
 
 logger.configure(
     handlers=[
