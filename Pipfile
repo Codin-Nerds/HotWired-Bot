@@ -33,7 +33,6 @@ python_version = "3.8"
 [scripts]
 start="python -m bot"
 lint = "pre-commit run --all-files"
-precommit = "pre-commit install"
 
 [pipenv]
 allow_prereleases = true

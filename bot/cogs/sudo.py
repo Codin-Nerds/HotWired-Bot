@@ -4,8 +4,15 @@ from bot import config
 from bot.core.bot import Bot
 from bot.utils.checks import is_bot_dev
 
-from discord import Color, Embed
 from discord.ext.commands import Cog, Context, check, group
+
+
+def uptime(date: str) -> str:
+    days = date.days
+    hours, r = divmod(date.seconds, 3600)
+    minutes, seconds = divmod(r, 60)
+
+    return f" Days: `{days}`, Hours: `{hours}`, Minutes: `{minutes}`, Seconds: `{seconds}`"
 
 
 class Sudo(Cog):
@@ -17,11 +24,7 @@ class Sudo(Cog):
     @group(hidden=True)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
-        if ctx.invoked_subcommand is None:
-            embed = Embed(
-                description="Invalid sudo Command Passed!", color=Color.red()
-            )
-            await ctx.send(embed=embed)
+        pass
 
     @sudo.command()
     @check(is_bot_dev)
