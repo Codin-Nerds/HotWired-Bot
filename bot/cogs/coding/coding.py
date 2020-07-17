@@ -134,9 +134,7 @@ class Coding(Cog):
                 compilerFlags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(
-                    line[21:].strip("`").split(" ")
-                )  # cli options
+                commandLineOptions.extend(line[21:].strip("`").split(" ")) 
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
