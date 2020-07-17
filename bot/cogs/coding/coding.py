@@ -209,13 +209,8 @@ class Coding(Cog):
                 lang = config.default_languages[lang]
 
             if lang not in self.bot.languages:  # if lang not found
-                matches = "\n".join(
-                    [
-                        language
-                        for language in self.bot.languages
-                        if lang in language
-                    ][:10]
-                )
+                similar_langs = [language for language in self.bot.languages if lang in language]
+                matches = "\n".join(similar_langs[:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
