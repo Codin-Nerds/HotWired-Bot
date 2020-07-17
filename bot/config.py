@@ -33,7 +33,7 @@ admin_invite_link = (
     "&redirect_uri=https%3A%2F%2Fdiscord.gg%2FvP26dCy&scope=bot "
 )
 
-SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
+SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
 COMMAND_PREFIX = ">>"
 
