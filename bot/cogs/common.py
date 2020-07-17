@@ -164,17 +164,17 @@ class Common(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def shorten(self, ctx: Context, *, link: str) -> None:
-        '''Makes a link shorter using the tinyurl api'''
+        """Makes a link shorter using the tinyurl api"""
         if not link.startswith("https://"):
-            await ctx.send(f'Invalid link: `{link}`. Enter a valid URL.')
+            await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")
             return
 
         url = link.strip("<>")
-        url = f'http://tinyurl.com/api-create.php?url={url}'
+        url = f"http://tinyurl.com/api-create.php?url={url}"
 
         async with self.session.get(url) as resp:
             if resp.status != 200:
-                await ctx.send('Error retrieving shortened URL, please try again in a minute.')
+                await ctx.send("Error retrieving shortened URL, please try again in a minute.")
                 return
             shortened_link = await resp.text()
 
