@@ -10,32 +10,34 @@ black = "==19.10b0"
 flake8-annotations = "*"
 
 [packages]
-psutil = "==5.7.0"
 requests = "==2.23.0"
 aiohttp = "==3.6.2"
 beautifulsoup4 = "==4.9.1"
 discord = "==1.0.1"
 markdownify = "==0.4.1"
-stackexchange = "==0.5.0"
 tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 html2text = "*"
 "nekos.py" = "*"
-googletrans = "*"
 html5lib = "*"
+humanize = "*"
+praw = "*"
+asyncpg = "*"
 py-stackexchange = "*"
 youtube-dl = "*"
-asyncpg = "*"
 pynacl = "*"
+lxml = "*"
+bleach = "*"
+aiogoogletrans = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
-start="python -u ./main.py"
+start="python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
-autoformat = "black ."
 
 [pipenv]
 allow_prereleases = true
