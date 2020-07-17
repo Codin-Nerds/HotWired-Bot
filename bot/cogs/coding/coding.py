@@ -293,9 +293,7 @@ class Coding(Cog):
             await returned.delete()
 
     @commands.command(aliases=["ref"])
-    async def reference(
-        self, ctx: Context, language: str, *, query: str
-    ) -> None:
+    async def reference(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
         lang = language.strip("`")
