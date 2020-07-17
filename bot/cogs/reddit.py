@@ -9,9 +9,7 @@ from praw import Reddit as RedditAPI
 from praw.exceptions import MissingRequiredAttributeException
 
 
-async def reddit_embed(
-    subreddit: str, randompost: RedditAPI.submission
-) -> Embed:
+async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
     embed = Embed(colour=Color.green(), url=randompost.url)
 
     if len(randompost.title) > 0 and len(randompost.title) < 256:

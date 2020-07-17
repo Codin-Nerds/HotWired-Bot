@@ -7,7 +7,7 @@ __pycache__/
 # Vscode settings
 .vscode/
 
-# Ignore enviromental vars (contains private information) and database variables inside db.env and .env files
+# Ignore enviromental vars in `db.env` and `.env` files (contains private information and database authentication data)
 *.env
 
 # Ignore intellij Files

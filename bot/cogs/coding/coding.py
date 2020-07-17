@@ -102,9 +102,8 @@ class Coding(Cog):
             "--wrapped": False,
         }  # the flags to be used when the compiler is needed
 
-        lang = language.strip(
-            "`"
-        ).lower()  # strip the "`" characters to obtain code
+        # strip the "`" characters to obtain code
+        lang = language.strip( "`").lower() 
         options_amount = len(options)
 
         # Setting options and removing them from the beginning of the command
@@ -135,9 +134,7 @@ class Coding(Cog):
                 compilerFlags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(
-                    line[21:].strip("`").split(" ")
-                )  # cli options
+                commandLineOptions.extend(line[21:].strip("`").split(" ")) 
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -150,9 +147,8 @@ class Coding(Cog):
         text = None
 
         async with ctx.typing():
-            if (
-                ctx.message.attachments
-            ):  # if file is sent instead of raw code in codeblocks
+            # if file is sent instead of raw code in codeblocks
+            if (ctx.message.attachments): 
                 file = ctx.message.attachments[0]
                 if (
                     file.size > 20000
@@ -229,9 +225,7 @@ class Coding(Cog):
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
-                    message = (
-                        message + f" Maybe you meant {matches}?"
-                    )  # provide a suggestion.
+                    message = (message + f" Maybe you meant {matches}?")
 
                 await ctx.send(message)
                 return
@@ -299,9 +293,7 @@ class Coding(Cog):
             await returned.delete()
 
     @commands.command(aliases=["ref"])
-    async def reference(
-        self, ctx: Context, language: str, *, query: str
-    ) -> None:
+    async def reference(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
 
         lang = language.strip("`")
@@ -316,9 +308,7 @@ class Coding(Cog):
         await self.referred[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(aliases=["docs"])
-    async def documentation(
-        self, ctx: Context, language: str, *, query: str
-    ) -> None:
+    async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
@@ -331,9 +321,7 @@ class Coding(Cog):
         await self.documented[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(name="list")
-    async def _list(
-        self, ctx: Context, *, group: t.Optional[str] = None
-    ) -> None:
+    async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
         """Lists available choices for other commands."""
 
         choices = {
