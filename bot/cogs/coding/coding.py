@@ -30,9 +30,7 @@ class Coding(Cog):
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
         async with aiohttp.ClientSession() as client_session:
-            async with client_session.get(
-                "https://tio.run/languages.json"
-            ) as response:
+            async with client_session.get("https://tio.run/languages.json") as response:
                 if response.status != 200:
                     print(f"Error: (status code: {response.status}).")
                 print(await response.json())
@@ -92,9 +90,7 @@ class Coding(Cog):
         """,
         brief="Execute code in a given programming language",
     )
-    async def run(
-        self, ctx: Context, language: str, *, code: str = ""
-    ) -> t.Union[None, str]:
+    async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
         options = {
@@ -103,7 +99,7 @@ class Coding(Cog):
         }  # the flags to be used when the compiler is needed
 
         # strip the "`" characters to obtain code
-        lang = language.strip( "`").lower() 
+        lang = language.strip("`").lower()
         options_amount = len(options)
 
         # Setting options and removing them from the beginning of the command
@@ -134,7 +130,7 @@ class Coding(Cog):
                 compilerFlags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" ")) 
+                commandLineOptions.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -148,19 +144,15 @@ class Coding(Cog):
 
         async with ctx.typing():
             # if file is sent instead of raw code in codeblocks
-            if (ctx.message.attachments): 
+            if (ctx.message.attachments):
                 file = ctx.message.attachments[0]
-                if (
-                    file.size > 20000
-                ):  # check the size of file exceeding max limit
+                if (file.size > 20000):  # check the size of file exceeding max limit
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith(
-                "link="
-            ):  # if link is sent instead of file or codeblocks
+            elif code.split(" ")[-1].startswith("link="):  # if link is sent instead of file or codeblocks
                 base_url = urllib.parse.quote_plus(
                     code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]"
                 )
@@ -171,14 +163,10 @@ class Coding(Cog):
                     if response.status == 404:
                         return await ctx.send("Nothing found. Check your link")
                     elif response.status != 200:
-                        return await ctx.send(
-                            "An error occurred. Retry later."
-                        )
+                        return await ctx.send("An error occurred. Retry later.")
                     text = await response.text()
                     if len(text) > 20000:
-                        return await ctx.send(
-                            "Code must be shorter than 20,000 characters."
-                        )
+                        return await ctx.send("Code must be shorter than 20,000 characters.")
 
             elif code.strip("`"):  # strip the raw code, if codeblock
                 text = code.strip("`")
@@ -189,9 +177,7 @@ class Coding(Cog):
 
             # Ensures code isn't empty after removing options
             if text is None:
-                raise commands.MissingRequiredArgument(
-                    ctx.command.clean_params["code"]
-                )
+                raise commands.MissingRequiredArgument(ctx.command.clean_params["code"])
 
             quickmap = {
                 "asm": "assembly",
@@ -215,13 +201,7 @@ class Coding(Cog):
                 lang = config.default_languages[lang]
 
             if lang not in self.bot.languages:  # if lang not found
-                matches = "\n".join(
-                    [
-                        language
-                        for language in self.bot.languages
-                        if lang in language
-                    ][:10]
-                )
+                matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
@@ -231,9 +211,7 @@ class Coding(Cog):
                 return
 
             if options["--wrapped"]:
-                if not (
-                    any(map(lambda x: lang.split("-")[0] == x, self.wrapping))
-                ) or lang in ("cs-mono-shell", "cs-csi"):
+                if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):
                     return await ctx.send(f"`{lang}` cannot be wrapped")
 
                 for beginning in self.wrapping:
@@ -280,9 +258,11 @@ class Coding(Cog):
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
             return (
-                user == ctx.author
-                and str(reaction.emoji) == "🗑"
-                and reaction.message.id == returned.id
+                all(
+                    user == ctx.author,
+                    str(reaction.emoji) == "🗑",
+                    reaction.message.id == returned.id
+                )
             )
 
         try:
