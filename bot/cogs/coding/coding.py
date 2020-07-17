@@ -146,13 +146,15 @@ class Coding(Cog):
             # if file is sent instead of raw code in codeblocks
             if (ctx.message.attachments):
                 file = ctx.message.attachments[0]
-                if (file.size > 20000):  # check the size of file exceeding max limit
+                # check the size of file exceeding max limit
+                if file.size > 20000:
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith("link="):  # if link is sent instead of file or codeblocks
+            # if link is sent instead of file or codeblocks
+            elif code.split(" ")[-1].startswith("link="):
                 base_url = urllib.parse.quote_plus(
                     code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]"
                 )
@@ -201,7 +203,8 @@ class Coding(Cog):
                 lang = config.default_languages[lang]
 
             if lang not in self.bot.languages:  # if lang not found
-                matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
+                similar_langs = [language for language in self.bot.languages if lang in language]
+                matches = "\n".join(similar_langs[:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
