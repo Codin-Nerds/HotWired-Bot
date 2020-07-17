@@ -172,9 +172,7 @@ class Coding(Cog):
                         return await ctx.send("An error occurred. Retry later.")
                     text = await response.text()
                     if len(text) > 20000:
-                        return await ctx.send(
-                            "Code must be shorter than 20,000 characters."
-                        )
+                        return await ctx.send("Code must be shorter than 20,000 characters.")
 
             elif code.strip("`"):  # strip the raw code, if codeblock
                 text = code.strip("`")
