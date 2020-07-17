@@ -102,9 +102,8 @@ class Coding(Cog):
             "--wrapped": False,
         }  # the flags to be used when the compiler is needed
 
-        lang = language.strip(
-            "`"
-        ).lower()  # strip the "`" characters to obtain code
+        # strip the "`" characters to obtain code
+        lang = language.strip( "`").lower() 
         options_amount = len(options)
 
         # Setting options and removing them from the beginning of the command
