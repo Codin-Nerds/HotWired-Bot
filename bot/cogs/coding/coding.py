@@ -260,12 +260,10 @@ class Coding(Cog):
         await returned.add_reaction("🗑")
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
-            return (
-                all(
-                    user == ctx.author,
-                    str(reaction.emoji) == "🗑",
-                    reaction.message.id == returned.id
-                )
+            return all(
+                user == ctx.author,
+                str(reaction.emoji) == "🗑",
+                reaction.message.id == returned.id
             )
 
         try:
