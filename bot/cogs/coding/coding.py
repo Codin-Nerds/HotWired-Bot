@@ -169,9 +169,7 @@ class Coding(Cog):
                     if response.status == 404:
                         return await ctx.send("Nothing found. Check your link")
                     elif response.status != 200:
-                        return await ctx.send(
-                            "An error occurred. Retry later."
-                        )
+                        return await ctx.send("An error occurred. Retry later.")
                     text = await response.text()
                     if len(text) > 20000:
                         return await ctx.send(
