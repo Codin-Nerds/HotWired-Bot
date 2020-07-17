@@ -191,7 +191,7 @@ class Fun(Cog):
 
     @command()
     async def why(self, ctx: Context) -> None:
-        """Why _____?"""
+        """Why?."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/why", headers=self.user_agent) as why:
                 if why.status == 200:

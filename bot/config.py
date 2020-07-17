@@ -15,7 +15,7 @@ suggestions_channel = 728570594899132456
 complaints_channel = 728570619985264650
 
 creator = "The-Codin-Hole team"
-devs = [710400991761137666, 688275913535914014, 306876636526280705]
+devs = [688275913535914014, 306876636526280705]  # add faholan's id.
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
@@ -99,126 +99,27 @@ ERROR_REPLIES = [
 
 # NSFW Command Possible types
 nsfw_possible = [
-    "feet",
-    "yuri",
-    "trap",
-    "futanari",
-    "hololewd",
-    "lewdkemo",
-    "solog",
-    "feetg",
-    "cum",
-    "erokemo",
-    "les",
-    "wallpaper",
-    "lewdk",
-    "ngif",
-    "tickle",
-    "lewd",
-    "feed",
-    "gecg",
-    "eroyuri",
-    "eron",
-    "cum_jpg",
-    "bj",
-    "nsfw_neko_gif",
-    "solo",
-    "kemonomimi",
-    "nsfw_avatar",
-    "gasm",
-    "poke",
-    "anal",
-    "slap",
-    "hentai",
-    "avatar",
-    "erofeet",
-    "holo",
-    "keta",
-    "blowjob",
-    "pussy",
-    "tits",
-    "holoero",
-    "lizard",
-    "pussy_jpg",
-    "pwankg",
-    "classic",
-    "kuni",
-    "waifu",
-    "pat",
-    "8ball",
-    "kiss",
-    "femdom",
-    "neko",
-    "spank",
-    "cuddle",
-    "erok",
-    "fox_girl",
-    "boobs",
-    "random_hentai_gif",
-    "smallboobs",
-    "hug",
-    "ero",
-    "smug",
-    "goose",
-    "baka",
-    "woof",
+    "feet", "yuri", "trap", "futanari", "hololewd", "lewdkemo",
+    "solog", "feetg", "cum", "erokemo", "les", "wallpaper",
+    "lewdk", "ngif", "tickle", "lewd", "feed", "gecg",
+    "eroyuri", "eron", "cum_jpg", "bj", "nsfw_neko_gif", "solo",
+    "kemonomimi", "nsfw_avatar", "gasm", "poke", "anal", "slap",
+    "hentai", "avatar", "erofeet", "holo", "keta", "blowjob",
+    "pussy", "tits", "holoero", "lizard", "pussy_jpg", "pwankg",
+    "classic", "kuni", "waifu", "pat", "8ball", "kiss",
+    "femdom", "neko", "spank", "cuddle", "erok", "fox_girl",
+    "boobs", "random_hentai_gif", "smallboobs", "hug", "ero", "smug",
+    "goose", "baka", "woof",
 ]
 
 # Possible HTTP Codes for HttpCat
 http_codes = [
-    100,
-    101,
-    200,
-    201,
-    202,
-    204,
-    206,
-    207,
-    300,
-    301,
-    302,
-    303,
-    304,
-    305,
-    307,
-    400,
-    401,
-    402,
-    403,
-    404,
-    405,
-    406,
-    408,
-    409,
-    410,
-    411,
-    412,
-    413,
-    414,
-    416,
-    417,
-    418,
-    420,
-    421,
-    422,
-    423,
-    424,
-    425,
-    426,
-    429,
-    444,
-    450,
-    451,
-    500,
-    502,
-    503,
-    504,
-    506,
-    507,
-    508,
-    509,
-    511,
-    599,
+    100, 101, 200, 201, 202, 204, 206, 207, 300, 301,
+    302, 303, 304, 305, 307, 400, 401, 402, 403, 404,
+    405, 406, 408, 409, 410, 411, 412, 413, 414, 416,
+    417, 418, 420, 421, 422, 423, 424, 425, 426, 429,
+    444, 450, 451, 500, 502, 503, 504, 506, 507, 508,
+    509, 511, 599,
 ]
 
 # Search Engine categories
@@ -239,6 +140,15 @@ nekos = {
 
 with open("bot/assets/languages.yml", "r") as file:
     default_languages = safe_load(file)
+
+
+# Emojis class
+class Emojis:
+    issue = "<:IssueOpen:725770366714380410>"
+    issue_closed = "<:IssueClosed:725770497039663114>"
+    pull_request = "<:PROpen:725770558582554744>"
+    pull_request_closed = "<:PRClosed:725770652354609234>"
+    merge = "<:PRMerged:725770703600615435>"
 
 
 class Infraction(Enum):
