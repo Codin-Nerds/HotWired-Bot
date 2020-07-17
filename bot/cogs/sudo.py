@@ -44,7 +44,7 @@ class Sudo(Cog):
         else:
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
-    async def is_owner(self, ctx: Context) -> t.Union[bool, None]:
+    async def is_owner(ctx: Context) -> t.Union[bool, None]:
         if ctx.author.id in config.devs:
             return True
         else:
