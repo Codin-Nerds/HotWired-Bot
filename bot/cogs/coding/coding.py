@@ -157,9 +157,8 @@ class Coding(Cog):
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith(
-                "link="
-            ):  # if link is sent instead of file or codeblocks
+            # if link is sent instead of file or codeblocks
+            elif code.split(" ")[-1].startswith("link="): 
                 base_url = urllib.parse.quote_plus(
                     code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]"
                 )
