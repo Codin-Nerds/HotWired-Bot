@@ -147,9 +147,8 @@ class Coding(Cog):
         text = None
 
         async with ctx.typing():
-            if (
-                ctx.message.attachments
-            ):  # if file is sent instead of raw code in codeblocks
+            # if file is sent instead of raw code in codeblocks
+            if (ctx.message.attachments): 
                 file = ctx.message.attachments[0]
                 if (
                     file.size > 20000
