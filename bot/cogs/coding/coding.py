@@ -308,9 +308,7 @@ class Coding(Cog):
         await self.referred[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(aliases=["docs"])
-    async def documentation(
-        self, ctx: Context, language: str, *, query: str
-    ) -> None:
+    async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
         """Returns element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
