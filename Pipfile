@@ -27,6 +27,7 @@ py-stackexchange = "*"
 lxml = "*"
 bleach = "*"
 aiogoogletrans = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.8"
