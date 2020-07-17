@@ -96,7 +96,7 @@ class ProcessedUser(UserConverter):
         if ID is None:
             raise UserNotFound(f"No user found from `{argument}`")
         try:
-            return await ctx.bot.fetch_member(ID)
+            return await ctx.bot.fetch_user(ID)
         except NotFound:
             raise UserNotFound(f"No user with ID: {ID} found")
 
