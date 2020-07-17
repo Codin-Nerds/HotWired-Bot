@@ -321,9 +321,7 @@ class Coding(Cog):
         await self.documented[lang.lower()](ctx, query.strip("`"))
 
     @commands.command(name="list")
-    async def _list(
-        self, ctx: Context, *, group: t.Optional[str] = None
-    ) -> None:
+    async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
         """Lists available choices for other commands."""
 
         choices = {
