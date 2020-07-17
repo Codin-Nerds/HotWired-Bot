@@ -133,7 +133,7 @@ class Support(Cog):
         embed = Embed(
             title="Problem's still there?",
             description="If you still have **problems with the bot**"
-            ", Join the Support Server immediately! The developers surely would be hapy to help ya!"
+            ", Join the Support Server now and our developers will happily help you!"
             f"\n❯❯ [Support Server]({config.SUPPORT_SERVER})"
             f"\n❯❯ [Invite Link]({config.invite_link})",
             color=Color.dark_green(),
