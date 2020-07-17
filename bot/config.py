@@ -1,6 +1,8 @@
+import os
 from enum import Enum
 
 from discord import Color
+
 from yaml import safe_load
 
 DEV_MODE = True
@@ -12,8 +14,6 @@ bug_report_channel = 728570578507923526
 suggestions_channel = 728570594899132456
 complaints_channel = 728570619985264650
 
-
-owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [688275913535914014, 306876636526280705]  # add faholan's id.
 
@@ -35,7 +35,8 @@ admin_invite_link = (
 
 SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
-COMMAND_PREFIX = ">>"
+
+COMMAND_PREFIX = os.environ.get("COMMAND_PREFIX", ">>")
 
 paste_link = "https://pastebin.com"
 paste_link_2 = "https://hastebin.com"
@@ -122,14 +123,22 @@ http_codes = [
 ]
 
 # Search Engine categories
-basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
+basic_search_categories = [
+    "web",
+    "videos",
+    "music",
+    "files",
+    "images",
+    "it",
+    "maps",
+]
 
 nekos = {
     "sfw": "https://nekos.life/api/neko",
 }
 
 
-with open('bot/assets/languages.yml', 'r') as file:
+with open("bot/assets/languages.yml", "r") as file:
     default_languages = safe_load(file)
 
 

@@ -2,11 +2,11 @@ import textwrap
 import typing as t
 from functools import wraps
 
-from discord import Embed, Member, User, Color
-from discord.ext.commands import Cog, Context
-
 from bot.core.converters import ProcessedMember
 from bot.utils.errors import MemberNotFound
+
+from discord import Color, Embed, Member, User
+from discord.ext.commands import Cog, Context
 
 
 def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
