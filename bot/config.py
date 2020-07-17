@@ -228,7 +228,7 @@ nekos = {
 }
 
 
-with open('bot/assets/languages.yml', 'r') as file:
+with open("bot/assets/languages.yml", "r") as file:
     default_languages = safe_load(file)
 
 
