@@ -150,9 +150,8 @@ class Coding(Cog):
             # if file is sent instead of raw code in codeblocks
             if (ctx.message.attachments): 
                 file = ctx.message.attachments[0]
-                if (
-                    file.size > 20000
-                ):  # check the size of file exceeding max limit
+                # check the size of file exceeding max limit
+                if (file.size > 20000):  
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
