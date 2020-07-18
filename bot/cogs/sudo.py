@@ -1,15 +1,16 @@
 import datetime
+import math
 import os
 import platform
 import textwrap
-import math
-import typing as t
-import traceback
-import humanize
 import time
+import traceback
+import typing as t
 
 import GPUtil
-from discord import Color, Embed, InvalidArgument, Activity, ActivityType, Game, Status
+import humanize
+from discord import (Activity, ActivityType, Color, Embed, Game,
+                     InvalidArgument, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, check, group
 
@@ -112,7 +113,6 @@ class Sudo(Cog):
     async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
         """
         Change the status of the bot
-
         `botstatus playing <new status>` - Change playing status
         `botstatus watching <new status>` - Change watching status
         `botstatus listening <new status>` - Change listening status
@@ -233,11 +233,9 @@ class Sudo(Cog):
                 f"""
                 • Load: {gpu.load*100}%
                 • Temperature: {gpu.temperature} °C
-
                 • Free Memory: {gpu.memoryFree}MB
                 • Used Memory: {gpu.memoryUsed}MB
                 • Total Memory: {gpu.memoryTotal}MB
-
                 • UUID: {gpu.uuid}
                 """
             )

@@ -6,8 +6,10 @@ from contextlib import suppress
 
 import aiohttp
 from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, has_permissions)
+from discord.ext.commands import (
+    BadArgument, BucketType, Cog, Context,
+    command, cooldown, has_permissions
+)
 
 from bot import config
 from bot.core.bot import Bot

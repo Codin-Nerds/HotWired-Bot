@@ -3,14 +3,17 @@ import os
 import urllib
 
 import aiohttp
+
 import bleach
-import stackexchange
+
+from bot.core.bot import Bot
+
 from discord import Color, Embed
 from discord.errors import HTTPException
 from discord.ext.commands import Cog, Context, command, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
-from bot.core.bot import Bot
+import stackexchange
 
 StackExchangeToken = os.getenv("STACKEXCHANGE")
 

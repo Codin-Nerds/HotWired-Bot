@@ -1,11 +1,13 @@
 import urllib.parse
 from functools import partial
+from typing import Literal
 
 import aiohttp
+
+from bs4 import BeautifulSoup
+
 import discord
 from discord.ext.commands import Context
-from bs4 import BeautifulSoup
-from typing import Literal
 
 
 async def python_doc(ctx: Context, text: str) -> None:

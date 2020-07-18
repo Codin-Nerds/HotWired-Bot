@@ -3,11 +3,12 @@ import textwrap
 import traceback
 
 import aiohttp
-from discord import Color, Embed, Guild, Message
-from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Color, Embed, Guild, Message
+from discord.ext.commands import Cog
 
 PREFIX = config.COMMAND_PREFIX
 
@@ -63,8 +64,8 @@ class Events(Cog):
     async def on_error(self, event: str, *args, **kwargs) -> None:
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
-            async with self.session.post("https://www.hastebin.com/documents", data=error_message) as resp:
-                error_message = "https://www.hastebin.com/" + (await resp.json())["key"]
+            async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
+                error_message = "https://www.hasteb.in/" + (await resp.json())["key"]
 
         embed = Embed(color=Color.red(), description=error_message, title=event)
 
