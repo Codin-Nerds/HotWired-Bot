@@ -21,3 +21,6 @@ __pycache__/
 
 # ignore databases
 *.sqlite3
+
+# Ignore any temporary cogs made for pull request feature testing
+bot/cogs/**/*_pr_test.py

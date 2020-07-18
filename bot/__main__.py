@@ -3,6 +3,8 @@ import os
 from bot import config
 from bot.core.bot import Bot
 
+from colorama import Fore, init
+
 from discord import Game
 from discord.ext.commands import when_mentioned_or
 
@@ -10,6 +12,7 @@ from discord.ext.commands import when_mentioned_or
 TOKEN = os.getenv("BOT_TOKEN")
 
 extensions = [
+    "bot.cogs.paginator_pr_test.py"  # ! TODO remove this line
     "bot.cogs.codesandbox",
     "bot.cogs.commands",
     "bot.cogs.conversion",
@@ -37,9 +40,29 @@ extensions = [
 bot = Bot(
     extensions,
     command_prefix=when_mentioned_or(config.COMMAND_PREFIX),
-    activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
+    activity=Game(name=f"Invoke me using {config.COMMAND_PREFIX}help"),
     case_insensitive=True,
 )
 
+
+class TokenNotFoundError(Exception):
+    """
+    Raised if token is not found
+    """
+    pass
+
+
 if __name__ == "__main__":
-    bot.run(TOKEN)
+    if TOKEN is not None:
+        bot.run(TOKEN)
+    else:
+        init(autoreset=True)
+
+        raise TokenNotFoundError(
+            Fore.RED + "\n"
+            "Token not found, are you sure\n"
+            "you are running this file through\n"
+            "pipenv and there is a .env file\n"
+            "containing a BOT_TOKEN key on your\n"
+            "current working directory?"
+        )
