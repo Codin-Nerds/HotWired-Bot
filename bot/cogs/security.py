@@ -1,8 +1,6 @@
 from contextlib import suppress
 from os.path import splitext
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 
@@ -32,7 +30,7 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
 class MalwareProtection(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:

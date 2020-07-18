@@ -1,6 +1,5 @@
 import traceback
 
-from bot import config
 from bot.core.bot import Bot
 from bot.utils.checks import is_bot_dev
 
@@ -29,10 +28,8 @@ class Sudo(Cog):
     @sudo.command()
     @check(is_bot_dev)
     async def shutoff(self, ctx: Context) -> None:
-        if ctx.author.id in config.devs:
-            await ctx.message.add_reaction("✅")
-            print("Shutting Down...")
-            await self.bot.logout()
+        await ctx.message.add_reaction("✅")
+        await self.bot.shutoff()
 
     @sudo.command(name="reload")
     @check(is_bot_dev)

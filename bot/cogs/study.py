@@ -57,7 +57,7 @@ class UrbanDictionaryPages(Pages):
 class Study(Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
@@ -94,7 +94,7 @@ class Study(Cog):
     async def urban(self, ctx: Context, *, word: str) -> None:
         """Searches urban dictionary."""
         url = "http://api.urbandictionary.com/v0/define"
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get(url, params={"term": word}) as resp:
                 if resp.status != 200:
                     await ctx.send(f"An error occurred: {resp.status} {resp.reason}.")
@@ -253,6 +253,8 @@ class Study(Cog):
                 self.base_url, params=payload, headers=self.headers
             ) as res:
                 result = await res.json()
+
+        conn.close()
 
         try:
             # Get the last page. Usually this is the only page.

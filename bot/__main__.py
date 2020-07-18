@@ -3,7 +3,7 @@ import os
 from bot import config
 from bot.core.bot import Bot
 
-from colorama import Fore, init
+import colorama
 
 from discord import Game
 from discord.ext.commands import when_mentioned_or
@@ -56,11 +56,11 @@ if __name__ == "__main__":
     if TOKEN is not None:
         bot.run(TOKEN)
     else:
-        init(autoreset=True)
+        colorama.init(autoreset=True)
 
         raise TokenNotFoundError(
-            Fore.RED + "\n"
-            "Token not found, are you sure\n"
+            colorama.Fore.RED + "\n"
+            "Token is not found, are you sure\n"
             "you are running this file through\n"
             "pipenv and there is a .env file\n"
             "containing a BOT_TOKEN key on your\n"

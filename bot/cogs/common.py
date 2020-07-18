@@ -3,8 +3,6 @@ import textwrap
 import time
 from contextlib import suppress
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 
@@ -22,7 +20,7 @@ from discord.ext.commands import (
 class Common(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     # TODO : Add custom command support after db integration
     @command()

@@ -1,6 +1,10 @@
 from datetime import datetime
 
+import aiohttp
+
 from bot import config
+
+import colorama
 
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
@@ -11,6 +15,7 @@ class Bot(Base_Bot):
         super().__init__(*args, **kwargs)
         self.extension_list = extensions
         self.initial_call = True
+        self.aio_session = aiohttp.ClientSession
 
     async def on_ready(self) -> None:
         if self.initial_call:
@@ -46,5 +51,11 @@ class Bot(Base_Bot):
 
         print("Bot is ready")
 
-    async def close(self) -> None:
+    async def shutoff(self) -> None:
+        colorama.init(autoreset=True)
+
+        print(colorama.Fore.GREEN + "Shutting Down...")
+
         await super().close()
+        await self.aio_session.close(self.aio_session)
+        print(colorama.Fore.BLUE + "The bot and aiohttp connections are properly closed ✔️")

@@ -1,7 +1,5 @@
 import textwrap
 
-import aiohttp
-
 from bot.config import Emojis
 
 from discord import Color, Embed
@@ -16,7 +14,7 @@ BAD_RESPONSES = {
 class Github(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)

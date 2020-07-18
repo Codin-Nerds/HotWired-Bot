@@ -1,8 +1,6 @@
 import io
 import random
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 
@@ -17,7 +15,7 @@ class Comics(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @command()
     async def ohno(self, ctx: Context) -> None:
@@ -126,14 +124,14 @@ class Comics(Cog):
             url = "https://xkcd.com/info.0.json"
 
         if comic_type == "random":
-            async with aiohttp.ClientSession() as session:
+            async with self.bot.aio_session as session:
                 async with session.get("https://xkcd.com/info.0.json") as r:
                     data = await r.json()
                 random_comic = random.randint(1, data["num"])
 
                 url = f"https://xkcd.com/{random_comic}/info.0.json"
 
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get(url) as r:
                 if r.status == 200:
                     data = await r.json()
@@ -153,8 +151,8 @@ class Comics(Cog):
                     await ctx.send(embed=embed)
                 else:
                     url = "https://xkcd.com/info.0.json"
-                    async with aiohttp.ClientSession() as csession:
-                        async with csession.get(url) as req:
+                    async with self.bot.aio_session as session:
+                        async with session.get(url) as req:
                             data = await req.json()
                             latest_comic_num = data["num"]
 

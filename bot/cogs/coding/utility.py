@@ -1,4 +1,4 @@
-import aiohttp
+from bot.core.bot import Bot
 
 from discord.ext.commands import BadArgument
 
@@ -33,9 +33,9 @@ def get_raw(link: str) -> str:
         return link + "/raw"
 
 
-async def paste(text: str) -> str:
+async def paste(bot: Bot, text: str) -> str:
     """Return an online bin of given text."""
-    async with aiohttp.ClientSession() as aioclient:
+    async with bot.aio_session as aioclient:
         post = await aioclient.post("https://hasteb.in/documents", data=text)
         if post.status == 200:
             response = await post.text()

@@ -17,7 +17,7 @@ class Events(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.dev_mode = config.DEV_MODE
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @staticmethod
     def get_link_code(string: str) -> str:

@@ -2,8 +2,6 @@ import re
 import textwrap
 from typing import List
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 
@@ -66,7 +64,7 @@ class Search(Cog, name="Basic"):
 
         # Searching
         headers = {"User-Agent": ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0")}
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get(search_url, headers=headers) as resp:
                 to_parse = await resp.json()
 
@@ -143,7 +141,7 @@ class Search(Cog, name="Basic"):
 
         # Handling
         async with ctx.typing():
-            async with aiohttp.ClientSession() as session:
+            async with self.bot.aio_session as session:
                 async with session.get(base + "anime", params={"filter[text]": query}) as resp:
                     resp = await resp.json()
                     resp = resp["data"]
@@ -200,7 +198,7 @@ class Search(Cog, name="Basic"):
 
             # Handling
             async with ctx.typing():
-                async with aiohttp.ClientSession() as session:
+                async with self.bot.aio_session as session:
                     async with session.get(base + "manga", params={"filter[text]": query}) as resp:
                         resp = await resp.json()
                         resp = resp["data"]

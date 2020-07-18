@@ -5,6 +5,8 @@ from functools import partial
 
 import aiohttp
 
+from bot.core.bot import Bot
+
 from bs4 import BeautifulSoup
 
 from discord import Embed, Message
@@ -17,9 +19,9 @@ def markdownify(html: str) -> str:
     return MarkdownConverter(bullets="•").convert(html)
 
 
-async def mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
+async def mozilla_doc(bot: Bot, ctx: Context, url: str) -> t.Union[Message, str]:
     """Get tag formatted content from given url from developers.mozilla.org."""
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status == 404:
                 return await ctx.send("No results")
@@ -90,7 +92,7 @@ async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
     base_url = f"https://git-scm.com/docs/{part}{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
+    async with aiohttp.ClientSession as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
@@ -111,6 +113,7 @@ async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
                 content = "\n".join([markdownify(p) for p in tag.find_all(lambda x: x.name in ["p", "pre"])])
                 embed.add_field(name=tag.find("h2").text, value=content[:1024], inline=False)
 
+            await client_session.close()
             return await ctx.send(embed=embed)
 
 
@@ -118,7 +121,7 @@ git_ref = partial(_git_main_ref, "git-")
 git_tutorial_ref = partial(_git_main_ref, "")
 
 
-async def sql_ref(ctx: Context, text: str) -> Message:
+async def sql_ref(bot: Bot, ctx: Context, text: str) -> Message:
     """Displays reference on an SQL statement."""
     text = text.strip("`").lower()
     if text in ("check", "unique", "not null"):
@@ -128,7 +131,7 @@ async def sql_ref(ctx: Context, text: str) -> Message:
     base_url = f"http://www.sqltutorial.org/sql-{text}/"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
@@ -153,7 +156,7 @@ async def sql_ref(ctx: Context, text: str) -> Message:
             return await ctx.send(embed=embed)
 
 
-async def haskell_ref(ctx: Context, text: str) -> Message:
+async def haskell_ref(bot: Bot, ctx: Context, text: str) -> Message:
     """Displays information on given Haskell topic."""
     text = text.strip("`")
 
@@ -162,7 +165,7 @@ async def haskell_ref(ctx: Context, text: str) -> Message:
     base_url = f"https://wiki.haskell.org/{snake}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status == 404:
                 return await ctx.send(f"No results for `{text}`")

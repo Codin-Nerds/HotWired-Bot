@@ -5,8 +5,6 @@ import typing as t
 import urllib
 from random import choice, randint
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 from bot.utils.errors import ServiceError
@@ -41,12 +39,12 @@ class Fun(Cog):
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @command()
     async def catfact(self, ctx: Context) -> None:
         """Sends a random cat fact"""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
         fact = choice(self.all_facts["all"])
@@ -107,18 +105,18 @@ class Fun(Cog):
     async def chuck(self, ctx: Context) -> t.Union[None, Message]:
         """Get a random Chuck Norris joke."""
         if randint(0, 1):
-            async with aiohttp.ClientSession() as session:
+            async with self.bot.aio_session as session:
                 async with session.get("https://api.chucknorris.io/jokes/random") as r:
                     joke = await r.json()
                     return await ctx.send(joke["value"])
         if ctx.guild:
             if not ctx.channel.is_nsfw():
-                async with aiohttp.ClientSession() as session:
+                async with self.bot.aio_session as session:
                     async with session.get("http://api.icndb.com/jokes/random?exclude=[explicit]") as r:
                         joke = await r.json()
                         return await ctx.send(joke["value"]["joke"])
 
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("http://api.icndb.com/jokes/random") as r:
                 joke = await r.json()
                 await ctx.send(joke["value"]["joke"].replace("&quote", '"'))
@@ -126,7 +124,7 @@ class Fun(Cog):
     @command()
     async def cat(self, ctx: Context) -> None:
         """Random cat images. Awww, so cute! Powered by random.cat."""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
                 if r.status == 200:
                     js = await r.json()
@@ -149,7 +147,7 @@ class Fun(Cog):
     @command()
     async def fox(self, ctx: Context) -> None:
         """Sends a random fox picture."""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
         embed = discord.Embed(title="Fox", color=0x690E8)
@@ -167,7 +165,7 @@ class Fun(Cog):
             elif n == 1:
                 return "https://dog.ceo/api/breeds/image/random"
 
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get(decide_source(), headers=self.user_agent) as shibe_get:
                 if shibe_get.status == 200:
                     if shibe_get.host == "random.dog":
@@ -189,7 +187,7 @@ class Fun(Cog):
     @command()
     async def lizard(self, ctx) -> None:
         """Shows a random lizard picture."""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
                     img = await lizr.json()
@@ -202,7 +200,7 @@ class Fun(Cog):
     @command()
     async def why(self, ctx: Context) -> None:
         """Why?."""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://nekos.life/api/why", headers=self.user_agent) as why:
                 if why.status == 200:
                     why_js = await why.json()
@@ -235,7 +233,7 @@ class Fun(Cog):
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
         """Why not make your decisions with a bot?"""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://yesno.wtf/api", headers=self.user_agent) as meme:
                 if meme.status == 200:
                     mj = await meme.json()
@@ -249,7 +247,7 @@ class Fun(Cog):
     @command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
     async def joke(self, ctx: Context) -> None:
         """Dad joke simulator 3017, basically"""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as jok:
                 if jok.status == 200:
                     res = await jok.text()
@@ -265,7 +263,7 @@ class Fun(Cog):
 
         Source: http://pages.cs.wisc.edu/~ballard/bofh
         """
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as r:
                 data = await r.text()
         lines = data.split("\n")
@@ -288,7 +286,7 @@ class Fun(Cog):
     @command()
     async def neko(self, ctx: Context) -> None:
         """Shows a neko."""
-        async with aiohttp.ClientSession() as session:
+        async with self.bot.aio_session as session:
             async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()

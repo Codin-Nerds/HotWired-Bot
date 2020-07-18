@@ -5,8 +5,6 @@ import urllib.parse
 from contextlib import suppress
 from io import BytesIO
 
-import aiohttp
-
 from bot import config
 from bot.core.bot import Bot
 
@@ -25,11 +23,11 @@ class Coding(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
-        async with aiohttp.ClientSession() as client_session:
+        async with self.bot.aio_session as client_session:
             async with client_session.get("https://tio.run/languages.json") as response:
                 if response.status != 200:
                     print(f"Error: (status code: {response.status}).")
@@ -240,7 +238,7 @@ class Coding(Cog):
 
             if len(result) > 1991 or result.count("\n") > 40:
                 # If it exceeds 2000 characters (Discord longest message), counting ` and ph\n characters
-                link = await paste(result)
+                link = await paste(self.bot, result)
 
                 if link is None:
                     return await ctx.send(
@@ -286,7 +284,7 @@ class Coding(Cog):
                 )
                 return
 
-        await self.referred[lang.lower()](ctx, query.strip("`"))
+        await self.referred[lang.lower()](self.bot, ctx, query.strip("`"))
 
     @commands.command(aliases=["docs"])
     async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
@@ -299,7 +297,7 @@ class Coding(Cog):
                 )
                 return
 
-        await self.documented[lang.lower()](ctx, query.strip("`"))
+        await self.documented[lang.lower()](self.bot, ctx, query.strip("`"))
 
     @commands.command(name="list")
     async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:

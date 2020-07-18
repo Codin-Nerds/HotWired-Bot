@@ -2,7 +2,7 @@ import urllib.parse
 from functools import partial
 from typing import Literal
 
-import aiohttp
+from bot.core.bot import Bot
 
 from bs4 import BeautifulSoup
 
@@ -10,12 +10,12 @@ import discord
 from discord.ext.commands import Context
 
 
-async def python_doc(ctx: Context, text: str) -> None:
+async def python_doc(bot: Bot, ctx: Context, text: str) -> None:
     """Filters python.org results based on your query."""
     text = text.strip("`")
     url = "https://docs.python.org/3/genindex-all.html"
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
@@ -42,7 +42,7 @@ async def python_doc(ctx: Context, text: str) -> None:
             await ctx.send(embed=embed)
 
 
-async def cppreference(language: Literal["C", "C++"], ctx: Context, text: str) -> None:
+async def cppreference(bot: Bot, language: Literal["C", "C++"], ctx: Context, text: str) -> None:
     """Search something on cppreference."""
 
     text = text.strip("`")
@@ -50,7 +50,7 @@ async def cppreference(language: Literal["C", "C++"], ctx: Context, text: str) -
     base_url = "https://cppreference.com/w/cpp/index.php?title=Special:Search&search=" + text
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
@@ -86,7 +86,7 @@ c_doc = partial(cppreference, "C")
 cpp_doc = partial(cppreference, "C++")
 
 
-async def haskell_doc(ctx: Context, text: str) -> None:
+async def haskell_doc(bot: Bot, ctx: Context, text: str) -> None:
     """Search something on wiki.haskell.org."""
 
     text = text.strip("`")
@@ -96,7 +96,7 @@ async def haskell_doc(ctx: Context, text: str) -> None:
     base_url = f"https://wiki.haskell.org/index.php?title=Special%3ASearch&profile=default&search={snake}&fulltext=Search"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
@@ -122,7 +122,7 @@ async def haskell_doc(ctx: Context, text: str) -> None:
             await ctx.send(embed=embed)
 
 
-async def rust_doc(ctx, text: str) -> None:
+async def rust_doc(bot: Bot, ctx, text: str) -> None:
     """Get the doc.rust-lang.org results based on your query"""
 
     text = text.strip('`')
@@ -131,7 +131,7 @@ async def rust_doc(ctx, text: str) -> None:
 
     url = "https://doc.rust-lang.org/stable/std/all.html"
 
-    async with aiohttp.ClientSession() as client_session:
+    async with bot.aio_session as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send('An error occurred (status code: {response.status}). Retry later.')

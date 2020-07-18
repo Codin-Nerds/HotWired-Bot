@@ -2,8 +2,6 @@ import json
 import os
 import urllib
 
-import aiohttp
-
 import bleach
 
 from bot.core.bot import Bot
@@ -21,7 +19,7 @@ StackExchangeToken = os.getenv("STACKEXCHANGE")
 class Documentation(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session
 
     @cooldown(1, 8, BucketType.user)
     @command(aliases=["stackoverflow", "overflow"])
