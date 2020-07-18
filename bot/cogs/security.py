@@ -2,11 +2,12 @@ from contextlib import suppress
 from os.path import splitext
 
 import aiohttp
-from discord import Color, Embed, Message, NotFound
-from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Color, Embed, Message, NotFound
+from discord.ext.commands import Cog
 
 FILE_EMBED_DESCRIPTION = (
     f"""

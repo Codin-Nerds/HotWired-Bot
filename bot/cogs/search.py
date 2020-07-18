@@ -3,12 +3,14 @@ import textwrap
 from typing import List
 
 import aiohttp
-import html2text
-from discord import Embed, utils
-from discord.ext.commands import Cog, CommandError, Context, command
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Embed, utils
+from discord.ext.commands import Cog, CommandError, Context, command
+
+import html2text
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()

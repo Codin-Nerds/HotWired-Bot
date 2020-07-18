@@ -2,13 +2,14 @@ import io
 import re
 import typing as t
 
+from bot import config
+from bot.core.bot import Bot
+
 import discord
-import requests
 from discord.ext.commands import BadArgument, Cog, Context, command
 from discord.utils import get
 
-from bot import config
-from bot.core.bot import Bot
+import requests
 
 
 class InvalidCommandException(Exception):
