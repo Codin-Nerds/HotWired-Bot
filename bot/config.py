@@ -36,7 +36,7 @@ admin_invite_link = (
 SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
 
-COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ";")
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ">>")
 
 paste_link = "https://pastebin.com"
 paste_link_2 = "https://hastebin.com"
