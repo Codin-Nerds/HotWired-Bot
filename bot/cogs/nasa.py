@@ -66,9 +66,7 @@ class Nasa(Cog):
                 color=Color.blurple()
             )
             embed.set_image(url=item["links"][0]["href"])
-            embed.set_footer(
-                text=f"ID: {item['data'][0]['nasa_id']} | Powered by HotWired"
-            )
+            embed.set_footer(text=f"ID: {item['data'][0]['nasa_id']} | Powered by HotWired")
 
             await ctx.send(embed=embed)
         else:
@@ -136,12 +134,12 @@ class Nasa(Cog):
     @command()
     async def mars(self, ctx: Context, date: str, rover: str = None, number: int = 1) -> None:
         """Get images from Mars. must specify the date (in the form YYYY-MM-DD),and you can specify the rover and the number of images to retrieve."""
+        if rover is None:
+            rover = random.choice(["curiosity", "opportunity", "spirit"])
+
         if not rover.lower() in ("curiosity", "opportunity", "spirit"):
             await ctx.send("Sorry but this rover doesn't exist")
             return
-
-        if rover is None:
-            rover = random.choice(["curiosity", "opportunity", "spirit"])
 
         async with self.session.get(
             "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos", params={"earth_date": date, "api_key": NASA_API}
