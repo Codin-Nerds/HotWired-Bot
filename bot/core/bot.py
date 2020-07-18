@@ -1,20 +1,8 @@
-import os
-
-import asyncpg
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot as Base_Bot
 from loguru import logger
 
-DATABASE = {
-    "host": "127.0.0.1",
-    "database": os.getenv("DATABASE_NAME"),
-    "user": os.getenv("DATABASE_USER"),
-    "password": os.getenv("DATABASE_PASSWORD"),
-    "min_size": int(os.getenv("POOL_MIN", "20")),
-    "max_size": int(os.getenv("POOL_MAX", "100")),
-}
 
-
-class Bot(Bot):
+class Bot(Base_Bot):
     def __init__(self, extensions: list, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.extension_list = extensions
@@ -23,9 +11,6 @@ class Bot(Bot):
     async def on_ready(self) -> None:
         if self.initial_call:
             self.initial_call = False
-
-            # connect to the database
-            self.pool = await asyncpg.create_pool(**DATABASE)
 
             # Load all extensions
             for extension in self.extension_list:
@@ -40,6 +25,3 @@ class Bot(Bot):
     async def close(self) -> None:
         logger.info("Closing bot connection")
         await super().close()
-        # In case bot doesn't get to on_ready
-        if hasattr(self, "pool"):
-            await self.pool.close()

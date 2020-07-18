@@ -3,19 +3,15 @@ import typing as t
 from datetime import datetime
 
 from discord import Color, Embed, Member, User
+from discord.errors import Forbidden
 from discord.ext.commands import (
-    Cog,
-    Context,
-    NoPrivateMessage,
-    RoleConverter,
-    command,
-    has_permissions,
+    Cog, Context, NoPrivateMessage,
+    RoleConverter, command, has_permissions
 )
 
 from bot.core.bot import Bot
 from bot.core.converters import Duration, ProcessedMember, ProcessedUser
 from bot.core.decorators import follow_roles
-from discord.errors import Forbidden
 
 
 class Moderation(Cog):

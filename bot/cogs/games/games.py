@@ -1,10 +1,10 @@
 import random
 
-from discord import Color, Embed
-from discord.ext.commands import Cog, Context, command
-
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Color, Embed
+from discord.ext.commands import Cog, Context, command
 
 
 class Games(Cog):
@@ -37,3 +37,5 @@ class Games(Cog):
         embed = Embed(title="Magic 8-ball", color=Color.blurple())
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
+        
+        await ctx.send(embed=embed)

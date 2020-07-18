@@ -4,12 +4,19 @@ import time
 from contextlib import suppress
 
 import aiohttp
-from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import (BadArgument, BucketType, Cog, CommandError,
-                                  Context, command, cooldown, has_permissions)
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Color, Embed, Forbidden, Member
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog, Context,
+    command,
+    cooldown,
+    has_permissions
+)
 
 
 class Common(Cog):
@@ -121,23 +128,6 @@ class Common(Cog):
             await asyncio.sleep(1)
         await message.delete()
 
-    @command()
-    @cooldown(1, 10, BucketType.user)
-    async def urlshorten(self, ctx: Context, url='') -> None:
-        '''Shorten a URL.'''
-        async with ctx.typing():
-            if not url:
-                raise CommandError(message='Required argument missing: `url`.')
-            if not url.startswith("https://"):
-                raise CommandError(message=f'Invalid argument: `{url}`. Argument must be a valid URL.')
-
-            async with self.session.get(f'https://is.gd/create.php?format=simple&url={url}') as r:
-                if r.status != 200:
-                    raise CommandError(message='Error retrieving shortened URL, please try again in a minute.')
-                data = await r.text()
-
-        await ctx.send(data)
-
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
         """How to ask a Question."""
@@ -177,6 +167,31 @@ class Common(Cog):
             )
             embed.set_image(url="https://media.giphy.com/media/6tHy8UAbv3zgs/giphy.gif")
             await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 10, BucketType.user)
+    async def shorten(self, ctx: Context, *, link: str) -> None:
+        """Makes a link shorter using the tinyurl api"""
+        if not link.startswith("https://"):
+            await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")
+            return
+
+        url = link.strip("<>")
+        url = f"http://tinyurl.com/api-create.php?url={url}"
+
+        async with self.session.get(url) as resp:
+            if resp.status != 200:
+                await ctx.send("Error retrieving shortened URL, please try again in a minute.")
+                return
+            shortened_link = await resp.text()
+
+        embed = Embed(color=Color.blurple())
+        embed.add_field(name="Original Link", value=link, inline=False)
+        embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
+        await ctx.send(embed=embed)
+
+        with suppress(Forbidden):
+            await ctx.message.delete()
 
 
 def setup(bot: Bot) -> None:

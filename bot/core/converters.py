@@ -4,8 +4,10 @@ from ast import literal_eval
 from contextlib import suppress
 
 from discord import Member, NotFound, User
-from discord.ext.commands import (BadArgument, Context, Converter,
-                                  MemberConverter, UserConverter)
+from discord.ext.commands import (
+    BadArgument, Context, Converter,
+    MemberConverter, UserConverter
+)
 
 from bot.core.errors import MemberNotFound, UserNotFound
 

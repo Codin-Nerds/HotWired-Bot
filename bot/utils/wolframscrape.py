@@ -1,5 +1,6 @@
-import requests
 import os
+
+import requests
 
 APPID = os.getenv("WOLFRAM_APPID")
 
