@@ -6,15 +6,25 @@ import urllib
 from random import choice, randint
 
 import aiohttp
-import discord
-import nekos
-from discord import Color, Embed, Message
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, errors, is_nsfw)
 
 from bot import config
 from bot.core.bot import Bot
 from bot.utils.errors import ServiceError
+
+import discord
+from discord import Color, Embed, Message
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    errors,
+    is_nsfw
+)
+
+import nekos
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()
@@ -191,7 +201,7 @@ class Fun(Cog):
 
     @command()
     async def why(self, ctx: Context) -> None:
-        """Why _____?"""
+        """Why?."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/why", headers=self.user_agent) as why:
                 if why.status == 200:

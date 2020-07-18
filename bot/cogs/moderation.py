@@ -7,8 +7,10 @@ from datetime import datetime
 
 import discord
 from discord import Color, Embed, Member, NotFound, Role
-from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
-                                  command, has_permissions)
+from discord.ext.commands import (
+    Cog, Context, Greedy, NoPrivateMessage,
+    command, has_permissions
+)
 from loguru import logger
 
 from bot.core.bot import Bot
