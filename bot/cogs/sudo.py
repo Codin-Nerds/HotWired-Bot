@@ -5,7 +5,6 @@ import platform
 import textwrap
 import time
 import traceback
-import typing as t
 
 from bot.config import devs
 from bot.core.bot import Bot
@@ -111,7 +110,7 @@ class Sudo(Cog):
         # os.system("python3.8 -m pipenv run start")
 
     @sudo.command()
-    async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
+    async def botstatus(self, ctx: Context, status: str, status_info: str) -> None:
         """
         Change the status of the bot
         `botstatus playing <new status>` - Change playing status
