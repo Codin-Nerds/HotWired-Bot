@@ -3,12 +3,12 @@ import textwrap
 import typing as t
 from collections import defaultdict
 
+from bot.core.bot import Bot
+from bot.core.converters import Unicode
+
 from discord import Color, Embed, Member, TextChannel
 from discord.errors import HTTPException
 from discord.ext.commands import Cog, ColourConverter, Context, group
-
-from bot.core.bot import Bot
-from bot.core.converters import Unicode
 
 
 class EmbedData(t.NamedTuple):

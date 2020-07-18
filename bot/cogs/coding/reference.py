@@ -1,14 +1,16 @@
 import re
+import typing as t
 import urllib.parse
 from functools import partial
 
+import aiohttp
+
 from bs4 import BeautifulSoup
 
-import aiohttp
-from discord import Message, Embed
+from discord import Embed, Message
 from discord.ext.commands import Context
+
 from markdownify import MarkdownConverter
-import typing as t
 
 
 def markdownify(html: str) -> str:
