@@ -1,4 +1,5 @@
 import asyncio
+import re
 import textwrap
 import time
 from contextlib import suppress
@@ -171,9 +172,20 @@ class Common(Cog):
             await ctx.send(f"FILE PASTE : {file_paste}")
 
     def _clean_code(self, code: str) -> str:
-        if code.startswith("```") and code.endswith("```"):
-            return "\n".join(code.split("\n")[1:-1])
-        return code.strip("\n")
+        codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)
+        if codeblock_match:
+            lang = codeblock_match.group(1)
+            code = codeblock_match.group(2)
+            ret = lang if not code else code
+            if ret[-1] == "\n":
+                ret = ret[:-1]
+            return ret
+
+        simple_match = re.fullmatch(r"\`(.*\n*)\`", code)
+        if simple_match:
+            return simple_match.group(1)
+
+        return code
 
     @cooldown(1, 10, BucketType.user)
     async def shorten(self, ctx: Context, *, link: str) -> None:
