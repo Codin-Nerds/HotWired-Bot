@@ -92,10 +92,10 @@ class CodeSandbox(Cog):
         )
 
         def check(m) -> bool:
-            return (
-                m.author.id == ctx.author.id
-                and m.channel.id == ctx.channel.id
-                and m.content.startswith("`")
+            return all(
+                m.author.id == ctx.author.id,
+                m.channel.id == ctx.channel.id,
+                m.content.startswith("`")
             )
 
         while True:

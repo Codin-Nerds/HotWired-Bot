@@ -38,14 +38,18 @@ class MalwareProtection(Cog):
         """Find messages with blacklisted attachments."""
         if not message.attachments or not message.guild:
             return
+
         elif not message.author.permissions_in(message.channel).manage_messages:
             return
+
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
         is_blocked = file_extensions - set(whitelist)
 
         file_pastes = []
+
         if is_blocked:
             embed = Embed(description=FILE_EMBED_DESCRIPTION, color=Color.dark_blue())
+
             with suppress(NotFound, ConnectionError):
                 for attachment in message.attachments:
                     content = await attachment.read()

@@ -1,5 +1,5 @@
-from discord.ext import commands
 from discord import NotFound
+from discord.ext import commands
 
 
 class ServiceError(commands.CommandInvokeError):

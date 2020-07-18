@@ -1,9 +1,10 @@
-from discord import Color, Embed
-from discord.ext.commands import Cog, Context, command
+import textwrap
 
 from bot import config
 from bot.core.bot import Bot
-import textwrap
+
+from discord import Color, Embed
+from discord.ext.commands import Cog, Context, command
 
 
 class Support(Cog):
