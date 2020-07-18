@@ -71,7 +71,7 @@ class Sudo(Cog):
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
         try:
-            self.bot.load_extension(f"cogs.{extension}")
+            self.bot.load_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
@@ -82,8 +82,8 @@ class Sudo(Cog):
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
-            self.bot.load_extension(f"cogs.{extension}")
+            self.bot.unload_extension(f"bot.cogs.{extension}")
+            self.bot.load_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
@@ -94,7 +94,7 @@ class Sudo(Cog):
     async def unload(self, ctx: Context, *, extension: str) -> None:
         """Unloads a module."""
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
+            self.bot.unload_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
