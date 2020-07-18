@@ -39,7 +39,7 @@ class MalwareProtection(Cog):
         if not message.attachments or not message.guild:
             return
 
-        elif not message.author.permissions_in(message.channel).manage_messages:
+        elif message.author.permissions_in(message.channel).manage_messages:
             return
 
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
