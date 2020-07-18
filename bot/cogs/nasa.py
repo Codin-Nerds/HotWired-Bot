@@ -26,10 +26,12 @@ class Nasa(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
+        if NASA_API is None:
+            self.cog_unload()
 
-    @command()
+    @command(aliases=["apod"])
     @cooldown(16, 60, BucketType.guild)
-    async def apod(self, ctx: Context) -> None:
+    async def astronomy_picture(self, ctx: Context) -> None:
         """Gives you the astronomy picture of the day."""
         async with self.session.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API}") as resp:
             data = await resp.json()
@@ -80,19 +82,15 @@ class Nasa(Cog):
 
         try:
             items = data["collection"]["items"][0]["href"]
-            embed = Embed(
-                color=Color.blurple()
-            )
+            embed = Embed(color=Color.blurple())
             embed.set_image(url=items)
-            embed.set_footer(
-                text=f"ID: {id} | Powered by HotWired"
-            )
+            embed.set_footer(text=f"ID: {id} | Powered by HotWired")
         except KeyError:
             await ctx.send("No results found!")
 
         await ctx.send(embed=embed)
 
-    @command(aliases=["npatent"])
+    @command(aliases=["nasapatent"])
     async def nasa_patent(self, ctx: Context, *, patent: str) -> None:
         """Search for a picture on Nasa with nasa id."""
         async with self.session.get(f"https://api.nasa.gov/techtransfer/patent/?{patent}&api_key={NASA_API}") as resp:
@@ -113,9 +111,7 @@ class Nasa(Cog):
                 description=remove_tags(description),
                 color=Color.blurple()
             )
-            embed.set_footer(
-                text="Powered by HotWired"
-            )
+            embed.set_footer(text="Powered by HotWired")
 
             await ctx.send(embed=embed)
         else:
@@ -138,11 +134,14 @@ class Nasa(Cog):
                 await ctx.send(embed=embed)
 
     @command()
-    async def mars(self, ctx: Context, date: str, rover: str = random.choice(("curiosity", "opportunity", "spirit")), n: int = 1) -> None:
+    async def mars(self, ctx: Context, date: str, rover: str = None, number: int = 1) -> None:
         """Get images from Mars. must specify the date (in the form YYYY-MM-DD),and you can specify the rover and the number of images to retrieve."""
         if not rover.lower() in ("curiosity", "opportunity", "spirit"):
             await ctx.send("Sorry but this rover doesn't exist")
             return
+
+        if rover is None:
+            rover = random.choice(["curiosity", "opportunity", "spirit"])
 
         async with self.session.get(
             "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos", params={"earth_date": date, "api_key": NASA_API}
@@ -152,7 +151,7 @@ class Nasa(Cog):
                 await ctx.send(f"Couldn't Find anything! Invalid Rover : {rover.capitalize()}")
                 return
 
-            for i in range(min(n, len(images["photos"]))):
+            for i in range(min(number, len(images["photos"]))):
                 embed = Embed(
                     title="Picture from " + rover.capitalize(),
                     description="Picture taken from the " + images["photos"][i]["camera"]["full_name"],
