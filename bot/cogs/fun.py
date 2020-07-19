@@ -211,7 +211,7 @@ class Fun(Cog):
             'y': ['y', 'Y'], 'z': ['Z', 'z']
         }
         content = [i.lower()+' ' for i in [i for i in ctx.message.content.split(" ") if i.lower() != ">leet" and i.lower() != ">leetify"]]
-        strContent = ''
+        str_content = ''
         for i in content:
             strContent += i
         RefContent = ''
