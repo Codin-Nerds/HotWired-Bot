@@ -212,7 +212,7 @@ class Fun(Cog):
             "u": ["U", "u"], "v": ["v","V"], "w": ["W", "w"], "x": ["X", "x"],
             "y": ["y", "Y"], "z": ["Z", "z"]
         }
-        content = [i.lower()+" " for i in ctx.message.content[1:]]
+        content = [i.lower() + " " for i in ctx.message.content[1:]]
         str_content = ""
         for i in content:
             str_content += i
