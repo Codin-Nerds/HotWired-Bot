@@ -110,7 +110,7 @@ class Sudo(Cog):
         # os.system("python3.8 -m pipenv run start")
 
     @sudo.command()
-    async def botstatus(self, ctx: Context, status: str, status_info: str) -> None:
+    async def botstatus(self, ctx: Context, status: str, *, status_info: str) -> None:
         """
         Change the status of the bot
         `botstatus playing <new status>` - Change playing status

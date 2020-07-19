@@ -5,6 +5,7 @@ from collections import Counter
 from contextlib import suppress
 from datetime import datetime
 
+from bot.cogs.embeds import Embeds
 from bot.core.bot import Bot
 from bot.core.converters import ActionReason, ProcessedMember
 from bot.core.decorators import follow_roles
@@ -26,8 +27,14 @@ from discord.ext.commands import (
 class Moderation(Cog):
     """This cog provides moderation commands."""
 
-    def __init__(self, bot: Bot) -> None:
+    def __init__(self, bot: Bot, *args) -> None:
         self.bot = bot
+        self.args = args
+
+    @property
+    def embeds(self) -> Embeds:
+        """Get currently loaded Embed cog instance."""
+        return self.bot.get_cog("Embeds")
 
     @command()
     @has_permissions(kick_members=True)
@@ -220,35 +227,34 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], *, message: str) -> None:
+    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]]) -> None:
         """Dm a List of Specified User from Your Guild."""
-        embed = Embed(
-            title="Notice!",
-            description=message,
-            color=Color.dark_magenta()
-        )
+        embed = self.embeds.embeds[ctx.guild][ctx.author]
+
+        if embed.description is None and embed.title is None:
+            await ctx.send("Please create a embed using our embed handler to send it.")
+            return
+
         embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in members:
             if isinstance(member, Role):
-                print("works")
                 for mem in member.members:
-                    print("for")
                     await mem.send(embed=embed)
-                print("above return")
                 return
             else:
                 await member.send(embed=embed)
 
     @command()
     @has_permissions(administrator=True)
-    async def dmall(self, ctx: Context, *, message: str) -> None:
+    async def dmall(self, ctx: Context) -> None:
         """Dm all Users from Your Guild."""
-        embed = Embed(
-            title="Notice!",
-            description=message,
-            color=Color.dark_magenta()
-        )
+        embed = self.embeds.embeds[ctx.guild][ctx.author]
+
+        if embed.description is None and embed.title is None:
+            await ctx.send("Please create a embed using our embed handler to send it.")
+            return
+
         embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in ctx.guild.members:
