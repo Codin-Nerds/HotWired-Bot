@@ -232,7 +232,7 @@ class Fun(Cog):
                     MDlist.remove("`")
                 ChosenMD = random.choice(MDlist)
                 prevMD = ChosenMD
-                RefContent += ChosenMD+random.choice(Leetters[i])+ChosenMD
+                RefContent += ChosenMD + random.choice(Leetters[i]) + ChosenMD
             else:
                 RefContent += i
 
