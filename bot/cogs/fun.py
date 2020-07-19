@@ -204,39 +204,35 @@ class Fun(Cog):
         """Gives each letter of a given message a different markdown style."""
 
         leetters = {
-            "a": ["A","4"], "b": ["b", "B"], "c": ["C", "c"], "d": ["D", "d"],
-            "e": ["E", "3"], "f": ["F", "f"], "g": ["G", "g"], "h": ["H", "h"],
-            "i": ["1", "I", "i"], "j": ["j", "J"], "k": ["K", "k"], "l": ["L", "l"],
-            "m": ["M", "m"], "n": ["n", "N"], "o": ["O", "0"], "p": ["P", "p"],
-            "q": ["Q", "q"], "r": ["R", "r"], "s": ["5", "S"], "t": ["t", "T"],
-            "u": ["U", "u"], "v": ["v","V"], "w": ["W", "w"], "x": ["X", "x"],
-            "y": ["y", "Y"], "z": ["Z", "z"]
-        }
+            "a": ["A","4"], "e": ["E", "3"], "i": ["1", "I", "i"],
+            "o": ["O", "0", "o"], "s": ["5", "S", "s"]
+            }
         content = [i.lower() + " " for i in content]
         str_content = ""
         for i in content:
             str_content += i
         ref_content = ""
         prev_md = ""
-        for i in str_content:
-            if i in leetters.keys():
-                md_list = ["prev_md*", "**", "***", "__", "", "`"]
-                random.seed(random.randint(421, 294244))
-                if prev_md == "":
-                    md_list.remove("")
-                elif "*" in prev_md:
-                    md_list.remove("*")
-                    md_list.remove("**")
-                    md_list.remove("***")
-                elif prev_md == "__":
-                    md_list.remove("__")
-                elif prev_md == "`":
-                    md_list.remove("`")
-                chosen_md = random.choice(md_list)
-                prev_md = chosen_md
-                ref_content += chosen_md + random.choice(leetters[i]) + chosen_md
+        for letter in str_content:
+            if letter in leeters.keys():
+                leet_char = random.choice(leeters[letter])
             else:
-                ref_content += i
+                leet_char = random.choice([letter, letter.upper()])
+            md_list = ["*", "**", "***", "__", "", "`"]
+            random.seed(random.randint(421, 294244))
+            if prev_md == "":
+                md_list.remove("")
+            elif "*" in prev_md:
+                md_list.remove("*")
+                md_list.remove("**")
+                md_list.remove("***")
+            elif prev_md == "__":
+                md_list.remove("__")
+            elif prev_md == "`":
+                md_list.remove("`")
+            chosen_md = random.choice(md_list)
+            prev_md = chosen_md
+            ref_content += chosen_md + leet_char + chosen_md
 
         await ctx.send(ref_content + f"\n-{ctx.message.author.name}")
 
