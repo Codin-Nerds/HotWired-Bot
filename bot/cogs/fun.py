@@ -236,7 +236,7 @@ class Fun(Cog):
             else:
                 RefContent += i
 
-        await ctx.channel.send(RefContent + f"\n-{ctx.message.author.name}")
+        await ctx.send(RefContent + f"\n-{ctx.message.author.name}")
 
     @command()
     async def why(self, ctx: Context) -> None:
