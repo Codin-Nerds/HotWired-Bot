@@ -199,7 +199,7 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"Something went Boom! [status : {lizr.status}]")
 
-    @commands.command(aliases=["leet"])
+    @command(aliases=["leet"])
     async def Leetify(self, ctx):
         Leetters = {'a':['A','4'], 'b':['b', 'B'], 'c':['C', 'c'], 'd':['D', 'd'],
                         'e':['E', '3'], 'f':['F', 'f'], 'g':['G', 'g'], 'h':['H', 'h'],
