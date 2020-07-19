@@ -201,42 +201,44 @@ class Fun(Cog):
 
     @command(aliases=["leet"])
     async def leetify(self, ctx: Context, *, content: str) -> None:
-        leetters = {
-            'a': ['A','4'], 'b': ['b', 'B'], 'c': ['C', 'c'], 'd': ['D', 'd'],
-            'e': ['E', '3'], 'f': ['F', 'f'], 'g': ['G', 'g'], 'h': ['H', 'h'],
-            'i': ['1', 'I', 'i'], 'j': ['j', 'J'], 'k': ['K', 'k'], 'l': ['L', 'l'],
-            'm': ['M', 'm'], 'n': ['n', 'N'], 'o': ['O', '0'], 'p': ['P', 'p'],
-            'q': ['Q', 'q'], 'r': ['R', 'r'], 's': ['5', 'S'], 't': ['t', 'T'],
-            'u': ['U', 'u'], 'v': ['v','V'], 'w': ['W', 'w'], 'x': ['X', 'x'],
-            'y': ['y', 'Y'], 'z': ['Z', 'z']
-        }
-        content = [i.lower()+' ' for i in [i for i in ctx.message.content.split(" ") if i.lower() != ">leet" and i.lower() != ">leetify"]]
-        str_content = ''
-        for i in content:
-            strContent += i
-        RefContent = ''
-        prevMD = ''
-        for i in strContent:
-            if i in Leetters.keys():
-                MDlist = ['*', '**', '***', '__', '', '`']
-                random.seed(random.randint(421, 294244))
-                if prevMD == '':
-                    MDlist.remove('')
-                elif '*' in prevMD:
-                    MDlist.remove("*")
-                    MDlist.remove("**")
-                    MDlist.remove("***")
-                elif prevMD == '__':
-                    MDlist.remove("__")
-                elif prevMD == '`':
-                    MDlist.remove("`")
-                ChosenMD = random.choice(MDlist)
-                prevMD = ChosenMD
-                RefContent += ChosenMD + random.choice(Leetters[i]) + ChosenMD
-            else:
-                RefContent += i
+        """Gives each letter of a given message a different markdown style."""
 
-        await ctx.send(RefContent + f"\n-{ctx.message.author.name}")
+        leetters = {
+            "a": ["A","4"], "b": ["b", "B"], "c": ["C", "c"], "d": ["D", "d"],
+            "e": ["E", "3"], "f": ["F", "f"], "g": ["G", "g"], "h": ["H", "h"],
+            "i": ["1", "I", "i"], "j": ["j", "J"], "k": ["K", "k"], "l": ["L", "l"],
+            "m": ["M", "m"], "n": ["n", "N"], "o": ["O", "0"], "p": ["P", "p"],
+            "q": ["Q", "q"], "r": ["R", "r"], "s": ["5", "S"], "t": ["t", "T"],
+            "u": ["U", "u"], "v": ["v","V"], "w": ["W", "w"], "x": ["X", "x"],
+            "y": ["y", "Y"], "z": ["Z", "z"]
+        }
+        content = [i.lower()+" " for i in ctx.message.content[1:]]
+        str_content = ""
+        for i in content:
+            str_content += i
+        ref_content = ""
+        prev_md = ""
+        for i in str_content:
+            if i in leetters.keys():
+                md_list = ["prev_md*", "**", "***", "__", "", "`"]
+                random.seed(random.randint(421, 294244))
+                if prev_md == "":
+                    md_list.remove("")
+                elif "*" in prev_md:
+                    md_list.remove("*")
+                    md_listmd_list.remove("**")
+                    md_list.remove("***")
+                elif prev_md == "__":
+                    md_list.remove("__")
+                elif prev_md == "`":
+                    md_list.remove("`")
+                chosen_md = random.choice(md_list)
+                prev_md = chosen_md
+                ref_content += chosen_md + random.choice(leetters[i]) + chosen_md
+            else:
+                ref_content += i
+
+        await ctx.send(ref_content + f"\n-{ctx.message.author.name}")
 
     @command()
     async def why(self, ctx: Context) -> None:
