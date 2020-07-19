@@ -87,7 +87,7 @@ class TTT(Cog):
                 await self.ttt_move(user, reaction.message, move)
 
     def decodeMove(self, emoji: str) -> None:
-        dict = {
+        emoji_dict = {
             u"\u2196": 0,
             u"\u2B06": 1,
             u"\u2197": 2,
@@ -98,7 +98,7 @@ class TTT(Cog):
             u"\u2B07": 7,
             u"\u2198": 8
         }
-        return dict[emoji] if emoji in dict else None
+        return emoji_dict[emoji] if emoji in emoji_dict else None
 
     # Utility Functions
     def tttTable(self, xo) -> str:
@@ -112,7 +112,7 @@ class TTT(Cog):
         ]
 
     def tttCoordsToIndex(self, coords: tuple) -> str:
-        map = {
+        board_map = {
             (0, 0): 0,
             (0, 1): 1,
             (0, 2): 2,
@@ -123,7 +123,7 @@ class TTT(Cog):
             (2, 1): 7,
             (2, 2): 8
         }
-        return map[coords]
+        return board_map[coords]
 
     def tttDoChecks(self, b: str) -> t.Union[str, None]:
         m = self.tttMatrix(b)
