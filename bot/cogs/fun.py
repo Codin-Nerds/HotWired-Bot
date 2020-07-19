@@ -226,7 +226,7 @@ class Fun(Cog):
                     md_list.remove("")
                 elif "*" in prev_md:
                     md_list.remove("*")
-                    md_listmd_list.remove("**")
+                    md_list.remove("**")
                     md_list.remove("***")
                 elif prev_md == "__":
                     md_list.remove("__")
