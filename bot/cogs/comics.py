@@ -13,7 +13,7 @@ from discord.ext.commands import Cog, Context, command
 
 
 class Comics(Cog):
-    """Print random comics from popular sources."""
+    """View random comics from popular sources."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -21,7 +21,7 @@ class Comics(Cog):
 
     @command()
     async def ohno(self, ctx: Context) -> None:
-        """Webcomic Name comics."""
+        """Sends a random 'Webcomic Name' comic."""
 
         url = "http://webcomicname.com/random"
 
@@ -41,7 +41,7 @@ class Comics(Cog):
 
     @command()
     async def smbc(self, ctx: Context) -> None:
-        """Saturday Morning comic."""
+        """Sends a random 'Saturday Morning' comic."""
 
         url = "http://www.smbc-comics.com/comic/archive"
 
@@ -75,7 +75,7 @@ class Comics(Cog):
 
     @command()
     async def pbf(self, ctx: Context) -> None:
-        """The Perry Bible comic."""
+        """Sends a random 'The Perry Bible' comic."""
 
         url = "http://pbfcomics.com/random"
 
@@ -95,7 +95,7 @@ class Comics(Cog):
 
     @command()
     async def cah(self, ctx: Context) -> None:
-        """Cyanide and Happiness comic."""
+        """Sends a random 'Cyanide and Happiness' comic."""
 
         url = "http://explosm.net/comics/random"
 
@@ -117,7 +117,7 @@ class Comics(Cog):
 
     @command()
     async def xkcd(self, ctx: Context, comic_type: str = "latest") -> None:
-        """Get your favorite xkcd comics."""
+        """See the latest/a random 'xkcd' comic."""
         comic_type = comic_type.lower()
 
         if comic_type not in ["latest", "random"]:
@@ -170,7 +170,7 @@ class Comics(Cog):
 
     @command()
     async def mrls(self, ctx: Context) -> None:
-        """Mr. Lovenstein comic."""
+        """Sends a random 'Mr. Lovenstein' comic."""
 
         url = "http://www.mrlovenstein.com/shuffle"
 
@@ -190,7 +190,7 @@ class Comics(Cog):
 
     @command()
     async def chainsaw(self, ctx: Context) -> None:
-        """Chainsawsuit comic."""
+        """Sends a random 'Chainsawsuit' comic."""
 
         url = "http://chainsawsuit.com/comic/random/?random&nocache=1"
 
@@ -210,7 +210,7 @@ class Comics(Cog):
 
     @command()
     async def sarah(self, ctx: Context) -> None:
-        """Sarah's Scribbles"""
+        """Sends a random 'Sarah's Scribbles' comic."""
 
         url = "http://www.gocomics.com/random/sarahs-scribbles"
 
