@@ -133,7 +133,7 @@ class Commands(Cog):
 
     def get_server_embed(self, guild: Guild) -> Embed:
         embed = Embed(
-            title="Serer's stats and information.",
+            title="Server's stats and information.",
             description=guild.description if guild.description else None,
             color=Color.gold()
         )
