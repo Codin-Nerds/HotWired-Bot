@@ -25,7 +25,7 @@ class TTT(Cog):
         msg = await self.bot.send_message(channel, response)
         await self.makeButtons(msg)
 
-    async def ttt_move(self, user: User, message: Message, move) -> None:
+    async def ttt_move(self, user: User, message: Message, move: int) -> None:
         print(f"ttt_move:{user.id}")
         uid = user.id
         if uid not in self.ttt_games:
