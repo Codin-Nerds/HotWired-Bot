@@ -199,6 +199,43 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"Something went Boom! [status : {lizr.status}]")
 
+    @commands.command(aliases=["leet"])
+    async def Leetify(self, ctx):
+        Leetters = {'a':['A','4'], 'b':['b', 'B'], 'c':['C', 'c'], 'd':['D', 'd'],
+                        'e':['E', '3'], 'f':['F', 'f'], 'g':['G', 'g'], 'h':['H', 'h'],
+                        'i':['1', 'I', 'i'], 'j':['j', 'J'], 'k':['K', 'k'], 'l':['L', 'l'],
+                        'm':['M', 'm'], 'n':['n', 'N'], 'o':['O', '0'], 'p':['P', 'p'],
+                        'q':['Q', 'q'], 'r':['R', 'r'], 's':['5', 'S'], 't':['t', 'T'],
+                        'u':['U', 'u'], 'v':['v','V'], 'w':['W', 'w'], 'x':['X', 'x'],
+                        'y':['y', 'Y'], 'z':['Z', 'z']}
+        content = [i.lower()+' ' for i in [i for i in ctx.message.content.split(" ") if i.lower() != ">leet" and i.lower() != ">leetify"]]
+        strContent = ''
+        for i in content:
+            strContent += i
+        RefContent = ''
+        prevMD = ''
+        for i in strContent:
+            if i in Leetters.keys():
+                MDlist = ['*', '**', '***', '__', '', '`']
+                random.seed(random.randint(421, 294244))
+                if prevMD == '':
+                    MDlist.remove('')
+                elif '*' in prevMD:
+                    MDlist.remove("*")
+                    MDlist.remove("**")
+                    MDlist.remove("***")
+                elif prevMD == '__':
+                    MDlist.remove("__")
+                elif prevMD == '`':
+                    MDlist.remove("`")
+                ChosenMD = random.choice(MDlist)
+                prevMD = ChosenMD
+                RefContent += ChosenMD+random.choice(Leetters[i])+ChosenMD
+            else:
+                RefContent += i
+
+        await ctx.channel.send(RefContent + f"\n-{ctx.message.author.name}")
+
     @command()
     async def why(self, ctx: Context) -> None:
         """Why?."""
