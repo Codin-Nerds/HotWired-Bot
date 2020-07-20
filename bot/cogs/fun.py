@@ -97,7 +97,7 @@ class Fun(Cog):
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
-            await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
+        await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
         except nekos.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
         except nekos.errors.NothingFound:
