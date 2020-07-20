@@ -237,7 +237,7 @@ class Fun(Cog):
             prev_md = chosen_md
             ref_content += chosen_md + leet_char + chosen_md
 
-        await ctx.send(ref_content + f"\n-{ctx.message.author.name}")
+        await ctx.send(f"{ref_content}\n-{ctx.message.author.mention}")
 
     @command()
     async def why(self, ctx: Context) -> None:
