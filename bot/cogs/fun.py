@@ -221,6 +221,8 @@ class Fun(Cog):
                 leet_char = random.choice(leeters[letter])
             else:
                 leet_char = random.choice([letter, letter.upper()])
+            
+            # Apply markdown without using the same style next to each other
             md_list = ["*", "**", "***", "__", "", "`"]
             random.seed(random.randint(421, 294244))
             if prev_md == "":
