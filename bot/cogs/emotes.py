@@ -102,22 +102,22 @@ class Emotes(Cog):
         """
         Add an emote to server
 
-        **Usage:**
-        `{config.COMMAND_PREFIX}add_emote twitch <emote_id>`
-        `{config.COMMAND_PREFIX}add_emote btv <emote_id> <channel_name>`
-        `{config.COMMAND_PREFIX}add_emote frf <emote_id>`
+        Usage:
+            - add_emote twitch <emote_id>
+            - add_emote btv <emote_id> <channel_name>
+            - add_emote frf <emote_id>
 
         To get an emote visit:
-        [twitchemotes.com](https://twitchemotes.com)
-        [betterttv.com](https://betterttv.com/emotes/shared)
-        [frankerfacez.com](https://www.frankerfacez.com/emoticons/)
+            - https://twitchemotes.com
+            - https://betterttv.com/emotes/shared
+            - https://www.frankerfacez.com/emoticons/
         and find an emote you like!.
 
         The channel name for BetterTTV emotes is found in the top right section of the web page for the emote
         The the ID of the emote is found at the end of the URL for a specific emote.
-        twitchemotes.com/emotes/__**120232**__
-        betterttv.com/emotes/__**5771aa498bbc1e572cb7ae4d**__
-        frankerfacez.com/emoticon/__**261802**__-4Town
+        - twitchemotes.com/emotes/120232
+        - betterttv.com/emotes/5771aa498bbc1e572cb7ae4d
+        - frankerfacez.com/emoticon/261802-4Town
         """
         try:
             emote = Emote.get_emote(content)
