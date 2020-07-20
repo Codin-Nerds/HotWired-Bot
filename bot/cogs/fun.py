@@ -210,21 +210,17 @@ class Fun(Cog):
             "o": ["O", "0", "o"], 
             "s": ["5", "S", "s"]
         }
-        content = [i.lower() + " " for i in content]
-        str_content = ""
-        for i in content:
-            str_content += i
+        content = content.lower()
         ref_content = ""
         prev_md = ""
-        for letter in str_content:
-            if letter in leeters.keys():
-                leet_char = random.choice(leeters[letter])
+        for letter in content:
+            if letter in leetters.keys():
+                leet_char = random.choice(leetters[letter])
             else:
                 leet_char = random.choice([letter, letter.upper()])
             
             # Apply markdown without using the same style next to each other
             md_list = ["*", "**", "***", "__", "", "`"]
-            random.seed(random.randint(421, 294244))
             if prev_md == "":
                 md_list.remove("")
             elif "*" in prev_md:
@@ -235,6 +231,7 @@ class Fun(Cog):
                 md_list.remove("__")
             elif prev_md == "`":
                 md_list.remove("`")
+            random.seed(random.randint(421, 294244))
             chosen_md = random.choice(md_list)
             prev_md = chosen_md
             ref_content += f"{chosen_md}{leet_char}{chosen_md}"
