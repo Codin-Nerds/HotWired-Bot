@@ -26,8 +26,7 @@ from discord.ext.commands import (
 
 import nekos
 
-file = open("bot/assets" + os.path.sep +
-            "excuses.txt", "r", encoding="utf-8")
+file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()
 file.close()
 
@@ -212,7 +211,7 @@ class Fun(Cog):
             "s": ["5", "S", "s"]
         }
         content = content.lower()
-        ref_content = ""
+        leetified_content = ""
         prev_md = ""
         for letter in content:
             if letter in leetters.keys():
@@ -235,9 +234,9 @@ class Fun(Cog):
             random.seed(random.randint(421, 294244))
             chosen_md = random.choice(md_list)
             prev_md = chosen_md
-            ref_content += f"{chosen_md}{leet_char}{chosen_md}"
+            leetified_content += f"{chosen_md}{leet_char}{chosen_md}"
 
-        await ctx.send(f"{ref_content}\n-{ctx.message.author.mention}")
+        await ctx.send(f"{leetified_content}\n-{ctx.message.author.mention}")
 
     @command()
     async def why(self, ctx: Context) -> None:
