@@ -2,23 +2,23 @@ import typing as t
 
 from bot.core.bot import Bot
 
-from discord import Channel, Message, Reaction, User
+from discord import TextChannel, Message, Reaction, User
 from discord.ext.commands import Cog, Context, command
 
 
-class TTT(Cog):
-    """Tic Tac Toe."""
+class TicTacToe(Cog):
+    """Tic-Tac-Toe Game."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.ttt_games = {}
 
-    @command(pass_context=True)
-    async def ttt(self, ctx: Context, move: str = "") -> None:
-        """ Tic Tac Toe """
-        await self.ttt_new(ctx.message.author, ctx.message.channel)
+    @command(aliases=["ttt", "tictactoe"])
+    async def tic_tac_toe(self, ctx: Context, move: str = "") -> None:
+        """Play a game of Tic-Tac-Toe."""
+        await self.ttt_new(ctx.author, ctx.channel)
 
-    async def ttt_new(self, user: User, channel: Channel) -> None:
+    async def ttt_new(self, user: User, channel: TextChannel) -> None:
         self.ttt_games[user.id] = [" "] * 9
         response = self.ttt_make_board(user)
         response += "Your move:"
@@ -125,7 +125,7 @@ class TTT(Cog):
         }
         return board_map[coords]
 
-    def tttDoChecks(self, b: str) -> t.Union[str, None]:
+    def tttDoChecks(self, b: str) -> t.Optional[str]:
         m = self.tttMatrix(b)
         if self.tttCheckWin(m, "x"):
             return "win X"
