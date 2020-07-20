@@ -237,7 +237,7 @@ class Fun(Cog):
                 md_list.remove("`")
             chosen_md = random.choice(md_list)
             prev_md = chosen_md
-            ref_content += chosen_md + leet_char + chosen_md
+            ref_content += f"{chosen_md}{leet_char}{chosen_md}"
 
         await ctx.send(f"{ref_content}\n-{ctx.message.author.mention}")
 
