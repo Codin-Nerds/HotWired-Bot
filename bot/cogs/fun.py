@@ -204,9 +204,12 @@ class Fun(Cog):
         """Gives each letter of a given message a different markdown style."""
 
         leetters = {
-            "a": ["A","4"], "e": ["E", "3"], "i": ["1", "I", "i"],
-            "o": ["O", "0", "o"], "s": ["5", "S", "s"]
-            }
+            "a": ["A","4"], 
+            "e": ["E", "3"], 
+            "i": ["1", "I", "i"],
+            "o": ["O", "0", "o"], 
+            "s": ["5", "S", "s"]
+        }
         content = [i.lower() + " " for i in content]
         str_content = ""
         for i in content:
