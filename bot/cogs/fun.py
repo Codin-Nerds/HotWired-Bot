@@ -97,7 +97,7 @@ class Fun(Cog):
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
-        await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
+            await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
         except nekos.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
         except nekos.errors.NothingFound:
@@ -130,7 +130,7 @@ class Fun(Cog):
             async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
                 if r.status == 200:
                     js = await r.json()
-                    em = discord.Embed(name="random.cat", colour=0x690E8)
+                    em = Embed(name="random.cat", colour=0x690E8)
                     em.set_image(url=js["file"])
                     await ctx.send(embed=em)
                 else:
@@ -140,7 +140,7 @@ class Fun(Cog):
     async def httpcat(self, ctx: Context, http_id: int) -> None:
         """http.cat images."""
         if http_id in config.http_codes:
-            httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
+            httpcat_em = Embed(name="http.cat", colour=0x690E8)
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
         else:
@@ -152,7 +152,7 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
-        embed = discord.Embed(title="Fox", color=0x690E8)
+        embed = Embed(title="Fox", color=0x690E8)
         embed.set_image(url=picture["image"])
         await ctx.send(embed=embed)
 
@@ -180,7 +180,7 @@ class Fun(Cog):
                     if ".mp4" in shibe_url:
                         await ctx.send("video: " + shibe_url)
                     else:
-                        shibe_em = discord.Embed(colour=0x690E8)
+                        shibe_em = Embed(colour=0x690E8)
                         shibe_em.set_image(url=shibe_url)
                         await ctx.send(embed=shibe_em)
                 else:
@@ -193,7 +193,7 @@ class Fun(Cog):
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
                     img = await lizr.json()
-                    liz_em = discord.Embed(colour=0x690E8)
+                    liz_em = Embed(colour=0x690E8)
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
@@ -245,7 +245,7 @@ class Fun(Cog):
             async with session.get("https://nekos.life/api/why", headers=self.user_agent) as why:
                 if why.status == 200:
                     why_js = await why.json()
-                    why_em = discord.Embed(
+                    why_em = Embed(
                         title=f"{ctx.author.name} wonders...", description=why_js["why"], colour=0x690E8,)
                     await ctx.send(embed=why_em)
                 else:
@@ -255,7 +255,7 @@ class Fun(Cog):
     async def robohash(self, ctx: Context, *, meme: str) -> None:
         """text => robot image thing."""
         try:
-            e = discord.Embed(colour=0x690E8)
+            e = Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
             e.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=e)
@@ -280,7 +280,7 @@ class Fun(Cog):
                 if meme.status == 200:
                     mj = await meme.json()
                     ans = await self.get_answer(mj["answer"])
-                    em = discord.Embed(
+                    em = Embed(
                         title=ans, description=f"And the answer to {question} is this:", colour=0x690E8,)
                     em.set_image(url=mj["image"])
                     await ctx.send(embed=em)
@@ -322,7 +322,7 @@ class Fun(Cog):
         try:
             async with self.session.get("http://inspirobot.me/api?generate=true") as page:
                 picture = await page.text(encoding="utf-8")
-                embed = discord.Embed()
+                embed = Embed()
                 embed.set_image(url=picture)
                 await ctx.send(embed=embed)
         except Exception:
@@ -335,7 +335,7 @@ class Fun(Cog):
             async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
-                    neko_em = discord.Embed(colour=0x690E8)
+                    neko_em = Embed(colour=0x690E8)
                     neko_em.set_image(url=img["neko"])
                     await ctx.send(embed=neko_em)
                 else:
