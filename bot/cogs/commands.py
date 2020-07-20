@@ -20,13 +20,12 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
         """Returns the number of members in a server."""
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
-        type = f"""
+        member_type = f"""
                 Humans: {ctx.guild.member_count - bots}
                 Bots: {bots}
             """
@@ -38,7 +37,7 @@ class Commands(Cog):
             """
         embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
         embed.add_field(name="**❯❯ Member Status**", value=status)
-        embed.add_field(name="**❯❯ Member Type**", value=type)
+        embed.add_field(name="**❯❯ Member Type**", value=member_type)
         embed.set_author(name=f"SERVER : {ctx.guild.name}")
 
         await ctx.send(embed=embed)

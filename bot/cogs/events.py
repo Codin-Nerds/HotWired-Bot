@@ -1,3 +1,4 @@
+import datetime
 import re
 import textwrap
 import traceback
@@ -72,25 +73,9 @@ class Events(Cog):
         embed = Embed(color=Color.red(), description=error_message, title=event)
 
         if not self.dev_mode:
-            await self.error_hook.send(embed=embed)  # TODO: replace with logging
+            await self.error_hook.send(embed=embed)
         else:
-            await logchannel.send(embed)
-
-    @Cog.listener()
-    async def on_command_error(self, event: str, *args, **kwargs) -> None:
-        logchannel = self.bot.get_channel(config.log_channel)
-
-        error_message = f"```py\n{traceback.format_exc()}\n```"
-        if len(error_message) > 2000:
-            async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
-                error_message = "https://www.hasteb.in/" + (await resp.json())["key"]
-
-        embed = Embed(color=Color.red(), description=error_message, title=event)
-
-        if not self.dev_mode:
-            await self.error_hook.send(embed=embed)  # TODO: replace with logging
-        else:
-            await logchannel.send(embed)
+            await logchannel.send(embed=embed)
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
@@ -136,9 +121,29 @@ class Events(Cog):
         except Exception:
             pass
 
-        await logchannel.send(
-            f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.bot.guilds)}th** server! :champagne_glass: "
+        log_embed = Embed(
+            title=f"The bot has been added to {guild.name}",
+            color=Color.green(),
+            description=textwrap.dedent(
+                f"""
+                **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
+                Guild Owner: **{guild.owner}** | **<@!{guild.owner_id}>**
+                Region: **{guild.region}**
+                Member Count: **{guild.member_count}**
+
+                Text channels: **{len(guild.text_channels)}**
+                Voice channels: **{len(guild.voice_channels)}**
+                AFK timeout: **{round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel}**
+
+                Created at: **{datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}**
+                File Size: **{round(guild.filesize_limit / 1048576)} MB**
+                Bitrate: **{round(guild.bitrate_limit / 1000)} kbps**
+                """
+            ),
         )
+        embed.set_thumbnail(url=str(guild.icon_url))
+
+        await logchannel.send(embed=log_embed)
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:

@@ -32,9 +32,11 @@ class Moderation(Cog):
         self.args = args
 
     @property
-    def embeds(self) -> Embeds:
+    def embeds_cog(self) -> Embeds:
         """Get currently loaded Embed cog instance."""
-        return self.bot.get_cog("Embeds")
+        embed_cog = self.bot.get_cog("Embeds")
+        print(embed_cog)
+        return embed_cog
 
     @command()
     @has_permissions(kick_members=True)
@@ -229,37 +231,37 @@ class Moderation(Cog):
     @has_permissions(administrator=True)
     async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]]) -> None:
         """Dm a List of Specified User from Your Guild."""
-        embed = self.embeds.embeds[ctx.guild][ctx.author]
+        embed_data = self.embeds_cog.embeds[ctx.author]
 
-        if embed.description is None and embed.title is None:
+        if embed_data.embed.description is None and embed_data.embed.title is None:
             await ctx.send("Please create a embed using our embed handler to send it.")
             return
 
-        embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+        embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in members:
             if isinstance(member, Role):
                 for mem in member.members:
-                    await mem.send(embed=embed)
+                    await mem.send(embed=embed_data.embed)
                 return
             else:
-                await member.send(embed=embed)
+                await member.send(embed=embed_data.embed)
 
     @command()
     @has_permissions(administrator=True)
     async def dmall(self, ctx: Context) -> None:
         """Dm all Users from Your Guild."""
-        embed = self.embeds.embeds[ctx.guild][ctx.author]
+        embed_data = self.embeds_cog.embeds[ctx.author]
 
-        if embed.description is None and embed.title is None:
+        if embed_data.embed.description is None and embed_data.embed.title is None:
             await ctx.send("Please create a embed using our embed handler to send it.")
             return
 
-        embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+        embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in ctx.guild.members:
             with suppress(Forbidden):
-                await member.send(embed=embed)
+                await member.send(embed=embed_data.embed)
 
     @command()
     @has_permissions(manage_channels=True)
