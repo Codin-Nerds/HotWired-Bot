@@ -49,92 +49,92 @@ class NSFW(commands.Cog):
         self.bot = bot
         self.config = bot.config
         self.session = aiohttp.ClientSession()
-
+    
+    
     async def fetch_from_reddit(self, urlstr, rating, provider):
-        async with self.session.get(urlstr, headers={'User-Agent': "Booru (https://github.com/yumenetwork/Yume-Bot)"}) as resp:
+        async with self.session.get(urlstr, headers={'User-Agent': "NSFW (https://github.com/The-Codin-Hole/HotWired-Bot)"}) as resp:
             try:
                 content = await resp.json(content_type=None)
             except (ValueError, aiohttp.ContentTypeError) as ex:
                 print("Pruned by exception, error below:")
                 print(ex)
                 content = []
-        if not content or content == [] or content is None or (isinstance(content, dict) and "success" in content.keys() and not content["success"]):
-            content = []
-            return content
-        else:
-            # Clean up to kill bad pictures and crap
-            good_content = []
-            for item in content["data"]["children"]:
-                IMGUR_LINKS = "https://imgur.com/", "https://i.imgur.com/", "http://i.imgur.com/", "http://imgur.com", "https://m.imgur.com"
-                GOOD_EXTENSIONS = ".png", ".jpg", ".jpeg", ".gif"
-                url = item["data"]["url"]
-                if url.startswith(IMGUR_LINKS):
-                    if url.endswith(".mp4"):
-                        item["file_url"] = url[:-3] + "gif"
-                    elif url.endswith(".gifv"):
-                        item["file_url"] = url[:-1]
-                    elif url.endswith(GOOD_EXTENSIONS):
-                        item["file_url"] = url
-                    else:
-                        item["file_url"] = url + ".png"
-                elif url.startswith("https://gfycat.com/"):
-                    url_cut = url[19:]
-                    if url_cut.islower():
-                        continue
-                    item["file_url"] = "https://thumbs.gfycat.com/" + \
-                        url_cut + "-size_restricted.gif"
+        
+        if not content or content == [] or (isinstance(content, dict) and "success" in content.keys() and not content["success"]):
+            return []
+        
+        
+        good_content = []
+        for item in content["data"]["children"]:
+            IMGUR_LINKS = "https://imgur.com/", "https://i.imgur.com/", "http://i.imgur.com/", "http://imgur.com", "https://m.imgur.com"
+            GOOD_EXTENSIONS = ".png", ".jpg", ".jpeg", ".gif"
+            url = item["data"]["url"]
+            if url.startswith(IMGUR_LINKS):
+                if url.endswith(".mp4"):
+                    item["file_url"] = url[:-3] + "gif"
+                elif url.endswith(".gifv"):
+                    item["file_url"] = url[:-1]
                 elif url.endswith(GOOD_EXTENSIONS):
                     item["file_url"] = url
                 else:
+                    item["file_url"] = url + ".png"
+                        
+            elif url.startswith("https://gfycat.com/"):
+                url_cut = url.strip("https://gfycat.com/")
+                if url_cut.islower():
                     continue
-                good_content.append(item)
-            content = good_content
+                item["file_url"] = "https://thumbs.gfycat.com/" + \
+                    url_cut + "-size_restricted.gif"
+            elif url.endswith(GOOD_EXTENSIONS):
+                    item["file_url"] = url
+            else:
+                continue
+            
+            good_content.append(item)
+        content = good_content
 
-            # Assign stuff to be used by booru_show
-            for item in content:
-                item["provider"] = provider
-                item["rating"] = rating
-                item["post_link"] = "https://reddit.com" + \
-                    item["data"]["permalink"]
-                item["score"] = item["data"]["score"]
-                item["tags"] = item["data"]["title"]
-                item["author"] = item["data"]["author"]
-            return content
+            
+        for item in content:
+            item["provider"] = provider
+            item["rating"] = rating
+            item["post_link"] = "https://reddit.com" + \
+                item["data"]["permalink"]
+            item["score"] = item["data"]["score"]
+            item["tags"] = item["data"]["title"]
+            item["author"] = item["data"]["author"]
+            
+        return content
 
     async def generic_specific_source(self, ctx, board):
-
-        # Image board fetcher
         async with ctx.typing():
             data = await getattr(self, f"fetch_{board}")(ctx)
 
-        # Filter data without using up requests space
         data = await self.filter_posts(ctx, data)
 
-        # Done sending requests, time to show it
-        await self.show_booru(ctx, data)
+        await self.show_nsfw(ctx, data)
 
     async def filter_posts(self, ctx, data):
         filtered_data = []
 
-        for booru in data:
-            if booru.get("is_deleted"):
+        for nsfw in data:
+            if nsfw.get("is_deleted"):
                 continue
 
-            filtered_data.append(booru)
+            filtered_data.append(nsfw)
 
         return filtered_data
 
-    async def show_booru(self, ctx, data):  # Shows various info in embed
+    async def show_nsfw(self, ctx, data):
         mn = len(data)
         if mn == 0:
             await ctx.send("No results.")
         else:
             i = randint(0, mn - 1)
-            booru = data[i]
+            nsfw = data[i]
 
             # Set colour for each board
             embed = discord.Embed()
-            embed.set_image(url=booru["file_url"])
+            embed.set_image(url=nsfw["file_url"])
             try:
                 await ctx.send(embed=embed)
             except discord.client.DiscordException:
