@@ -54,7 +54,7 @@ class Fun(Cog):
             title="Did you Know?",
             description=fact["text"],
             color=0x690E8
-            ))
+        ))
 
     @command()
     async def textcat(self, ctx: Context) -> None:
@@ -99,7 +99,7 @@ class Fun(Cog):
         try:
             embed = Embed(
                 color=0x690E8
-                )
+            )
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
@@ -139,7 +139,7 @@ class Fun(Cog):
                     em = Embed(
                         name="random.cat",
                         colour=0x690E8
-                        )
+                    )
                     em.set_image(url=js["file"])
                     await ctx.send(embed=em)
                 else:
@@ -152,7 +152,7 @@ class Fun(Cog):
             httpcat_em = Embed(
                 name="http.cat",
                 colour=0x690E8
-                )
+            )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
         else:
@@ -167,7 +167,7 @@ class Fun(Cog):
         embed = Embed(
             title="Fox",
             color=0x690E8
-            )
+        )
         embed.set_image(url=picture["image"])
         await ctx.send(embed=embed)
 
@@ -264,7 +264,7 @@ class Fun(Cog):
                         title=f"{ctx.author.name} wonders...",
                         description=why_js["why"],
                         colour=0x690E8
-                        )
+                    )
                     await ctx.send(embed=why_em)
                 else:
                     await ctx.send(f"Something went Boom! [status : {why.status}]")
@@ -302,7 +302,7 @@ class Fun(Cog):
                         title=ans,
                         description=f"And the answer to {question} is this:",
                         colour=0x690E8
-                        )
+                    )
                     em.set_image(url=mj["image"])
                     await ctx.send(embed=em)
                 else:
@@ -335,7 +335,7 @@ class Fun(Cog):
             title="Excuses",
             description=random.choice(lines),
             color=Color.gold()
-            )
+        )
 
         await ctx.send(embed=embed)
 
@@ -372,7 +372,7 @@ class Fun(Cog):
                 title="Slap In The Face!",
                 description=f"{ctx.author.mention} got slapped him/her self LMAO!",
                 color=Color.blurple()
-                )
+            )
             embed.set_image(
                 url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
         else:
@@ -392,10 +392,11 @@ class Fun(Cog):
             "https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif",
         ]
         if member == ctx.author.mention or member is None:
-            embed = Embed(title="Punch In The Face!",
-                          description=f"{ctx.author.mention} punched him/her self LMAO!",
-                          color=Color.blurple()
-                          )
+            embed = Embed(
+                title="Punch In The Face!",
+                description=f"{ctx.author.mention} punched him/her self LMAO!",
+                color=Color.blurple()
+            )
             embed.set_image(url=random.choice(img_links))
         else:
             embed = Embed(
@@ -424,9 +425,10 @@ class Fun(Cog):
             title="Table Throw!",
             description=f"{ctx.author.mention} threw the table! :boom:",
             color=Color.blurple()
-            )
+        )
         embed.set_image(
-            url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif")
+            url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif"
+        )
         await ctx.send(embed=embed)
 
     @command(aliases=["cookies", "cook"])
@@ -473,7 +475,7 @@ class Fun(Cog):
                 title="❌ERROR",
                 description="You can only get a cookie **Once Every 2 Hours**.",
                 color=Color.red()
-                )
+            )
             await ctx.send(embed=embed)
 
 

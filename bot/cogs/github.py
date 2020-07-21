@@ -59,7 +59,7 @@ class Github(Cog):
                 f"""
                 Repository : **{user}/{repository}**
                 Title : **{json_data.get('title')}**
-                ID : **`{number}`**
+                ID : **`{issue_num}`**
                 Link :  [Here]({issue_url})
                 """
             )

@@ -138,7 +138,7 @@ class Search(Cog, name="Basic"):
              - music
              - files
              - images
-             - it 
+             - it
              - maps
         """
         if category not in config.basic_search_categories:

@@ -40,7 +40,7 @@ class Commands(Cog):
         embed.add_field(name="**❯❯ Member Status**", value=status)
         embed.add_field(name="**❯❯ Member Type**", value=type)
         embed.set_author(name=f"SERVER : {ctx.guild.name}")
-        ember.set_footer(text="Powered by HotWired")
+        embed.set_footer(text="Powered by HotWired")
 
         await ctx.send(embed=embed)
 
