@@ -7,10 +7,10 @@ import time
 import traceback
 import typing as t
 
+import GPUtil
+
 from bot import config
 from bot.core.bot import Bot
-
-import GPUtil
 
 import humanize
 
