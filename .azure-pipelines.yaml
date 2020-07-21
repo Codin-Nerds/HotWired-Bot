@@ -19,3 +19,8 @@ jobs:
           python -m pipenv run lint
 
         displayName: "Check code style with flake8"
+
+      - script: |
+          python -m pipenv run isort -c -df
+
+        displayName: "Check import order"
