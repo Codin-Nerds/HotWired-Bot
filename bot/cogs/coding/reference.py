@@ -4,12 +4,9 @@ import urllib.parse
 from functools import partial
 
 import aiohttp
-
 from bs4 import BeautifulSoup
-
 from discord import Embed, Message
 from discord.ext.commands import Context
-
 from markdownify import MarkdownConverter
 
 

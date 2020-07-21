@@ -3,10 +3,10 @@ import textwrap
 import typing as t
 from collections import Counter
 
-from bot.core.bot import Bot
-
 from discord import ActivityType, Color, Embed, Guild, Member, Status, User
 from discord.ext.commands import Cog, Context, command
+
+from bot.core.bot import Bot
 
 STATUSES = {
     Status.online: "ONLINE <:online:346921745279746048>",

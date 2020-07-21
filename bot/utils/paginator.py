@@ -218,8 +218,7 @@ class Pages:
                     await self.message.clear_reactions()
                 except Exception:
                     pass
-                finally:
-                    break
+                break
             try:
                 await self.message.remove_reaction(payload.emoji, discord.Object(id=payload.user_id))
             except Exception:

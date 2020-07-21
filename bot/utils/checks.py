@@ -1,7 +1,7 @@
-from bot.config import devs
-
 from discord import Member
 from discord.ext.commands import Context, NoPrivateMessage
+
+from bot.config import devs
 
 
 def is_bot_dev(ctx: Context) -> bool:
