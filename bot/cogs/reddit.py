@@ -4,7 +4,6 @@ import random
 
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, group, is_nsfw
-
 from praw import Reddit as RedditAPI
 from praw.exceptions import MissingRequiredAttributeException
 

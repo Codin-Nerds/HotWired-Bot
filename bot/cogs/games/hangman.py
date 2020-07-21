@@ -4,11 +4,11 @@ import typing as t
 from collections import defaultdict
 from os import path
 
-from bot import config
-from bot.core.bot import Bot
-
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Cog, Context, command
+
+from bot import config
+from bot.core.bot import Bot
 
 DIR_PATH = path.dirname(__file__)
 # TODO: Define global hangman players

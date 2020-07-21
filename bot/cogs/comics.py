@@ -2,14 +2,12 @@ import io
 import random
 
 import aiohttp
+from bs4 import BeautifulSoup
+from discord import Color, Embed, File
+from discord.ext.commands import Cog, Context, command
 
 from bot import config
 from bot.core.bot import Bot
-
-from bs4 import BeautifulSoup
-
-from discord import Color, Embed, File
-from discord.ext.commands import Cog, Context, command
 
 
 class Comics(Cog):

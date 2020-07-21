@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from bot import config
-
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
+
+from bot import config
 
 
 class Bot(Base_Bot):

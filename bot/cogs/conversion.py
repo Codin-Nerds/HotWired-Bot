@@ -2,11 +2,11 @@ import base64
 import hashlib
 import textwrap
 
-from bot import config
-from bot.core.bot import Bot
-
 from discord import Embed
 from discord.ext.commands import Cog, Context, command
+
+from bot import config
+from bot.core.bot import Bot
 
 
 class Conversion(Cog):

@@ -1,11 +1,11 @@
 import textwrap
 
 import aiohttp
+from discord import Color, Embed
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
 
 from bot.config import Emojis
-
-from discord import Color, Embed
-from discord.ext.commands import Bot, BucketType, Cog, Context, command, cooldown
 
 BAD_RESPONSES = {
     404: "Issue/pull request not Found! Please enter a valid PR Number!",
