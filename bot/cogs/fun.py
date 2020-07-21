@@ -149,7 +149,8 @@ class Fun(Cog):
     async def httpcat(self, ctx: Context, http_id: int) -> None:
         """http.cat images."""
         if http_id in config.http_codes:
-            httpcat_em = Embed(name="http.cat",
+            httpcat_em = Embed(
+                name="http.cat",
                 colour=0x690E8
                 )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
@@ -194,9 +195,7 @@ class Fun(Cog):
                     if ".mp4" in shibe_url:
                         await ctx.send("video: " + shibe_url)
                     else:
-                        shibe_em = Embed(
-                            colour=0x690E8
-                            )
+                        shibe_em = Embed(colour=0x690E8)
                         shibe_em.set_image(url=shibe_url)
                         await ctx.send(embed=shibe_em)
                 else:
@@ -209,9 +208,7 @@ class Fun(Cog):
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
                     img = await lizr.json()
-                    liz_em = Embed(
-                        colour=0x690E8
-                        )
+                    liz_em = Embed(colour=0x690E8)
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
@@ -276,9 +273,7 @@ class Fun(Cog):
     async def robohash(self, ctx: Context, *, meme: str) -> None:
         """text => robot image thing."""
         try:
-            e = Embed(
-                colour=0x690E8
-                )
+            e = Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
             e.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=e)
@@ -363,9 +358,7 @@ class Fun(Cog):
             async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
-                    neko_em = Embed(
-                        colour=0x690E8
-                        )
+                    neko_em = Embed(colour=0x690E8)
                     neko_em.set_image(url=img["neko"])
                     await ctx.send(embed=neko_em)
                 else:
@@ -430,7 +423,8 @@ class Fun(Cog):
         embed = Embed(
             title="Table Throw!",
             description=f"{ctx.author.mention} threw the table! :boom:",
-            color=Color.blurple())
+            color=Color.blurple()
+            )
         embed.set_image(
             url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif")
         await ctx.send(embed=embed)
@@ -453,7 +447,7 @@ class Fun(Cog):
                     **You got +10 points!**
                     """
                 ),
-                color=Color.blurple(),
+                color=Color.blurple()
             )
             embed.set_image(
                 url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
@@ -466,7 +460,7 @@ class Fun(Cog):
                     *You got +{num} points!**"
                     """
                 ),
-                color=Color.blurple(),
+                color=Color.blurple()
             )
         await ctx.send(embed=embed)
         # TODO : Add points after db integration
