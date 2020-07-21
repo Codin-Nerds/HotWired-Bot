@@ -33,6 +33,9 @@ extensions = [
     "bot.cogs.translate",
     "bot.cogs.github",
     "bot.cogs.nasa",
+    "bot.cogs.nsfw.neko",
+    "bot.cogs.nsfw.nswfreddit",
+    "bot.cogs.nsfw.yandere"
 ]
 
 bot = Bot(

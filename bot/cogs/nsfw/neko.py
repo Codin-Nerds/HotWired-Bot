@@ -32,7 +32,7 @@ from discord.ext import commands
 from modules.booru.core import embed_booru
 
 
-class Booru(commands.Cog):
+class NSFW(commands.Cog):
     conf = {}
 
     def __init__(self, bot):
@@ -210,4 +210,4 @@ class Booru(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Booru(bot))
+    bot.add_cog(NSFW(bot))

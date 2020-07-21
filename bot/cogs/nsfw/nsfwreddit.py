@@ -68,7 +68,7 @@ subreddits = {
 }
 
 
-class Booru(commands.Cog):
+class NSFW(commands.Cog):
     conf = {}
 
     def __init__(self, bot):
@@ -86,7 +86,7 @@ class Booru(commands.Cog):
                 print("Pruned by exception, error below:")
                 print(ex)
                 content = []
-        if not content or content == [] or content is None or (type(content) is dict and "success" in content.keys() and content["success"] == False):
+        if not content or content == [] or content is None or (isinstance(content, dict) and "success" in content.keys() and not content["success"]):
             content = []
             return content
         else:
@@ -127,7 +127,7 @@ class Booru(commands.Cog):
                 item["score"] = item["data"]["score"]
                 item["tags"] = item["data"]["title"]
                 item["author"] = item["data"]["author"]
-        return content
+            return content
 
     async def generic_specific_source(self, ctx, board):
 
@@ -161,12 +161,11 @@ class Booru(commands.Cog):
             booru = data[i]
 
             # Set colour for each board
-
             embed = discord.Embed()
             embed.set_image(url=booru["file_url"])
             try:
                 await ctx.send(embed=embed)
-            except:
+            except discord.client.DiscordException:
                 print(data[i])
 
     @commands.group()
@@ -496,4 +495,4 @@ class Booru(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Booru(bot))
+    bot.add_cog(NSFW(bot))
