@@ -50,7 +50,11 @@ class Fun(Cog):
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
         fact = choice(self.all_facts["all"])
-        await ctx.send(embed=Embed(title="Did you Know?", description=fact["text"], color=0x690E8))
+        await ctx.send(embed=Embed(
+            title="Did you Know?",
+            description=fact["text"],
+            color=0x690E8
+            ))
 
     @command()
     async def textcat(self, ctx: Context) -> None:
@@ -93,7 +97,9 @@ class Fun(Cog):
     async def image(self, ctx: Context, type: str) -> None:
         """Sends a random image(sfw and nsfw)."""
         try:
-            embed = Embed(color=0x690E8)
+            embed = Embed(
+                color=0x690E8
+                )
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
@@ -143,7 +149,9 @@ class Fun(Cog):
     async def httpcat(self, ctx: Context, http_id: int) -> None:
         """http.cat images."""
         if http_id in config.http_codes:
-            httpcat_em = Embed(name="http.cat", colour=0x690E8)
+            httpcat_em = Embed(name="http.cat",
+                colour=0x690E8
+                )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
         else:
