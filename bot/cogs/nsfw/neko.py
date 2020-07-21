@@ -29,7 +29,12 @@ import discord
 import requests
 from discord.ext import commands
 
-from modules.booru.core import embed_booru
+
+async def make_embed(img: str, provider: str, author: discord.User):
+    em = discord.Embed(color=discord.Colour.red())
+    em.title = provider + " requested by " + author.name
+    em.set_image(url=img)
+    return em
 
 
 class NSFW(commands.Cog):
@@ -43,7 +48,7 @@ class NSFW(commands.Cog):
         base = 'https://api.nekos.dev/api/v3/'
         r = requests.get(base + url)
         r = r.json()
-        em = await embed_booru(r['data']['response']["url"], "Nekos.life", author)
+        em = await make_embed(r['data']['response']["url"], "Nekos.life", author)
         return em
 
     @commands.group()

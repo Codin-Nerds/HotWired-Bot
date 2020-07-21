@@ -77,8 +77,6 @@ class NSFW(commands.Cog):
         self.session = aiohttp.ClientSession()
 
     async def fetch_from_reddit(self, urlstr, rating, provider):
-        content = ""
-
         async with self.session.get(urlstr, headers={'User-Agent': "Booru (https://github.com/yumenetwork/Yume-Bot)"}) as resp:
             try:
                 content = await resp.json(content_type=None)
