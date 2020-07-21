@@ -1,4 +1,5 @@
 import datetime
+import json
 import textwrap
 import typing as t
 from collections import Counter
@@ -19,6 +20,18 @@ STATUSES = {
 class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @command()
+    async def changeprefix(self, ctx: Context, prefix: str) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = prefix
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
 
     # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()

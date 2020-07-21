@@ -1,3 +1,4 @@
+import json
 import re
 import textwrap
 import traceback
@@ -76,6 +77,14 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(guild.id)] = PREFIX
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
         logchannel = self.bot.get_channel(config.log_channel)
 
         embed = Embed(
@@ -124,6 +133,14 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes.pop(str(guild.id))
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
         logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
