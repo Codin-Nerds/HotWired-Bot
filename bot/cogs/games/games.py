@@ -53,7 +53,7 @@ class Games(Cog):
             try:
                 async with session.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon}") as resp:
                     data = await resp.json()
-            except:
+            except Exception:
                 await ctx.send("that's not a valid pokemon's name")
 
         pokemon_embed = Embed(
