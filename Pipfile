@@ -7,7 +7,7 @@ verify_ssl = true
 flake8 = "~=3.8.3"
 pre-commit = "~=2.6.0"
 flake8-annotations = "~=2.3.0"
-flake8-isort = "~=3.0.1"
+flake8-bugbear = "~=20.1.4"
 
 [packages]
 PyYAML = "~=5.3.1"

@@ -1,5 +1,6 @@
 import zlib
 from functools import partial
+import typing as t
 
 import aiohttp
 
@@ -19,7 +20,21 @@ def _to_tio_string(couple: list) -> bytes:
 
 class Tio:
     '''Thanks to FrenchMasterSword For the TIO Wrapper.'''
-    def __init__(self, language: str, code: str, inputs: str = "", compilerFlags: list = [], commandLineOptions: list = [], args: list = [],) -> None:
+    def __init__(
+        self,
+        language: str,
+        code: str,
+        inputs: str = "",
+        compilerFlags: t.Optional[list] = None,
+        commandLineOptions: t.Optional[list] = None,
+        args: t.Optional[list] = None
+    ) -> None:
+        if not compilerFlags:
+            compilerFlags = []
+        if not commandLineOptions:
+            commandLineOptions = []
+        if not args:
+            args = []
         self.backend = "https://tio.run/cgi-bin/run/api/"
         self.json = "https://tio.run/languages.json"
 
