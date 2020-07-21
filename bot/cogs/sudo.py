@@ -19,6 +19,7 @@ from discord.ext.commands import Cog, Context, check, group
 
 import humanize
 
+
 def uptime(date: str) -> str:
     days = date.days
     hours, r = divmod(date.seconds, 3600)
