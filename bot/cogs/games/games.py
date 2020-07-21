@@ -38,13 +38,13 @@ class Games(Cog):
         embed = Embed(title="Magic 8-ball", color=Color.blurple())
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
-        
+
         await ctx.send(embed=embed)
 
     @command(aliases=["pokesearch"])
     async def pokemon(self, ctx: Context, pokemon: str = None) -> None:
         """Fetches data about a given pokemon
-           
+
            eg. pokemon pikachu"""
 
         if not pokemon:
@@ -67,9 +67,9 @@ class Games(Cog):
         base_stats = ["**" + stat_name + "**: `" + str(base_stat_dict["base_stat"]) + "`" for stat_name, base_stat_dict in zip(base_stat_names, data["stats"])]
         
         pokemon_embed.set_thumbnail(url=data["sprites"]["front_default"])
-        pokemon_embed.add_field(name = "Base Stats", value = "❯❯ " + "\n❯❯ ".join(base_stats))
-        pokemon_embed.add_field(name = "Type", value = "❯❯ " + "\n❯❯ ".join(pokemon_types))
-        pokemon_embed.add_field(name="Weight", value = "❯❯ `" + str(data["weight"]) + "`")
-        pokemon_embed.add_field(name = "Abilities", value = "❯❯ " + "\n❯❯ ".join(ability_names), inline = True)
+        pokemon_embed.add_field(name="Base Stats", value = "❯❯ " + "\n❯❯ ".join(base_stats))
+        pokemon_embed.add_field(name="Type", value="❯❯ " + "\n❯❯ ".join(pokemon_types))
+        pokemon_embed.add_field(name="Weight", value="❯❯ `" + str(data["weight"]) + "`")
+        pokemon_embed.add_field(name="Abilities", value="❯❯ " + "\n❯❯ ".join(ability_names), inline=True)
 
         await ctx.send(embed=pokemon_embed)
