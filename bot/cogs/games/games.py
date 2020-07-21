@@ -1,4 +1,5 @@
 import random
+import aiohttp
 
 from bot import config
 from bot.core.bot import Bot
@@ -39,3 +40,36 @@ class Games(Cog):
         embed.add_field(name="Answer", value=answer)
         
         await ctx.send(embed=embed)
+
+    @command(aliases=["pokesearch"])
+    async def pokemon(self, ctx: Context, pokemon: str = None) -> None:
+        """Fetches data about a given pokemon
+           
+           eg. pokemon pikachu"""
+
+        if not pokemon:
+            await ctx.send("You didn't give a pokemon's name.")
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon}") as resp:
+                    data = await resp.json()
+            except:
+                await ctx.send("that's not a valid pokemon's name")
+
+        pokemon_embed = Embed(
+            title=f"{pokemon.capitalize()} Info",
+            color=Color.blurple()
+        )
+
+        ability_names = ["`" + ability["ability"]["name"] + "`" for ability in data["abilities"]]
+        pokemon_types = ["`" + ptype_raw["type"]["name"] + "`" for ptype_raw in data["types"]]
+        base_stat_names = ["Hp", "Attack", "Defence", "Special-Attack", "Special-Defence", "Speed"]
+        base_stats = ["**" + stat_name + "**: `" + str(base_stat_dict["base_stat"]) + "`" for stat_name, base_stat_dict in zip(base_stat_names, data["stats"])]
+        
+        pokemon_embed.set_thumbnail(url=data["sprites"]["front_default"])
+        pokemon_embed.add_field(name = "Base Stats", value = "❯❯ " + "\n❯❯ ".join(base_stats))
+        pokemon_embed.add_field(name = "Type", value = "❯❯ " + "\n❯❯ ".join(pokemon_types))
+        pokemon_embed.add_field(name="Weight", value = "❯❯ `" + str(data["weight"]) + "`")
+        pokemon_embed.add_field(name = "Abilities", value = "❯❯ " + "\n❯❯ ".join(ability_names), inline = True)
+
+        await ctx.send(embed=pokemon_embed)
