@@ -243,7 +243,6 @@ class Moderation(Cog):
             if isinstance(member, Role):
                 for mem in member.members:
                     await mem.send(embed=embed_data.embed)
-                return
             else:
                 await member.send(embed=embed_data.embed)
 
@@ -273,7 +272,7 @@ class Moderation(Cog):
             await channel.set_permissions(channel.guild.default_role, send_messages=False,
                                           reason=f"Reason: {reason} | Requested by {ctx.author}.")
             await channel.send("🔒 Locked down this channel.")
-        if not channels == [ctx.channel]:
+        if channels != [ctx.channel]:
             await ctx.send(f"Locked down {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
 
     @command()
