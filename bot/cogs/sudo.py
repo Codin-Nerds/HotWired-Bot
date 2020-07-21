@@ -10,18 +10,14 @@ import typing as t
 from bot import config
 from bot.core.bot import Bot
 
+import GPUtil
+
+import humanize
+
 from discord import (Activity, ActivityType, Color, Embed, Game,
                      InvalidArgument, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, check, group
-
-
-import GPUtil
-import humanize
-
-
-
-
 
 def uptime(date: str) -> str:
     days = date.days
