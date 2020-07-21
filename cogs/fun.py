@@ -404,9 +404,8 @@ class Fun(Cog):
     async def tweet(self, ctx: Context, username: str, *, text: str) -> None:
         """Tweet as someone."""
         async with ctx.typing():
-            async with self.session.get("https://nekobot.xyz/api/imagegen?type=tweet"
-                                        f"&username={username}"
-                                        f"&text={text}") as r:
+            base_url = "https://nekobot.xyz/api/imagegen?type=tweet"
+            async with self.session.get(f"{base_url}&username={username}&text={text}") as r:
                 res = await r.json()
 
             embed = Embed(color=Color.dark_green())
