@@ -12,12 +12,12 @@ import GPUtil
 from bot import config
 from bot.core.bot import Bot
 
-import humanize
-
 from discord import (Activity, ActivityType, Color, Embed, Game,
                      InvalidArgument, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, check, group
+
+import humanize
 
 def uptime(date: str) -> str:
     days = date.days
