@@ -4,6 +4,7 @@ import textwrap
 import typing as t
 from collections import Counter
 
+from bot import config
 from bot.core.bot import Bot
 
 from discord import ActivityType, Color, Embed, Guild, Member, Status, User
@@ -23,10 +24,24 @@ class Commands(Cog):
 
     @command()
     async def changeprefix(self, ctx: Context, prefix: str) -> None:
+        """Changes the prefix for the bot."""
         with open("bot/assets/prefixes.json", "r") as file:
             prefixes = json.load(file)
 
         prefixes[str(ctx.guild.id)] = prefix
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
+
+    @command()
+    async def resetprefix(self, ctx: Context, prefix: str) -> None:
+        """Resets the prefix of the bot to original one."""
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = config.COMMAND_PREFIX
 
         with open("bot/assets/prefixes.json", "w") as file:
             json.dump(prefixes, file, indent=4)
