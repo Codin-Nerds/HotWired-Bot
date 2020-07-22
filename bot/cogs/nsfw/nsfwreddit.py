@@ -1,45 +1,16 @@
-from random import choice, randint
+import aiohttp
+import json
+
+from random import randint
+from aiocache import cached, SimpleMemoryCache
 
 import discord
-import requests
 from discord.ext import commands
-import aiohttp
-from aiocache import cached, SimpleMemoryCache
 
 cache = SimpleMemoryCache()
 
-subreddits = {
-    "fourk": ["HighResNSFW", "UHDnsfw",
-              "nsfw_hd", "NSFW_Wallpapers", "closeup"],
-    "ass": ["ass", "pawg", "AssholeBehindThong", "girlsinyogapants", "girlsinleggings", "bigasses", "asshole", "AssOnTheGlass", "TheUnderbun", "asstastic", "booty",
-            "AssReveal", "beautifulbutt", "Mooning", "BestBooties", "brunetteass", "assinthong", "paag", "asstastic", "GodBooty", "Underbun", "datass", "ILikeLittleButts", "datgap"],
-    "anal":  ["MasterOfAnal", "analgonewild", "anal", "buttsex",
-              "buttsthatgrip", "AnalGW", "analinsertions", "AnalGW", "assholegonewild"],
-    "bdsm": ["BDSMGW", "bdsm", "ropeart", "shibari"],
-    "blowjob": ["blowjobsandwich", "Blowjobs", "BlowjobGifs", "BlowjobEyeContact",
-                "blowbang", "AsianBlowjobs", "SuckingItDry", "OralCreampie", "SwordSwallowers"],
-    "boobs": ["boobs", "TheHangingBoobs", "bigboobs", "BigBoobsGW", "hugeboobs", "pokies", "ghostnipples", "PiercedNSFW", "piercedtits", "PerfectTits", "BestTits", "Boobies", "JustOneBoob", "tits", "naturaltitties", "smallboobs", "Nipples",
-              "homegrowntits", "TheUnderboob", "BiggerThanYouThought", "fortyfivefiftyfive", "Stacked", "BigBoobsGonewild", "AreolasGW", "TittyDrop", "Titties", "Boobies", "boobbounce", "TinyTits", "cleavage", "BoobsBetweenArms", "BustyNaturals", "burstingout"],
-    "cunnilingus": ["cunnilingus", "CunnilingusSelfie", "Hegoesdown"],
-    "bottomless": ["upskirt", "Bottomless",
-                   "nopanties", "Pantiesdown"],
-    "cumshots": ["OralCreampie", "cumfetish", "cumontongue", "cumshots", "CumshotSelfies", "facialcumshots", "pulsatingcumshots", "gwcumsluts",
-                 "ImpresssedByCum", "GirlsFinishingTheJob", "amateurcumsluts", "unexpectedcum", "bodyshots", "ContainTheLoad", "bodyshots"],
-    "dick": ["DickPics4Freedom", "mangonewild",
-             "MassiveCock", "penis", "cock", "ThickDick"],
-    "doublepenetration":  ["doublepenetration", "dp_porn", "Technical_DP"],
-    "deepthroat": ["DeepThroatTears", "deepthroat", "SwordSwallowers"],
-    "gay":  ["gayporn", "ladybonersgw", "mangonewild"],
-    "hentai": ["hentai", "thick_hentai", "HQHentai", "AnimeBooty",
-               "thighdeology", "ecchigifs", "nsfwanimegifs", "oppai_gif"],
-    "lesbian": ["lesbians", "HDLesbianGifs", "amateurlesbians", "Lesbian_gifs"],
-    "public": ["RealPublicNudity", "FlashingAndFlaunting", "FlashingGirls", "PublicFlashing",
-               "Unashamed", "NudeInPublic", "publicplug", "casualnudity"],
-    "rule34": ["rule34", "rule34cartoons", "Rule_34", "Rule34LoL",
-               "AvatarPorn", "Overwatch_Porn", "Rule34Overwatch", "WesternHentai"],
-    "trap": ["Transex", "DeliciousTraps", "traps", "trapgifs", "GoneWildTrans", "SexyShemales",
-             "Shemales", "shemale_gifs", "Shemales", "ShemalesParadise", "Shemale_Big_Cock", "ShemaleGalleries"]
-}
+with open("bot/assets/nsfw_subreddit.json", "r") as f:
+    subreddits = json.load(f)
 
 
 class NSFW(commands.Cog):
@@ -49,51 +20,53 @@ class NSFW(commands.Cog):
         self.bot = bot
         self.config = bot.config
         self.session = aiohttp.ClientSession()
-    
-    
-    async def fetch_from_reddit(self, urlstr, rating, provider):
-        async with self.session.get(urlstr, headers={'User-Agent': "NSFW (https://github.com/The-Codin-Hole/HotWired-Bot)"}) as resp:
+
+    async def fetch_from_reddit(self, urlstr: str, rating: str, provider: str) -> list:
+        async with self.session.get(urlstr, headers={'User-Agent': "Hotwired"}) as resp:
             try:
                 content = await resp.json(content_type=None)
             except (ValueError, aiohttp.ContentTypeError) as ex:
-                print("Pruned by exception, error below:")
-                print(ex)
+                print(f"Pruned by exception, error {ex}")
                 content = []
-        
+
         if not content or content == [] or (isinstance(content, dict) and "success" in content.keys() and not content["success"]):
             return []
-        
-        
+
         good_content = []
         for item in content["data"]["children"]:
             IMGUR_LINKS = "https://imgur.com/", "https://i.imgur.com/", "http://i.imgur.com/", "http://imgur.com", "https://m.imgur.com"
             GOOD_EXTENSIONS = ".png", ".jpg", ".jpeg", ".gif"
             url = item["data"]["url"]
+
             if url.startswith(IMGUR_LINKS):
                 if url.endswith(".mp4"):
                     item["file_url"] = url[:-3] + "gif"
+
                 elif url.endswith(".gifv"):
                     item["file_url"] = url[:-1]
+
                 elif url.endswith(GOOD_EXTENSIONS):
                     item["file_url"] = url
+
                 else:
                     item["file_url"] = url + ".png"
-                        
+
             elif url.startswith("https://gfycat.com/"):
                 url_cut = url.strip("https://gfycat.com/")
+
                 if url_cut.islower():
                     continue
-                item["file_url"] = "https://thumbs.gfycat.com/" + \
-                    url_cut + "-size_restricted.gif"
+                item["file_url"] = f"https://thumbs.gfycat.com/{url_cut}-size_restricted.gif"
+
             elif url.endswith(GOOD_EXTENSIONS):
-                    item["file_url"] = url
+                item["file_url"] = url
+
             else:
                 continue
-            
+
             good_content.append(item)
         content = good_content
 
-            
         for item in content:
             item["provider"] = provider
             item["rating"] = rating
@@ -102,10 +75,10 @@ class NSFW(commands.Cog):
             item["score"] = item["data"]["score"]
             item["tags"] = item["data"]["title"]
             item["author"] = item["data"]["author"]
-            
+
         return content
 
-    async def generic_specific_source(self, ctx, board):
+    async def generic_specific_source(self, ctx: Context, board: str) -> None:
         async with ctx.typing():
             data = await getattr(self, f"fetch_{board}")(ctx)
 
@@ -113,7 +86,7 @@ class NSFW(commands.Cog):
 
         await self.show_nsfw(ctx, data)
 
-    async def filter_posts(self, ctx, data):
+    async def filter_posts(self, ctx: Context, data: list) -> list:
         filtered_data = []
 
         for nsfw in data:
@@ -146,70 +119,62 @@ class NSFW(commands.Cog):
         pass
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def tags(self, ctx):
-        await ctx.send("Reddits tags :\n`4k`, `ass`, `anal`, `bdsm`, `blowjob`, `cunnilingus`, `bottomless`, `cumshots`, `deepthroat`, `dick`, `doublepenetration`, `gay`, `hentai`, `lesbian`, `public`, `rule34`, `hentai`, `boobs`")
+        await ctx.send(
+            "Reddits tags :\n`4k`, `ass`, `anal`, `bdsm`, `blowjob`, `cunnilingus`, `bottomless`, `cumshots`, `deepthroat`, `dick`, "
+            "`doublepenetration`, `gay`, `hentai`, `lesbian`, `public`, `rule34`, `hentai`, `boobs`"
+        )
 
     @reddit.command(name="4k")
-    @commands.guild_only()
     @commands.is_nsfw()
     async def _4k(self, ctx):
         sub = "4k"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def ass(self, ctx):
         sub = "ass"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def anal(self, ctx):
         sub = "anal"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def bdsm(self, ctx):
         sub = "bdsm"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def blowjob(self, ctx):
         sub = "blowjob"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def cunnilingus(self, ctx):
         sub = "cunnilingus"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def bottomless(self, ctx):
         sub = "bottomless"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def cumshots(self, ctx):
-
         sub = "cumshots"
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def deepthroat(self, ctx):
 
@@ -217,7 +182,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def dick(self, ctx):
 
@@ -225,7 +189,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def doublepenetration(self, ctx):
 
@@ -233,7 +196,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def gay(self, ctx):
 
@@ -241,7 +203,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def hentai(self, ctx):
 
@@ -249,7 +210,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def lesbian(self, ctx):
 
@@ -257,7 +217,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def public(self, ctx):
 
@@ -265,7 +224,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def rule34(self, ctx):
 
@@ -273,7 +231,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def trap(self, ctx):
 
@@ -281,7 +238,6 @@ class NSFW(commands.Cog):
         await self.generic_specific_source(ctx, sub)
 
     @reddit.command()
-    @commands.guild_only()
     @commands.is_nsfw()
     async def boobs(self, ctx):
 
