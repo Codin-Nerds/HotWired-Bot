@@ -268,7 +268,8 @@ class Search(Cog, name="Basic"):
     async def weather(self, ctx: Context, *, city: str = None) -> None:
         """Sends current weather in the given city name
 
-        eg. weather london"""
+        eg. weather london
+        """
         url_formatted_city = city.replace(" ", "-")
         async with aiohttp.ClientSession() as session:
             try:
@@ -316,27 +317,18 @@ class Search(Cog, name="Basic"):
             value=f"**❯❯ Humidity: **`{humidity}%`\n**❯❯ Visibility: **`{visibility}km`\n**❯❯ Weather Summary: **`{weather_description}`",
         )
 
-        weather_icons = {
-            "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
-            "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
-            "sun": "https://cdn.discordapp.com/attachments/728569086174298112/735550167859593306/sunny.png",
-            "cloud": "https://cdn.discordapp.com/attachments/728569086174298112/735550159781494865/cloudy.png",
-            "partly": "https://cdn.discordapp.com/attachments/728569086174298112/735550162721701979/partly.png",
-            "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png"
-        }
-
         if "wind" in weather_description:
-            weather_embed.set_image(url=weather_icons["wind"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["wind"])
         elif "partly" in weather_description:
-            weather_embed.set_image(url=weather_icons["partly"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["partly"])
         elif "cloud" in weather_description:
-            weather_embed.set_image(url=weather_icons["cloud"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["cloud"])
         elif "snow" in weather_description:
-            weather_embed.set_image(url=weather_icons["snow"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["snow"])
         elif "rain" in weather_description:
-            weather_embed.set_image(url=weather_icons["rain"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["rain"])
         else:
-            weather_embed.set_image(url=weather_icons["sun"])
+            weather_embed.set_image(url=config.WEATHER_ICONS["sun"])
 
         await ctx.send(embed=weather_embed)
 

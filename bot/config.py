@@ -43,6 +43,15 @@ paste_link_2 = "https://hastebin.com"
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
 WEATHER_API_KEY = "46b482193da9b57cf56fa98ff8855b55"
+WEATHER_ICONS = {
+    "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
+    "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
+    "sun": "https://cdn.discordapp.com/attachments/728569086174298112/735550167859593306/sunny.png",
+    "cloud": "https://cdn.discordapp.com/attachments/728569086174298112/735550159781494865/cloudy.png",
+    "partly": "https://cdn.discordapp.com/attachments/728569086174298112/735550162721701979/partly.png",
+    "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png"
+}
+
 
 # Magic 8-Ball responses
 NEGATIVE_REPLIES = [
