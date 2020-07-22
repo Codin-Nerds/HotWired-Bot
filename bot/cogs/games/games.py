@@ -43,9 +43,9 @@ class Games(Cog):
 
     @command(aliases=["pokesearch"])
     async def pokemon(self, ctx: Context, pokemon: str = None) -> None:
-        """Fetches data about a given pokemon
-
-           eg. pokemon pikachu"""
+        """
+        Fetches data about a given pokemon eg. pokemon pikachu
+        """
 
         if not pokemon:
             await ctx.send("You didn't give a pokemon's name.")
