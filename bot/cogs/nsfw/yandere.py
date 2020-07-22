@@ -6,7 +6,7 @@ from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, is_nsfw, command
 
 
-class NSFW(Cog):
+class Yandere(Cog):
     conf = {}
 
     def __init__(self, bot: Bot) -> None:
@@ -31,7 +31,3 @@ class NSFW(Cog):
         embed.set_image(url=image_url)
 
         await ctx.send(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(NSFW(bot))

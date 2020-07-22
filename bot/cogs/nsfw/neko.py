@@ -6,7 +6,7 @@ from discord import Color, Embed, User
 from discord.ext.commands import Cog, Context, Bot, group, is_nsfw
 
 
-class NSFW(Cog):
+class Neko(Cog):
     conf = {}
 
     def __init__(self, bot: Bot) -> None:
@@ -167,7 +167,3 @@ class NSFW(Cog):
 
         embed = await self.get(source, ctx.author)
         await ctx.send(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(NSFW(bot))
