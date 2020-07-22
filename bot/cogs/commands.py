@@ -3,10 +3,10 @@ import textwrap
 import typing as t
 from collections import Counter
 
-from bot.core.bot import Bot
-
 from discord import ActivityType, Color, Embed, Guild, Member, Status, User
 from discord.ext.commands import Cog, Context, command
+
+from bot.core.bot import Bot
 
 STATUSES = {
     Status.online: "ONLINE",
@@ -40,7 +40,7 @@ class Commands(Cog):
         embed.add_field(name="**❯❯ Member Status**", value=status)
         embed.add_field(name="**❯❯ Member Type**", value=type)
         embed.set_author(name=f"SERVER : {ctx.guild.name}")
-        ember.set_footer(text="Powered by HotWired")
+        embed.set_footer(text="Powered by HotWired")
 
         await ctx.send(embed=embed)
 

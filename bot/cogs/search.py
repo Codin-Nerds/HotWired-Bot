@@ -3,14 +3,12 @@ import textwrap
 from typing import List
 
 import aiohttp
-
-from bot import config
-from bot.core.bot import Bot
-
+import html2text
 from discord import Embed, utils
 from discord.ext.commands import Cog, CommandError, Context, command
 
-import html2text
+from bot import config
+from bot.core.bot import Bot
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
@@ -138,7 +136,7 @@ class Search(Cog, name="Basic"):
              - music
              - files
              - images
-             - it 
+             - it
              - maps
         """
         if category not in config.basic_search_categories:
