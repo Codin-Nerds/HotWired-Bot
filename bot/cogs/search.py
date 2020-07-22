@@ -225,7 +225,7 @@ class Search(Cog, name="Basic"):
                     manga_id = manga["id"]
                     url = f"https://kitsu.io/manga/{manga_id}"
 
-                    embed = Embed(title=f"{title}", color=ctx.author.color, url=url)
+                    embed = Embed(title=title, color=ctx.author.color, url=url)
                     embed.description = manga["attributes"]["synopsis"][0:425] + "..."
 
                     if manga["attributes"]["averageRating"]:
