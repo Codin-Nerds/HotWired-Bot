@@ -69,4 +69,3 @@ class Games(Cog):
         pokemon_embed.add_field(name="Abilities", value="❯❯ " + "\n❯❯ ".join(ability_names), inline=True)
 
         await ctx.send(embed=pokemon_embed)
-        

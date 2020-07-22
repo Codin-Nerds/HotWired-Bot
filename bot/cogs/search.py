@@ -1,13 +1,14 @@
+import os
 import re
 import textwrap
 from typing import List
 
 import aiohttp
-import html2text
-from discord import Embed, utils, Color
+from discord import Color, Embed, utils
 from discord.ext.commands import Cog, CommandError, Context, command
 from discord.ext.commands.errors import CommandInvokeError
 
+import html2text
 from bot import config
 from bot.core.bot import Bot
 
@@ -278,7 +279,7 @@ class Search(Cog, name="Basic"):
             ctx.send("You didn't provide a city")
 
         async with aiohttp.ClientSession() as session:
-            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={config.WEATHER_API_KEY}"
+            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={os.getenv('WEATHER_API_KEY')}"
             async with session.get(weather_lookup_url) as resp:
                 data = await resp.json()
 
