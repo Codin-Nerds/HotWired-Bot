@@ -265,7 +265,7 @@ class Search(Cog, name="Basic"):
                         await ctx.send(template)
 
     @command()
-    async def weather(ctx: Context, *, city: str = None) -> None:
+    async def weather(self, ctx: Context, *, city: str = None) -> None:
         """Sends current weather in the given city name
 
         eg. weather london"""
