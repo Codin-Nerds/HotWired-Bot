@@ -5,11 +5,11 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
-from bot.core.bot import Bot
-from bot.utils.checks import is_bot_dev
-
 from discord import Forbidden, HTTPException
 from discord.ext.commands import Cog, CommandError, Context, check, command
+
+from bot.core.bot import Bot
+from bot.utils.checks import is_bot_dev
 
 
 class CodeSandbox(Cog):

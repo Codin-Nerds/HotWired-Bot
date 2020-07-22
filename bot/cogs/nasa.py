@@ -2,16 +2,9 @@ import os
 import random
 
 import aiohttp
-
 from discord import Color, Embed
-from discord.ext.commands import (
-    Bot,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown
-)
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
 
 NASA_API = os.getenv("NASA_API")
 

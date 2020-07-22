@@ -4,22 +4,16 @@ import typing as t
 from collections import Counter
 from datetime import datetime
 
+import discord
+from discord import Color, Embed, Member, NotFound, Role
+from discord.errors import Forbidden
+from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
+                                  command, has_permissions)
+
 from bot.core.bot import Bot
 from bot.core.converters import ActionReason, ProcessedMember
 from bot.core.decorators import follow_roles
 from bot.utils.formats import Plural
-
-import discord
-from discord import Color, Embed, Member, NotFound, Role
-from discord.errors import Forbidden
-from discord.ext.commands import (
-    Cog,
-    Context,
-    Greedy,
-    NoPrivateMessage,
-    command,
-    has_permissions
-)
 
 
 class Moderation(Cog):
