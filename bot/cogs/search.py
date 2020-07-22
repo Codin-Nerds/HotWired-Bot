@@ -282,7 +282,7 @@ class Search(Cog, name="Basic"):
         if data["cod"] == "401":
             await ctx.send("Invalid API key")
             return
-        elif data["cod"] == "404":
+        if data["cod"] == "404":
             await ctx.send("Invalid city name")
             return
 
