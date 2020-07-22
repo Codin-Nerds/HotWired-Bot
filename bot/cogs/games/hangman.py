@@ -159,7 +159,8 @@ class HangmanGame:
                 await self.channel.send(embed=embed)
                 return
             await self.send_status(guess, guess_status)
-            if state := self.is_finished():
+            state = self.is_finished()
+            if state > 0:
                 if state == 1:
                     embed = Embed(
                         title="You won",

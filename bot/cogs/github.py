@@ -20,10 +20,10 @@ class Github(Cog):
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
-    async def issue(self, ctx: Context, number: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
+    async def issue(self, ctx: Context, issue_num: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
-        url = f"https://api.github.com/repos/{user}/{repository}/issues/{number}"
-        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{number}/merge"
+        url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
+        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}/merge"
 
         async with self.session.get(url) as resp:
             json_data = await resp.json()
@@ -59,7 +59,7 @@ class Github(Cog):
                 f"""
                 Repository : **{user}/{repository}**
                 Title : **{json_data.get('title')}**
-                ID : **`{number}`**
+                ID : **`{issue_num}`**
                 Link :  [Here]({issue_url})
                 """
             )

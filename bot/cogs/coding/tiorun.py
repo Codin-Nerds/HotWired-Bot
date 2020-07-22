@@ -1,6 +1,6 @@
+import typing as t
 import zlib
 from functools import partial
-import typing as t
 
 import aiohttp
 

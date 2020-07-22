@@ -24,7 +24,7 @@ class Games(Cog):
 
     @command(aliases=["8ball"])
     async def ball8(self, ctx: Context, *, question: str) -> None:
-        """Play 8ball."""
+        """Ask the all-knowing 8ball your burning questions."""
         reply_type = random.randint(1, 3)
 
         if reply_type == 1:
