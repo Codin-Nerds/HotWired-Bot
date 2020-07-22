@@ -6,6 +6,7 @@ import aiohttp
 import html2text
 from discord import Embed, utils, Color
 from discord.ext.commands import Cog, CommandError, Context, command
+from discord.ext.commands.errors import CommandInvokeError
 
 from bot import config
 from bot.core.bot import Bot
@@ -270,15 +271,16 @@ class Search(Cog, name="Basic"):
 
         eg. weather london
         """
-        url_formatted_city = city.replace(" ", "-")
+
+        try:
+            url_formatted_city = city.replace(" ", "-")
+        except CommandInvokeError:
+            ctx.send("You didn't provide a city")
+
         async with aiohttp.ClientSession() as session:
-            try:
-                weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={config.WEATHER_API_KEY}"
-                async with session.get(weather_lookup_url) as resp:
-                    data = await resp.json()
-            except Exception:
-                await ctx.send("You didn't provide a city name")
-                return
+            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={config.WEATHER_API_KEY}"
+            async with session.get(weather_lookup_url) as resp:
+                data = await resp.json()
 
         if data["cod"] == "401":
             await ctx.send("Invalid API key")

@@ -42,18 +42,17 @@ class Games(Cog):
         await ctx.send(embed=embed)
 
     @command(aliases=["pokesearch"])
-    async def pokemon(self, ctx: Context, pokemon: str = None) -> None:
+    async def pokemon(self, ctx: Context, pokemon: str) -> None:
         """
         Fetches data about a given pokemon eg. pokemon pikachu
         """
 
-        if not pokemon:
-            await ctx.send("You didn't give a pokemon's name.")
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon}") as resp:
                     data = await resp.json()
-            except Exception:
+            except Exception as e:
+                print(e)
                 await ctx.send("No such pokemon.")
 
         pokemon_embed = Embed(
@@ -62,15 +61,15 @@ class Games(Cog):
         )
 
         ability_names = [f"`{ability['ability']['name']}`" for ability in data["abilities"]]
-        pokemon_types = [f"`{ptype_raw["type"]["name"]}`" for ptype_raw in data["types"]]
+        pokemon_types = [f"`{ptype['type']['name']}`" for ptype_raw in data["types"]]
         base_stat_names = ["Hp", "Attack", "Defence", "Special-Attack", "Special-Defence", "Speed"]
         base_stats_zip = zip(base_stat_names, data["stats"])
-       base_stats = [f"**{stat_name}**: `{str(base_stat_dict["base_stat"])}`" for stat_name, base_stat_dict in base_stats_zip]
+        base_stats = [f"**{stat_name}**: `{str(base_stat_dict['base_stat'])}`" for stat_name, base_stat_dict in base_stats_zip]
 
         pokemon_embed.set_thumbnail(url=data["sprites"]["front_default"])
-        pokemon_embed.add_field(name="Base Stats", value=f"❯❯ {"\n❯❯ ".join(base_stats)}")
-        pokemon_embed.add_field(name="Type", value=f"❯❯ {"\n❯❯ ".join(pokemon_types)}")
-        pokemon_embed.add_field(name="Weight", value=f"❯❯ `{str(data["weight"])}`")
-        pokemon_embed.add_field(name="Abilities", value=f"❯❯ {"\n❯❯ ".join(ability_names)}", inline=True)
+        pokemon_embed.add_field(name="Base Stats", value=f"❯❯ {'\n❯❯ '.join(base_stats)}")
+        pokemon_embed.add_field(name="Type", value=f"❯❯ {'\n❯❯ '.join(pokemon_types)}")
+        pokemon_embed.add_field(name="Weight", value=f"❯❯ `{str(data['weight'])}`")
+        pokemon_embed.add_field(name="Abilities", value=f"❯❯ {'\n❯❯ '.join(ability_names)}", inline=True)
 
         await ctx.send(embed=pokemon_embed)
