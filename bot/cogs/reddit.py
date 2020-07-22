@@ -41,7 +41,7 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
                 url = url + ".png"
 
         elif url.startswith("https://gfycat.com/"):
-            url_cut = url.strip("https://gfycat.com/")
+            url_cut = url.replace("https://gfycat.com/", "")
 
             url = f"https://thumbs.gfycat.com/{url_cut}-size_restricted.gif"
 
@@ -91,7 +91,6 @@ class Reddit(Cog):
     @group()
     async def reddit(self, ctx: Context) -> None:
         """Reddit commands."""
-        pass
 
     @reddit.command(aliases=["meme"])
     async def memes(self, ctx: Context) -> None:
