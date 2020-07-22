@@ -53,7 +53,7 @@ class Commands(Cog):
     async def userinfo(self, ctx: Context, user: t.Optional[t.Union[Member, User]] = None) -> None:
         """
         Get information about you, or a specified member.
-        'user' can be a user Mention, Name, or ID.
+        `user` can be a user Mention, Name, or ID.
         """
         if not user:
             user = ctx.author
