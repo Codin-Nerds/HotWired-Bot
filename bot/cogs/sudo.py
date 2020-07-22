@@ -7,21 +7,14 @@ import time
 import traceback
 import typing as t
 
-<<<<<<< HEAD
-import GPUtil
-
-from bot import config
-from bot.core.bot import Bot
-
-=======
 import humanize
->>>>>>> b65e20ffa30b35071931665b09d4daa799ef4145
 from discord import (Activity, ActivityType, Color, Embed, Game,
                      InvalidArgument, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, check, group
 
-import humanize
+from bot import config
+from bot.core.bot import Bot
 
 
 def uptime(date: str) -> str:
