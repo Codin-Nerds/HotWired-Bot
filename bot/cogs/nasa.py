@@ -2,16 +2,9 @@ import os
 import random
 
 import aiohttp
-
 from discord import Color, Embed
-from discord.ext.commands import (
-    Bot,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown
-)
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
 
 NASA_API = os.getenv("NASA_API")
 
@@ -52,7 +45,7 @@ class Nasa(Cog):
 
     @command(aliases=["nsearch"])
     async def nasa_search(self, ctx: Context, *, query: str) -> None:
-        """Search for a query on Nasa."""
+        """Search for a query on NASA's website."""
         async with self.session.get(f"https://images-api.nasa.gov/search?q={query}") as resp:
             data = await resp.json()
 
@@ -74,7 +67,7 @@ class Nasa(Cog):
 
     @command(aliases=["nid"])
     async def nasa_id(self, ctx: Context, id: str) -> None:
-        """Search for a picture on Nasa with nasa id."""
+        """Search for a picture on NASA's website with an id."""
         async with self.session.get(f"https://images-api.nasa.gov/asset/{id}") as resp:
             data = await resp.json()
 
@@ -90,7 +83,7 @@ class Nasa(Cog):
 
     @command(aliases=["nasapatent"])
     async def nasa_patent(self, ctx: Context, *, patent: str) -> None:
-        """Search for a picture on Nasa with nasa id."""
+        """Search for a NASA patent."""
         async with self.session.get(f"https://api.nasa.gov/techtransfer/patent/?{patent}&api_key={NASA_API}") as resp:
             data = await resp.json()
 

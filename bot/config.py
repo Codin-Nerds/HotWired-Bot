@@ -2,7 +2,6 @@ import os
 from enum import Enum
 
 from discord import Color
-
 from yaml import safe_load
 
 DEV_MODE = True

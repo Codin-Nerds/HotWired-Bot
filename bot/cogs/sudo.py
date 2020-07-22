@@ -7,7 +7,6 @@ import time
 import traceback
 import typing as t
 
-import GPUtil
 import humanize
 from discord import (Activity, ActivityType, Color, Embed, Game,
                      InvalidArgument, Status)
@@ -220,28 +219,6 @@ class Sudo(Cog):
         embed.set_author(
             name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url,
         )
-
-        await ctx.send(embed=embed)
-
-    @sudo.command()
-    async def gpuinfo(self, ctx: Context) -> None:
-        """Get detailed GPU info."""
-        embed = Embed(title="BOT GPU INFO", color=Color.red())
-
-        for gpu in GPUtil.getGPUs():
-            gpu_details = textwrap.dedent(
-                f"""
-                • Load: {gpu.load*100}%
-                • Temperature: {gpu.temperature} °C
-                • Free Memory: {gpu.memoryFree}MB
-                • Used Memory: {gpu.memoryUsed}MB
-                • Total Memory: {gpu.memoryTotal}MB
-                • UUID: {gpu.uuid}
-                """
-            )
-            embed.add_field(
-                name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False,
-            )
 
         await ctx.send(embed=embed)
 

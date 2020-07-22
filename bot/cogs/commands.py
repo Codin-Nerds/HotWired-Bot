@@ -3,16 +3,16 @@ import textwrap
 import typing as t
 from collections import Counter
 
-from bot.core.bot import Bot
-
 from discord import ActivityType, Color, Embed, Guild, Member, Status, User
 from discord.ext.commands import Cog, Context, command
 
+from bot.core.bot import Bot
+
 STATUSES = {
-    Status.online: "ONLINE <:online:346921745279746048>",
-    Status.idle: "IDLE <:away:346921747330891780>",
-    Status.dnd: "DND <:dnd:346921781786836992>",
-    Status.offline: "OFFLINE <:offline:346921814435430400>",
+    Status.online: "ONLINE",
+    Status.idle: "IDLE",
+    Status.dnd: "DND",
+    Status.offline: "OFFLINE",
 }
 
 
@@ -23,7 +23,7 @@ class Commands(Cog):
     # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
-        """Returns the number of members in a server."""
+        """Returns the number of members in the server."""
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
         type = f"""
@@ -40,6 +40,7 @@ class Commands(Cog):
         embed.add_field(name="**❯❯ Member Status**", value=status)
         embed.add_field(name="**❯❯ Member Type**", value=type)
         embed.set_author(name=f"SERVER : {ctx.guild.name}")
+        embed.set_footer(text="Powered by HotWired")
 
         await ctx.send(embed=embed)
 
@@ -52,8 +53,7 @@ class Commands(Cog):
     async def userinfo(self, ctx: Context, user: t.Optional[t.Union[Member, User]] = None) -> None:
         """
         Get information about you, or a specified member.
-
-        `user`: The user to get information from. Can be a Mention, Name or ID.
+        `user` can be a user Mention, Name, or ID.
         """
         if not user:
             user = ctx.author
@@ -127,13 +127,13 @@ class Commands(Cog):
             inline=False
         )
 
-        embed.set_thumbnail(url=user.avatar_url_as(format="png"))
+        embed.set_thumbnail(url=user.avatar_url)
 
         return embed
 
     def get_server_embed(self, guild: Guild) -> Embed:
         embed = Embed(
-            title="Serer's stats and information.",
+            title="Server's stats and information.",
             description=guild.description if guild.description else None,
             color=Color.gold()
         )
@@ -145,7 +145,7 @@ class Commands(Cog):
                 Name: {guild.name}
                 Created at: {datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}
                 Members: {guild.member_count}
-                Owner: {guild.owner}
+                Owner: <@!{guild.owner}>
                 Nitro Tier: {guild.premium_tier} | Boosters: {guild.premium_subscription_count}
 
                 File Size: {round(guild.filesize_limit / 1048576)} MB
@@ -160,14 +160,14 @@ class Commands(Cog):
                 f"""
                 Text channels: {len(guild.text_channels)}
                 Voice channels: {len(guild.voice_channels)}
-                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel}
+                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel.mention}
                 """
             ),
             inline=False,
         )
 
         embed.set_thumbnail(url=guild.icon_url)
-        embed.set_footer(text=f"ID: {guild.id}")
+        embed.set_footer(text=f"Guild ID: {guild.id}")
 
         return embed
 
