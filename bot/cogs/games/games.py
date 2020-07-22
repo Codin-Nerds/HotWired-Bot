@@ -61,7 +61,7 @@ class Games(Cog):
             color=Color.blurple()
         )
 
-        ability_names = ["`" + ability["ability"]["name"] + "`" for ability in data["abilities"]]
+        ability_names = [f"`{ability['ability']['name']}`" for ability in data["abilities"]]
         pokemon_types = ["`" + ptype_raw["type"]["name"] + "`" for ptype_raw in data["types"]]
         base_stat_names = ["Hp", "Attack", "Defence", "Special-Attack", "Special-Defence", "Speed"]
         base_stats_zip = zip(base_stat_names, data["stats"])
