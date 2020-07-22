@@ -42,6 +42,8 @@ paste_link_2 = "https://hastebin.com"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
+WEATHER_API_KEY = "46b482193da9b57cf56fa98ff8855b55"
+
 # Magic 8-Ball responses
 NEGATIVE_REPLIES = [
     "Noooooo!!",
