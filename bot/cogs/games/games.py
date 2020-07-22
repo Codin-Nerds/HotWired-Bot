@@ -66,6 +66,7 @@ class Games(Cog):
         pokemon_embed.add_field(name="Base Stats", value="❯❯ " + "\n❯❯ ".join(base_stats))
         pokemon_embed.add_field(name="Type", value="❯❯ " + "\n❯❯ ".join(pokemon_types))
         pokemon_embed.add_field(name="Weight", value=f"❯❯ `{str(data['weight'])}`")
-        pokemon_embed.add_field(name="Abilities", value=f"❯❯ " + "\n❯❯ ".join(ability_names), inline=True)
+        pokemon_embed.add_field(name="Abilities", value="❯❯ " + "\n❯❯ ".join(ability_names), inline=True)
 
         await ctx.send(embed=pokemon_embed)
+        
