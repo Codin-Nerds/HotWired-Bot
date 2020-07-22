@@ -3,14 +3,8 @@ import json
 from random import choice, choices, randint, sample
 
 from discord import File, Error
-from discord.ext.commands import (
-    Cog,
-    Bot,
-    Context,
-    command,
-    CommandInvokeError,
-    has_permissions,
-)
+from discord.ext.commands import (Bot, Cog, CommandInvokeError, Context,
+                                  command, has_permissions)
 from discord.utils import get
 
 
