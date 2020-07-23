@@ -44,7 +44,7 @@ class Games(Cog):
     @command(aliases=["pokesearch"])
     async def pokemon(self, ctx: Context, pokemon: str) -> None:
         """
-        Fetches data about a given pokemon eg. pokemon pikachu
+        Fetches data about a given pokemon eg. pokemon pikachu.
         """
 
         async with aiohttp.ClientSession() as session:
