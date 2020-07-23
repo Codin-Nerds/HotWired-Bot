@@ -126,6 +126,7 @@ class Events(Cog):
             description=textwrap.dedent(
                 f"""
                 **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
+                Guild Id: **{guild.id}**
                 Guild Owner: **{guild.owner}** | **<@!{guild.owner_id}>**
 
                 Member Count: **{guild.member_count}**
