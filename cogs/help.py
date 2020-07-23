@@ -46,9 +46,11 @@ class HelpSource(menus.ListPageSource):
         """Format the pages."""
         cog, command_list = cog_tuple
         embed = discord.Embed(
-            title=(
-                "Help for "
-                f"{cog.qualified_name if cog else 'unclassified commands'}"
+            title=textwrap.dedent(
+                f"""
+                Help for
+                {cog.qualified_name if cog else 'unclassified commands'}
+                """
             ),
             description=textwrap.dedent(
                 f"""
@@ -147,9 +149,11 @@ class Help(commands.HelpCommand):
         prefix = ctx.prefix
         embed = discord.Embed(
             title=f"{prefix}{self.get_command_signature(command)}",
-            description=(
-                "Help syntax : `<Required arguments`. "
-                f"`[Optional arguments]`\n{command.help}"
+            description=textwrap.dedent(
+                f"""
+                Help syntax : `<Required arguments`.
+                `[Optional arguments]`\n{command.help}
+                """
             ),
             color=discord.Color.blue(),
         )
@@ -177,13 +181,17 @@ class Help(commands.HelpCommand):
         ctx = self.context
         prefix = ctx.prefix
         embed = discord.Embed(
-            title=(
-                f"Help for group {prefix}"
-                f"{self.get_command_signature(group)}"
+            title=textwrap.dedent(
+                f"""
+                Help for group {prefix}
+                {self.get_command_signature(group)}
+                """
             ),
-            description=(
-                "Help syntax : `<Required arguments>`. "
-                f"`[Optional arguments]`\n{group.help}"
+            description=textwrap.dedent(
+                f"""
+                Help syntax : `<Required arguments>`.
+                `[Optional arguments]`\n{group.help}
+                """
             ),
             color=discord.Color.blue(),
         )
