@@ -8,7 +8,7 @@ import traceback
 
 from bot.config import devs
 from bot.core.bot import Bot
-from bot.utils.checks import is_bot_dev
+from bot.utils.checks import is_sudo
 
 from discord import (
     Activity,
@@ -58,7 +58,7 @@ class Sudo(Cog):
         pass
 
     @sudo.command()
-    @check(is_bot_dev)
+    @check(is_sudo)
     async def shutoff(self, ctx: Context) -> None:
         if ctx.author.id in devs:
             await ctx.message.add_reaction("✅")
@@ -66,7 +66,7 @@ class Sudo(Cog):
             await self.bot.logout()
 
     @sudo.command()
-    @check(is_bot_dev)
+    @check(is_sudo)
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
         try:
@@ -77,7 +77,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_bot_dev)
+    @check(is_sudo)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
         try:
@@ -89,7 +89,7 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_bot_dev)
+    @check(is_sudo)
     async def unload(self, ctx: Context, *, extension: str) -> None:
         """Unloads a module."""
         try:
@@ -100,14 +100,13 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_bot_dev)
+    @check(is_sudo)
     async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
         await ctx.message.add_reaction("✅")
         await self.bot.logout()
         time.sleep(2)
         os.system("pipenv run start")
-        # os.system("python3.8 -m pipenv run start")
 
     @sudo.command()
     async def botstatus(self, ctx: Context, status: str, *, status_info: str) -> None:
