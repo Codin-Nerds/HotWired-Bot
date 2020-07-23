@@ -24,7 +24,8 @@ class HelpSource(menus.ListPageSource):
             prefix: str,
             author: discord.User,
             bot_id: int,
-            cogs: dict) -> None:
+            cogs: dict
+        ) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
