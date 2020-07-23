@@ -2,13 +2,12 @@ from contextlib import suppress
 from os.path import splitext
 
 import aiohttp
+from discord import Color, Embed, Message, NotFound
+from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
 from loguru import logger
-
-from discord import Color, Embed, Message, NotFound
-from discord.ext.commands import Cog
 
 FILE_EMBED_DESCRIPTION = (
     f"""
@@ -29,7 +28,8 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
             whitelist.append(line.replace("\n", ""))
 
 
-class MalwareProtection(Cog):
+# TODO : add token protection, to stop playing with any type of discord tokens
+class Security(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -82,4 +82,4 @@ class MalwareProtection(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(MalwareProtection(bot))
+    bot.add_cog(Security(bot))

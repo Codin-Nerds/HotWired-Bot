@@ -6,25 +6,15 @@ import urllib
 from random import choice, randint
 
 import aiohttp
+import discord
+import nekos
+from discord import Color, Embed, Message
+from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
+                                  command, cooldown, errors, is_nsfw)
 
 from bot import config
 from bot.core.bot import Bot
-from bot.utils.errors import ServiceError
-
-import discord
-from discord import Color, Embed, Message
-from discord.ext.commands import (
-    BadArgument,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown,
-    errors,
-    is_nsfw
-)
-
-import nekos
+from bot.core.errors import ServiceError
 
 file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
 excuses = file.readlines()
@@ -50,7 +40,11 @@ class Fun(Cog):
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
         fact = choice(self.all_facts["all"])
-        await ctx.send(embed=Embed(title="Did you Know?", description=fact["text"], color=0x690E8))
+        await ctx.send(embed=Embed(
+            title="Did you Know?",
+            description=fact["text"],
+            color=0x690E8
+        ))
 
     @command()
     async def textcat(self, ctx: Context) -> None:
@@ -93,7 +87,9 @@ class Fun(Cog):
     async def image(self, ctx: Context, type: str) -> None:
         """Sends a random image(sfw and nsfw)."""
         try:
-            embed = Embed(color=0x690E8)
+            embed = Embed(
+                color=0x690E8
+            )
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
@@ -130,7 +126,10 @@ class Fun(Cog):
             async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
                 if r.status == 200:
                     js = await r.json()
-                    em = discord.Embed(name="random.cat", colour=0x690E8)
+                    em = Embed(
+                        name="random.cat",
+                        colour=0x690E8
+                    )
                     em.set_image(url=js["file"])
                     await ctx.send(embed=em)
                 else:
@@ -140,7 +139,10 @@ class Fun(Cog):
     async def httpcat(self, ctx: Context, http_id: int) -> None:
         """http.cat images."""
         if http_id in config.http_codes:
-            httpcat_em = discord.Embed(name="http.cat", colour=0x690E8)
+            httpcat_em = Embed(
+                name="http.cat",
+                colour=0x690E8
+            )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
             await ctx.send(embed=httpcat_em)
         else:
@@ -152,7 +154,10 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
-        embed = discord.Embed(title="Fox", color=0x690E8)
+        embed = Embed(
+            title="Fox",
+            color=0x690E8
+        )
         embed.set_image(url=picture["image"])
         await ctx.send(embed=embed)
 
@@ -180,7 +185,7 @@ class Fun(Cog):
                     if ".mp4" in shibe_url:
                         await ctx.send("video: " + shibe_url)
                     else:
-                        shibe_em = discord.Embed(colour=0x690E8)
+                        shibe_em = Embed(colour=0x690E8)
                         shibe_em.set_image(url=shibe_url)
                         await ctx.send(embed=shibe_em)
                 else:
@@ -193,11 +198,50 @@ class Fun(Cog):
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
                     img = await lizr.json()
-                    liz_em = discord.Embed(colour=0x690E8)
+                    liz_em = Embed(colour=0x690E8)
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
                     await ctx.send(f"Something went Boom! [status : {lizr.status}]")
+
+    @command(aliases=["leet"])
+    async def leetify(self, ctx: Context, *, content: str) -> None:
+        """Gives each letter of a given message a different markdown style."""
+
+        leetters = {
+            "a": ["A", "4"],
+            "e": ["E", "3"],
+            "i": ["1", "I", "i"],
+            "o": ["O", "0", "o"],
+            "s": ["5", "S", "s"]
+        }
+        content = content.lower()
+        leetified_content = ""
+        prev_md = ""
+        for letter in content:
+            if letter in leetters.keys():
+                leet_char = random.choice(leetters[letter])
+            else:
+                leet_char = random.choice([letter, letter.upper()])
+
+            # Apply markdown without using the same style next to each other
+            md_list = ["*", "**", "***", "__", "", "`"]
+            if prev_md == "":
+                md_list.remove("")
+            elif "*" in prev_md:
+                md_list.remove("*")
+                md_list.remove("**")
+                md_list.remove("***")
+            elif prev_md == "__":
+                md_list.remove("__")
+            elif prev_md == "`":
+                md_list.remove("`")
+            random.seed(random.randint(421, 294244))
+            chosen_md = random.choice(md_list)
+            prev_md = chosen_md
+            leetified_content += f"{chosen_md}{leet_char}{chosen_md}"
+
+        await ctx.send(f"{leetified_content}\n-{ctx.message.author.mention}")
 
     @command()
     async def why(self, ctx: Context) -> None:
@@ -206,7 +250,11 @@ class Fun(Cog):
             async with session.get("https://nekos.life/api/why", headers=self.user_agent) as why:
                 if why.status == 200:
                     why_js = await why.json()
-                    why_em = discord.Embed(title=f"{ctx.author.name} wonders...", description=why_js["why"], colour=0x690E8,)
+                    why_em = Embed(
+                        title=f"{ctx.author.name} wonders...",
+                        description=why_js["why"],
+                        colour=0x690E8
+                    )
                     await ctx.send(embed=why_em)
                 else:
                     await ctx.send(f"Something went Boom! [status : {why.status}]")
@@ -215,7 +263,7 @@ class Fun(Cog):
     async def robohash(self, ctx: Context, *, meme: str) -> None:
         """text => robot image thing."""
         try:
-            e = discord.Embed(colour=0x690E8)
+            e = Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
             e.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=e)
@@ -240,7 +288,11 @@ class Fun(Cog):
                 if meme.status == 200:
                     mj = await meme.json()
                     ans = await self.get_answer(mj["answer"])
-                    em = discord.Embed(title=ans, description=f"And the answer to {question} is this:", colour=0x690E8,)
+                    em = Embed(
+                        title=ans,
+                        description=f"And the answer to {question} is this:",
+                        colour=0x690E8
+                    )
                     em.set_image(url=mj["image"])
                     await ctx.send(embed=em)
                 else:
@@ -269,7 +321,11 @@ class Fun(Cog):
             async with session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as r:
                 data = await r.text()
         lines = data.split("\n")
-        embed = Embed(title="Excuses", description=random.choice(lines), color=Color.gold())
+        embed = Embed(
+            title="Excuses",
+            description=random.choice(lines),
+            color=Color.gold()
+        )
 
         await ctx.send(embed=embed)
 
@@ -279,7 +335,7 @@ class Fun(Cog):
         try:
             async with self.session.get("http://inspirobot.me/api?generate=true") as page:
                 picture = await page.text(encoding="utf-8")
-                embed = discord.Embed()
+                embed = Embed()
                 embed.set_image(url=picture)
                 await ctx.send(embed=embed)
         except Exception:
@@ -292,7 +348,7 @@ class Fun(Cog):
             async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
                     img = await neko.json()
-                    neko_em = discord.Embed(colour=0x690E8)
+                    neko_em = Embed(colour=0x690E8)
                     neko_em.set_image(url=img["neko"])
                     await ctx.send(embed=neko_em)
                 else:
@@ -302,13 +358,20 @@ class Fun(Cog):
     async def slap(self, ctx: Context, member: discord.Member = None) -> None:
         """Slap a User."""
         if member == ctx.author.mention or member is None:
-            embed = Embed(title="Slap In The Face!", description=f"{ctx.author.mention} got slapped him/her self LMAO!", color=Color.blurple(),)
-            embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+            embed = Embed(
+                title="Slap In The Face!",
+                description=f"{ctx.author.mention} got slapped him/her self LMAO!",
+                color=Color.blurple()
+            )
+            embed.set_image(
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
         else:
             embed = Embed(
-                title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!", color=Color.blurple()
+                title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!",
+                color=Color.blurple()
             )
-            embed.set_image(url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+            embed.set_image(
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
         await ctx.send(embed=embed)
 
     @command()
@@ -319,11 +382,16 @@ class Fun(Cog):
             "https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif",
         ]
         if member == ctx.author.mention or member is None:
-            embed = Embed(title="Punch In The Face!", description=f"{ctx.author.mention} punched him/her self LMAO!", color=Color.blurple(),)
+            embed = Embed(
+                title="Punch In The Face!",
+                description=f"{ctx.author.mention} punched him/her self LMAO!",
+                color=Color.blurple()
+            )
             embed.set_image(url=random.choice(img_links))
         else:
             embed = Embed(
-                title="Punch In The Face!", description=f"{member.mention} got punched in the face by {ctx.author.mention}!", color=Color.blurple()
+                title="Punch In The Face!", description=f"{member.mention} got punched in the face by {ctx.author.mention}!",
+                color=Color.blurple()
             )
             embed.set_image(url=random.choice(img_links))
         await ctx.send(embed=embed)
@@ -332,16 +400,25 @@ class Fun(Cog):
     async def shoot(self, ctx: Context, member: discord.Member) -> None:
         """Shoot a User."""
         embed = Embed(
-            title="Boom! Bam! He's Dead!", description=f"{member.mention} shot by {ctx.author.mention} :gun: :boom:", color=Color.blurple(),
+            title="Boom! Bam! He's Dead!",
+            description=f"{member.mention} shot by {ctx.author.mention} :gun: :boom:",
+            color=Color.blurple()
         )
-        embed.set_image(url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
+        embed.set_image(
+            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
         await ctx.send(embed=embed)
 
     @command(aliases=["table", "flip", "tableflip"])
     async def throw(self, ctx: Context) -> None:
         """Throw the table."""
-        embed = Embed(title="Table Throw!", description=f"{ctx.author.mention} threw the table! :boom:", color=Color.blurple(),)
-        embed.set_image(url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif")
+        embed = Embed(
+            title="Table Throw!",
+            description=f"{ctx.author.mention} threw the table! :boom:",
+            color=Color.blurple()
+        )
+        embed.set_image(
+            url="https://media.giphy.com/media/pzFB1KY4wob0jpbuPa/giphy.gif"
+        )
         await ctx.send(embed=embed)
 
     @command(aliases=["cookies", "cook"])
@@ -362,9 +439,10 @@ class Fun(Cog):
                     **You got +10 points!**
                     """
                 ),
-                color=Color.blurple(),
+                color=Color.blurple()
             )
-            embed.set_image(url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
+            embed.set_image(
+                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
         else:
             embed = Embed(
                 title="Cookie Giver!",
@@ -374,7 +452,7 @@ class Fun(Cog):
                     *You got +{num} points!**"
                     """
                 ),
-                color=Color.blurple(),
+                color=Color.blurple()
             )
         await ctx.send(embed=embed)
         # TODO : Add points after db integration
@@ -383,7 +461,11 @@ class Fun(Cog):
     @cookie.error
     async def cookie_error(self, ctx: Context, error: Exception) -> None:
         if isinstance(error, BadArgument):
-            embed = Embed(title="❌ERROR", description="You can only get a cookie **Once Every 2 Hours**.", color=Color.red(),)
+            embed = Embed(
+                title="❌ERROR",
+                description="You can only get a cookie **Once Every 2 Hours**.",
+                color=Color.red()
+            )
             await ctx.send(embed=embed)
 
 

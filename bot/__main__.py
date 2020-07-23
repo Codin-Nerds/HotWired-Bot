@@ -1,11 +1,10 @@
 import os
 
-from bot import config
-from bot.core.bot import Bot
-
 from discord import Game
 from discord.ext.commands import when_mentioned_or
 
+from bot import config
+from bot.core.bot import Bot
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -32,6 +31,7 @@ extensions = [
     "bot.cogs.reddit",
     "bot.cogs.translate",
     "bot.cogs.github",
+    "bot.cogs.nasa",
 ]
 
 bot = Bot(

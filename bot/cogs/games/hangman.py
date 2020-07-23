@@ -4,11 +4,11 @@ import typing as t
 from collections import defaultdict
 from os import path
 
-from bot import config
-from bot.core.bot import Bot
-
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Cog, Context, command
+
+from bot import config
+from bot.core.bot import Bot
 
 DIR_PATH = path.dirname(__file__)
 # TODO: Define global hangman players
@@ -159,7 +159,8 @@ class HangmanGame:
                 await self.channel.send(embed=embed)
                 return
             await self.send_status(guess, guess_status)
-            if state := self.is_finished():
+            state = self.is_finished()
+            if state > 0:
                 if state == 1:
                     embed = Embed(
                         title="You won",

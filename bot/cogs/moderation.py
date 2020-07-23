@@ -1,316 +1,156 @@
-import asyncio
 import textwrap
 import typing as t
-from collections import Counter
-from contextlib import suppress
 from datetime import datetime
 
-import discord
-from discord import Color, Embed, Member, NotFound, Role
+from discord import Color, Embed, Member, User
+from discord.errors import Forbidden
 from discord.ext.commands import (
-    Cog, Context, Greedy, NoPrivateMessage,
-    command, has_permissions
+    Cog, Context, NoPrivateMessage,
+    RoleConverter, command, has_permissions
 )
-from loguru import logger
 
 from bot.core.bot import Bot
-from bot.core.converters import ActionReason, ProcessedMember
+from bot.core.converters import Duration, ProcessedMember, ProcessedUser
 from bot.core.decorators import follow_roles
 
 
 class Moderation(Cog):
-    """This cog provides moderation commands."""
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    # region: Commands
+
     @command()
+    @follow_roles()
     @has_permissions(kick_members=True)
-    @follow_roles()
-    async def kick(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
-        """Kick a User."""
-        if not isinstance(member, Member):
-            embed = Embed(
-                title="You can't kick this user",
-                description=textwrap.dedent(
-                    f"""
-                    {member.mention} (`{member.id}`) doesn't seem to be a member of this server.
-
-                    **❯❯ You can only kick server members.**
-                    """
-                ),
-                color=discord.Color.red(),
-            )
-            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
-            return
-
-        server_embed = discord.Embed(
-            title="User Kicked",
-            description=textwrap.dedent(
-                f"""
-                **Reason**: {reason}
-                **User**: {member.mention} (`{member.id}`)
-                **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
-                """
-            ),
-            color=discord.Color.orange(),
-            timestamp=datetime.utcnow(),
-        )
-        server_embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
-
-        dm_embed = discord.Embed(
-            title="You were Kicked",
-            description=textwrap.dedent(
-                f"""
-                {reason}
-
-                *Server: {ctx.guild.name}*
-                """
-            ),
-            color=discord.Color.red(),
-            timestamp=datetime.utcnow(),
-        )
-        dm_embed.set_thumbnail(url=ctx.guild.icon_url)
-
-        await ctx.send(embed=server_embed)
-        await member.send(embed=dm_embed)
-        await member.kick(reason=reason)
-        logger.debug(f"User <@{ctx.author.id}> has kicked <@{member.id}> from {ctx.guild.id}")
+    async def kick(self, ctx: Context, member: ProcessedMember, *, reason: str = "No specific reason.") -> None:
+        """Kick user from the server for given reason."""
+        await self._apply_kick(ctx, member, reason)
 
     @command()
-    @has_permissions(ban_members=True)
     @follow_roles()
-    async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
-        """Ban a User."""
-        server_embed = discord.Embed(
-            title="User Banned",
-            description=textwrap.dedent(
-                f"""
-                **Reason**: {reason}
-                **User**: {member.mention} (`{member.id}`)
-                **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
-                """
-            ),
-            color=discord.Color.orange(),
-            timestamp=datetime.utcnow(),
-        )
-        server_embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
-
-        dm_embed = discord.Embed(
-            title="You were Banned",
-            description=textwrap.dedent(
-                f"""
-                {reason}
-
-                *Server: {ctx.guild.name}*
-                """
-            ),
-            color=discord.Color.red(),
-            timestamp=datetime.utcnow(),
-        )
-        dm_embed.set_thumbnail(url=ctx.guild.icon_url)
-
-        await ctx.send(embed=server_embed)
-        await member.send(embed=dm_embed)
-        await member.ban(reason=reason)
-        logger.debug(f"User <@{ctx.author.id}> has banned <@{member.id}> from {ctx.guild.id}")
-
-    @command()
     @has_permissions(administrator=True)
-    async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
-        """Bans multiple members from the server."""
-        if len(members) == 0:
-            return await ctx.send("No members to ban.")
+    async def ban(self, ctx: Context, user: ProcessedUser, *, reason: str = "No specific reason.") -> None:
+        """"Permanently ban user from the server for given reason."""
+        await self._apply_ban(ctx, user, reason)
 
-        banned_members = []
-        for member in members:
-            with suppress(discord.HTTPException):
-                # TODO: Make sure user has permission to ban given member
-                await ctx.guild.ban(member, reason=reason)
-                banned_members.append(member)
-
-        banned_members_str = ", ".join(banned_member.mention for banned_member in banned_members)
-        log_banned_members = ", ".join(str(banned_member.id) for banned_member in banned_members)
-        failed_members = len(members) - (len(members) - len(banned_members))
-
-        await ctx.send(f"Banned members: {banned_members_str} ({failed_members} / {len(members)})")
-        logger.debug(f"User <@{ctx.author.id}> has multibanned users: [{log_banned_members}] from {ctx.guild.id}")
+    @command()
+    @follow_roles()
+    @has_permissions(ban_members=True)
+    async def tempban(self, ctx: Context, user: ProcessedUser, duration: Duration, *, reason: str = "No specific reason.") -> None:
+        """Temporarely ban user from the server for given reason."""
+        await self._apply_ban()
 
     @command()
     @has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, *, user: ProcessedMember) -> None:
-        """Unban a User."""
-        try:
-            await ctx.guild.unban(user)
+    async def unban(self, ctx: Context, user: ProcessedUser) -> None:
+        """Revoke users ban on the server."""
+        await self._apply_unban(ctx, user)
 
-            embed = discord.Embed(
-                title="User Unbanned",
-                description=textwrap.dedent(
-                    f"""
-                    **User**: {user.mention} (`{user.id}`)
-                    **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
-                    """
-                ),
-                color=discord.Color.green(),
-                timestamp=datetime.utcnow(),
-            )
-            embed.set_thumbnail(url=user.avatar_url_as(format="png", size=256))
-            await ctx.send(embed=embed)
-            logger.debug(f"User <@{ctx.author.id}> has unbanned <@{user.id}> from {ctx.guild.id}")
-        except NotFound:
-            embed = discord.Embed(
-                title="Ban not Found!",
-                description=textwrap.dedent(
-                    f"""
-                    There are no active bans on discord for {user.mention}.
-                    He isn't banned here.
-                    """
-                ),
-                color=discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
-            logger.trace(f"User <@{ctx.author.id}> has tried to unban non-banned <@{user.id}> from {ctx.guild.id}")
+    @command()
+    @follow_roles()
+    @has_permissions(manage_roles=True)
+    async def promote(self, ctx: Context, member: ProcessedMember, role: RoleConverter, *, reason: str = "No specific reason.") -> None:
+        """Promote user to any given role (less than yours)."""
+        await self._apply_promotion()
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int) -> None:
-        """Clear specified number of messages."""
-        await ctx.channel.purge(limit=amount + 1)
-
-        embed = Embed(
-            description=textwrap.dedent(
-                f"""
-                **Messages Cleared!**
-                **Amount**: {amount}
-                """
-            ),
-            color=discord.Color.orange(),
-        )
-        message = await ctx.send(ctx.author.mention, embed=embed)
-        await asyncio.sleep(2.5)
-        await message.delete()
-        logger.debug(f"User <@{ctx.author.id}> has cleared {amount} messages in <#{ctx.channel.id}> on {ctx.guild.id}")
+    async def clean(self, ctx: Context, amount: int) -> None:
+        """Clean specified amount of messages."""
+        await self._apply_clean()
 
     @command()
-    @has_permissions(manage_roles=True)
-    async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
-        """Promote member to role."""
-        # TODO: Use custom check here
-        if role >= ctx.author.top_role:
-            embed = Embed(
-                title="Insufficient permissions",
-                description="You can give someone role which is higher in the role hierarchy than your top role.",
-                color=Color.red(),
-            )
-            await ctx.send(embed=embed)
-            logger.trace(
-                f"User <@{ctx.author.id}> has tried to promote <@{member.id}> to <@&{role.id}> on {ctx.guild.id} without permission"
-            )
-            return
-        if role in member.roles:
-            embed = Embed(title="Error", description=f"{member.mention} already has the {role.mention} role!", color=Color.red())
-            await ctx.send(embed=embed)
-            logger.trace(f"User <@{ctx.author.id}> has tried promote <@{member.id}> to <@&{role.id}> who already had a role on {ctx.guild.id}")
-            return
+    @has_permissions(manage_messages=True)
+    async def cleanup(self, ctx: Context, amount: int) -> None:
+        """Cleanup messages from bot."""
+        await self._apply_cleanup()
 
-        try:
-            await member.add_roles(role)
-            logger.debug(f"User <@{ctx.author.id}> has promoted <@{member.id}> to <@&{role.id}> on {ctx.guild.id}")
-        except discord.errors.Forbidden:
-            embed = Embed(
-                title="Insufficient permission",
-                description=textwrap.dedent(
-                    f"""
-                    Sorry, I don't have sufficient permission to promote to this role.
+    # endregion
+    # region: Strike Execution (private) functions
 
-                    **My Top Role**: {ctx.me.top_role.mention}
-                    **Requested Role**: {role.mention}
-                    """
-                ),
-                color=discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
-            logger.trace(
-                f"User <@{ctx.author.id}> has tried promote <@{member.id}> to <@&{role.id}> on {ctx.guild.id} but bot didn't have permission"
-            )
-            return
+    async def _apply_kick(self, ctx: Context, member: Member, reason: str) -> None:
+        dm_sent = await self._send_DM(member, ctx, "Kicked", reason)
+        await self._send_server_embed(member, ctx, "Kicked", reason)
+        await ctx.send(dm_sent)
 
+    async def _apply_ban(self, ctx: Context, user: User, reason: str) -> None:
+        dm_sent = await self._send_DM(user, ctx, "Banned", reason)
+        await self._send_server_embed(user, ctx, "Banned", reason)
+        await ctx.send(dm_sent)
+
+    async def _apply_unban(self, ctx: Context, user: User) -> None:
+        dm_sent = await self._send_DM(user, ctx, "Unbanned", "", color=Color.green())
+        await self._send_server_embed(user, ctx, "Unbanned", "", color=Color.green())
+        await ctx.send(dm_sent)
+
+    async def _apply_promotion(self) -> None:
+        pass
+
+    async def _apply_clean(self) -> None:
+        pass
+
+    async def _apply_cleanup(self) -> None:
+        pass
+
+    async def _send_DM(
+        self,
+        user: t.Union[Member, User],
+        ctx: Context,
+        action: str,
+        reason: str,
+        color: t.Optional[Color] = None
+    ) -> bool:
+        if not color:
+            color = Color.red()
+        reason_string = f"{reason}\n" if reason else '\r'
         embed = Embed(
-            title="Promotion!",
+            title=f"You were {action}",
             description=textwrap.dedent(
                 f"""
-                {member.mention} has been promoted to {role.mention}!
-                :tada: Congratulations! :tada:
+                {reason_string}
+                *Server: {ctx.guild.name}*
                 """
             ),
-            color=Color.green(),
+            color=color,
+            timestamp=datetime.utcnow(),
         )
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+        try:
+            await user.send(embed=embed)
+            return True
+        except Forbidden:
+            return False
+
+    async def _send_server_embed(
+        self,
+        user: t.Union[Member, User],
+        ctx: Context,
+        action: str,
+        reason: str,
+        color: t.Optional[Color] = None
+    ) -> None:
+        if not color:
+            color = Color.red()
+        reason_string = f"**Reason**: {reason}\n" if reason else '\r'
+        embed = Embed(
+            title=f"User {action}",
+            description=textwrap.dedent(
+                f"""
+                {reason_string}
+                **User**: {user.mention} (`{user.id}`)
+                **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
+                """
+            ),
+            color=color,
+            timestamp=datetime.utcnow()
+        )
+        embed.set_thumbnail(url=user.avatar_url_as(format="png", size=256))
         await ctx.send(embed=embed)
 
-        dm_embed = Embed(
-            title="Congratulations!",
-            description=textwrap.dedent(
-                f"""
-                You have been promoted to **{role.name}** in our community.
-                `'With great power comes great responsibility'`
-                Be active and keep the community safe
-                """
-            ),
-            color=Color.green(),
-        )
-        dm_embed.set_footer(text=f"Server: {ctx.guild.name}", icon_url=ctx.guild.icon_url)
-        await member.send(embed=dm_embed)
+    # endregion
 
-    async def _basic_cleanup_strategy(self, ctx: Context, amount: int) -> dict:
-        count = 0
-        async for msg in ctx.history(limit=amount, before=ctx.message):
-            if msg.author == ctx.me:
-                await msg.delete()
-                count += 1
-        return {ctx.me: count}
-
-    async def _complex_cleanup_strategy(self, ctx: Context, amount: int) -> Counter:
-        prefixes = tuple(await self.bot.get_prefix(ctx.message))
-
-        def check(bot: Bot) -> bool:
-            return bot.author == ctx.me or bot.content.startswith(prefixes)
-
-        deleted = await ctx.channel.purge(limit=amount, check=check, before=ctx.message)
-        return Counter(m.author for m in deleted)
-
-    @command()
-    @has_permissions(manage_messages=True)
-    async def cleanup(self, ctx: Context, amount: int = 100) -> None:
-        """Cleans up the bots messages from the channel."""
-        strategy = self._basic_cleanup_strategy
-
-        if ctx.me.permissions_in(ctx.channel).manage_messages:
-            strategy = self._complex_cleanup_strategy
-
-        spammers = await strategy(ctx, amount)
-        deleted = sum(spammers.values())
-
-        if deleted:
-            authors = ""
-            spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
-            for author, count in spammers:
-                authors += f"• {author.mention}: {count}\n"
-
-            embed = Embed(
-                title="Message Cleanup",
-                description=textwrap.dedent(
-                    f"""
-                    {deleted} messages {' was' if deleted == 1 else 's were'} removed.
-
-                    {authors}
-                    """
-                ),
-                color=discord.Color.red(),
-            )
-            logger.debug(f"User <@{ctx.author.id}> has cleaned up {amount} bot messages")
-            await ctx.send(embed=embed, delete_after=10)
-
-    async def cog_check(self, ctx: Context) -> t.Union[None, bool]:
+    async def cog_check(self, ctx: Context) -> t.Optional[bool]:
         """Make sure these commands can't be executed from DMs."""
         if ctx.guild is None:
             raise NoPrivateMessage

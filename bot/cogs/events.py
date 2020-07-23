@@ -3,12 +3,11 @@ import textwrap
 import traceback
 
 import aiohttp
+from discord import Color, Embed, Guild, Message
+from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
-
-from discord import Color, Embed, Guild, Message
-from discord.ext.commands import Cog
 
 PREFIX = config.COMMAND_PREFIX
 

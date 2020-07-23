@@ -2,12 +2,9 @@ import textwrap
 import typing as t
 from functools import wraps
 
-from bot.core.converters import ProcessedMember
-from bot.utils.errors import MemberNotFound
-from loguru import logger
-
 from discord import Color, Embed, Member, User
 from discord.ext.commands import Cog, Context
+from loguru import logger
 
 
 def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
@@ -30,9 +27,8 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                     raise ValueError(f"Specified argument '{argument}' not found.")
 
             if isinstance(user, User):
-                try:
-                    member = await ProcessedMember.get_member(ctx.guild, user)
-                except MemberNotFound:
+                member = ctx.guild.get_member(user.id)
+                if member is None:
                     # Skip checks in case of bad member
                     logger.trace("Skipping follow_role check, provided user isn't a valid Member.")
                     await func(self, ctx, *args, **kwargs)
