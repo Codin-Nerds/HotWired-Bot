@@ -93,7 +93,16 @@ class Moderation(Cog):
     async def _apply_cleanup(self) -> None:
         pass
 
-    async def _send_DM(self, user: t.Union[Member, User], ctx: Context, action: str, reason: str, color: Color = Color.red()) -> bool:
+    async def _send_DM(
+        self,
+        user: t.Union[Member, User],
+        ctx: Context,
+        action: str,
+        reason: str,
+        color: t.Optional[Color] = None
+    ) -> bool:
+        if not color:
+            color = Color.red()
         reason_string = f"{reason}\n" if reason else '\r'
         embed = Embed(
             title=f"You were {action}",
@@ -113,7 +122,16 @@ class Moderation(Cog):
         except Forbidden:
             return False
 
-    async def _send_server_embed(self, user: t.Union[Member, User], ctx: Context, action: str, reason: str, color: Color = Color.red()) -> None:
+    async def _send_server_embed(
+        self,
+        user: t.Union[Member, User],
+        ctx: Context,
+        action: str,
+        reason: str,
+        color: t.Optional[Color] = None
+    ) -> None:
+        if not color:
+            color = Color.red()
         reason_string = f"**Reason**: {reason}\n" if reason else '\r'
         embed = Embed(
             title=f"User {action}",
