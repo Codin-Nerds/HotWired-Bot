@@ -5,16 +5,14 @@ from collections import Counter
 from contextlib import suppress
 from datetime import datetime
 
-from bot.cogs.embeds import Embeds
 from bot.core.bot import Bot
 from bot.core.converters import ActionReason, ProcessedMember
 from bot.core.decorators import follow_roles
 from bot.utils.formats import Plural
 
-import discord
-from discord import Color, Embed, Member, NotFound, Role, TextChannel
-from discord.errors import Forbidden
-from discord.ext.commands import (
+from discord import Color, Embed, Member, NotFound, Role, TextChannel, HTTPException
+from errors import Forbidden
+from ext.commands import (
     Cog,
     Context,
     Greedy,
@@ -32,10 +30,9 @@ class Moderation(Cog):
         self.args = args
 
     @property
-    def embeds_cog(self) -> Embeds:
+    def embeds_cog(self) -> Embed:
         """Get currently loaded Embed cog instance."""
         embed_cog = self.bot.get_cog("Embeds")
-        print(embed_cog)
         return embed_cog
 
     @command()
@@ -53,12 +50,12 @@ class Moderation(Cog):
                     **❯❯ You can only kick server members.**
                     """
                 ),
-                color=discord.Color.red(),
+                color=Color.red(),
             )
             await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
             return
 
-        server_embed = discord.Embed(
+        server_embed = Embed(
             title="User Kicked",
             description=textwrap.dedent(
                 f"""
@@ -67,12 +64,12 @@ class Moderation(Cog):
                 **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                 """
             ),
-            color=discord.Color.orange(),
+            color=Color.orange(),
             timestamp=datetime.utcnow(),
         )
         server_embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
 
-        dm_embed = discord.Embed(
+        dm_embed = Embed(
             title="You were Kicked",
             description=textwrap.dedent(
                 f"""
@@ -81,7 +78,7 @@ class Moderation(Cog):
                 *Server: {ctx.guild.name}*
                 """
             ),
-            color=discord.Color.red(),
+            color=Color.red(),
             timestamp=datetime.utcnow(),
         )
         dm_embed.set_thumbnail(url=ctx.guild.icon_url)
@@ -95,7 +92,7 @@ class Moderation(Cog):
     @follow_roles()
     async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
         """Ban a User."""
-        server_embed = discord.Embed(
+        server_embed = Embed(
             title="User Banned",
             description=textwrap.dedent(
                 f"""
@@ -104,12 +101,12 @@ class Moderation(Cog):
                 **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                 """
             ),
-            color=discord.Color.orange(),
+            color=Color.orange(),
             timestamp=datetime.utcnow(),
         )
         server_embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
 
-        dm_embed = discord.Embed(
+        dm_embed = Embed(
             title="You were Banned",
             description=textwrap.dedent(
                 f"""
@@ -118,7 +115,7 @@ class Moderation(Cog):
                 *Server: {ctx.guild.name}*
                 """
             ),
-            color=discord.Color.red(),
+            color=Color.red(),
             timestamp=datetime.utcnow(),
         )
         dm_embed.set_thumbnail(url=ctx.guild.icon_url)
@@ -148,7 +145,7 @@ class Moderation(Cog):
         for member in members:
             try:
                 await ctx.guild.ban(member, reason=reason)
-            except discord.HTTPException:
+            except HTTPException:
                 failed += 1
 
         await ctx.send(f"Banned {total_members - failed}/{total_members} members.")
@@ -160,7 +157,7 @@ class Moderation(Cog):
         try:
             await ctx.guild.unban(user)
 
-            embed = discord.Embed(
+            embed = Embed(
                 title="User Unbanned",
                 description=textwrap.dedent(
                     f"""
@@ -168,13 +165,13 @@ class Moderation(Cog):
                     **Moderator**: {ctx.author.mention} (`{ctx.author.id}`)
                     """
                 ),
-                color=discord.Color.green(),
+                color=Color.green(),
                 timestamp=datetime.utcnow(),
             )
             embed.set_thumbnail(url=user.avatar_url_as(format="png", size=256))
             await ctx.send(embed=embed)
         except NotFound:
-            embed = discord.Embed(
+            embed = Embed(
                 title="Ban not Found!",
                 description=textwrap.dedent(
                     f"""
@@ -182,7 +179,7 @@ class Moderation(Cog):
                     He isn't banned here.
                     """
                 ),
-                color=discord.Color.red(),
+                color=Color.red(),
             )
             await ctx.send(embed=embed)
 
@@ -202,7 +199,7 @@ class Moderation(Cog):
                 **Amount**: {amount}
                 """
             ),
-            color=discord.Color.orange(),
+            color=Color.orange(),
         )
         message = await ctx.send(ctx.author.mention, embed=embed)
         await asyncio.sleep(2.5)
@@ -334,7 +331,7 @@ class Moderation(Cog):
                     **Requested Role**: {role.mention}
                     """
                 ),
-                color=discord.Color.red(),
+                color=Color.red(),
             )
             await ctx.send(embed=embed)
             return
@@ -409,7 +406,7 @@ class Moderation(Cog):
                     {authors}
                     """
                 ),
-                color=discord.Color.red(),
+                color=Color.red(),
             )
             await ctx.send(embed=embed, delete_after=10)
 

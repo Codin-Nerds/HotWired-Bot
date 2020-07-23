@@ -2,12 +2,11 @@ from contextlib import suppress
 from os.path import splitext
 
 import aiohttp
+from discord import Color, Embed, Message, NotFound
+from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
-
-from discord import Color, Embed, Message, NotFound
-from discord.ext.commands import Cog
 
 FILE_EMBED_DESCRIPTION = (
     f"""
@@ -39,7 +38,7 @@ class MalwareProtection(Cog):
         if not message.attachments or not message.guild:
             return
 
-        elif not message.author.permissions_in(message.channel).manage_messages:
+        elif message.author.permissions_in(message.channel).manage_messages:
             return
 
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}

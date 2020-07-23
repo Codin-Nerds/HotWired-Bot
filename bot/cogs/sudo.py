@@ -189,6 +189,40 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
+    @sudo.command(aliases=["sinfo"])
+    async def sysinfo(self, ctx: Context) -> None:
+        """Get system information (show info about the server this bot runs on)."""
+        uname = platform.uname()
+
+        system = textwrap.dedent(
+            f"""
+            • System: **{uname.system}**
+            • Node Name: **{uname.node}**
+            """
+        )
+        version = textwrap.dedent(
+            f"""
+            • Release: **{uname.release}**
+            • Version: **{uname.version}**
+            """
+        )
+        hardware = textwrap.dedent(
+            f"""
+            • Machine: **{uname.machine}**
+            • Processor: **{uname.processor}**
+            """
+        )
+
+        embed = Embed(title="BOT SYSTEM INFO", color=Color.red())
+        embed.add_field(name="**❯❯ System**", value=system, inline=True)
+        embed.add_field(name="**❯❯ Hardware**", value=hardware, inline=True)
+        embed.add_field(name="**❯❯ Version**", value=version, inline=False)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url,
+        )
+
+        await ctx.send(embed=embed)
+
     @sudo.command(aliases=['slist', 'serverlist'])
     async def guildlist(self, ctx: Context, page: int = 1) -> None:
         """List the guilds I am in."""
