@@ -47,6 +47,17 @@ def disable_banlock(serverid: int) -> None:
             db.commit()
 
 
+def get_banlock(serverid: int) -> int:
+    query = "SELECT banlock FROM antispam WHERE serverid = ?"
+
+    async with aiosqlite.connect(database_path) as db:
+        async with db.execute(query, (serverid)) as cursor:
+            banlock = await cursor.fetchone()
+            banlock = banlock[0]
+
+    return banlock
+
+
 def enable_kicklock(serverid: int) -> None:
     query = "SELECT kicklock FROM antispam WHERE serverid = ?"
 
@@ -73,6 +84,17 @@ def disable_kicklock(serverid: int) -> None:
             sql = "INSERT INTO antispam(kicklock) values(0)"
             db.execute(sql)
             db.commit()
+
+
+def get_kicklock(serverid: int) -> None:
+    query = "SELECT kicklock FROM antispam WHERE serverid = ?"
+
+    async with aiosqlite.connect(database_path) as db:
+        async with db.execute(query, (serverid)) as cursor:
+            kicklock = await cursor.fetchone()
+            kicklock = kicklock[0]
+
+    return kicklock
 
 
 def enable_serverlock(serverid: int) -> None:
