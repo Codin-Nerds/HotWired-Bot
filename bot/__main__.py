@@ -42,55 +42,7 @@ bot = Bot(
     case_insensitive=True,
 )
 
-bot.remove_command('help')
 
-
-@bot.command(help="Shows this message.")
-async def help(ctx, cmd=None):
-    cmds = bot.all_commands
-
-    def format_cmd_help(cmd):
-        def format_params(params):
-            return params
-
-        return "    {} {}\n        {}\n\n".format(
-            ", ".join([cmd.name] + cmd.aliases),
-            format_params(cmd.params),
-            cmd.help
-        )
-
-    if not cmd:
-        cogs = {}
-
-        for cmd_name in cmds:
-            cmd_obj = cmds[cmd_name]
-            cog_name = cmd_obj.cog_name if cmd_obj.cog_name is not None else 'Others'
-
-            try:
-                cogs[cog_name].append(cmd_obj)
-
-            except KeyError:
-                cogs[cog_name] = []
-                cogs[cog_name].append(cmd_obj)
-
-            except AttributeError:
-                cogs[cog_name] = []
-                cogs[cog_name].append(cmd_obj)
-
-        bot_help = []
-
-        for cog in cogs:
-            cog_help = "\n{}:\n".format(cog)
-            for cmd in cogs[cog]:
-                cog_help += format_cmd_help(cmd)
-
-            bot_help += [cog_help]
-
-        bot_help.reverse()
-
-        await ctx.send(f"```{''.join(bot_help)}```")
-    else:
-        await ctx.send("```\n{}\n```".format(format_cmd_help(cmd)))
 
 if __name__ == "__main__":
     bot.run(TOKEN)
