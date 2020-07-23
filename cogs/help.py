@@ -7,7 +7,7 @@ line 19), under Flake8, Mypy, Pydocstyle and Pylint.
 
 from inspect import Parameter
 import textwrap
-from typing import Callable, Coroutine, Optional
+import typing as t
 
 import discord
 from discord.ext import commands, menus
@@ -19,19 +19,17 @@ class HelpSource(menus.ListPageSource):
 
     def __init__(
             self,
-            signature: Callable,
-            filter_commands: Coroutine,
+            signature: t.Callable,
+            filter_commands: t.Coroutine,
             prefix: str,
             author: discord.User,
-            bot_id: int,
             cogs: dict
-        ) -> None:
+            ) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
         self.prefix = prefix
         self.menu_author = author
-        self.bot_id = bot_id
         super().__init__(
             [(cog, cogs[cog]) for cog in sorted(
                 cogs,
@@ -55,7 +53,7 @@ class HelpSource(menus.ListPageSource):
             ),
             description=textwrap.dedent(
                 f"""
-                Help syntax : `<Required argument>`. `[Optional argument]`
+                Help syntax : `<Required argument>`. `[t.Optional argument]`
                 Command prefix: `{self.prefix}`
                 {cog.description if cog else ""}
                 """
@@ -87,7 +85,7 @@ class Help(commands.HelpCommand):
         for arg in command.clean_params.values():
             if arg.kind in (Parameter.VAR_KEYWORD, Parameter.VAR_POSITIONAL):
                 basis += f" [{arg.name}]"
-            elif arg.annotation == Optional:
+            elif arg.annotation == t.Optional:
                 basis += f" [{arg.name} = None]"
             elif isinstance(arg.annotation, commands.converter._Greedy):
                 basis += f" [{arg.name} = (...)]"
@@ -106,8 +104,8 @@ class Help(commands.HelpCommand):
                 self.filter_commands,
                 ctx.prefix,
                 ctx.author,
-                ctx.bot.user.id,
-                mapping),
+                mapping,
+            ),
             clear_reactions_after=True,
         )
         await pages.start(ctx)
@@ -120,8 +118,8 @@ class Help(commands.HelpCommand):
             title=cog.qualified_name,
             description=textwrap.dedent(
                 f"""
-                Help syntax : `<Required argument>`. `[Optional argument]`
-                Command prefix: `{self.prefix}`
+                Help syntax : `<Required argument>`. `[t.Optional argument]`
+                Command prefix: `{prefix}`
                 {cog.description}
                 """
             ),
@@ -153,7 +151,8 @@ class Help(commands.HelpCommand):
             description=textwrap.dedent(
                 f"""
                 Help syntax : `<Required arguments`.
-                `[Optional arguments]`\n{command.help}
+                `[t.Optional arguments]`
+                {command.help}
                 """
             ),
             color=discord.Color.blue(),
@@ -191,7 +190,8 @@ class Help(commands.HelpCommand):
             description=textwrap.dedent(
                 f"""
                 Help syntax : `<Required arguments>`.
-                `[Optional arguments]`\n{group.help}
+                `[t.Optional arguments]`
+                {group.help}
                 """
             ),
             color=discord.Color.blue(),
