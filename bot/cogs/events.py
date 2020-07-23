@@ -127,11 +127,8 @@ class Events(Cog):
                 f"""
                 **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
                 Guild Owner: **{guild.owner}** | **<@!{guild.owner_id}>**
-                Region: **{guild.region}**
-                Member Count: **{guild.member_count}**
 
-                Text channels: **{len(guild.text_channels)}**
-                Voice channels: **{len(guild.voice_channels)}**
+                Member Count: **{guild.member_count}**
 
                 Created at: **{datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}**
                 """
