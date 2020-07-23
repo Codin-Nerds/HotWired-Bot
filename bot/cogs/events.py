@@ -132,11 +132,8 @@ class Events(Cog):
 
                 Text channels: **{len(guild.text_channels)}**
                 Voice channels: **{len(guild.voice_channels)}**
-                AFK timeout: **{round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel}**
 
                 Created at: **{datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}**
-                File Size: **{round(guild.filesize_limit / 1048576)} MB**
-                Bitrate: **{round(guild.bitrate_limit / 1000)} kbps**
                 """
             ),
         )
