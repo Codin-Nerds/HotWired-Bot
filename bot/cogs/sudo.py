@@ -5,10 +5,10 @@ import platform
 import textwrap
 import time
 import traceback
+import typing as t
 
 from bot.config import devs
 from bot.core.bot import Bot
-from bot.utils.checks import is_sudo
 
 from discord import (
     Activity,
@@ -20,7 +20,7 @@ from discord import (
     Status
 )
 from discord import __version__ as discord_version
-from discord.ext.commands import Cog, Context, check, group
+from discord.ext.commands import Cog, Context, group
 
 import humanize
 
@@ -40,6 +40,13 @@ class Sudo(Cog):
         self.bot = bot
         self.start_time = datetime.datetime.utcnow()
 
+    def cog_check(self, ctx: Context) -> t.Optional[bool]:
+        if ctx.author.id in devs:
+            return True
+        else:
+            embed = Embed(description="Make your Own sandwich Mortal!.", color=Color.red())
+            await ctx.send(embed=embed)
+
     def get_uptime(self) -> str:
         """Get formatted server uptime."""
         now = datetime.datetime.utcnow()
@@ -58,7 +65,6 @@ class Sudo(Cog):
         pass
 
     @sudo.command()
-    @check(is_sudo)
     async def shutoff(self, ctx: Context) -> None:
         if ctx.author.id in devs:
             await ctx.message.add_reaction("✅")
@@ -66,7 +72,6 @@ class Sudo(Cog):
             await self.bot.logout()
 
     @sudo.command()
-    @check(is_sudo)
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Loads a cog."""
         try:
@@ -77,7 +82,6 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_sudo)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reloads a module."""
         try:
@@ -89,7 +93,6 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_sudo)
     async def unload(self, ctx: Context, *, extension: str) -> None:
         """Unloads a module."""
         try:
@@ -100,7 +103,6 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_sudo)
     async def restart(self, ctx: Context) -> None:
         """Restart The bot."""
         await ctx.message.add_reaction("✅")
