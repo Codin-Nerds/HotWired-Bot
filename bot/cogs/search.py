@@ -208,7 +208,6 @@ class Search(Cog, name="Basic"):
         """Look up manga information."""
         base = "https://kitsu.io/api/edge/"
 
-        # Handling
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 async with session.get(base + "manga", params={"filter[text]": query}) as resp:
