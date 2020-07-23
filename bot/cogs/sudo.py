@@ -40,13 +40,6 @@ class Sudo(Cog):
         self.bot = bot
         self.start_time = datetime.datetime.utcnow()
 
-    def cog_check(self, ctx: Context) -> t.Optional[bool]:
-        if ctx.author.id in devs:
-            return True
-        else:
-            embed = Embed(description="Make your Own sandwich Mortal!.", color=Color.red())
-            await ctx.send(embed=embed)
-
     def get_uptime(self) -> str:
         """Get formatted server uptime."""
         now = datetime.datetime.utcnow()
@@ -248,6 +241,14 @@ class Sudo(Cog):
         embed.set_footer(text=f"Currently showing: {page} out of {pages}")
 
         await ctx.send(embed=embed)
+
+    def cog_check(self, ctx: Context) -> t.Optional[bool]:
+        if ctx.author.id in devs:
+            return True
+        else:
+            embed = Embed(description="Make your Own sandwich Mortal!.", color=Color.red())
+            await ctx.send(embed=embed)
+            return False
 
 
 def setup(bot: Bot) -> None:

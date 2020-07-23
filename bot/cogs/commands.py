@@ -26,14 +26,14 @@ class Commands(Cog):
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
         member_type = f"""
-                Humans: {ctx.guild.member_count - bots}
+                Member: {ctx.guild.member_count - bots}
                 Bots: {bots}
             """
         status = f"""
-                {STATUSES[Status.online]} {member_by_status["online"]}
-                {STATUSES[Status.idle]} {member_by_status["idle"]}
-                {STATUSES[Status.dnd]} {member_by_status["dnd"]}
-                {STATUSES[Status.offline]} {member_by_status["offline"]}
+                {STATUSES[Status.online]}: **{member_by_status["online"]}**
+                {STATUSES[Status.idle]}: **{member_by_status["idle"]}**
+                {STATUSES[Status.dnd]}: **{member_by_status["dnd"]}**
+                {STATUSES[Status.offline]}: **{member_by_status["offline"]}**
             """
         embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
         embed.add_field(name="**❯❯ Member Status**", value=status)

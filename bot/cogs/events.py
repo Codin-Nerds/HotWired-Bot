@@ -74,6 +74,7 @@ class Events(Cog):
         if not self.dev_mode:
             await self.error_hook.send(embed=embed)
         else:
+            traceback.print_exc()
             await logchannel.send(embed=embed)
 
     @Cog.listener()
@@ -122,18 +123,18 @@ class Events(Cog):
 
         log_embed = Embed(
             title=f"The bot has been added to {guild.name}",
-            color=Color.green(),
             description=textwrap.dedent(
                 f"""
                 **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
                 Guild Id: **{guild.id}**
-                Guild Owner: **{guild.owner}** | **<@!{guild.owner_id}>**
+                Guild Owner: **{guild.owner}** | {guild.owner.mention}
 
                 Member Count: **{guild.member_count}**
 
                 Created at: **{datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}**
                 """
             ),
+            color=Color.green(),
         )
         embed.set_thumbnail(url=str(guild.icon_url))
 

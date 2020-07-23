@@ -12,7 +12,7 @@ from bot.utils.formats import Plural
 
 from discord import Color, Embed, Member, NotFound, Role, TextChannel, HTTPException
 from errors import Forbidden
-from ext.commands import (
+from discord.ext.commands import (
     Cog,
     Context,
     Greedy,
@@ -25,9 +25,8 @@ from ext.commands import (
 class Moderation(Cog):
     """This cog provides moderation commands."""
 
-    def __init__(self, bot: Bot, *args) -> None:
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.args = args
 
     @property
     def embeds_cog(self) -> Embed:
@@ -226,13 +225,16 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]]) -> None:
+    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], text: str = None) -> None:
         """Dm a List of Specified User from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
         if embed_data.embed.description is None and embed_data.embed.title is None:
             await ctx.send("Please create a embed using our embed handler to send it.")
             return
+
+        if text is not None:
+            embed_data.embed.description = text
 
         embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
@@ -245,13 +247,16 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dmall(self, ctx: Context) -> None:
+    async def dmall(self, ctx: Context, text: str = None) -> None:
         """Dm all Users from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
         if embed_data.embed.description is None and embed_data.embed.title is None:
             await ctx.send("Please create a embed using our embed handler to send it.")
             return
+
+        if text is not None:
+            embed_data.embed.description = text
 
         embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
@@ -265,12 +270,21 @@ class Moderation(Cog):
         """Disable @everyone's permission to send message on given channel or current channel if not specified."""
         if channels is None:
             channels = [ctx.channel]
+
+        channel_count = 0
         for channel in channels:
-            await channel.set_permissions(channel.guild.default_role, send_messages=False,
-                                          reason=f"Reason: {reason} | Requested by {ctx.author}.")
+            if ctx.author.channel_permissions.manage_channels:
+                await channel.set_permissions(
+                    channel.guild.default_role,
+                    send_messages=False,
+                    reason=f"Reason: {reason} | Requested by {ctx.author}."
+                )
+                channel_count += 1
+            else:
+                continue
             await channel.send("🔒 Locked down this channel.")
         if channels != [ctx.channel]:
-            await ctx.send(f"Locked down {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
+            await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
 
     @command()
     @has_permissions(manage_channels=True)
@@ -278,10 +292,19 @@ class Moderation(Cog):
         """Reset @everyone's permission to send message on given channel or current channel if not specified."""
         if channels is None:
             channels = [ctx.channel]
+
+        channel_count = 0
         for channel in channels:
-            await channel.set_permissions(channel.guild.default_role, send_messages=None,
-                                          reason=f"Reason: {reason} | Requested by {ctx.author}.")
-        await ctx.send(f"Unlocked {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
+            if ctx.author.channel_permissions.manage_channels:
+                await channel.set_permissions(
+                    channel.guild.default_role,
+                    send_messages=None,
+                    reason=f"Reason: {reason} | Requested by {ctx.author}."
+                )
+                channel_count += 1
+            else:
+                continue
+        await ctx.send(f"Unlocked {channel_count} channel{'s' if channel_count > 1 else ''}.")
 
     @command()
     @has_permissions(manage_channels=True)
@@ -294,12 +317,17 @@ class Moderation(Cog):
         if channels is None:
             channels = [ctx.channel]
 
+        channel_count = 0
         for channel in channels:
-            await channel.edit(reason=f"Reason: {reason} | Requested by {ctx.author}.", slowmode_delay=seconds)
+            if ctx.author.channel_permissions.manage_channels:
+                await channel.edit(reason=f"Reason: {reason} | Requested by {ctx.author}.", slowmode_delay=seconds)
+                channel_count += 1
+            else:
+                continue
         if seconds != 0:
-            await ctx.send(f"✅ Set {len(channels)} channel{'s' if len(channels) > 1 else ''} with {seconds}sec slowmode.")
+            await ctx.send(f"✅ Set {channel_count} channel{'s' if channel_count > 1 else ''} with {seconds}sec slowmode.")
         else:
-            await ctx.send(f"✅ Disabled slowmode for {len(channels)} channel{'s' if len(channels) > 1 else ''}.")
+            await ctx.send(f"✅ Disabled slowmode for {channel_count} channel{'s' if channel_count > 1 else ''}.")
 
     @command()
     @has_permissions(manage_roles=True)
