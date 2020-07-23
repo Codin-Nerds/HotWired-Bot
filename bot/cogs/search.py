@@ -267,9 +267,10 @@ class Search(Cog, name="Basic"):
 
     @command()
     async def weather(self, ctx: Context, *, city: str = None) -> None:
-        """Sends current weather in the given city name
-
-        eg. weather london
+        """
+        Sends current weather in the given city name.
+        
+        eg. `weather london`
         """
 
         try:
