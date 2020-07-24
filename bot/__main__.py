@@ -1,9 +1,11 @@
 import os
+import asyncio
 
 from discord import Game
 from discord.ext.commands import when_mentioned_or
 
 from bot import config
+from aiohttp import ClientSession
 from bot.core.bot import Bot
 
 TOKEN = os.getenv("BOT_TOKEN")
@@ -40,6 +42,8 @@ bot = Bot(
     activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
     case_insensitive=True,
 )
+loop = asyncio.get_event_loop()
+bot.loop = loop
 
 if __name__ == "__main__":
     bot.run(TOKEN)
