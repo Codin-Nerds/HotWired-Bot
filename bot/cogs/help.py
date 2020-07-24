@@ -16,26 +16,28 @@ class HelpSource(menus.ListPageSource):
             filter_commands: t.Coroutine,
             prefix: str,
             author: discord.User,
-            cogs: dict
+            cogs: t.Dict[t.Optional[commands.Cog], t.List[commands.Command]],
     ) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
         self.prefix = prefix
         self.menu_author = author
+        sorted_cogs = sorted(
+            cogs,
+            key=lambda cog: cog.qualified_name if cog else "ZZ"
+        )
         super().__init__(
-            [(cog, cogs[cog]) for cog in sorted(
-                cogs,
-                key=lambda cog: cog.qualified_name if cog else "ZZ"
-            )
-            ],
+            [(cog, cogs[cog]) for cog in sorted_cogs],
             per_page=1,
         )
 
     async def format_page(
             self,
             menu: menus.Menu,
-            cog_tuple: tuple,
+            cog_tuple: t.Tuple[
+                t.Optional[commands.Cog], t.List[commands.Command]
+            ],
     ) -> discord.Embed:
         """Format the pages."""
         cog, command_list = cog_tuple

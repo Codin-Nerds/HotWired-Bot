@@ -1,9 +1,10 @@
 import os
 
+from discord import Game
 from discord.ext.commands import when_mentioned_or
 
-import config
-from core.bot import Bot
+from bot import config
+from bot.core.bot import Bot
 
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
@@ -38,8 +39,8 @@ extensions = [
 
 bot = Bot(
     extensions,
-    PREFIX,
     when_mentioned_or(PREFIX),
+    activity=Game(name=f"Ping me using {PREFIX}help"),
     case_insensitive=True,
 )
 
