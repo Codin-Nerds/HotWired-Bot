@@ -1,10 +1,3 @@
-"""Help system.
-
-This help is nearly perfect, with only one warning (access to a protected
-class) and two info (not enough methods at line 16 and too many arguments at
-line 19), under Flake8, Mypy, Pydocstyle and Pylint.
-"""
-
 from inspect import Parameter
 import textwrap
 import typing as t
@@ -24,7 +17,7 @@ class HelpSource(menus.ListPageSource):
             prefix: str,
             author: discord.User,
             cogs: dict
-            ) -> None:
+    ) -> None:
         """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
@@ -41,7 +34,8 @@ class HelpSource(menus.ListPageSource):
     async def format_page(
             self,
             menu: menus.Menu,
-            cog_tuple: tuple) -> discord.Embed:
+            cog_tuple: tuple,
+    ) -> discord.Embed:
         """Format the pages."""
         cog, command_list = cog_tuple
         embed = discord.Embed(
