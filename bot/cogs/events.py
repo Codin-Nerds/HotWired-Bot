@@ -4,12 +4,11 @@ import textwrap
 import traceback
 
 import aiohttp
-from discord import Color, Embed, Guild, Message, Member
+from discord import Color, Embed, Guild, Message
 from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
-from bot.utils.sqlitefunc import get_banlock, get_kicklock
 
 PREFIX = config.COMMAND_PREFIX
 
@@ -77,21 +76,6 @@ class Events(Cog):
         else:
             traceback.print_exc()
             await logchannel.send(embed=embed)
-
-    @Cog.listener()
-    async def on_member_join(member: Member) -> None:
-        ban_state = get_banlock(member.guild.id)
-        kick_state = get_kicklock(member.guild.id)
-
-        if ban_state:
-            await member.ban()
-
-        if kick_state:
-            await member.kick()
-
-    @Cog.listener()
-    async def on_member_remove(member: Member) -> None:
-        pass
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
