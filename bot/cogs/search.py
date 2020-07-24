@@ -315,8 +315,8 @@ class Search(Cog, name="Basic"):
         humidity = data["main"]["humidity"]
         weather_description = data["weather"][0]["description"]
         weather_embed.add_field(
-            name="Miscellaneous",
-            value=f"**❯❯ Humidity: **`{humidity}%`\n**❯❯ Visibility: **`{visibility}km`\n**❯❯ Weather Summary: **`{weather_description}`",
+            name="❯❯Miscellaneous",
+            value=f"**Humidity: **`{humidity}%`\n**Visibility: **`{visibility}km`\n**Weather Summary: **`{weather_description}`",
         )
 
         if "wind" in weather_description:
