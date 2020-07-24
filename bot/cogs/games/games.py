@@ -63,9 +63,9 @@ class Games(Cog):
         base_stats = [f"**{stat_name}**: `{str(base_stat_dict['base_stat'])}`" for stat_name, base_stat_dict in base_stats_zip]
 
         pokemon_embed.set_thumbnail(url=data["sprites"]["front_default"])
-        pokemon_embed.add_field(name="Base Stats", value="❯❯ " + "\n❯❯ ".join(base_stats))
-        pokemon_embed.add_field(name="Type", value="❯❯ " + "\n❯❯ ".join(pokemon_types))
-        pokemon_embed.add_field(name="Weight", value=f"❯❯ `{str(data['weight'])}`")
-        pokemon_embed.add_field(name="Abilities", value="❯❯ " + "\n❯❯ ".join(ability_names), inline=True)
+        pokemon_embed.add_field(name="❯❯Base Stats", value="\n ".join(base_stats))
+        pokemon_embed.add_field(name="❯❯Type", value="\n".join(pokemon_types))
+        pokemon_embed.add_field(name="❯❯Weight", value=f"`{str(data['weight'])}`")
+        pokemon_embed.add_field(name="❯❯Abilities", value="\n".join(ability_names), inline=True)
 
         await ctx.send(embed=pokemon_embed)
