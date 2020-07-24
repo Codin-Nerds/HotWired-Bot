@@ -271,7 +271,6 @@ class Search(Cog, name="Basic"):
 
         eg. `weather london`
         """
-
         try:
             url_formatted_city = city.replace(" ", "-")
         except CommandInvokeError:
