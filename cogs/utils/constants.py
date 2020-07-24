@@ -1,10 +1,18 @@
 from enum import Enum
 
 from discord import Color
+from yaml import safe_load
 
 DEV_MODE = True
 
-log_channel = 704197974577643550
+log_channel = 728570503169704014
+contact_channel = 728570526443896934
+support_channel = 728570540998262834
+bug_report_channel = 728570578507923526
+suggestions_channel = 728570594899132456
+complaints_channel = 728570619985264650
+
+
 owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
 devs = [710400991761137666, 688275913535914014, 306876636526280705]
@@ -28,6 +36,9 @@ admin_invite_link = (
 SUPPORT_SERVER = "https://discord.gg/CgH6Sj6"
 
 COMMAND_PREFIX = ">>"
+
+paste_link = "https://pastebin.com"
+paste_link_2 = "https://hastebin.com"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
@@ -211,6 +222,10 @@ http_codes = [
 
 # Search Engine categories
 basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
+
+
+with open('cogs/utils/languages.yml', 'r') as file:
+    default = safe_load(file)
 
 
 class Infraction(Enum):
