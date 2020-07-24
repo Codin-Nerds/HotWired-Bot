@@ -16,6 +16,7 @@ class Yandere(Cog):
     @command(aliases=["yan"])
     @is_nsfw()
     async def yandere(self, ctx: Context, tag: str = "yandere") -> None:
+        """Searches Yande.re for NSFW pics."""
         url = requests.get(f"https://yande.re/post.json?limit=20&tags={tag}")
         url = url.json()
 

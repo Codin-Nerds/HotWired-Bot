@@ -33,6 +33,7 @@ extensions = [
     "bot.cogs.github",
     "bot.cogs.nasa",
     "bot.cogs.nsfw",
+    "bot.cogs.disjobs"
 ]
 
 bot = Bot(
@@ -41,7 +42,6 @@ bot = Bot(
     activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
     case_insensitive=True,
 )
-
 
 
 if __name__ == "__main__":
