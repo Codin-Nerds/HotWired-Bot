@@ -302,8 +302,8 @@ class Search(Cog, name="Basic"):
         actual_temp = round(data["main"]["temp"] / 10, 1)
         feels_like = round(data["main"]["feels_like"] / 10, 1)
         weather_embed.add_field(
-            name="Temperature",
-            value=f"**❯❯ Temperature: **`{actual_temp}°C`\n**❯❯ Feels Like: **`{feels_like}°C`"
+            name="❯❯Temperature",
+            value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`"
         )
         wind_speed = data["wind"]["speed"]
         wind_direction = data["wind"]["deg"]
