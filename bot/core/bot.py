@@ -3,8 +3,6 @@ from datetime import datetime
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
 
-from bot import config
-
 
 class Bot(Base_Bot):
     def __init__(self, *args, **kwargs) -> None:

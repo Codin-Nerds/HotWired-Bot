@@ -28,7 +28,7 @@ class SuggestionStatus(Enum):
     approved = "Approved"
 
 
-def setup(bot):
+def setup(bot) -> None:
     """Create botvars."""
     bot.extension_list = [
         "bot.cogs.codesandbox",
