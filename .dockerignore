@@ -1,0 +1,25 @@
+# VENVs are automatically built during the build process, hence not needed
+.venv/**
+venv
+
+# Github isn't needed in the build
+.git
+.gitignore
+.github
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Tests cache
+.pytest_cache/
+
+# Vscode settings
+.vscode/
+
+# Ignore ide Files
+.idea
+
+# Ignore any kind of log files and directories
+**/Logs/*
+**/*.log
