@@ -1,5 +1,5 @@
-import random
 import aiohttp
+import random
 
 from discord import Color, Embed
 from discord.ext.commands import Cog, Context, command
