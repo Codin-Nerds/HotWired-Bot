@@ -296,8 +296,8 @@ class Search(Cog, name="Basic"):
         longtitude = data["coord"]["lon"]
         lattitude = data["coord"]["lat"]
         weather_embed.add_field(
-            name="Coordinates",
-            value=f"**❯❯ Longtitude: **`{longtitude}`\n**❯❯ Latittude: **`{lattitude}`"
+            name="❯❯Coordinates",
+            value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"
         )
         actual_temp = round(data["main"]["temp"] / 10, 1)
         feels_like = round(data["main"]["feels_like"] / 10, 1)
