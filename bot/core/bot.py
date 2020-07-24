@@ -1,9 +1,8 @@
 from datetime import datetime
-from itertools import cycle
 import os
 
 import asyncpg
-from discord import Color, Embed, Game
+from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
 
 from bot import config
