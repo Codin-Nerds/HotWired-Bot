@@ -7,10 +7,10 @@ import asyncpg
 import discord
 from discord.ext import commands, tasks
 
-from cogs.utils import constants
+import config
 
 TOKEN = os.getenv("BOT_TOKEN")
-PREFIX = constants.COMMAND_PREFIX
+PREFIX = config.COMMAND_PREFIX
 
 extensions = [
     "cogs.codesandbox",
@@ -78,7 +78,7 @@ class Bot(commands.Bot):
             )
             self.change_status.start()
             self.first_on_ready = False
-            self.log_channel = self.get_channel(constants.log_channel)
+            self.log_channel = self.get_channel(config.log_channel)
             await self.log_channel.send(
                 "Bot is ready.\nLogged in as "
                 f"{self.user.name} : {self.user.id}"
