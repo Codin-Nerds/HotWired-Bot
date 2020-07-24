@@ -27,7 +27,8 @@ class HelpSource(menus.ListPageSource):
             [(cog, cogs[cog]) for cog in sorted(
                 cogs,
                 key=lambda cog: cog.qualified_name if cog else "ZZ"
-            )],
+            )
+            ],
             per_page=1,
         )
 
