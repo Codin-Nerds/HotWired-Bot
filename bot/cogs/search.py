@@ -308,8 +308,8 @@ class Search(Cog, name="Basic"):
         wind_speed = data["wind"]["speed"]
         wind_direction = data["wind"]["deg"]
         weather_embed.add_field(
-            name="Wind",
-            value=f"**❯❯ Speed: **`{wind_speed}km/h`\n**❯❯ Direction: **`{wind_direction}°`",
+            name="❯❯Wind",
+            value=f"**Speed: **`{wind_speed}km/h`\n**Direction: **`{wind_direction}°`",
         )
         visibility = round(data["visibility"] / 1000, 2)
         humidity = data["main"]["humidity"]
