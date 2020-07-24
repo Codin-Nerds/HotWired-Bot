@@ -5,20 +5,7 @@ import aiohttp
 from discord import Color, Embed, Message, NotFound
 from discord.ext.commands import Cog
 
-from bot import config
 from bot.core.bot import Bot
-
-FILE_EMBED_DESCRIPTION = (
-    f"""
-    **Oh No!** Your message got zapped by our spam filter.
-    We currently don't allow `.txt` attachments or any source files, so here are some tips you can use: \n
-    • Try shortening your message, if it exceeds 2000 character limit
-    to fit within the character limit or use a pasting service (see below) \n
-    • If you're showing code, you can use codeblocks or use a pasting service like :
-    {config.paste_link} or {config.paste_link_2}
-    """
-)
-
 
 with open("bot/assets/allowed_filetypes.txt", "r") as f:
     whitelist = []
@@ -31,6 +18,16 @@ class MalwareProtection(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
+        self.file_embed_description = (
+            f"""
+            **Oh No!** Your message got zapped by our spam filter.
+            We currently don't allow `.txt` attachments or any source files, so here are some tips you can use: \n
+            • Try shortening your message, if it exceeds 2000 character limit
+            to fit within the character limit or use a pasting service (see below) \n
+            • If you're showing code, you can use codeblocks or use a pasting service like :
+            {self.bot.paste_link} or {self.bot.paste_link_2}
+            """
+        )
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -47,7 +44,7 @@ class MalwareProtection(Cog):
         file_pastes = []
 
         if is_blocked:
-            embed = Embed(description=FILE_EMBED_DESCRIPTION, color=Color.dark_blue())
+            embed = Embed(description=self.file_embed_description, color=Color.dark_blue())
 
             with suppress(NotFound, ConnectionError):
                 for attachment in message.attachments:

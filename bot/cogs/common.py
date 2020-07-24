@@ -97,7 +97,7 @@ class Common(Cog):
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
-                description=f"[Click Here]({config.github_repo_link}) to visit the Open Source Repo of HotWired",
+                description=f"[Click Here]({self.bot.github_repo_link}) to visit the Open Source Repo of HotWired",
                 color=Color.dark_blue(),
             )
         )

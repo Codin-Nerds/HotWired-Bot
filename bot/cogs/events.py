@@ -15,7 +15,7 @@ PREFIX = config.COMMAND_PREFIX
 class Events(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.dev_mode = config.DEV_MODE
+        self.dev_mode = self.bot.DEV_MODE
         self.session = aiohttp.ClientSession()
 
     @staticmethod
@@ -75,8 +75,6 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
-        logchannel = self.bot.get_channel(config.log_channel)
-
         embed = Embed(
             title="Greetings",
             description=(
@@ -96,7 +94,7 @@ class Events(Cog):
             value=textwrap.dedent(
                 f"""
                     **► __Bot Id__**: {self.bot.user.id}
-                    **► __Developer__**: **{config.creator}**
+                    **► __Developer__**: **{self.bot.creator}**
                     **► __Prefix__**: {PREFIX}
                 """
             ),
@@ -105,8 +103,8 @@ class Events(Cog):
             name="**Links**",
             value=textwrap.dedent(
                 f"""
-                    **►** [Support Server]({config.discord_server})
-                    **►** [Invite link]({config.invite_link})
+                    **►** [Support Server]({self.bot.discord_server})
+                    **►** [Invite link]({self.bot.invite_link})
                 """
             ),
         )
@@ -117,15 +115,13 @@ class Events(Cog):
         except Exception:
             pass
 
-        await logchannel.send(
+        await self.bot.log_channel.send(
             f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.bot.guilds)}th** server! :champagne_glass: "
         )
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
-        logchannel = self.bot.get_channel(config.log_channel)
-
-        await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
+        await self.bot.log_channel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 
 
 def setup(bot: Bot) -> None:

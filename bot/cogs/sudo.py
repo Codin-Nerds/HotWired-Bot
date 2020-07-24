@@ -13,7 +13,6 @@ from discord import (Activity, ActivityType, Color, Embed, Game,
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, check, group
 
-from bot import config
 from bot.core.bot import Bot
 
 
@@ -45,7 +44,7 @@ class Sudo(Cog):
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
     async def is_owner(ctx: Context) -> t.Union[bool, None]:
-        if ctx.author.id in config.devs:
+        if ctx.author.id in ctx.bot.devs:
             return True
         else:
             embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
@@ -59,7 +58,7 @@ class Sudo(Cog):
     @sudo.command()
     @check(is_owner)
     async def shutoff(self, ctx: Context) -> None:
-        if ctx.author.id in config.devs:
+        if ctx.author.id in ctx.bot.devs:
             await ctx.message.add_reaction("✅")
             print("Shutting Down!")
             await self.bot.logout()

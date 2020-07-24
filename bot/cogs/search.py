@@ -7,7 +7,6 @@ import html2text
 from discord import Embed, utils
 from discord.ext.commands import Cog, CommandError, Context, command
 
-from bot import config
 from bot.core.bot import Bot
 
 with open("bot/assets/filter_words.txt", "r") as f:
@@ -139,8 +138,8 @@ class Search(Cog, name="Basic"):
              - it
              - maps
         """
-        if category not in config.basic_search_categories:
-            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(config.basic_search_categories)}```")
+        if category not in self.bot.basic_search_categories:
+            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(self.bot.basic_search_categories)}```")
             return
         await self._basic_search(ctx, query, category)
 

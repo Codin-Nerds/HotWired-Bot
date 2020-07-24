@@ -7,17 +7,17 @@ from bot import config
 
 
 class Bot(Base_Bot):
-    def __init__(self, extensions: list, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.extension_list = extensions
         self.initial_call = True
+        self.log_channel = None
 
     async def on_ready(self) -> None:
         if self.initial_call:
             self.initial_call = False
+            self.load_extension("bot.config")
 
             # Log new connection
-            self.log_channel = self.get_channel(config.log_channel)
             embed = Embed(
                 title="Bot Connection",
                 description="New connection initialized.",
