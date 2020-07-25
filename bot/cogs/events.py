@@ -1,4 +1,3 @@
-import datetime
 import re
 import textwrap
 import traceback
@@ -126,12 +125,8 @@ class Events(Cog):
             description=textwrap.dedent(
                 f"""
                 **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
-                Guild Id: **{guild.id}**
-                Guild Owner: **{guild.owner}** | {guild.owner.mention}
-
+                Guild Id: **{guild.id}** | Guild Owner: {guild.owner.mention}
                 Member Count: **{guild.member_count}**
-
-                Created at: **{datetime.datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}**
                 """
             ),
             color=Color.green(),
