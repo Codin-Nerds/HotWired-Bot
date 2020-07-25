@@ -230,7 +230,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], text: str = None) -> None:
+    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], *, text: str = None) -> None:
         """Dm a List of Specified User from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
@@ -252,7 +252,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dmall(self, ctx: Context, text: str = None) -> None:
+    async def dmall(self, ctx: Context, *, text: str = None) -> None:
         """Dm all Users from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
@@ -278,7 +278,7 @@ class Moderation(Cog):
 
         channel_count = 0
         for channel in channels:
-            if ctx.author.channel_permissions.manage_channels:
+            if channel.permissions_for(ctx.author).manage_channels:
                 await channel.set_permissions(
                     channel.guild.default_role,
                     send_messages=False,
@@ -300,7 +300,7 @@ class Moderation(Cog):
 
         channel_count = 0
         for channel in channels:
-            if ctx.author.channel_permissions.manage_channels:
+            if channel.permissions_for(ctx.author).manage_channels:
                 await channel.set_permissions(
                     channel.guild.default_role,
                     send_messages=None,
@@ -324,7 +324,7 @@ class Moderation(Cog):
 
         channel_count = 0
         for channel in channels:
-            if ctx.author.channel_permissions.manage_channels:
+            if channel.permissions_for(ctx.author).manage_channels:
                 await channel.edit(reason=f"Reason: {reason} | Requested by {ctx.author}.", slowmode_delay=seconds)
                 channel_count += 1
             else:
