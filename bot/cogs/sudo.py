@@ -52,6 +52,7 @@ class Sudo(Cog):
             await ctx.send(embed=embed)
 
     @group(hidden=True)
+    @check(is_owner)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
         pass
@@ -109,6 +110,7 @@ class Sudo(Cog):
         # os.system("python3.8 -m pipenv run start")
 
     @sudo.command()
+    @check(is_owner)
     async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
         """
         Change the status of the bot
@@ -161,6 +163,7 @@ class Sudo(Cog):
                 await ctx.send(e)
 
     @sudo.command()
+    @check(is_owner)
     async def stats(self, ctx: Context) -> None:
         """Show full bot stats."""
         implementation = platform.python_implementation()
@@ -189,6 +192,7 @@ class Sudo(Cog):
         await ctx.send(embed=embed)
 
     @sudo.command(aliases=["sinfo"])
+    @check(is_owner)
     async def sysinfo(self, ctx: Context) -> None:
         """Get system information (show info about the server this bot runs on)."""
         uname = platform.uname()
@@ -223,6 +227,7 @@ class Sudo(Cog):
         await ctx.send(embed=embed)
 
     @sudo.command(aliases=['slist', 'serverlist'])
+    @check(is_owner)
     async def guildlist(self, ctx: Context, page: int = 1) -> None:
         """List the guilds I am in."""
         guild_list = []
