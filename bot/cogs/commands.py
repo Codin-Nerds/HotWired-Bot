@@ -160,7 +160,7 @@ class Commands(Cog):
                 f"""
                 Text channels: {len(guild.text_channels)}
                 Voice channels: {len(guild.voice_channels)}
-                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel.mention}
+                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel.name}
                 """
             ),
             inline=False,
