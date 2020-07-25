@@ -11,7 +11,7 @@ from bot.core.decorators import follow_roles
 from bot.utils.formats import Plural
 
 from discord import Color, Embed, Member, NotFound, Role, TextChannel, HTTPException
-from errors import Forbidden
+from discord.errors import Forbidden
 from discord.ext.commands import (
     Cog,
     Context,
@@ -208,6 +208,10 @@ class Moderation(Cog):
     @has_permissions(manage_messages=True)
     async def shift(self, ctx, count: int, target: TextChannel, copy: bool = False) -> None:
         """Copy or Move specified messages amount to specified channel"""
+        if not (5 <= count <= 150):
+            await ctx.send("Amount of messages shifted must be greater than 0 and smaller than 150")
+            return
+
         messages = []
         async for message in ctx.channel.history(limit=count):
             embed = Embed(description=message.content, color=Color.green())
@@ -222,6 +226,7 @@ class Moderation(Cog):
 
         for embed in reversed(messages):
             await target.send(embed=embed)
+            asyncio.sleep(0.5)
 
     @command()
     @has_permissions(administrator=True)

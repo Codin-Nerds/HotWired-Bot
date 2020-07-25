@@ -1,5 +1,4 @@
 import datetime
-import math
 import os
 import platform
 import textwrap
@@ -21,8 +20,6 @@ from discord import (
 )
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group
-
-import humanize
 
 
 def uptime(date: str) -> str:
@@ -48,9 +45,11 @@ class Sudo(Cog):
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
         if days:
-            return f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            str = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
         else:
-            return f"{hours} hr, {minutes} mins, and {seconds} secs"
+            str = f"{hours} hr, {minutes} mins, and {seconds} secs"
+
+        return str
 
     @group(hidden=True)
     async def sudo(self, ctx: Context) -> None:
@@ -104,7 +103,7 @@ class Sudo(Cog):
         os.system("pipenv run start")
 
     @sudo.command()
-    async def botstatus(self, ctx: Context, status: str, *, status_info: str) -> None:
+    async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
         """
         Change the status of the bot
         `botstatus playing <new status>` - Change playing status
@@ -183,70 +182,11 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @sudo.command(aliases=["sinfo"])
-    async def sysinfo(self, ctx: Context) -> None:
-        """Get system information (show info about the server this bot runs on)."""
-        uname = platform.uname()
-
-        system = textwrap.dedent(
-            f"""
-            • System: **{uname.system}**
-            • Node Name: **{uname.node}**
-            """
-        )
-        version = textwrap.dedent(
-            f"""
-            • Release: **{uname.release}**
-            • Version: **{uname.version}**
-            """
-        )
-        hardware = textwrap.dedent(
-            f"""
-            • Machine: **{uname.machine}**
-            • Processor: **{uname.processor}**
-            """
-        )
-
-        embed = Embed(title="BOT SYSTEM INFO", color=Color.red())
-        embed.add_field(name="**❯❯ System**", value=system, inline=True)
-        embed.add_field(name="**❯❯ Hardware**", value=hardware, inline=True)
-        embed.add_field(name="**❯❯ Version**", value=version, inline=False)
-        embed.set_author(
-            name=f"{self.bot.user.name}'s System Data", icon_url=self.bot.user.avatar_url,
-        )
-
-        await ctx.send(embed=embed)
-
-    @sudo.command(aliases=['slist', 'serverlist'])
-    async def guildlist(self, ctx: Context, page: int = 1) -> None:
-        """List the guilds I am in."""
-        guild_list = []
-
-        for guild in self.bot.guilds:
-            guild_list.append(guild)
-
-        guild_count = len(self.bot.guilds)
-        items_per_page = 10
-        pages = math.ceil(guild_count / items_per_page)
-
-        start = (page - 1) * items_per_page
-        end = start + items_per_page
-
-        guilds_list = ''
-        for guild in guild_list[start:end]:
-            guilds_list += f'**{guild.name}** ({guild.id})\n**Joined:** {humanize.naturaltime(guild.get_member(self.bot.user.id).joined_at)}\n>'
-            guilds_list += "=====================================\n"
-
-        embed = Embed(color=Color.greyple(), title="Total Guilds", description=guilds_list)
-        embed.set_footer(text=f"Currently showing: {page} out of {pages}")
-
-        await ctx.send(embed=embed)
-
-    def cog_check(self, ctx: Context) -> t.Optional[bool]:
+    async def cog_check(self, ctx: Context) -> t.Optional[bool]:
         if ctx.author.id in devs:
             return True
         else:
-            embed = Embed(description="Make your Own sandwich Mortal!.", color=Color.red())
+            embed = Embed(title="Make your Own sandwich Mortal!", color=Color.red())
             await ctx.send(embed=embed)
             return False
 
