@@ -224,5 +224,5 @@ class Comics(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add comics to the bot."""
+    """Load the Comics cog."""
     bot.add_cog(Comics(bot))
