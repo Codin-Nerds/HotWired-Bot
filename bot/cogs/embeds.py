@@ -189,7 +189,7 @@ class Embeds(Cog):
         await ctx.send("This command is not meant to be used on its own!")
 
     @author_group.command(name="name", aliases=["set_name"])
-    async def author_name(self, ctx: Context, author_name: str) -> None:
+    async def author_name(self, ctx: Context, *, author_name: str) -> None:
         """Set authors name for the Embed."""
         embed = self.embeds[ctx.author].embed
         embed.set_author(name=author_name, url=embed.author.url, icon_url=embed.author.icon_url)
