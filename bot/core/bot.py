@@ -25,13 +25,7 @@ class Bot(Base_Bot):
         if self.first_on_ready:
             self.first_on_ready = False
 
-            self.pool = await asyncpg.create_pool(
-                database=os.getenv("DATABASE_NAME", "hotwired"),
-                host="127.0.0.1", min_size=int(os.getenv("POOL_MIN", "20")),
-                max_size=int(os.getenv("POOL_MAX", "100")),
-                user=os.getenv("DATABASE_USER"),
-                password=os.getenv("DATABASE_PASSWORD"),
-            )
+            self.pool = await asyncpg.create_pool(**config.DATABASE)
 
             # Log new connection
             self.log_channel = self.get_channel(config.log_channel)
@@ -66,4 +60,5 @@ class Bot(Base_Bot):
     async def close(self) -> None:
         """Close the bot and do some cleanup."""
         await super().close()
-        await self.pool.close()
+        if hasattr(self, "pool"):
+            await self.pool.close()
