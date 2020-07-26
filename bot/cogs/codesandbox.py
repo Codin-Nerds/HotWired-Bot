@@ -178,5 +178,5 @@ class CodeSandbox(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add codesandbox to the bot."""
+    """Load the CodeSandbox cog."""
     bot.add_cog(CodeSandbox(bot))
