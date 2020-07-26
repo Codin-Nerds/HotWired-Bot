@@ -20,7 +20,7 @@ class EmoteNotFoundException(Exception):
 
 
 class Emote:
-    """Gimme the emotes."""
+    """Get an emote according to given parameters."""
 
     content_re = re.compile(r"^\b(twitch|bttv|ffz)\b\s([\w\d]+)(?:\s(.+))?$", re.I | re.M)
 
