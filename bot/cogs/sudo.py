@@ -1,5 +1,4 @@
 import datetime
-import math
 import os
 import platform
 import textwrap
@@ -14,6 +13,18 @@ import humanize
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import (
+    Activity,
+    ActivityType,
+    Color,
+    Embed,
+    Game,
+    InvalidArgument,
+    Status
+)
+from discord import __version__ as discord_version
+from discord.ext.commands import Cog, Context, group
 
 
 # Wrong typehint for date
@@ -42,9 +53,9 @@ class Sudo(Cog):
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
         if days:
-            return f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            str = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
         else:
-            return f"{hours} hr, {minutes} mins, and {seconds} secs"
+            str = f"{hours} hr, {minutes} mins, and {seconds} secs"
 
     @staticmethod
     async def cog_check(ctx: Context) -> t.Union[bool, None]:
@@ -70,7 +81,7 @@ class Sudo(Cog):
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Load a cog."""
         try:
-            self.bot.load_extension(f"cogs.{extension}")
+            self.bot.load_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
@@ -80,8 +91,8 @@ class Sudo(Cog):
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reload a module."""
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
-            self.bot.load_extension(f"cogs.{extension}")
+            self.bot.unload_extension(f"bot.cogs.{extension}")
+            self.bot.load_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
@@ -91,7 +102,7 @@ class Sudo(Cog):
     async def unload(self, ctx: Context, *, extension: str) -> None:
         """Unload a module."""
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
+            self.bot.unload_extension(f"bot.cogs.{extension}")
         except Exception:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
@@ -104,7 +115,6 @@ class Sudo(Cog):
         await self.bot.logout()
         time.sleep(2)
         os.system("pipenv run start")
-        # os.system("python3.8 -m pipenv run start")
 
     @sudo.command(aliases=["status"])
     async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
