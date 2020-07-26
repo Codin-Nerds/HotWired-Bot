@@ -26,7 +26,7 @@ class Bot(Base_Bot):
 
             try:
                 self.pool = await asyncpg.create_pool(**config.DATABASE)
-            except:
+            except Exception:
                 print("Database connection error. Killing program.")
                 return await self.close()
 
