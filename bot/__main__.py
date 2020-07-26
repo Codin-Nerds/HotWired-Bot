@@ -12,7 +12,6 @@ from discord.ext.commands import when_mentioned_or
 TOKEN = os.getenv("BOT_TOKEN")
 
 extensions = [
-    "bot.cogs.paginator_pr_test.py"  # ! TODO remove this line
     "bot.cogs.codesandbox",
     "bot.cogs.commands",
     "bot.cogs.conversion",

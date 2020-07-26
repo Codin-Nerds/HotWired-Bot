@@ -9,6 +9,8 @@ import colorama
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
 
+colorama.init(autoreset=True)
+
 
 class Bot(Base_Bot):
     def __init__(self, extensions: list, *args, **kwargs) -> None:
@@ -49,13 +51,13 @@ class Bot(Base_Bot):
             )
             await self.log_channel.send(embed=embed)
 
-        print("Bot is ready")
+        print(colorama.Fore.GREEN + "Bot is ready")
 
     async def shutoff(self) -> None:
         colorama.init(autoreset=True)
 
-        print(colorama.Fore.GREEN + "Shutting Down...")
+        print(colorama.Fore.BLUE + "Shutting Down...")
 
         await super().close()
         await self.aio_session.close(self.aio_session)
-        print(colorama.Fore.BLUE + "The bot and aiohttp connections are properly closed ✔️")
+        print(colorama.Fore.GREEN + "The bot and aiohttp connections are properly closed ✔️")
