@@ -14,7 +14,7 @@ STOP_EMOJI = "\N{BLACK SQUARE FOR STOP}"
 INFO_EMOJI = "\N{INFORMATION SOURCE}"
 
 
- # TODO : build the paginator around discord.ext.menus.MenuPages / ListPageSource
+# TODO : build the paginator around discord.ext.menus.MenuPages / ListPageSource
 class CannotPaginate(Exception):
     pass
 

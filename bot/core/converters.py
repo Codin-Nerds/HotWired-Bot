@@ -1,6 +1,5 @@
 import typing as t
 from ast import literal_eval
-from contextlib import suppress
 
 from discord import Guild, Member, NotFound, User
 from discord.ext.commands import BadArgument, Context, Converter, UserConverter

@@ -76,7 +76,7 @@ class Emote:
             async with self.session.get(f"https://cdn.frankerfacez.com/emoticon/{self.emote_id}/4") as resp:
                 api_res = await resp.content
 
-        return io.BytesIO(img)
+        return io.BytesIO(api_res)
 
     @classmethod
     def get_emote(cls, content: str) -> "Emote":

@@ -42,7 +42,8 @@ bot = Bot(
 )
 
 
-def main():
+def main() -> None:
+    """Run the bot."""
     bot.run(TOKEN)
 
 

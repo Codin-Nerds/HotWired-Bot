@@ -7,6 +7,7 @@ from discord.ext.commands import Bot, Cog, Context, group, is_nsfw
 from praw import Reddit as RedditAPI
 from praw.exceptions import MissingRequiredAttributeException
 
+
 # This function could be a regular function, even a method
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
     """Mak a reddit post an embed."""

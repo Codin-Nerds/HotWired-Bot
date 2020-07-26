@@ -6,10 +6,8 @@ class ServiceError(commands.CommandInvokeError):
     """Raised whenever a request to a service and returns a failure of some sort."""
 
 
-
 class NSFWException(commands.CheckFailure):
     """Raised whenever a NSFW command is not executed in a NSFW channel."""
-
 
 
 class MemberNotFound(NotFound):

@@ -1,6 +1,5 @@
 import asyncio
 import textwrap
-import typing as t
 from collections import Counter
 from datetime import datetime
 
