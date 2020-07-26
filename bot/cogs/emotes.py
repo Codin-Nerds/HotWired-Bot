@@ -114,7 +114,7 @@ class Emotes(Cog):
 
     # TODO: Remove this when error handler will be implemented
     async def send_error(self, ctx: Context, error: str) -> None:
-        """Sends the error of any functions as an Embed."""
+        """Send an exception raised by any function as an Embed."""
         help_message = f"Type `{config.COMMAND_PREFIX}help` for further assistance"
         embed = discord.Embed(colour=discord.Colour.red())
         embed.add_field(name=f"Error: {error}", value=help_message)
