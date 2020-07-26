@@ -128,7 +128,17 @@ class Search(Cog, name="Basic"):
 
     @command()
     async def search(self, ctx: Context, category: str, *, query: str) -> None:
-        """Search online for general results."""
+        """
+        Search online for general results.
+        Valid Categories:
+             - web
+             - videos
+             - music
+             - files
+             - images
+             - it
+             - maps
+        """
         if category not in config.basic_search_categories:
             await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(config.basic_search_categories)}```")
             return

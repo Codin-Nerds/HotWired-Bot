@@ -8,7 +8,6 @@ import colorama
 from discord import Game
 from discord.ext.commands import when_mentioned_or
 
-
 TOKEN = os.getenv("BOT_TOKEN")
 
 extensions = [
@@ -34,6 +33,7 @@ extensions = [
     "bot.cogs.reddit",
     "bot.cogs.translate",
     "bot.cogs.github",
+    "bot.cogs.nasa",
 ]
 
 bot = Bot(

@@ -26,7 +26,6 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
             whitelist.append(line.replace("\n", ""))
 
 
-# TODO : add token protection, to stop playing with any type of discord tokens
 class MalwareProtection(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -37,18 +36,37 @@ class MalwareProtection(Cog):
         """Find messages with blacklisted attachments."""
         if not message.attachments or not message.guild:
             return
-        elif not message.author.permissions_in(message.channel).manage_messages:
+
+        elif message.author.permissions_in(message.channel).manage_messages:
             return
-        # TODO: Adjust the message and remove only filtered attachments instead of deleting the whole message
+
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
         is_blocked = file_extensions - set(whitelist)
+
+        file_pastes = []
 
         if is_blocked:
             embed = Embed(description=FILE_EMBED_DESCRIPTION, color=Color.dark_blue())
 
             with suppress(NotFound, ConnectionError):
+                for attachment in message.attachments:
+                    content = await attachment.read()
+
+                    async with self.session.post("https://hasteb.in/documents", data=content) as resp:
+                        key = (await resp.json())['key']
+                        file_paste = 'https://www.hasteb.in/' + key
+
+                    file_pastes.append(file_paste)
+
                 await message.delete()
-            await message.channel.send(f"Hey {message.author.mention}!", embed=embed)
+                await message.channel.send(f"Hey {message.author.mention}!", embed=embed)
+
+                paste_embed = Embed(
+                    color=Color.gold(),
+                    description=f"The Paste(s) of the File(s) Can be found at {', '.join(file_pastes)}",
+                    title="File Pastes!"
+                )
+                await message.channel.send(embed=paste_embed)
 
 
 def setup(bot: Bot) -> None:
