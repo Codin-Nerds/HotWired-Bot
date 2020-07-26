@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 
 import asyncpg
 from discord import Color, Embed
