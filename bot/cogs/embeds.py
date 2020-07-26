@@ -108,7 +108,7 @@ class JsonEmbedParser:
         return {"content": content, "embed": new_json}
 
     def make_embed(self) -> EmbedData:
-        """Make it embed."""
+        """Produce an embed from the processed json."""
         embed = Embed.from_dict(self.json["embed"])
         return EmbedData(self.json["content"], embed)
 
