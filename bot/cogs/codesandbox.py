@@ -23,7 +23,7 @@ class CodeSandbox(Cog):
 
     @staticmethod
     def _clean_code(code: str) -> str:
-        """Get cleaner code."""
+        """Remove markdown codeblocks."""
         if code.startswith("```") and code.endswith("```"):
             return "\n".join(code.split("\n")[1:-1])
         return code.strip("`\n")
