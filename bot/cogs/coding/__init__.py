@@ -4,5 +4,5 @@ from .coding import Coding
 
 
 def setup(bot: Bot) -> None:
-    """Load the games cogs."""
+    """Load the games cog."""
     bot.add_cog(Coding(bot))

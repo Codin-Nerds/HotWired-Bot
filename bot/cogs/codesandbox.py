@@ -6,23 +6,32 @@ import traceback
 from contextlib import redirect_stdout
 
 from discord import Forbidden, HTTPException
-from discord.ext.commands import Cog, CommandError, Context, check, command
+from discord.ext.commands import Cog, CommandError, Context, command
 
 from bot.core.bot import Bot
 from bot.utils.checks import is_bot_dev
 
 
 class CodeSandbox(Cog):
+    """Sandbox some code."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         self.bot = bot
         self._last_eval_result = None
+        self.sessions = []
 
-    def _clean_code(self, code: str) -> str:
+    @staticmethod
+    def _clean_code(code: str) -> str:
+        """Get cleaner code."""
         if code.startswith("```") and code.endswith("```"):
             return "\n".join(code.split("\n")[1:-1])
         return code.strip("`\n")
 
-    @check(is_bot_dev)
+    def cog_check(self, ctx: Context) -> bool:
+        """Make it safer."""
+        return is_bot_dev(ctx)
+
     @command(name="eval", hidden=True)
     async def _eval(self, ctx: Context, *, code: str) -> None:
         """Evaluate the passed code."""
@@ -45,8 +54,8 @@ class CodeSandbox(Cog):
 
         try:
             exec(to_compile, env)  # TODO: Very unsafe
-        except Exception as e:
-            return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n``")
+        except Exception as error:
+            return await ctx.send(f"```py\n{error.__class__.__name__}: {error}\n``")
 
         codefn = env["codefn"]
         try:
@@ -63,11 +72,10 @@ class CodeSandbox(Cog):
                 if value is not None:
                     await ctx.send(f"```py\n{value}\n```")
                 else:
-                    self._last_result = ret
+                    self._last_eval_result = ret
                     await ctx.send(f"```py\n{value}{ret}\n```")
 
     @command(hidden=True)
-    @check(is_bot_dev)
     async def repl(self, ctx: Context) -> None:
         """Launches an interactive REPL session."""
 
@@ -86,29 +94,31 @@ class CodeSandbox(Cog):
                 message=f"Error: duplicate REPL session in `{ctx.channel.name}`."
             )
 
-        self.sessions.add(ctx.channel.id)
+        self.sessions.append(ctx.channel.id)
         await ctx.send(
             "Enter code to execute or evaluate. `exit()` or `quit` to exit."
         )
 
-        def check(m) -> bool:
+        def check(message) -> bool:
             return all(
-                m.author.id == ctx.author.id,
-                m.channel.id == ctx.channel.id,
-                m.content.startswith("`")
+                message.author.id == ctx.author.id,
+                message.channel.id == ctx.channel.id,
+                message.content.startswith("`")
             )
 
         while True:
             try:
                 response = await self.bot.wait_for(
-                    "message", check=check, timeout=10.0 * 60.0
+                    "message",
+                    check=check,
+                    timeout=600,
                 )
             except asyncio.TimeoutError:
                 await ctx.send("Exiting REPL session.")
                 self.sessions.remove(ctx.channel.id)
                 break
 
-            cleaned = self.cleanup_code(response.content)
+            cleaned = self._clean_code(response.content)
 
             if cleaned in ("quit", "exit", "exit()"):
                 await ctx.send("Exiting.")
@@ -128,8 +138,9 @@ class CodeSandbox(Cog):
             if executor is exec:
                 try:
                     code = compile(cleaned, "<repl session>", "exec")
-                except SyntaxError as e:
-                    await ctx.send(self.get_syntax_error(e))
+                except SyntaxError as error:
+                    # This is undefined, but I don't know what it is
+                    await ctx.send(self.get_syntax_error(error))
                     continue
 
             variables["message"] = response
@@ -162,9 +173,10 @@ class CodeSandbox(Cog):
                         await ctx.send(fmt)
             except Forbidden:
                 pass
-            except HTTPException as e:
-                raise CommandError(message=f"Unexpected error: `{e}`")
+            except HTTPException as error:
+                raise CommandError(message=f"Unexpected error: `{error}`")
 
 
 def setup(bot: Bot) -> None:
+    """Add codesandbox to the bot."""
     bot.add_cog(CodeSandbox(bot))

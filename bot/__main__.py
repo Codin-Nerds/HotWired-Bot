@@ -41,5 +41,10 @@ bot = Bot(
     case_insensitive=True,
 )
 
-if __name__ == "__main__":
+
+def main():
     bot.run(TOKEN)
+
+
+if __name__ == "__main__":
+    main()

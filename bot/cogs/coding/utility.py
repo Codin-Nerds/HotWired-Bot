@@ -3,7 +3,7 @@ from discord.ext.commands import BadArgument
 
 
 def get_raw(link: str) -> str:
-    """Returns the url for raw version on a hastebin-like."""
+    """Return the url for raw version on a hastebin-like."""
     link = link.strip("<>/")  # Allow for no-embed links
 
     authorized = (

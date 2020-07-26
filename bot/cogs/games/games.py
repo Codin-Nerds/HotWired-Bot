@@ -8,7 +8,10 @@ from bot.core.bot import Bot
 
 
 class Games(Cog):
+    """We all love playing games."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         self.bot = bot
 
     @command()

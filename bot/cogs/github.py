@@ -14,7 +14,10 @@ BAD_RESPONSES = {
 
 
 class Github(Cog):
+    """Add GitHub integration to the bot"""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the bot."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -70,8 +73,7 @@ class Github(Cog):
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
-        """
-        Show info about a given GitHub repository.
+        """Show info about a given GitHub repository.
 
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
@@ -100,4 +102,5 @@ class Github(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Make the bot interact with GitHub."""
     bot.add_cog(Github(bot))

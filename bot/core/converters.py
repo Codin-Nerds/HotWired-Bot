@@ -21,15 +21,15 @@ class ActionReason(Converter):
 
 
 class Unicode(Converter):
-    """Convert raw input into unicode formatted string"""
+    """Convert raw input into unicode formatted string."""
 
-    def process_unicode(self, message: str) -> str:
+    @staticmethod
+    def process_unicode(message: str) -> str:
         """
-        This accepts any string with raw unicode and converts it into proper unicode.
+        Accept any string with raw unicode and convert it into proper unicode.
 
         It uses literal eval to process the string safely and turn it into proper unicode.
         """
-
         # Only process individual lines to avoid EOL in expression
         lines = message.split("\n")
         for index, line in enumerate(lines):
@@ -41,14 +41,15 @@ class Unicode(Converter):
                 line = literal_eval(f"'''{line}'''")
                 line = line.replace("`<ESCAPE STRING>`", "'''")
                 lines[index] = line
-            except SyntaxError as e:
+            except SyntaxError as error:
                 print(line)
-                print(f"String deemed unsafe -> {e}")
+                print(f"String deemed unsafe -> {error}")
 
         return "\n".join(lines)
 
-    def outside_delimeter(self, string: str, delimeter: str, operation: t.Callable) -> str:
-        """Apply given operation to text outside of delimeted section"""
+    @staticmethod
+    def outside_delimeter(string: str, delimeter: str, operation: t.Callable) -> str:
+        """Apply given operation to text outside of delimeted section."""
         splitted = string.split(delimeter)
         for index, string_part in enumerate(splitted):
             # Not inside of a delimeted section
@@ -57,10 +58,14 @@ class Unicode(Converter):
 
         return delimeter.join(splitted)
 
-    async def convert(self, ctx: Context, message: str) -> str:
+    async def convert(self, ctx: Context, argument: str) -> str:
+        """Do the conversion."""
         # don't replace unicode characters within code blocks
-        operation = lambda x: self.outside_delimeter(x, "`", self.process_unicode)
-        return self.outside_delimeter(message, "```", operation)
+        return self.outside_delimeter(
+            argument,
+            "```",
+            lambda x: self.outside_delimeter(x, "`", self.process_unicode),
+        )
 
 
 class ProcessedUser(UserConverter):
@@ -70,34 +75,22 @@ class ProcessedUser(UserConverter):
     When possible try to convert user into `Member` but if not, use `User` instead.
     """
 
+    @staticmethod
     async def get_member(guild: Guild, user: User) -> Member:
-        member = guild.get_member(user.id)
-        if not member:
-            try:
-                member = await guild.fetch_member(user.id)
-            except NotFound:
-                raise MemberNotFound(f"No member with ID: {user.id} on guild {guild.id}")
-        return member
+        """Get a member from a guild."""
+        try:
+            return guild.get_member(user.id) or await guild.fetch_member(user.id)
+        except NotFound:
+            raise MemberNotFound(f"No member with ID: {user.id} on guild {guild.id}")
 
     async def convert(self, ctx: Context, argument: str) -> Member:
         """Convert the `argument` into `Member` or `User`."""
-        with suppress(BadArgument):
-            # Try to use UserConverter first
-            user = await super().convert(ctx, argument)
-            try:
-                return await self.get_member(ctx.guild, user)
-            except MemberNotFound:
-                return user
-
-        # If UserConverter failed, try to fetch user as ID
+        # Try to use UserConverter first
+        user = await super().convert(ctx, argument)
         try:
-            user = await ctx.bot.fetch_user(int(argument))
-            try:
-                return await self.get_member(ctx.guild, user)
-            except MemberNotFound:
-                return user
-        except ValueError:
-            raise BadArgument(f"{argument} is not a valid user or user ID")
+            return await self.get_member(ctx.guild, user)
+        except MemberNotFound:
+            return user
 
 
 ProcessedMember = t.Union[Member, ProcessedUser]

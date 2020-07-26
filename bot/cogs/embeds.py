@@ -22,13 +22,13 @@ class JsonEmbedParser:
     """This class is used for converting json into embed and vice versa."""
 
     def __init__(self, ctx: Context, json_dict: dict) -> None:
+        """Initialize the parser."""
         self.ctx = ctx
         self.json = JsonEmbedParser.process_dict(json_dict)
 
     @classmethod
     async def from_str(cls: "JsonEmbedParser", ctx: Context, json_string: str) -> t.Union["JsonEmbedParser", bool]:
-        """
-        Return class instance from json string
+        """Return class instance from json string.
 
         This will return either class instance (on correct json string),
         or False on incorrect json string.
@@ -36,8 +36,7 @@ class JsonEmbedParser:
         json_dict = await cls.parse_json(ctx, json_string)
         if json_dict is False:
             return False
-        else:
-            return cls(ctx, json_dict)
+        return cls(ctx, json_dict)
 
     @classmethod
     def from_embed(cls: "JsonEmbedParser", ctx: Context, embed: t.Union[Embed, EmbedData]) -> "JsonEmbedParser":
@@ -51,6 +50,7 @@ class JsonEmbedParser:
 
     @staticmethod
     async def parse_json(ctx: Context, json_code: str) -> t.Union[dict, bool]:
+        """Parse some json code."""
         # Sanitize code (remove codeblocks if any)
         if "```" in json_code:
             json_code = json_code.replace("```json\n", "")
@@ -61,7 +61,7 @@ class JsonEmbedParser:
         # Parse the code into JSON
         try:
             return json.loads(json_code)
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError as error:
             lines = json_code.split("\n")
 
             embed = Embed(
@@ -69,12 +69,12 @@ class JsonEmbedParser:
                     f"""
                     Sorry, I couldn't parse this JSON:
                     ```
-                    {e}
+                    {error}
                     ```
-                    The error seems to be here *(`line: {e.lineno} col: {e.colno}`)*:
+                    The error seems to be here *(`line: {error.lineno} col: {error.colno}`)*:
                     ```
-                    {lines[e.lineno - 1]}
-                    {" " * (int(e.colno) - 1)}^
+                    {lines[error.lineno - 1]}
+                    {" " * (int(error.colno) - 1)}^
                     ```
                     """
                 ),
@@ -108,10 +108,12 @@ class JsonEmbedParser:
         return {"content": content, "embed": new_json}
 
     def make_embed(self) -> EmbedData:
+        """Make it embed."""
         embed = Embed.from_dict(self.json["embed"])
         return EmbedData(self.json["content"], embed)
 
     def make_json(self) -> str:
+        """Make it json."""
         return json.dumps(self.json, indent=2)
 
 
@@ -119,6 +121,7 @@ class Embeds(Cog):
     """A Cog which provides the ability to build a custom embed."""
 
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         self.bot = bot
         # Provide an empty embed for every member (key)
         self.embeds = defaultdict(lambda: EmbedData("", Embed()))
@@ -140,8 +143,8 @@ class Embeds(Cog):
         self.embeds[ctx.author].embed.title = title
         await ctx.send("Embeds title updated.")
 
-    @embed_group.command(aliases=["set_description"])
-    async def description(self, ctx: Context, *, description: Unicode) -> None:
+    @embed_group.command(aliases=["set_description"], name="description")
+    async def _desc(self, ctx: Context, *, description: Unicode) -> None:
         """Set Description for the Embed."""
         self.embeds[ctx.author].embed.description = description
         await ctx.send("Embeds description updated.")
@@ -166,8 +169,7 @@ class Embeds(Cog):
 
     @embed_group.command(aliases=["set_color"])
     async def color(self, ctx: Context, color: ColourConverter) -> None:
-        """
-        Set color for the Embed.
+        """Set color for the Embed.
 
         `color` can be HEX color code or some of the standard colors (red, blue, ...).
         """
@@ -190,22 +192,21 @@ class Embeds(Cog):
 
     @author_group.command(name="name", aliases=["set_name"])
     async def author_name(self, ctx: Context, author_name: str) -> None:
-        """Set authors name for the Embed."""
+        """Set author's name for the Embed."""
         embed = self.embeds[ctx.author].embed
         embed.set_author(name=author_name, url=embed.author.url, icon_url=embed.author.icon_url)
         await ctx.send("Embeds author updated.")
 
     @author_group.command(name="url", aliases=["set_url"])
     async def author_url(self, ctx: Context, author_url: str) -> None:
-        """Set authors URL for Embed."""
+        """Set author's URL for Embed."""
         embed = self.embeds[ctx.author].embed
         embed.set_author(name=embed.author.name, url=author_url, icon_url=embed.author.icon_url)
         await ctx.send("Embeds author URL updated.")
 
     @author_group.command(name="icon", aliases=["set_icon"])
     async def author_icon(self, ctx: Context, author_icon: t.Union[Member, str]) -> None:
-        """
-        Set authors icon in the Embed.
+        """Set author's icon in the Embed.
 
         `author_icon` can either be URL to the image or you can mention a user to get his avatar
         """
@@ -221,6 +222,7 @@ class Embeds(Cog):
 
     @embed_group.group(invoke_without_command=True, name="field", aliases=["filedset", "set_field"])
     async def field_group(self, ctx: Context) -> None:
+        """Group for field-related actions."""
         await ctx.send("This command is not meant to be used on its own!")
 
     @field_group.command(name="add")
@@ -232,8 +234,8 @@ class Embeds(Cog):
 
     @field_group.command(name="remove", aliases=["delete", "rem", "del"])
     async def field_remove(self, ctx: Context, ID: int) -> None:
-        """Remove filed with specific `ID` from Embed."""
-        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+        """Remove field with specific `ID` from Embed."""
+        if 0 <= ID <= self.embed_fields[ctx.author]:
             self.embeds[ctx.author].embed.remove_field(ID)
             self.embed_fields[ctx.author] -= 1
             await ctx.send(f"Embeds field **#{ID}** has been removed.")
@@ -243,7 +245,7 @@ class Embeds(Cog):
     @field_group.command(name="description", aliases=["set_description", "value", "set_value"])
     async def field_description(self, ctx: Context, ID: int, *, description: Unicode) -> None:
         """Set a description for embeds field #`ID`."""
-        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+        if 0 <= ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
             embed.set_field_at(
                 ID,
@@ -258,7 +260,7 @@ class Embeds(Cog):
     @field_group.command(name="append_description", aliases=["add_description", "add_value"])
     async def field_append_description(self, ctx: Context, ID: int, *, description: Unicode) -> None:
         """Set a description for embeds field #`ID`."""
-        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+        if 0 <= ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
             embed.set_field_at(
                 ID,
@@ -273,7 +275,7 @@ class Embeds(Cog):
     @field_group.command(name="title", aliases=["set_title", "name", "set_name"])
     async def field_title(self, ctx: Context, ID: int, *, title: Unicode) -> None:
         """Set a title for embeds field #`ID`."""
-        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+        if 0 <= ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
             embed.set_field_at(
                 ID,
@@ -288,7 +290,7 @@ class Embeds(Cog):
     @field_group.command(name="inline", aliases=["set_inline", "in_line", "set_in_line"])
     async def field_inline(self, ctx: Context, ID: int, inline_status: bool) -> None:
         """Choose if embed field #`ID` should be inline or not"""
-        if ID >= 0 and ID <= self.embed_fields[ctx.author]:
+        if 0 <= ID <= self.embed_fields[ctx.author]:
             embed = self.embeds[ctx.author].embed
             embed.set_field_at(
                 ID,
@@ -305,7 +307,7 @@ class Embeds(Cog):
 
     @embed_group.command(aliases=["json_load", "from_json", "json", "import"])
     async def load(self, ctx: Context, *, json_code: str) -> None:
-        """Generate Embed from given JSON code"""
+        """Generate Embed from given JSON code."""
         embed_parser = await JsonEmbedParser.from_str(ctx, json_code)
         if embed_parser is not False:
             self.embeds[ctx.author] = embed_parser.make_embed()
@@ -324,17 +326,18 @@ class Embeds(Cog):
     # region: showing, sending, resetting
 
     async def send_embed(self, author: Member, channel: TextChannel) -> bool:
+        """Send the Embed."""
         try:
             await channel.send(self.embeds[author].content, embed=self.embeds[author].embed)
             return True
-        except HTTPException as e:
+        except HTTPException as error:
             embed = Embed(
                 description=textwrap.dedent(
                     f"""
-                    You're embed is causing an error (code: `{e.code}`):
-                    ```{e.response.status}: {e.response.reason}```
+                    You're embed is causing an error (code: `{error.code}`):
+                    ```{error.response.status}: {error.response.reason}```
                     With message:
-                    ```{e.text}```
+                    ```{error.text}```
 
                     """
                 ),
@@ -345,11 +348,12 @@ class Embeds(Cog):
 
     @embed_group.command(aliases=["show"])
     async def preview(self, ctx: Context) -> None:
-        """Take a look at the Embed before you post it"""
+        """Take a look at the Embed before you post it."""
         await self.send_embed(ctx.author, ctx.channel)
 
     @embed_group.command()
     async def send(self, ctx: Context, channel: TextChannel) -> None:
+        """Send the Embed to the given channel."""
         # Make sure author has permission to manage messages in specified channel
         # Note that the cog check only checks that permission in the channel
         # this message is sent to, not channel where the embed will be sent
@@ -362,14 +366,14 @@ class Embeds(Cog):
 
     @embed_group.command()
     async def reset(self, ctx: Context) -> None:
+        """Reset the Embed."""
         self.embeds[ctx.author] = EmbedData("", Embed())
         await ctx.send("Your saved embed was reset.")
 
     # endregion
 
     def cog_check(self, ctx: Context) -> bool:
-        """
-        Only allow users with manage messages permission to invoke commands in this cog.
+        """Only allow users with manage messages permission to invoke commands in this cog.
 
         This is needed because Embeds can be much longer in comparison to regular messages,
         therefore it would be very easy to spam things and clutter the chat.
@@ -379,4 +383,5 @@ class Embeds(Cog):
 
 
 def setup(bot: Bot) -> Bot:
+    """Add Embeds to the bot."""
     bot.add_cog(Embeds(bot))

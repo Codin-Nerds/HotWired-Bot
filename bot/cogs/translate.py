@@ -1,18 +1,22 @@
-from aiogoogletrans import Translator
+from aiogoogletrans import Translator as GoogleTranslator
 from discord import Color, Embed
 from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
 
-translator = Translator()
+translator = GoogleTranslator()
 
 
 class Translator(Cog):
+    """Translation is so cool."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the translator."""
         self.bot = bot
 
     @command(aliases=["linfo"])
     async def getinfo(self, ctx: Context, *, sentence: str) -> None:
+        """Get info about a sentence."""
         detection = await translator.detect(sentence)
 
         embed = Embed(title="Sentence Info", color=Color.dark_orange())
@@ -26,13 +30,14 @@ class Translator(Cog):
 
     @command()
     async def translate(
-        self,
-        ctx: Context,
-        source_language: str = "en",
-        destination_language: str = "en",
-        *,
-        sentence: str = "Hello World",
+            self,
+            ctx: Context,
+            source_language: str = "en",
+            destination_language: str = "en",
+            *,
+            sentence: str = "Hello World",
     ) -> None:
+        """Translate a sentence."""
         translation = await translator.translate(
             sentence, dest=destination_language, src=source_language
         )
@@ -45,4 +50,5 @@ class Translator(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Add translation to the bot."""
     bot.add_cog(Translator(bot))

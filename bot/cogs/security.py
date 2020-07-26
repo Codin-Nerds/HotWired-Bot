@@ -28,7 +28,10 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
 
 
 class MalwareProtection(Cog):
+    """Protect you from malwares."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the protection."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -38,7 +41,7 @@ class MalwareProtection(Cog):
         if not message.attachments or not message.guild:
             return
 
-        elif message.author.permissions_in(message.channel).manage_messages:
+        if message.author.permissions_in(message.channel).manage_messages:
             return
 
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
@@ -71,4 +74,5 @@ class MalwareProtection(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Make the bot protect users."""
     bot.add_cog(MalwareProtection(bot))

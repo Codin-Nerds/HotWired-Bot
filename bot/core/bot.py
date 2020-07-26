@@ -7,12 +7,16 @@ from bot import config
 
 
 class Bot(Base_Bot):
+    """Hotwired subclassed bot."""
+
     def __init__(self, extensions: list, *args, **kwargs) -> None:
+        """Initialize the subclass."""
         super().__init__(*args, **kwargs)
         self.extension_list = extensions
         self.initial_call = True
 
     async def on_ready(self) -> None:
+        """Do some extra setup."""
         if self.initial_call:
             self.initial_call = False
 
@@ -31,9 +35,9 @@ class Bot(Base_Bot):
                 try:
                     self.load_extension(extension)
                     print(f"Cog {extension} loaded.")
-                except Exception as e:
+                except Exception as error:
                     print(
-                        f"Cog {extension} failed to load with {type(e)}: {e}"
+                        f"Cog {extension} failed to load with {type(error)}: {error}"
                     )
         else:
             embed = Embed(
@@ -45,6 +49,3 @@ class Bot(Base_Bot):
             await self.log_channel.send(embed=embed)
 
         print("Bot is ready")
-
-    async def close(self) -> None:
-        await super().close()

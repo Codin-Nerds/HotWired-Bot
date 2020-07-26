@@ -13,7 +13,10 @@ from bot.core.bot import Bot
 
 
 class Common(Cog):
+    """Common commands."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -26,7 +29,7 @@ class Common(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def ping(self, ctx: Context) -> None:
-        """Shows bot ping."""
+        """Show bot ping."""
         start = time.perf_counter()
         embed = Embed(title="Info", description="Pong!", color=Color.blurple())
         message = await ctx.send(embed=embed)
@@ -38,8 +41,7 @@ class Common(Cog):
     # TODO : after db integration, add Time Limit, and grand announcement, when the poll is over.
     @command(aliases=("poll",))
     async def vote(self, ctx: Context, title: str, *options: str) -> None:
-        """
-        Build a quick voting poll with matching reactions with the provided options.
+        """Build a quick voting poll with matching reactions with the provided options.
 
         A maximum of 20 options can be provided, as Discord supports a max of 20
         reactions on a single message.
@@ -58,10 +60,13 @@ class Common(Cog):
 
     @command(aliases=["spoll"])
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
-        """strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        """Strawpoll my question.
+
+        Syntax : answer a | answer b | answer c
+        At least two answers required.
+        """
         if question_and_choices is None:
-            await ctx.send(f"Usage: {config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
-            return
+            return await ctx.send_help("strawpoll")
 
         if "|" in question_and_choices:
             delimiter = "|"
@@ -71,7 +76,7 @@ class Common(Cog):
 
         if len(question_and_choices) == 1:
             return await ctx.send("Not enough choices supplied")
-        elif len(question_and_choices) >= 31:
+        if len(question_and_choices) >= 31:
             return await ctx.send("Too many choices")
 
         question, *choices = question_and_choices
@@ -87,13 +92,13 @@ class Common(Cog):
         async with self.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
             data = await r.json()
 
-        id = data["id"]
-        await ctx.send(f"http://www.strawpoll.me/{id}")
+        strawpoll_id = data["id"]
+        await ctx.send(f"http://www.strawpoll.me/{strawpoll_id}")
 
     # TODO : add github logo thumnail to embed, and some more content.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
-        """Sends a link to the bots GitHub repository"""
+        """Send a link to the bots GitHub repository."""
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
@@ -106,7 +111,7 @@ class Common(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def countdown(self, ctx: Context, start: int) -> None:
-        """A Countdown timer that counts down from the specified time in seconds."""
+        """Create a countdown from the specified time in the seconds."""
         with suppress(Forbidden):
             await ctx.message.delete()
 
@@ -123,7 +128,7 @@ class Common(Cog):
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
-        """How to ask a Question."""
+        """How to ask a question."""
         embed = Embed(
             title="How To Ask a Question?",
             description=textwrap.dedent(
@@ -143,7 +148,7 @@ class Common(Cog):
 
     @command(aliases=["thank", "ty"])
     async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
-        """Thank a User."""
+        """Thank a user."""
         if ctx.author == member:
             embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
@@ -164,7 +169,7 @@ class Common(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def shorten(self, ctx: Context, *, link: str) -> None:
-        """Makes a link shorter using the tinyurl api"""
+        """Make a link shorter using the tinyurl api."""
         if not link.startswith("https://"):
             await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")
             return
@@ -188,4 +193,5 @@ class Common(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Add common commands to the bot."""
     bot.add_cog(Common(bot))

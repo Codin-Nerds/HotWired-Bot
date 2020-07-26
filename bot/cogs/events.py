@@ -13,17 +13,22 @@ PREFIX = config.COMMAND_PREFIX
 
 
 class Events(Cog):
+    """Some events, packed in a cog."""
+
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         self.bot = bot
         self.dev_mode = config.DEV_MODE
         self.session = aiohttp.ClientSession()
 
     @staticmethod
     def get_link_code(string: str) -> str:
+        """Get the code from a link."""
         return string.split("/")[-1]
 
     @staticmethod
     async def is_our_invite(full_link: str, guild: Guild) -> bool:
+        """Check if the full link is an invite for the given guild."""
         guild_invites = await guild.invites()
         for invite in guild_invites:
             # discord.gg/code resolves to https://discordapp.com/invite/code after using session.get(invite)
@@ -33,16 +38,17 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
+        """Prevent people from posting other servers' invites."""
         # Check that the message is not from bot account
         if message.author.bot:
             return
 
         # DM Check.
-        elif message.guild is None:
+        if not message.guild:
             return
 
         # Is an Admin.
-        elif message.author.guild_permissions.administrator:
+        if message.author.guild_permissions.administrator:
             return
 
         if "https:" in message.content or "http:" in message.content:
@@ -58,9 +64,11 @@ class Events(Cog):
                 if "discordapp.com/invite/" in invite or "discord.gg/" in invite:
                     if not await Events.is_our_invite(invite, message.guild):
                         await message.channel.send(f"{message.author.mention} You are not allowed to post other Server's invites!")
+                        await message.delete()
 
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:
+        """Error manager."""
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
             async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
@@ -69,12 +77,14 @@ class Events(Cog):
         embed = Embed(color=Color.red(), description=error_message, title=event)
 
         if not self.dev_mode:
+            # self.error_hook is undefined
             await self.error_hook.send(embed=embed)
         else:
             traceback.print_exc()
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
+        """Send message upon joining a guild, and log it."""
         logchannel = self.bot.get_channel(config.log_channel)
 
         embed = Embed(
@@ -123,10 +133,12 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
+        """Log guild removal."""
         logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 
 
 def setup(bot: Bot) -> None:
+    """Add events to the bot."""
     bot.add_cog(Events(bot))

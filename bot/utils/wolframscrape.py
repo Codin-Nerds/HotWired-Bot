@@ -2,6 +2,7 @@ import os
 
 import requests
 
+# TODO : use aiohttp
 APPID = os.getenv("WOLFRAM_APPID")
 
 

@@ -13,24 +13,24 @@ from bot.core.bot import Bot
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
 
-regexp = ""
+REGEXP = ""
 for filter_word in filter_words:
     filter_word = filter_word.replace("\n", "")
-    regexp += f"{filter_word}|"
-regexp = regexp[:-1]
+    REGEXP += f"{filter_word}|"
+REGEXP = REGEXP[:-1]
 
-filter_words = re.compile(regexp, re.I)
+filter_words = re.compile(REGEXP, re.I)
 
 
 class SafesearchFail(CommandError):
     """Thrown when a query contains NSFW content."""
-    pass
 
 
 class Search(Cog, name="Basic"):
-    """Searches the web for a variety of different resources."""
+    """Search the web for a variety of different resources."""
 
     def __init__(self, bot: Bot) -> None:
+        """Initialize the cog."""
         # Main Stuff
         self.bot = bot
         self.emoji = "\U0001F50D"
@@ -44,10 +44,9 @@ class Search(Cog, name="Basic"):
         self.tomd.body_width = 0
 
     async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
-        """Uses scrapestack and the Qwant API to find search results."""
+        """Use scrapestack and the Qwant API to find search results."""
         if not is_nsfw:
-            filter = filter_words.search(query)
-            if filter:
+            if filter_words.search(query):
                 # TODO: Log this
                 raise SafesearchFail("Query had NSFW.")
 
@@ -81,8 +80,7 @@ class Search(Cog, name="Basic"):
                 results = await self._search_logic(query, is_nsfw, category)
             except SafesearchFail:
                 await ctx.send(f":x: Sorry {ctx.author.mention}, your message contains filtered words, I've removed this message.")
-                await ctx.message.delete()
-                return
+                return await ctx.message.delete()
             count = len(results)
 
             # Ignore markdown when displaying
@@ -90,9 +88,8 @@ class Search(Cog, name="Basic"):
             query_display = utils.escape_markdown(query_display)
 
             # Return if no results
-            if count == 0:
-                await ctx.send(f"No results found for `{query_display}`.")
-                return
+            if not count:
+                return await ctx.send(f"No results found for `{query_display}`.")
 
             # Gets the first entry's data
             first_title = self.tomd.handle(results[0]["title"]).rstrip("\n")
@@ -101,9 +98,9 @@ class Search(Cog, name="Basic"):
 
             # Builds the substring for each of the other result.
             other_results: List[str] = []
-            for r in results[1:count]:
-                title = self.tomd.handle(r["title"]).rstrip("\n")
-                url = r["url"]
+            for result in results[1:count]:
+                title = self.tomd.handle(result["title"]).rstrip("\n")
+                url = result["url"]
                 other_results.append(f"**{title}** {url}")
             other_msg: str = "\n".join(other_results)
 
@@ -128,8 +125,8 @@ class Search(Cog, name="Basic"):
 
     @command()
     async def search(self, ctx: Context, category: str, *, query: str) -> None:
-        """
-        Search online for general results.
+        """Search online for general results.
+
         Valid Categories:
              - web
              - videos
@@ -140,8 +137,7 @@ class Search(Cog, name="Basic"):
              - maps
         """
         if category not in config.basic_search_categories:
-            await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(config.basic_search_categories)}```")
-            return
+            return await ctx.send(f"Invalid Category! ```Available Categories : {', '.join(config.basic_search_categories)}```")
         await self._basic_search(ctx, query, category)
 
     @command()
@@ -201,69 +197,70 @@ class Search(Cog, name="Basic"):
                         )
                         await ctx.send(template)
 
-        @command()
-        async def manga(self, ctx: Context, *, query: str) -> None:
-            """Look up manga information."""
-            base = "https://kitsu.io/api/edge/"
+    @command()
+    async def manga(self, ctx: Context, *, query: str) -> None:
+        """Look up manga information."""
+        base = "https://kitsu.io/api/edge/"
 
-            # Handling
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(base + "manga", params={"filter[text]": query}) as resp:
-                        resp = await resp.json()
-                        resp = resp["data"]
+        # Handling
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base + "manga", params={"filter[text]": query}) as resp:
+                    resp = await resp.json()
+                    resp = resp["data"]
 
-                        query = utils.escape_mentions(query)
-                        query = utils.escape_markdown(query)
+                    query = utils.escape_mentions(query)
+                    query = utils.escape_markdown(query)
 
-                        if not resp:
-                            await ctx.send(f"No results for `{query}`.")
-                            return
+                    if not resp:
+                        await ctx.send(f"No results for `{query}`.")
+                        return
 
-                        manga = resp[0]
-                        title = f'{manga["attributes"]["canonicalTitle"]}'
-                        manga_id = manga["id"]
-                        url = f"https://kitsu.io/manga/{manga_id}"
+                    manga = resp[0]
+                    title = f'{manga["attributes"]["canonicalTitle"]}'
+                    manga_id = manga["id"]
+                    url = f"https://kitsu.io/manga/{manga_id}"
 
-                        embed = Embed(title=f"{title}", color=ctx.author.color, url=url)
-                        embed.description = manga["attributes"]["synopsis"][0:425] + "..."
+                    embed = Embed(title=f"{title}", color=ctx.author.color, url=url)
+                    embed.description = manga["attributes"]["synopsis"][0:425] + "..."
 
-                        if manga["attributes"]["averageRating"]:
-                            embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
-                        embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
+                    if manga["attributes"]["averageRating"]:
+                        embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
+                    embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
 
-                        if manga["attributes"]["ageRating"]:
-                            embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
-                        embed.add_field(name="Status", value=manga["attributes"]["status"])
-                        thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
-                        embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
+                    if manga["attributes"]["ageRating"]:
+                        embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
+                    embed.add_field(name="Status", value=manga["attributes"]["status"])
+                    thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
+                    embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
 
-                        if manga["attributes"]["chapterCount"]:
-                            embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
-                        embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
-                        embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
+                    if manga["attributes"]["chapterCount"]:
+                        embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
+                    embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
+                    embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
 
-                        try:
-                            await ctx.send(f"**{title}** - <{url}>", embed=embed)
-                        except Exception:
-                            aired = f"{manga['attributes']['startDate']}{thing}"
-                            template = textwrap.dedent(
-                                f"""
-                                ```
-                                url: {url}
-                                Title: {title}
-                                Average Rating: {manga["attributes"]["averageRating"]}
-                                Popularity Rank: {manga["attributes"]["popularityRank"]}
-                                Age Rating: {manga["attributes"]["ageRating"]}
-                                Status: {manga["attributes"]["status"]}
-                                Aired: {aired}
-                                Type: {manga['attributes']["showType"]}
-                                Powered by HotWired
-                                ```
-                                """
-                            )
-                            await ctx.send(template)
+                    try:
+                        await ctx.send(f"**{title}** - <{url}>", embed=embed)
+                    except Exception:
+                        aired = f"{manga['attributes']['startDate']}{thing}"
+                        template = textwrap.dedent(
+                            f"""
+                            ```
+                            url: {url}
+                            Title: {title}
+                            Average Rating: {manga["attributes"]["averageRating"]}
+                            Popularity Rank: {manga["attributes"]["popularityRank"]}
+                            Age Rating: {manga["attributes"]["ageRating"]}
+                            Status: {manga["attributes"]["status"]}
+                            Aired: {aired}
+                            Type: {manga['attributes']["showType"]}
+                            Powered by HotWired
+                            ```
+                            """
+                        )
+                        await ctx.send(template)
 
 
 def setup(bot: Bot) -> None:
+    """Make the bot search."""
     bot.add_cog(Search(bot))

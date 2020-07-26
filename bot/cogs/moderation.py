@@ -26,7 +26,7 @@ class Moderation(Cog):
     @has_permissions(kick_members=True)
     @follow_roles()
     async def kick(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
-        """Kick a User."""
+        """Kick a user."""
         if not isinstance(member, Member):
             embed = Embed(
                 title="You can't kick this user",
@@ -39,8 +39,7 @@ class Moderation(Cog):
                 ),
                 color=discord.Color.red(),
             )
-            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
-            return
+            return await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
 
         server_embed = discord.Embed(
             title="User Kicked",
@@ -78,7 +77,7 @@ class Moderation(Cog):
     @has_permissions(ban_members=True)
     @follow_roles()
     async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
-        """Ban a User."""
+        """Ban a user."""
         server_embed = discord.Embed(
             title="User Banned",
             description=textwrap.dedent(
@@ -114,13 +113,13 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
-        """Bans multiple members from the server."""
+        """Ban multiple members from the server."""
         if reason is None:
             reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
 
         total_members = len(members)
         if total_members == 0:
-            return await ctx.send("No members to ban.")
+            return await ctx.send("No member to ban.")
 
         confirm = await ctx.prompt(f"This will ban **{Plural(total_members):member}**. Are you sure?", reacquire=False)
         if not confirm:
@@ -138,7 +137,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     async def unban(self, ctx: Context, *, user: ProcessedMember) -> None:
-        """Unban a User."""
+        """Unban a user."""
         try:
             await ctx.guild.unban(user)
 
@@ -171,7 +170,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def clear(self, ctx: Context, amount: int) -> None:
-        """Clear specified number of messages."""
+        """Clear the specified number of messages from the channel."""
         await ctx.channel.purge(limit=amount + 1)
 
         embed = Embed(
@@ -190,19 +189,17 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_roles=True)
     async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
-        """Promote member to role."""
+        """Promote the member to the specified role."""
         if role >= ctx.author.top_role:
             embed = Embed(
                 title="Insufficient permissions",
                 description="You can give someone role which is higher in the role hierarchy than your top role.",
                 color=Color.red(),
             )
-            await ctx.send(embed=embed)
-            return
+            return await ctx.send(embed=embed)
         if role in member.roles:
             embed = Embed(title="Error", description=f"{member.mention} already has the {role.mention} role!", color=Color.red())
-            await ctx.send(embed=embed)
-            return
+            return await ctx.send(embed=embed)
 
         try:
             await member.add_roles(role)
@@ -219,8 +216,7 @@ class Moderation(Cog):
                 ),
                 color=discord.Color.red(),
             )
-            await ctx.send(embed=embed)
-            return
+            return await ctx.send(embed=embed)
 
         embed = Embed(
             title="Promotion!",
@@ -268,7 +264,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def cleanup(self, ctx: Context, amount: int = 100) -> None:
-        """Cleans up the bots messages from the channel."""
+        """Clean up the bots messages from the channel."""
         strategy = self._basic_cleanup_strategy
 
         if ctx.me.permissions_in(ctx.channel).manage_messages:
@@ -296,12 +292,13 @@ class Moderation(Cog):
             )
             await ctx.send(embed=embed, delete_after=10)
 
-    async def cog_check(self, ctx: Context) -> t.Union[None, bool]:
+    def cog_check(self, ctx: Context) -> bool:
         """Make sure these commands can't be executed from DMs."""
-        if ctx.guild is None:
-            raise NoPrivateMessage
-        return True
+        if ctx.guild:
+            return True
+        raise NoPrivateMessage
 
 
 def setup(bot: Bot) -> None:
+    """Add moderation to the bot."""
     bot.add_cog(Moderation(bot))

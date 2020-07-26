@@ -7,17 +7,18 @@ import time
 import traceback
 import typing as t
 
-import humanize
-from discord import (Activity, ActivityType, Color, Embed, Game,
-                     InvalidArgument, Status)
+from discord import Activity, ActivityType, Color, Embed, Game, Status
 from discord import __version__ as discord_version
-from discord.ext.commands import Cog, Context, check, group
+from discord.ext.commands import Cog, Context, group
+import humanize
 
 from bot import config
 from bot.core.bot import Bot
 
 
+# Wrong typehint for date
 def uptime(date: str) -> str:
+    """Calculate the uptime."""
     days = date.days
     hours, r = divmod(date.seconds, 3600)
     minutes, seconds = divmod(r, 60)
@@ -29,6 +30,7 @@ class Sudo(Cog):
     """This cog provides administrative stats about server and bot itself."""
 
     def __init__(self, bot: Bot) -> None:
+        """Initialize sudo"""
         self.bot = bot
         self.start_time = datetime.datetime.utcnow()
 
@@ -44,31 +46,29 @@ class Sudo(Cog):
         else:
             return f"{hours} hr, {minutes} mins, and {seconds} secs"
 
-    async def is_owner(ctx: Context) -> t.Union[bool, None]:
+    @staticmethod
+    async def cog_check(ctx: Context) -> t.Union[bool, None]:
+        """Only devs can use this."""
         if ctx.author.id in config.devs:
             return True
-        else:
-            embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
-            await ctx.send(embed=embed)
+        embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
+        await ctx.send(embed=embed)
 
     @group(hidden=True)
-    @check(is_owner)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
-        pass
 
-    @sudo.command()
-    @check(is_owner)
+    @sudo.command(aliases=["shutdown", "logout"])
     async def shutoff(self, ctx: Context) -> None:
+        """Turn the bot off."""
         if ctx.author.id in config.devs:
             await ctx.message.add_reaction("✅")
             print("Shutting Down!")
             await self.bot.logout()
 
     @sudo.command()
-    @check(is_owner)
     async def load(self, ctx: Context, *, extension: str) -> None:
-        """Loads a cog."""
+        """Load a cog."""
         try:
             self.bot.load_extension(f"cogs.{extension}")
         except Exception:
@@ -77,9 +77,8 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_owner)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
-        """Reloads a module."""
+        """Reload a module."""
         try:
             self.bot.unload_extension(f"cogs.{extension}")
             self.bot.load_extension(f"cogs.{extension}")
@@ -89,9 +88,8 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
     async def unload(self, ctx: Context, *, extension: str) -> None:
-        """Unloads a module."""
+        """Unload a module."""
         try:
             self.bot.unload_extension(f"cogs.{extension}")
         except Exception:
@@ -100,20 +98,18 @@ class Sudo(Cog):
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
     async def restart(self, ctx: Context) -> None:
-        """Restart The bot."""
+        """Restart the bot."""
         await ctx.message.add_reaction("✅")
         await self.bot.logout()
         time.sleep(2)
         os.system("pipenv run start")
         # os.system("python3.8 -m pipenv run start")
 
-    @sudo.command()
-    @check(is_owner)
+    @sudo.command(aliases=["status"])
     async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
-        """
-        Change the status of the bot
+        """Change the status of the bot.
+
         `botstatus playing <new status>` - Change playing status
         `botstatus watching <new status>` - Change watching status
         `botstatus listening <new status>` - Change listening status
@@ -129,10 +125,8 @@ class Sudo(Cog):
                     status=Status.online
                 )
                 await ctx.send(f"Successfully changed playing status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except Exception as error:
+                await ctx.send(error)
 
         elif status.lower() == "watching":
             try:
@@ -143,10 +137,8 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed watching status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except Exception as error:
+                await ctx.send(error)
 
         elif status.lower() == "listening":
             try:
@@ -157,13 +149,10 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed listening status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except Exception as error:
+                await ctx.send(error)
 
     @sudo.command()
-    @check(is_owner)
     async def stats(self, ctx: Context) -> None:
         """Show full bot stats."""
         implementation = platform.python_implementation()
@@ -192,7 +181,6 @@ class Sudo(Cog):
         await ctx.send(embed=embed)
 
     @sudo.command(aliases=["sinfo"])
-    @check(is_owner)
     async def sysinfo(self, ctx: Context) -> None:
         """Get system information (show info about the server this bot runs on)."""
         uname = platform.uname()
@@ -227,7 +215,6 @@ class Sudo(Cog):
         await ctx.send(embed=embed)
 
     @sudo.command(aliases=['slist', 'serverlist'])
-    @check(is_owner)
     async def guildlist(self, ctx: Context, page: int = 1) -> None:
         """List the guilds I am in."""
         guild_list = []
@@ -254,4 +241,5 @@ class Sudo(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Add sudo commands to the bot."""
     bot.add_cog(Sudo(bot))

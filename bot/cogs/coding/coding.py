@@ -23,11 +23,13 @@ class Coding(Cog):
     """To test code and check docs."""
 
     def __init__(self, bot: Bot) -> None:
+        """Initialize the coding."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
+        """Background task to update the languages."""
         async with aiohttp.ClientSession() as client_session:
             async with client_session.get("https://tio.run/languages.json") as response:
                 if response.status != 200:
@@ -68,8 +70,10 @@ class Coding(Cog):
         "rust": documentation.rust_doc,
     }
 
-    @commands.command(
-        help="""
+    @commands.command()
+    async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
+        """Execute code in a given programming language.
+
         run <language> [--wrapped] [--stats] <code>
         for command-line-options, compiler-flags and arguments you may
         add a line starting with this argument, and after a space add
@@ -86,12 +90,7 @@ class Coding(Cog):
         in a new hastebin and the link will be returned.
         When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
         Useful to hide your syntax fails or when you forgot to print the result.
-        """,
-        brief="Execute code in a given programming language",
-    )
-    async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
-        """Execute code in a given programming language."""
-
+        """
         options = {
             "--stats": False,
             "--wrapped": False,
@@ -114,8 +113,8 @@ class Coding(Cog):
 
         code = "".join(code)
 
-        compilerFlags = []
-        commandLineOptions = []
+        compilerflags = []
+        commandlineoptions = []
         args = []
         inputs = []
 
@@ -126,10 +125,10 @@ class Coding(Cog):
                 inputs.append(" ".join(line.split(" ")[1:]).strip("`"))
 
             elif line.startswith("compiler-flags "):  # check for flags
-                compilerFlags.extend(line[15:].strip("`").split(" "))
+                compilerflags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))
+                commandlineoptions.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -143,7 +142,7 @@ class Coding(Cog):
 
         async with ctx.typing():
             # if file is sent instead of raw code in codeblocks
-            if (ctx.message.attachments):
+            if ctx.message.attachments:
                 file = ctx.message.attachments[0]
                 # check the size of file exceeding max limit
                 if file.size > 20000:
@@ -224,9 +223,9 @@ class Coding(Cog):
             tio = Tio(
                 lang,
                 text,
-                compilerFlags=compilerFlags,
+                compilerFlags=compilerflags,
                 inputs=inputs,
-                commandLineOptions=commandLineOptions,
+                commandLineOptions=commandlineoptions,
                 args=args,
             )
             result = await tio.send()
@@ -274,7 +273,7 @@ class Coding(Cog):
 
     @commands.command(aliases=["ref"])
     async def reference(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
+        """Return element reference from given language."""
 
         lang = language.strip("`")
 
@@ -289,7 +288,7 @@ class Coding(Cog):
 
     @commands.command(aliases=["docs"])
     async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
+        """Return element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
@@ -302,7 +301,7 @@ class Coding(Cog):
 
     @commands.command(name="list")
     async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
-        """Lists available choices for other commands."""
+        """List available choices for other commands."""
 
         choices = {
             "documentations": self.documented,

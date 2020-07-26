@@ -21,14 +21,15 @@ def _to_tio_string(couple: list) -> bytes:
 class Tio:
     '''Thanks to FrenchMasterSword For the TIO Wrapper.'''
     def __init__(
-        self,
-        language: str,
-        code: str,
-        inputs: str = "",
-        compilerFlags: t.Optional[list] = None,
-        commandLineOptions: t.Optional[list] = None,
-        args: t.Optional[list] = None
+            self,
+            language: str,
+            code: str,
+            inputs: str = "",
+            compilerFlags: t.Optional[list] = None,
+            commandLineOptions: t.Optional[list] = None,
+            args: t.Optional[list] = None
     ) -> None:
+        """Initialize the Tio runner."""
         if not compilerFlags:
             compilerFlags = []
         if not commandLineOptions:
@@ -53,6 +54,7 @@ class Tio:
         self.request = zlib.compress(bytes_, 9)[2:-4]
 
     async def send(self) -> str:
+        """Sed the query."""
         async with aiohttp.ClientSession() as client_session:
             async with client_session.post(self.backend, data=self.request) as response:
                 if response.status != 200:
