@@ -50,7 +50,7 @@ class JsonEmbedParser:
 
     @staticmethod
     async def parse_json(ctx: Context, json_code: str) -> t.Union[dict, bool]:
-        """Parse some json code."""
+        """Parse given json code."""
         # Sanitize code (remove codeblocks if any)
         if "```" in json_code:
             json_code = json_code.replace("```json\n", "")
