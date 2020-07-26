@@ -14,18 +14,6 @@ import humanize
 from bot import config
 from bot.core.bot import Bot
 
-from discord import (
-    Activity,
-    ActivityType,
-    Color,
-    Embed,
-    Game,
-    InvalidArgument,
-    Status
-)
-from discord import __version__ as discord_version
-from discord.ext.commands import Cog, Context, group
-
 
 # Wrong typehint for date
 def uptime(date: str) -> str:
@@ -53,9 +41,10 @@ class Sudo(Cog):
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
         if days:
-            str = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            formatted = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
         else:
-            str = f"{hours} hr, {minutes} mins, and {seconds} secs"
+            formatted = f"{hours} hr, {minutes} mins, and {seconds} secs"
+        return formatted
 
     @staticmethod
     async def cog_check(ctx: Context) -> t.Union[bool, None]:

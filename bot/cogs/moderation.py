@@ -1,5 +1,6 @@
 import asyncio
 import textwrap
+import typing as t
 from collections import Counter
 from contextlib import suppress
 from datetime import datetime
@@ -89,7 +90,7 @@ class Moderation(Cog):
     @follow_roles()
     async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
         """Ban a user."""
-        server_embed = discord.Embed(
+        server_embed = Embed(
             title="User Banned",
             description=textwrap.dedent(
                 f"""
@@ -181,7 +182,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int) -> None:
+    async def clear(self, ctx: Context, amount: int, target: ProcessedMember = None) -> None:
         """Clear the specified number of messages from the channel."""
         if target is None:
             await ctx.message.channel.purge(limit=amount)
