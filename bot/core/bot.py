@@ -24,7 +24,11 @@ class Bot(Base_Bot):
         if self.first_on_ready:
             self.first_on_ready = False
 
-            self.pool = await asyncpg.create_pool(**config.DATABASE)
+            try:
+                self.pool = await asyncpg.create_pool(**config.DATABASE)
+            except:
+                print("Database connection error. Killing program.")
+                return await self.close()
 
             # Log new connection
             self.log_channel = self.get_channel(config.log_channel)

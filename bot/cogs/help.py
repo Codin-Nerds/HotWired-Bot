@@ -74,7 +74,7 @@ class HelpSource(menus.ListPageSource):
 
 
 class Help(commands.HelpCommand):
-    """The Help cog."""
+    """The Help implementation."""
 
     def get_command_signature(self, command: commands.Command) -> str:
         """Retrieve the command's signature."""

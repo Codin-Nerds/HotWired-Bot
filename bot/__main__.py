@@ -39,7 +39,7 @@ extensions = [
 
 bot = Bot(
     extensions,
-    when_mentioned_or(PREFIX),
+    command_prefix=when_mentioned_or(PREFIX),
     activity=Game(name=f"Ping me using {PREFIX}help"),
     case_insensitive=True,
 )
