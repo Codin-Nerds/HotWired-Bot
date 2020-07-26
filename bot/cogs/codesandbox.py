@@ -29,7 +29,7 @@ class CodeSandbox(Cog):
         return code.strip("`\n")
 
     def cog_check(self, ctx: Context) -> bool:
-        """Make it safer."""
+        """Only allow developers to use this cog."""
         return is_bot_dev(ctx)
 
     @command(name="eval", hidden=True)
