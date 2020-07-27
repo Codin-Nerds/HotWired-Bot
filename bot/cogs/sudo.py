@@ -47,19 +47,11 @@ class Sudo(Cog):
             formatted = f"{hours} hr, {minutes} mins, and {seconds} secs"
         return formatted
 
-    @staticmethod
-    async def cog_check(ctx: Context) -> t.Union[bool, None]:
-        """Only devs can use this."""
-        if ctx.author.id in config.devs:
-            return True
-        embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
-        await ctx.send(embed=embed)
-
     @group(hidden=True)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
 
-    @sudo.command(aliases=["shutdown", "logout"])
+    @sudo.command(aliases=["shutdown"])
     async def shutoff(self, ctx: Context) -> None:
         """Turn the bot off."""
         if ctx.author.id in config.devs:
@@ -237,6 +229,14 @@ class Sudo(Cog):
         embed = Embed(color=Color.greyple(), title="Total Guilds", description=guilds_list)
         embed.set_footer(text=f"Currently showing: {page} out of {pages}")
 
+        await ctx.send(embed=embed)
+
+    @staticmethod
+    async def cog_check(ctx: Context) -> t.Union[bool, None]:
+        """Only devs can use this."""
+        if ctx.author.id in config.devs:
+            return True
+        embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
         await ctx.send(embed=embed)
 
 

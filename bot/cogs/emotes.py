@@ -100,7 +100,6 @@ class Emote:
 
         try:
             return cls(emote_type, emote_id, emote_channel)
-
         except (KeyError, IndexError):
             raise EmoteNotFoundException()
 

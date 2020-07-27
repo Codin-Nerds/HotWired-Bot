@@ -16,7 +16,7 @@ from bot import config
 from bot.core.bot import Bot
 from bot.utils.errors import ServiceError
 
-file = open(f"bot{os.path.sep}assets{os.path.sep}excuses.txt", "r", encoding="utf-8")
+file = open(os.path.sep.join(("bot", "assets", "excuses.txt")), "r", encoding="utf-8")
 excuses = file.readlines()
 file.close()
 
@@ -268,8 +268,7 @@ class Fun(Cog):
             embed.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=embed)
         except Exception as error:
-            # What is {error!s} ?
-            await ctx.send(f"Something Broke. LOL [{error!s}]")
+            await ctx.send(f"Something Broke. LOL [{error}]")
 
     async def get_answer(self, ans: str) -> str:
         """Format an answer."""

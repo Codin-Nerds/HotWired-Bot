@@ -42,10 +42,5 @@ bot = Bot(
 )
 
 
-def main() -> None:
-    """Run the bot."""
-    bot.run(TOKEN)
-
-
 if __name__ == "__main__":
-    main()
+    bot.run(TOKEN)

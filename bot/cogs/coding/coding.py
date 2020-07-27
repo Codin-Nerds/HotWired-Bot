@@ -113,8 +113,8 @@ class Coding(Cog):
 
         code = "".join(code)
 
-        compilerflags = []
-        commandlineoptions = []
+        compiler_flags = []
+        commandline_options = []
         args = []
         inputs = []
 
@@ -125,10 +125,10 @@ class Coding(Cog):
                 inputs.append(" ".join(line.split(" ")[1:]).strip("`"))
 
             elif line.startswith("compiler-flags "):  # check for flags
-                compilerflags.extend(line[15:].strip("`").split(" "))
+                compiler_flags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandlineoptions.extend(line[21:].strip("`").split(" "))
+                commandline_options.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -223,9 +223,9 @@ class Coding(Cog):
             tio = Tio(
                 lang,
                 text,
-                compilerFlags=compilerflags,
+                compilerFlags=compiler_flags,
                 inputs=inputs,
-                commandLineOptions=commandlineoptions,
+                commandLineOptions=commandline_options,
                 args=args,
             )
             result = await tio.send()

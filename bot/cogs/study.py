@@ -194,15 +194,15 @@ class Study(Cog):
         out = {}
         if not lists:
             return
-        for a_type in types:
-            reg = str(lists[types.index(a_type)])
+        for _type in types:
+            reg = str(lists[types.index(_type)])
             meanings = []
             for result in re.findall(r">\s\((.*?)\)\s<", reg):
                 if "often followed by" in result:
                     pass
                 elif len(result) > 5 or " " in str(result):
                     meanings.append(result)
-            out[a_type.text] = meanings
+            out[_type.text] = meanings
         return out
 
     async def _synonym(self, ctx: Context, word: str) -> list:

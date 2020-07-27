@@ -43,7 +43,7 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
     return embed
 
 
-with open(f"bot{os.path.sep}assets{os.path.sep}subreddit.json", "r") as f:
+with open(os.path.sep.join(("bot", "assets", "subreddit.json")), "r") as f:
     subreddits = json.load(f)
 
 

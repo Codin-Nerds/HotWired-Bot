@@ -144,7 +144,7 @@ class Embeds(Cog):
         await ctx.send("Embeds title updated.")
 
     @embed_group.command(aliases=["set_description"], name="description")
-    async def _desc(self, ctx: Context, *, description: Unicode) -> None:
+    async def _description(self, ctx: Context, *, description: Unicode) -> None:
         """Set Description for the Embed."""
         self.embeds[ctx.author].embed.description = description
         await ctx.send("Embeds description updated.")
@@ -191,7 +191,7 @@ class Embeds(Cog):
         await ctx.send("This command is not meant to be used on its own!")
 
     @author_group.command(name="name", aliases=["set_name"])
-    async def author_name(self, ctx: Context, author_name: str) -> None:
+    async def author_name(self, ctx: Context, *, author_name: str) -> None:
         """Set author's name for the Embed."""
         embed = self.embeds[ctx.author].embed
         embed.set_author(name=author_name, url=embed.author.url, icon_url=embed.author.icon_url)
