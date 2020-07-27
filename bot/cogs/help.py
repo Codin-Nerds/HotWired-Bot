@@ -11,12 +11,12 @@ class HelpSource(menus.ListPageSource):
     """The Help menu."""
 
     def __init__(
-            self,
-            signature: t.Callable,
-            filter_commands: t.Coroutine,
-            prefix: str,
-            author: discord.User,
-            cogs: t.Dict[t.Optional[commands.Cog], t.List[commands.Command]],
+        self,
+        signature: t.Callable,
+        filter_commands: t.Coroutine,
+        prefix: str,
+        author: discord.User,
+        cogs: t.Dict[t.Optional[commands.Cog], t.List[commands.Command]],
     ) -> None:
         """Create the menu."""
         self.get_command_signature = signature
@@ -32,13 +32,7 @@ class HelpSource(menus.ListPageSource):
             per_page=1,
         )
 
-    async def format_page(
-            self,
-            menu: menus.Menu,
-            cog_tuple: t.Tuple[
-                t.Optional[commands.Cog], t.List[commands.Command]
-            ],
-    ) -> discord.Embed:
+    async def format_page(self, menu: menus.Menu, cog_tuple: t.Tuple[t.Optional[commands.Cog], t.List[commands.Command]]) -> discord.Embed:
         """Format the pages."""
         cog, command_list = cog_tuple
         embed = discord.Embed(
