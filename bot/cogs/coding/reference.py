@@ -92,7 +92,7 @@ async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
     base_url = f"https://git-scm.com/docs/{part}{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession as client_session:
+    async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")

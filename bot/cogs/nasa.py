@@ -1,9 +1,10 @@
 import os
 import random
 
-import aiohttp
+from bot.core.bot import Bot
+
 from discord import Color, Embed
-from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+from discord.ext.commands import (BucketType, Cog, Context, command,
                                   cooldown)
 
 NASA_API = os.getenv("NASA_API")
@@ -18,7 +19,7 @@ def remove_tags(text: str) -> None:
 class Nasa(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.aio_session()
         if NASA_API is None:
             self.cog_unload()
 
