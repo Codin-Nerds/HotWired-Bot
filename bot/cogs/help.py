@@ -18,7 +18,6 @@ class HelpSource(menus.ListPageSource):
         author: discord.User,
         cogs: t.Dict[t.Optional[commands.Cog], t.List[commands.Command]],
     ) -> None:
-        """Create the menu."""
         self.get_command_signature = signature
         self.filter_commands = filter_commands
         self.prefix = prefix
