@@ -22,6 +22,11 @@ class Game:
         "\u2B07",  # bottom
         "\u2198",  # bottom right
     ]
+    emojis = {
+        "x": ":x:",
+        "o": ":o:",
+        "": ":black_large_square:",
+    }
 
     def __init__(self, ctx: Context, opponent: t.Optional[Member]) -> None:
         self.ctx = ctx
@@ -46,7 +51,7 @@ class Game:
         """Send embed with the board,"""
         embed = Embed(
             title="Tic Tac Toe",
-            description=f"```{self.str_board}```",
+            description=self.str_board,
             color=Color.blurple()
         )
         if not hasattr(self, "msg"):
@@ -78,14 +83,12 @@ class Game:
 
     @property
     def str_board(self) -> str:
-        """Convert the board 2D array to string"""
-        result = ""
-
+        """Stringify the board using emojis."""
+        stringified = ""
         for row in self.board:
-            result += "|".join(f"{val: ^{2}}" for val in row)
-            result += f"\n{'-' * 11}\n"
-
-        return "\n".join(result.splitlines()[:-1])
+            stringified += "|".join(self.emojis[col] for col in row)
+            stringified += "\n"
+        return stringified
 
     def check_win(self) -> t.Tuple[bool, t.Literal["x", "o", None]]:
         """Check if the board is in win status, if it is return (True, winner)"""
@@ -231,6 +234,16 @@ class Game:
 
             self.board[row][col] = cpu_xo
             return
+
+    def __str__(self) -> str:
+        """Convert the board 2D array to string"""
+        result = ""
+
+        for row in self.board:
+            result += "|".join(f"{val: ^{2}}" for val in row)
+            result += f"\n{'-' * 9}\n"
+
+        return "\n".join(result.splitlines()[:-1])
 
 
 class TicTacToe(Cog):
