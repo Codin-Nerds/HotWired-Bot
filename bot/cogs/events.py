@@ -61,6 +61,8 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:
+        logchannel = self.bot.get_channel(config.log_channel)
+
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
             async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
@@ -72,6 +74,7 @@ class Events(Cog):
             await self.error_hook.send(embed=embed)
         else:
             traceback.print_exc()
+            await logchannel.send(embed=embed)
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
@@ -117,9 +120,20 @@ class Events(Cog):
         except Exception:
             pass
 
-        await logchannel.send(
-            f"The bot has been added to **{guild.name}** , " f"We've reached our **{len(self.bot.guilds)}th** server! :champagne_glass: "
+        log_embed = Embed(
+            title=f"The bot has been added to {guild.name}",
+            description=textwrap.dedent(
+                f"""
+                **We've reached our {len(self.bot.guilds)}th server!** :champagne_glass:
+                Guild Id: **{guild.id}** | Guild Owner: {guild.owner.mention}
+                Member Count: **{guild.member_count}**
+                """
+            ),
+            color=Color.green(),
         )
+        embed.set_thumbnail(url=str(guild.icon_url))
+
+        await logchannel.send(embed=log_embed)
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
