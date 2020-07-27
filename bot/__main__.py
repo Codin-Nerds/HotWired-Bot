@@ -59,9 +59,8 @@ if __name__ == "__main__":
 
         raise TokenNotFoundError(
             colorama.Fore.RED + "\n"
-            "Token is not found, are you sure\n"
-            "you are running this file through\n"
-            "pipenv and there is a .env file\n"
-            "containing a BOT_TOKEN key on your\n"
-            "current working directory?"
+            "Token not found.\n"
+            "Are you running this file through pipenv and\n"
+            "is there a .env file containing a BOT_TOKEN key\n"
+            "in your current working directory?\n"
         )
