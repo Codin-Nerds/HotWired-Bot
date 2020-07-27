@@ -91,7 +91,7 @@ class Fun(Cog):
                 data = await resp.json()
                 embed = Embed(
                     title="Random Duck!",
-                    color=Color.gold()
+                    color=Color.gold(),
                 )
                 embed.set_image(url=data["url"])
                 await ctx.send(
