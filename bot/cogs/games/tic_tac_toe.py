@@ -1,296 +1,209 @@
 import random
 import typing as t
-from collections import defaultdict
+from itertools import cycle
 
-from discord import Color, Embed, Member, Reaction, User
-from discord.ext.commands import Cog, Context, command
+import discord
+from discord.ext import commands
+from discord.ext import menus
 
 from bot.core.bot import Bot
-from bot.core.decorators import ProcessedMember
 
 
-class Game:
-    """Internal Tic Tac Toe logic."""
-    reactions = [
-        "\u2196",  # top left
-        "\u2B06",  # top
-        "\u2197",  # top right
-        "\u2B05",  # left
-        "\u23FA",  # middle
-        "\u27A1",  # right
-        "\u2199",  # bottom left
-        "\u2B07",  # bottom
-        "\u2198",  # bottom right
+class Game(menus.Menu):
+    """Tic-tac-Toe menu."""
+
+    emojis = [
+        ":black_large_square:",
+        ":o:",
+        ":x:",
     ]
-    emojis = {
-        "x": ":x:",
-        "o": ":o:",
-        "": ":black_large_square:",
-    }
 
-    def __init__(self, ctx: Context, opponent: t.Optional[Member]) -> None:
-        self.ctx = ctx
-        self.author = ctx.author
-        self.player = "x"
-        self.opponent = opponent
-        self.cpu_opponent = opponent is None
-        self.board = [
-            ["", "", ""],
-            ["", "", ""],
-            ["", "", ""],
-        ]
+    def __init__(self, author: discord.Member, opponent: t.Optional[discord.Member], **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.players = (author, opponent)
+        self.player_cycle = cycle(self.players)
+        self.next_player = next(self.player_cycle)
+        self.is_ia = bool(opponent)
+        self.status = [[0] * 3 for _ in range(3)]
 
-    def next_player(self) -> None:
-        """Switch player."""
-        if self.player == "x":
-            self.player = "o"
-        else:
-            self.player = "x"
+    def reaction_check(self, payload: discord.RawReactionActionEvent) -> bool:
+        """Whether or not to process the payload."""
+        if payload.message_id != self.message.id:
+            return False
+        if not self.next_player:
+            return False
+        return payload.user_id == self.next_player.id and payload.emoji in self.buttons
 
-    async def send_board(self) -> None:
-        """Send the embed with the board."""
-        embed = Embed(
+    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel) -> discord.Message:
+        """Send the first message."""
+        return await ctx.send(embed=self.get_embed())
+
+    def get_embed(self) -> discord.Embed:
+        """Generate the board embed."""
+        return discord.Embed(
             title="Tic Tac Toe",
-            description=self.str_board,
-            color=Color.blurple()
+            description="\n".join(
+                (
+                    "".join(
+                        self.emojis[state] for state in column
+                    ) for column in self.status
+                )
+            ),
+            color=discord.Color.blurple(),
         )
-        if not hasattr(self, "msg"):
-            self.msg = await self.ctx.send(embed=embed)
-            await self.add_buttons()
-        else:
-            await self.msg.edit(embed=embed)
 
-    async def add_buttons(self) -> None:
-        """Add reaction buttons to the message."""
-        for reaction in self.reactions:
-            await self.msg.add_reaction(reaction)
+    async def action(self, row: int, column: int) -> None:
+        """Play in the given place."""
+        if self.status[row][column]:
+            await self.ctx.send(
+                f"{self.next_player.mention}, you can't play here !",
+                delete_after=3,
+            )
+        self.status[row][column] = self.players.index(self.next_player) + 1
+        await self.update_board()
 
-    def apply_emoji_move(self, reaction_emoji: str, xo: t.Literal["x", "o"]) -> bool:
-        """Apply move based on an emoji."""
-        try:
-            move_id = self.reactions.index(reaction_emoji)
-        except ValueError:
-            # Bad emoji passed
-            return False
+    async def update_board(self) -> None:
+        """Update the board, and check for win."""
+        await self.message.edit(embed=self.get_embed())
+        self.next_player = next(self.player_cycle)
+        if await self.check():
+            return
+        if not self.next_player:
+            await self.cpu_move()
 
-        row = move_id // 3
-        col = move_id % 3
-
-        if not self.board[row][col]:
-            self.board[row][col] = xo
-            return True
-        return False
-
-    @property
-    def str_board(self) -> str:
-        """Stringify the board using emojis."""
-        stringified = ""
-        for row in self.board:
-            stringified += "|".join(self.emojis[col] for col in row)
-            stringified += "\n"
-        return stringified
-
-    def check_win(self) -> t.Tuple[bool, t.Literal["x", "o", None]]:
-        """Check if the board is in win status, if it is return (True, winner)"""
-
-        # Check rows and columns for X streaks
-        row_stat = {"x": [0, 0, 0], "o": [0, 0, 0]}
-        col_stat = {"x": [0, 0, 0], "o": [0, 0, 0]}
-
-        for row_id, row in enumerate(self.board):
-            for col_id, col in enumerate(row):
-                if col:
-                    row_stat[col][row_id] += 1
-                    col_stat[col][col_id] += 1
-
-        if 3 in row_stat["x"] or 3 in col_stat["x"]:
-            return (True, "x")
-        if 3 in row_stat["o"] or 3 in col_stat["o"]:
-            return (True, "o")
-
-        # Check diagonals
-        diag_1 = [row[col] for col, row in enumerate(self.board)]
-        diag_2 = [row[(col + 1) * -1] for col, row in enumerate(self.board)]
-
-        for xo in ["x", "o"]:
-            if all(field == xo for field in diag_1):
-                return (True, xo)
-            if all(field == xo for field in diag_2):
-                return (True, xo)
-
-        return (False, None)
-
-    def check_draw(self) -> bool:
-        """Check if current board is in draw."""
-
-        return all("" not in row for row in self.board)
-
-    async def apply_win(self, xo: t.Literal["x", "o"]) -> None:
-        """Send an appropriate win/lose message based on `xo`."""
-        if xo == "x":
-            winner = self.author
-        else:
-            winner = self.opponent
-
-        if winner:
-            await self.ctx.send(f":tada: Congratulations {winner.mention}, you won!")
-        else:
-            await self.ctx.send(f"You lost {self.author.mention}, better luck next time!")
-
-    async def turn(self, member: Member, reaction: Reaction) -> bool:
-        """A single turn of the game, returns ended status of game (True = ended)."""
-        if not any([
-            (self.opponent == member and self.player == "o"),
-            (self.author == member and self.player == "x"),
-        ]):
-            await self.ctx.send(f"Hey {member.mention}, it's not your turn!")
-            await reaction.remove(member)
-            return False
-
-        if not self.apply_emoji_move(str(reaction.emoji), self.player):
-            await self.ctx.send(f"Hey {member.mention}, that tile is occupied!")
-            await reaction.remove(member)
-            return False
-
-        await self.send_board()
-
-        win, xo = self.check_win()
-        if win:
-            await self.apply_win(xo)
-            return True
-
-        if self.check_draw():
+    async def send_result(self, result: int) -> None:
+        """Send the final result message."""
+        if result == -1:
             await self.ctx.send("Game result: draw")
+        elif self.is_ia:
+            if result:
+                await self.ctx.send(
+                    f":tada: Congratulations {self.players[0].mention}, you won !"
+                )
+            else:
+                await self.ctx.send(
+                    f"You lost {self.players[0].mention}, better luck next time!"
+                )
+        else:
+            await self.ctx.send(
+                f":tada: Congratulations {self.players[result].mention}, you won !"
+            )
+        await self.stop()
+
+    async def cpu_move(self) -> None:
+        """Make the computer move."""
+        for row in range(3):
+            if 0 in self.status[row]:
+                if self.status[row].count(2) == 2 or self.status[row].count(1) == 2:
+                    return await self.action(row, self.status[row].index(0))
+
+        for column_id in range(3):
+            column = [self.status[row_id][column_id] for row_id in range(3)]
+            if 0 in column:
+                if column.count(1) == 2 or column.count(2) == 2:
+                    return await self.action(column.index(0), column_id)
+
+        diag_1 = [self.status[place_id][place_id] for place_id in range(3)]
+        if 0 in diag_1:
+            if diag_1.count(1) == 2 or diag_1.count(2) == 2:
+                return await self.action(diag_1.index(0), diag_1.index(0))
+
+        diag_2 = [self.status[2 - place_id][place_id] for place_id in range(3)]
+        if 0 in diag_2:
+            if diag_2.count(1) == 2 or diag_2.count(2) == 2:
+                return await self.action(2 - diag_2.index(0), diag_2.index(0))
+
+        possible_moves = []
+        for row in range(3):
+            for column in range(3):
+                if not self.status[row][column]:
+                    possible_moves.append((row, column))
+        await self.action(*random.choice(possible_moves))
+
+    async def check(self) -> bool:
+        """Check if somebody won."""
+        all_checks = []
+        # rows
+        for row in self.status:
+            all_checks.append(row)
+        # columns
+        for column_id in range(3):
+            all_checks.append([self.status[row_id][column_id] for row_id in range(3)])
+        # diagonals
+        all_checks.append([self.status[place_id][place_id] for place_id in range(3)])
+        all_checks.append([self.status[2 - place_id][place_id] for place_id in range(3)])
+
+        for to_check in all_checks:
+            if to_check.count(1) == 3:
+                await self.send_result(0)
+                return True
+            if to_check.count(2) == 3:
+                await self.send_result(1)
+                return True
+        if not any(0 in row for row in self.status):
+            await self.send_result(-1)
             return True
-
-        if self.cpu_opponent:
-            self.cpu_move()
-            await self.send_board()
-            win, xo = self.check_win()
-            if win:
-                await self.apply_win(xo)
-                return True
-            if self.check_draw():
-                await self.ctx.send("Game result: draw")
-                return True
-            return False
-
-        self.next_player()
         return False
 
-    def test_win_move(self, row: int, col: int, xo: t.Literal["x", "o"]) -> bool:
-        """Retrun True if given move is a winning move"""
-        if self.board[row][col]:
-            return False
+    @menus.button("\N{north west arrow}\N{variation selector-16}")
+    async def top_left(self, payload: discord.RawReactionActionEvent) -> None:
+        """Top left button."""
+        await self.action(0, 0)
 
-        self.board[row][col] = xo
-        win, _ = self.check_win()
-        self.board[row][col] = ""
+    @menus.button("\N{upwards black arrow}\N{variation selector-16}")
+    async def top(self, payload: discord.RawReactionActionEvent) -> None:
+        """Top button."""
+        await self.action(0, 1)
 
-        if win:
-            return True
-        return False
+    @menus.button("\N{north east arrow}\N{variation selector-16}")
+    async def top_right(self, payload: discord.RawReactionActionEvent) -> None:
+        """Top right button."""
+        await self.action(0, 2)
 
-    def cpu_move(self) -> None:
-        """CPU's game turn."""
-        cpu_xo = "o"
+    @menus.button("\N{leftwards black arrow}\N{variation selector-16}")
+    async def left(self, payload: discord.RawReactionActionEvent) -> None:
+        """Left button."""
+        await self.action(1, 0)
 
-        # Check if CPU can win on any square
-        for row in range(3):
-            for col in range(3):
-                if self.test_win_move(row, col, cpu_xo):
-                    self.board[row][col] = cpu_xo
-                    return
+    @menus.button("\N{black circle for record}\N{variation selector-16}")
+    async def middle(self, payload: discord.RawReactionActionEvent) -> None:
+        """Middle button."""
+        await self.action(1, 1)
 
-        # Check for square that player can win on
-        for row in range(3):
-            for col in range(3):
-                if self.test_win_move(row, col, self.player):
-                    self.board[row][col] = cpu_xo
-                    return
+    @menus.button("\N{black rightwards arrow}\N{variation selector-16}")
+    async def right(self, payload: discord.RawReactionActionEvent) -> None:
+        """Right button."""
+        await self.action(1, 2)
 
-        # Move on a free corner
-        corners = [(0, 0), (0, 2), (2, 0), (2, 2)]
-        random.shuffle(corners)
-        for row, col in corners:
-            if self.board[row][col]:
-                continue
+    @menus.button("\N{south west arrow}\N{variation selector-16}")
+    async def bottom_left(self, payload: discord.RawReactionActionEvent) -> None:
+        """Bottom left button."""
+        await self.action(2, 0)
 
-            self.board[row][col] = cpu_xo
-            return
+    @menus.button("\N{downwards black arrow}\N{variation selector-16}")
+    async def down(self, payload: discord.RawReactionActionEvent) -> None:
+        """Down button."""
+        await self.action(2, 1)
 
-        # Move on a free center
-        if not self.board[1][1]:
-            self.board[1][1] = cpu_xo
-            return
+    @menus.button("\N{south east arrow}\N{variation selector-16}")
+    async def bottom_right(self, payload: discord.RawReactionActionEvent) -> None:
+        """Bottom right button."""
+        await self.action(2, 2)
 
-        # Move on a free side
-        sides = [(0, 1), (1, 0), (2, 1), (1, 2)]
-        random.shuffle(sides)
-        for row, col in sides:
-            if self.board[row][col]:
-                continue
-
-            self.board[row][col] = cpu_xo
-            return
-
-    def __str__(self) -> str:
-        """Convert the board 2D array to string"""
-        result = ""
-
-        for row in self.board:
-            result += "|".join(f"{val: ^{2}}" for val in row)
-            result += f"\n{'-' * 9}\n"
-
-        return "\n".join(result.splitlines()[:-1])
+    @menus.button("\N{BLACK SQUARE FOR STOP}\ufe0f")
+    async def on_stop(self, payload: discord.RawReactionActionEvent) -> None:
+        """Stop button."""
+        await self.stop()
 
 
-class TicTacToe(Cog):
+class TicTacToe(commands.Cog):
     """Tic-Tac-Toe Game."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.games = defaultdict(lambda: defaultdict(lambda: None))
 
-    @command(aliases=["ttt", "tictactoe"])
-    async def tic_tac_toe(self, ctx: Context, opponent: t.Optional[ProcessedMember] = None) -> None:
+    @commands.command(aliases=["ttt", "tictactoe"])
+    async def tic_tac_toe(self, ctx: commands.Context, opponent: discord.Member = None) -> None:
         """Play a game of Tic-Tac-Toe."""
-        if self.games[ctx.guild][ctx.author]:
-            await ctx.send(f"Sorry {ctx.author.mention}, you already have an active tic tac toe game on this server.")
-            return
-        if self.games[ctx.guild][ctx.author]:
-            await ctx.send(
-                f"Sorry, {ctx.author.mention}, {opponent.mention} already has an active tic tac toe game on this server, let him finish first."
-            )
-            return
-
-        game = Game(ctx, opponent)
-        self.games[ctx.guild][ctx.author] = game
-        if opponent:
-            self.games[ctx.guild][opponent] = game
-        await game.send_board()
-
-    @command(aliases=["tttstop", "tictactoestop"])
-    async def tic_tac_toe_stop(self, ctx: Context) -> None:
-        """Stop playing tic tac toe."""
-        if self.games[ctx.guild][ctx.author]:
-            del self.games[ctx.guild][ctx.author]
-            await ctx.send("Game stopped.")
-        else:
-            await ctx.send(f"Sorry {ctx.author.mention}, you don't have an active game of tic tac toe on this server.")
-
-    @Cog.listener()
-    async def on_reaction_add(self, reaction: Reaction, user: User) -> None:
-        # TODO: Use a custom converter for converting User to Member
-        guild = reaction.message.guild
-        member = guild.get_member(user.id)
-        game = self.games[guild][member]
-
-        if game:
-            ended = await game.turn(member, reaction)
-            if ended:
-                if game.opponent == member:
-                    del self.games[guild][game.author]
-                elif game.author == member and not game.cpu_opponent:
-                    del self.games[guild][game.opponent]
-                del self.games[guild][member]
+        game = Game(ctx.author, opponent, clear_reactions_after=True)
+        await game.start(ctx)
