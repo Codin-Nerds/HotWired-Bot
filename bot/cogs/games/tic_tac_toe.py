@@ -1,11 +1,12 @@
+import random
 import typing as t
 from collections import defaultdict
 
-from bot.core.bot import Bot
-from bot.core.decorators import ProcessedMember
-
 from discord import Color, Embed, Member, Reaction, User
 from discord.ext.commands import Cog, Context, command
+
+from bot.core.bot import Bot
+from bot.core.decorators import ProcessedMember
 
 
 class Game:
@@ -118,7 +119,20 @@ class Game:
 
     def check_draw(self) -> bool:
         """Check if current board is in draw."""
-        return all(xo != "" for row in self.board for xo in row)
+
+        return all("" not in row for row in self.board)
+
+    async def apply_win(self, xo: t.Literal["x", "o"]) -> None:
+        """If win is True, re"""
+        if xo == "x":
+            winner = self.author
+        else:
+            winner = self.opponent
+
+        if winner:
+            await self.ctx.send(f":tada: Congratulations {winner.mention}, you won!")
+        else:
+            await self.ctx.send(f"You lost {self.author.mention}, better luck next time!")
 
     async def turn(self, member: Member, reaction: Reaction) -> bool:
         """A single turn of the game, returns ended status of game (True = ended)."""
@@ -136,26 +150,87 @@ class Game:
             return False
 
         await self.send_board()
+
         win, xo = self.check_win()
         if win:
-            if xo == "x":
-                winner = self.author
-            else:
-                winner = self.opponent
-
-            if winner:
-                await self.ctx.send(f":tada: Congratulations {winner.mention}, you won!")
-            else:
-                await self.ctx.send(f"You lost {self.author.mention}, better luck next time!")
-
+            await self.apply_win(xo)
             return True
 
         if self.check_draw():
             await self.ctx.send("Game result: draw")
             return True
 
-        self.next_player()
+        if self.cpu_opponent:
+            self.cpu_move()
+            await self.send_board()
+            win, xo = self.check_win()
+            if win:
+                await self.apply_win(xo)
+                return True
+            if self.check_draw():
+                await self.ctx.send("Game result: draw")
+                return True
+            return False
+
+        else:
+            self.next_player()
+            return False
+
+    def test_win_move(self, row: int, col: int, xo: t.Literal["x", "o"]) -> bool:
+        """Retrun True if given move is a winning move"""
+        if self.board[row][col]:
+            return False
+
+        self.board[row][col] = xo
+        win, _ = self.check_win()
+        self.board[row][col] = ""
+
+        if win:
+            return True
         return False
+
+    def cpu_move(self) -> None:
+        """CPU's game turn."""
+        cpu_xo = "o"
+
+        # Check if CPU can win on any square
+        for row in range(3):
+            for col in range(3):
+                if self.test_win_move(row, col, cpu_xo):
+                    self.board[row][col] = cpu_xo
+                    return
+
+        # Check for square that player can win on
+        for row in range(3):
+            for col in range(3):
+                if self.test_win_move(row, col, self.player):
+                    self.board[row][col] = cpu_xo
+                    return
+
+        # Move on a free corner
+        corners = [(0, 0), (0, 2), (2, 0), (2, 2)]
+        random.shuffle(corners)
+        for row, col in corners:
+            if self.board[row][col]:
+                continue
+
+            self.board[row][col] = cpu_xo
+            return
+
+        # Move on a free center
+        if not self.board[1][1]:
+            self.board[1][1] = cpu_xo
+            return
+
+        # Move on a free side
+        sides = [(0, 1), (1, 0), (2, 1), (1, 2)]
+        random.shuffle(sides)
+        for row, col in sides:
+            if self.board[row][col]:
+                continue
+
+            self.board[row][col] = cpu_xo
+            return
 
 
 class TicTacToe(Cog):
@@ -194,7 +269,7 @@ class TicTacToe(Cog):
 
     @Cog.listener()
     async def on_reaction_add(self, reaction: Reaction, user: User) -> None:
-        # TODO: Use a custom function for converting User to Member
+        # TODO: Use a custom converter for converting User to Member
         guild = reaction.message.guild
         member = guild.get_member(user.id)
         game = self.games[guild][member]
