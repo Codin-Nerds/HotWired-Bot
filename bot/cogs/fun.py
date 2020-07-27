@@ -40,12 +40,11 @@ class Fun(Cog):
             if resp.status == 200:
                 data = await resp.json()
                 joke = data["joke"]
-                await ctx.send(
-                    embed=Embed(
-                        description=joke,
-                        color=Color.gold()
-                    )
+                embed = Embed(
+                    description=joke,
+                    color=Color.gold()
                 )
+                await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
 
@@ -60,9 +59,7 @@ class Fun(Cog):
                     color=Color.gold()
                 )
                 embed.set_image(url=data["url"])
-                await ctx.send(
-                    embed=embed
-                )
+                await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
 
@@ -77,9 +74,7 @@ class Fun(Cog):
                     color=Color.gold()
                 )
                 embed.set_image(url=data["url"])
-                await ctx.send(
-                    embed=embed
-                )
+                await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
 
@@ -94,9 +89,7 @@ class Fun(Cog):
                     color=Color.gold()
                 )
                 embed.set_image(url=data["url"])
-                await ctx.send(
-                    embed=embed
-                )
+                await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
 
@@ -155,9 +148,7 @@ class Fun(Cog):
     async def image(self, ctx: Context, type: str) -> None:
         """Sends a random image(sfw and nsfw)."""
         try:
-            embed = Embed(
-                color=0x690E8
-            )
+            embed = Embed(color=0x690E8)
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
 
@@ -443,14 +434,16 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!",
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         await ctx.send(embed=embed)
 
     @command()
@@ -484,7 +477,8 @@ class Fun(Cog):
             color=Color.blurple()
         )
         embed.set_image(
-            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
+            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif"
+        )
         await ctx.send(embed=embed)
 
     @command(aliases=["table", "flip", "tableflip"])
@@ -521,7 +515,8 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
+                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Cookie Giver!",
