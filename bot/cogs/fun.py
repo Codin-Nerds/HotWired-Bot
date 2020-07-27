@@ -250,7 +250,6 @@ class Fun(Cog):
                         shibe_em = Embed(colour=0x690E8)
                         shibe_em.set_image(url=shibe_url)
                         await ctx.send(embed=shibe_em)
-
                 else:
                     await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
@@ -331,7 +330,6 @@ class Fun(Cog):
             meme = urllib.parse.quote_plus(meme)
             embed.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=embed)
-
         except Exception as e:
             await ctx.send(f"Something Broke. LOL [{e!s}]")
 
