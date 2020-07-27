@@ -11,7 +11,6 @@ class Support(Cog):
     """Support is cool."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the support."""
         self.bot = bot
 
     @command()
@@ -147,5 +146,5 @@ class Support(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add support to the bot."""
+    """Load the Support cog."""
     bot.add_cog(Support(bot))

@@ -16,7 +16,6 @@ class Events(Cog):
     """Some events, packed in a cog."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         self.dev_mode = config.DEV_MODE
         self.session = aiohttp.ClientSession()
@@ -153,5 +152,5 @@ class Events(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add events to the bot."""
+    """Load the Events cog."""
     bot.add_cog(Events(bot))

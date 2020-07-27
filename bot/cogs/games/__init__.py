@@ -5,6 +5,6 @@ from .hangman import Hangman
 
 
 def setup(bot: Bot) -> None:
-    """Load the games cogs."""
+    """Load the Games cogs."""
     bot.add_cog(Hangman(bot))
     bot.add_cog(Games(bot))

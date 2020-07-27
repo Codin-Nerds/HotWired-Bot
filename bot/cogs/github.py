@@ -14,10 +14,9 @@ BAD_RESPONSES = {
 
 
 class Github(Cog):
-    """Add GitHub integration to the bot"""
+    """Add GitHub integration to the bot."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the bot."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -102,5 +101,5 @@ class Github(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Make the bot interact with GitHub."""
+    """Load the GitHub cog."""
     bot.add_cog(Github(bot))

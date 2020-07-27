@@ -22,7 +22,6 @@ class JsonEmbedParser:
     """This class is used for converting json into embed and vice versa."""
 
     def __init__(self, ctx: Context, json_dict: dict) -> None:
-        """Initialize the parser."""
         self.ctx = ctx
         self.json = JsonEmbedParser.process_dict(json_dict)
 
@@ -121,7 +120,6 @@ class Embeds(Cog):
     """A Cog which provides the ability to build a custom embed."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         # Provide an empty embed for every member (key)
         self.embeds = defaultdict(lambda: EmbedData("", Embed()))
@@ -383,5 +381,5 @@ class Embeds(Cog):
 
 
 def setup(bot: Bot) -> Bot:
-    """Add Embeds to the bot."""
+    """Load the Embeds cog."""
     bot.add_cog(Embeds(bot))

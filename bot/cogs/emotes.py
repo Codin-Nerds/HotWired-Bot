@@ -20,12 +20,11 @@ class EmoteNotFoundException(Exception):
 
 
 class Emote:
-    """Get an emote according to given parameters."""
+    """Get an emote according to the given parameters."""
 
     content_re = re.compile(r"^\b(twitch|bttv|ffz)\b\s([\w\d]+)(?:\s(.+))?$", re.I | re.M)
 
     def __init__(self, emote_type: str, emote_id: str, emote_channel: t.Optional[str]) -> None:
-        """Initialize the Emotes."""
         self.session = aiohttp.ClientSession()
 
         self.emote_type = emote_type
@@ -108,7 +107,6 @@ class Emotes(Cog):
     """Emote-related commands."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
 
     # TODO: Remove this when error handler will be implemented
@@ -180,5 +178,5 @@ class Emotes(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add emotes to the bot."""
+    """Load the Emotes cog."""
     bot.add_cog(Emotes(bot))

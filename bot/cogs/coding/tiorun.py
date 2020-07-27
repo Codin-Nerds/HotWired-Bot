@@ -21,13 +21,13 @@ def _to_tio_string(couple: list) -> bytes:
 class Tio:
     '''Thanks to FrenchMasterSword For the TIO Wrapper.'''
     def __init__(
-            self,
-            language: str,
-            code: str,
-            inputs: str = "",
-            compilerFlags: t.Optional[list] = None,
-            commandLineOptions: t.Optional[list] = None,
-            args: t.Optional[list] = None
+        self,
+        language: str,
+        code: str,
+        inputs: str = "",
+        compilerFlags: t.Optional[list] = None,
+        commandLineOptions: t.Optional[list] = None,
+        args: t.Optional[list] = None
     ) -> None:
         """Initialize the Tio runner."""
         if not compilerFlags:

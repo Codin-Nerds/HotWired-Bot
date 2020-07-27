@@ -14,7 +14,6 @@ class Comics(Cog):
     """View random comics from popular sources."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -43,9 +42,7 @@ class Comics(Cog):
         url = "http://www.smbc-comics.com/comic/archive"
 
         async with ctx.typing():
-            async with self.session.get(
-                    url, headers={"Connection": "keep-alive"}
-            ) as response:
+            async with self.session.get(url, headers={"Connection": "keep-alive"}) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             all_comics = soup.find("select", attrs={"name": "comic"})

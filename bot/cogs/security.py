@@ -31,7 +31,6 @@ class MalwareProtection(Cog):
     """Protect you from malwares."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the protection."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -74,5 +73,5 @@ class MalwareProtection(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Make the bot protect users."""
+    """Load the MalwareProtection cog."""
     bot.add_cog(MalwareProtection(bot))

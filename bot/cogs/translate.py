@@ -11,7 +11,6 @@ class Translator(Cog):
     """Translation is so cool."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the translator."""
         self.bot = bot
 
     @command(aliases=["linfo"])
@@ -30,12 +29,12 @@ class Translator(Cog):
 
     @command()
     async def translate(
-            self,
-            ctx: Context,
-            source_language: str = "en",
-            destination_language: str = "en",
-            *,
-            sentence: str = "Hello World",
+        self,
+        ctx: Context,
+        source_language: str = "en",
+        destination_language: str = "en",
+        *,
+        sentence: str = "Hello World",
     ) -> None:
         """Translate a sentence."""
         translation = await translator.translate(
@@ -50,5 +49,5 @@ class Translator(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add translation to the bot."""
+    """Load the Translation cog."""
     bot.add_cog(Translator(bot))

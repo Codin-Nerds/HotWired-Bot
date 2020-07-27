@@ -19,7 +19,6 @@ class Documentation(Cog):
     """I love documentation."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the docs."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -112,5 +111,5 @@ class Documentation(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add documentation to the bot."""
+    """Load the Documentation cog"""
     bot.add_cog(Documentation(bot))

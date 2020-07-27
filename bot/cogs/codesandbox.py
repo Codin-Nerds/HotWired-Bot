@@ -13,10 +13,9 @@ from bot.utils.checks import is_bot_dev
 
 
 class CodeSandbox(Cog):
-    """Sandbox some code."""
+    """Run code."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         self._last_eval_result = None
         self.sessions = []

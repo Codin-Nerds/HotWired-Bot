@@ -10,7 +10,7 @@ from praw.exceptions import MissingRequiredAttributeException
 
 # This function could be a regular function, even a method
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
-    """Mak a reddit post an embed."""
+    """Make a reddit post an embed."""
     embed = Embed(colour=Color.green(), url=randompost.url)
 
     if len(randompost.title) > 0 and len(randompost.title) < 256:
@@ -48,10 +48,9 @@ with open(os.path.sep.join(("bot", "assets", "subreddit.json")), "r") as f:
 
 
 class Reddit(Cog):
-    """Reddit, the front pageof the Internet."""
+    """Reddit, the front page of the Internet."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize reddit."""
         try:
             self.reddit_client = RedditAPI(
                 client_id=os.getenv("REDDIT_CLIENT_ID"),
@@ -248,5 +247,5 @@ class Reddit(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Make everyone love rddit."""
+    """Load the Reddit cog."""
     bot.add_cog(Reddit(bot))

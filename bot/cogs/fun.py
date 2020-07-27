@@ -25,7 +25,6 @@ class Fun(Cog):
     """This is a cog for simple fun commands."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the fun cog."""
         self.bot = bot
         self.user_agent = {"User-Agent": "HotWired"}
         self.dadjoke = {
@@ -474,5 +473,5 @@ class Fun(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """This bot is too boring."""
+    """Load the Func cog."""
     bot.add_cog(Fun(bot))

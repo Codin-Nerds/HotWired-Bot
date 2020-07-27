@@ -17,12 +17,14 @@ STATUSES = {
 
 
 class Commands(Cog):
+    """Common commands."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @command()
     async def members(self, ctx: Context) -> None:
-        """Returns the number of members in the server."""
+        """Get the number of members in the server."""
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
         member_type = f"""
@@ -52,6 +54,7 @@ class Commands(Cog):
     async def userinfo(self, ctx: Context, user: t.Optional[t.Union[Member, User]] = None) -> None:
         """
         Get information about you, or a specified member.
+
         `user` can be a user Mention, Name, or ID.
         """
         if not user:
@@ -131,6 +134,7 @@ class Commands(Cog):
         return embed
 
     def get_server_embed(self, guild: Guild) -> Embed:
+        """Get the information Embed from a guild."""
         embed = Embed(
             title="Server's stats and information.",
             description=guild.description if guild.description else None,
@@ -172,4 +176,5 @@ class Commands(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Commands cog"""
     bot.add_cog(Commands(bot))

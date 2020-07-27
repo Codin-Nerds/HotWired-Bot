@@ -16,6 +16,7 @@ from bot.utils.wolframscrape import get_wolfram_data
 
 class UrbanDictionaryPages(Pages):
     """Urban dictionnary is life."""
+
     BRACKETED = re.compile(r"(\[(.+?)\])")
 
     def __init__(self, ctx: Context, data: t.List[str]) -> None:
@@ -60,7 +61,6 @@ class Study(Cog):
     """We love studying."""
 
     def __init__(self, bot) -> None:
-        """Initialize the study."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -297,5 +297,5 @@ class Study(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Make the bot study."""
+    """Load the Study cog."""
     bot.add_cog(Study(bot))

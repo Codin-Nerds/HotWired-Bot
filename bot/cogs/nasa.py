@@ -17,7 +17,7 @@ def remove_tags(text: str) -> None:
 
 
 class Nasa(Cog):
-    """I wanna touch the sky."""
+    """And she's buying a stairway to heaven..."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -159,5 +159,5 @@ class Nasa(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Send the bot straight to Mars."""
+    """Are you sure all that glitter is gold?"""
     bot.add_cog(Nasa(bot))

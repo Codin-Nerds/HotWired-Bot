@@ -30,7 +30,6 @@ class Sudo(Cog):
     """This cog provides administrative stats about server and bot itself."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize sudo"""
         self.bot = bot
         self.start_time = datetime.datetime.utcnow()
 
@@ -72,6 +71,7 @@ class Sudo(Cog):
     @sudo.command(name="reload")
     async def _reload(self, ctx: Context, *, extension: str) -> None:
         """Reload a module."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/Chaotic%20Bot.py#L163
         try:
             self.bot.unload_extension(f"bot.cogs.{extension}")
             self.bot.load_extension(f"bot.cogs.{extension}")
@@ -241,5 +241,5 @@ class Sudo(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add sudo commands to the bot."""
+    """Load the Sudo cog."""
     bot.add_cog(Sudo(bot))

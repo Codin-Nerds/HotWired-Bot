@@ -30,7 +30,6 @@ class Search(Cog, name="Basic"):
     """Search the web for a variety of different resources."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         # Main Stuff
         self.bot = bot
         self.emoji = "\U0001F50D"
@@ -262,5 +261,5 @@ class Search(Cog, name="Basic"):
 
 
 def setup(bot: Bot) -> None:
-    """Make the bot search."""
+    """Load the Search cog."""
     bot.add_cog(Search(bot))

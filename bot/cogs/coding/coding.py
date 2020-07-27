@@ -23,7 +23,6 @@ class Coding(Cog):
     """To test code and check docs."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the coding."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 

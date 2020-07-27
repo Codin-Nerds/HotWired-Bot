@@ -13,7 +13,6 @@ class Conversion(Cog):
     """This is a Cog for converting and encoding strings."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
 
@@ -131,5 +130,5 @@ class Conversion(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add conversion to the bot."""
+    """Load the Conversion cog"""
     bot.add_cog(Conversion(bot))

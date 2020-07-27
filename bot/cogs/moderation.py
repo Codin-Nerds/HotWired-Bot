@@ -205,7 +205,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def shift(self, ctx, count: int, target: TextChannel, copy: bool = False) -> None:
-        """Copy or Move specified messages amount to specified channel"""
+        """Copy or Move specified messages amount to specified channel."""
         if not (5 <= count <= 150):
             await ctx.send("Amount of messages shifted must be greater than 0 and smaller than 150")
             return
@@ -439,12 +439,12 @@ class Moderation(Cog):
             await ctx.send(embed=embed, delete_after=10)
 
     def cog_check(self, ctx: Context) -> bool:
-        """Make sure these commands can't be executed from DMs."""
+        """Make sure these commands cannot be executed from DMs."""
         if ctx.guild:
             return True
         raise NoPrivateMessage
 
 
 def setup(bot: Bot) -> None:
-    """Add moderation to the bot."""
+    """Load the Moderation cog."""
     bot.add_cog(Moderation(bot))

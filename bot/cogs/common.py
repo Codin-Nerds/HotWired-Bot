@@ -16,7 +16,6 @@ class Common(Cog):
     """Common commands."""
 
     def __init__(self, bot: Bot) -> None:
-        """Initialize the cog."""
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
@@ -193,5 +192,5 @@ class Common(Cog):
 
 
 def setup(bot: Bot) -> None:
-    """Add common commands to the bot."""
+    """Load the Common cog."""
     bot.add_cog(Common(bot))
