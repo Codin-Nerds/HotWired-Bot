@@ -126,7 +126,7 @@ class Game:
         return all("" not in row for row in self.board)
 
     async def apply_win(self, xo: t.Literal["x", "o"]) -> None:
-        """If win is True, re"""
+        """Send an appropriate win/lose message based on `xo`."""
         if xo == "x":
             winner = self.author
         else:
