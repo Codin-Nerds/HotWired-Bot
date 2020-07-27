@@ -48,7 +48,7 @@ class Game:
             self.player = "x"
 
     async def send_board(self) -> None:
-        """Send embed with the board,"""
+        """Send the embed with the board."""
         embed = Embed(
             title="Tic Tac Toe",
             description=self.str_board,
