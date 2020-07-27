@@ -91,6 +91,7 @@ def foo(bar: int, baz: t.Optional[t.Dict[str, str]] = None) -> bool:
 ```
 
 To provide further instruction on our docstring formatting syntax, here are the formatting options
+
 ```py
 from discord.ext.commands import Context, command
 
@@ -108,13 +109,13 @@ def bar(ctx: Context, value: str) -> None:
 def foobar(ctx: Context, value: str) -> None:
   """
   Title for a longer description (might also be a short explanation).
-  
+
   Detailed multiline description.
   This may include the full explanation of how this command works.
-  
+
   We can also have multiple sections like this.
   Or when necessary a list of accepted parameters and their explanation.
-  
+
   Parameters:
   * value: str
       This is the `value` of this command.
