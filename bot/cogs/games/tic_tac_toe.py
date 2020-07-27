@@ -175,9 +175,8 @@ class Game:
                 return True
             return False
 
-        else:
-            self.next_player()
-            return False
+        self.next_player()
+        return False
 
     def test_win_move(self, row: int, col: int, xo: t.Literal["x", "o"]) -> bool:
         """Retrun True if given move is a winning move"""
