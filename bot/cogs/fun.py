@@ -35,7 +35,7 @@ class Fun(Cog):
 
     @command()
     async def joke(self, ctx: Context) -> None:
-        """Sends a random joke."""
+        """Send a random joke."""
         async with self.session.get("https://mrwinson.me/api/jokes/random") as resp:
             if resp.status == 200:
                 data = await resp.json()
