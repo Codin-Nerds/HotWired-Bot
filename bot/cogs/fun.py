@@ -263,7 +263,6 @@ class Fun(Cog):
                     liz_em = Embed(colour=0x690E8)
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
-
                 else:
                     await ctx.send(f"Something went boom! :( [CODE: {lizr.status}]")
 
