@@ -1,3 +1,4 @@
+import re
 import typing as t
 from ast import literal_eval
 from contextlib import suppress
@@ -6,6 +7,7 @@ from discord import Guild, Member, NotFound, User
 from discord.ext.commands import BadArgument, Context, Converter, UserConverter
 
 from bot.utils.errors import MemberNotFound
+from dateutil.relativedelta import relativedelta
 
 
 class ActionReason(Converter):
@@ -21,7 +23,7 @@ class ActionReason(Converter):
 
 
 class Unicode(Converter):
-    """Convert raw input into unicode formatted string"""
+    """Convert raw input into unicode formatted string."""
 
     def process_unicode(self, message: str) -> str:
         """
@@ -61,6 +63,42 @@ class Unicode(Converter):
         # don't replace unicode characters within code blocks
         operation = lambda x: self.outside_delimeter(x, "`", self.process_unicode)
         return self.outside_delimeter(message, "```", operation)
+
+
+class TimeDelta(Converter):
+    """Convert given duration string into relativedelta."""
+
+    time_getter = re.compile(
+        r"((?P<years>\d+?) ?(y|yr|yrs|years|year) ?)?"
+        r"((?P<months>\d+?) ?(mo|mon|months|month) ?)?"
+        r"((?P<weeks>\d+?) ?(w|wk|weeks|week) ?)?"
+        r"((?P<days>\d+?) ?(d|days|day) ?)?"
+        r"((?P<hours>\d+?) ?(h|hr|hrs|hours|hour) ?)?"
+        r"((?P<minutes>\d+?) ?(m|min|mins|minutes|minute) ?)?"
+        r"((?P<seconds>\d+?) ?(s|sec|secs|seconds|second))?",
+        re.IGNORECASE
+    )
+
+    def convert(self, ctx: Context, duration: str) -> relativedelta:
+        """
+        Convert a string `duration` to relativedelta.
+
+        Accepted inputs for `duration` (in order):
+        * years: `y`, `yr`, `yrs`, `years`, `year`
+        * months: `mo`, `mon`, `months`, `month`
+        * weeks: `w`, `wk`, `weeks`, `week`
+        * days: `d`, `days`, `day`
+        * hours: `h`, `hr`, `hrs`, `hours`, `hour`
+        * minutes: `m`, `min`, `mins`, `minutes`, `minute`
+        * seconds: `s`, `sec`, `secs`, `seconds` `second`
+        These inputs are case insensitive.
+        """
+        time_delta = self.time_getter.fullmatch(duration)
+        if not time_delta:
+            raise BadArgument("Invalid duration.")
+
+        duration_dict = {unit: int(amount) for unit, amount in time_delta.groupdict(default=0).items()}
+        return relativedelta(**duration_dict)
 
 
 class ProcessedUser(UserConverter):
