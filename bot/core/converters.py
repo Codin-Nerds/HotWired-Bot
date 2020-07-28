@@ -117,6 +117,44 @@ class TimeDelta(Converter):
         return relativedelta(**duration_dict)
 
 
+class CodeBlock(Converter):
+    """
+    Convert given wrapped string in codeblock into a tuple of language and the wrapped string
+    """
+
+    codeblock_parser = re.compile(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`")
+    inline_code_parser = re.compile(r"\`(.*\n*)\`")
+
+    def convert(self, ctx: Context, codeblock: str) -> t.Tuple[t.Optional[str], str]:
+        """
+        Convert a string `codeblock` into a tuple which consists of:
+        * language (f.e.: `py` or `None` for no language)
+        * wrapped_text (the text inside of the codeblock)
+
+        The converter converts:
+        * full codeblocks (```text```, ```py\ntext```, ```\ntext```)
+        * inline codeblocks (`text`)
+
+        In case no codeblock was found, original string is returned
+        """
+        codeblock_match = self.codeblock_parser.fullmatch(codeblock)
+        if codeblock_match:
+            lang = codeblock_match.group(1)
+            code = codeblock_match.group(2)
+            if not code:
+                code = lang
+                lang = None
+            if code[-1] == "\n":
+                code = code[:-1]
+            return (lang, code)
+
+        inline_match = self.inline_code_parser.fullmatch(codeblock)
+        if inline_match:
+            return (None, inline_match.group(1))
+
+        return codeblock
+
+
 class ProcessedUser(UserConverter):
     """
     Try to convert any accepted string into `User`
