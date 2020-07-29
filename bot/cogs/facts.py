@@ -13,7 +13,7 @@ class Facts(Cog):
         
     @command()
     async def randomfact(self, ctx: Context) -> None:
-        """Get a randaom fact"""
+        """Get A Random fact"""
         randomfact = randfacts.GetFact
         await ctx.send(embed=Embed(
             title="Did You Know?",
