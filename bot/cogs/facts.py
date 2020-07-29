@@ -19,7 +19,7 @@ class Facts(Cog):
         """Get a randaom fact"""
         randomfact = randfacts.GetFact
         await ctx.send(embed=Embed(
-            title="Did you Know?",
+            title="Did You Know?",
             description=randomfact["text"],
             color=0x690E8
             
