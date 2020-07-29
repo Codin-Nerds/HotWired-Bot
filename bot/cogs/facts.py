@@ -6,7 +6,6 @@ class Facts(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    # TODO: Remove this when error handler will be implemented
     async def send_error(self, ctx: Context, error: str) -> None:
         """Sends the Error of Any functions as an Embed."""
         help_message = f"Type `{config.COMMAND_PREFIX}help` for further assistance"
@@ -23,6 +22,9 @@ class Facts(Cog):
             title="Did you Know?",
             description=randomfact["text"],
             color=0x690E8
+            
+def setup(bot: Bot) -> None:
+    bot.add_cog(Facts(bot))
                                
        
 
