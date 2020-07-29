@@ -20,9 +20,9 @@ def _obtain_user_id(argument: str) -> t.Optional[int]:
 
     if mention_match is None and id_match is None:
         return None
-    elif mention_match is not None:
+    if mention_match is not None:
         return int(mention_match.group(1))
-    elif id_match is not None:
+    if id_match is not None:
         return int(id_match.group(1))
 
 
