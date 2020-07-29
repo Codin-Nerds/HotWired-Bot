@@ -53,8 +53,9 @@ class Reminders(Cog):
         self, reminder: dict, time_until_expiration=None
     ) -> None:
         """Schedule reminder"""
-        if not self.ensure_reminder_valid():
+        if not self.ensure_reminder_valid(reminder):
             self.delete_reminder(reminder['id'])
+            return
 
         if time_until_expiration is None:
             expiration = datetime.datetime.fromisoformat(
@@ -62,7 +63,7 @@ class Reminders(Cog):
             ).timestamp()
             time_until_expiration = expiration - datetime.datetime.now().timestamp()
 
-        # The use of -1 instead of 0 is to account for processing time.
+        # The use of -1 instead of 0 is to account for latency and processing time
         if time_until_expiration > -1:
 
             if time_until_expiration < 0:
@@ -105,7 +106,8 @@ class Reminders(Cog):
         channel = self.bot.get_channel(reminder["channel"])
         await channel.send(f"<@{reminder['user']}>", embed=embed)
 
-    def ensure_reminder_valid(reminder: dict) -> bool:
+    def ensure_reminder_valid(self, reminder: dict) -> bool:
+        """Ensure that both the user and the channel exist"""
         user = self.bot.get_user(reminder['user'])
         channel = self.bot.get_channel(reminder['channel'])
 
@@ -134,7 +136,7 @@ class Reminders(Cog):
         except sqlite3.Error as e:
             print(f"Failed to fetch reminders from database : {e}")
 
-    async def reschedule_reminders(self):
+    async def reschedule_reminders(self) -> None:
         """Get reminders from database and reschedule"""
         reminders_in_db = self.get_reminders()
 
@@ -143,7 +145,7 @@ class Reminders(Cog):
             reminder = dict(zip(columns, reminder))
             await self.schedule_reminder(reminder)
 
-    def create_reminders_table(self):
+    def create_reminders_table(self) -> None:
         """Create reminders table in database if it does not exist"""
         create_reminders_table_query = """
         CREATE TABLE IF NOT EXISTS reminders (
@@ -163,11 +165,11 @@ class Reminders(Cog):
     def delete_reminder(self, reminder_id: str) -> None:
         """Delete reminder from database"""
         cursor = self.db_connection.cursor()
-        cursor.execute(f'DELETE FROM reminders WHERE ID="{reminder_id}"')
+        cursor.execute('DELETE FROM reminders WHERE ID=?', (reminder_id,))
         self.db_connection.commit()
 
     @staticmethod
-    def create_db_connection(path):
+    def create_db_connection(path) -> None:
         """Create connection to database"""
         connection = None
         try:
@@ -188,6 +190,7 @@ class Reminders(Cog):
 
     @staticmethod
     def humanize_time(time_in_seconds: int) -> str:
+        """converts time in seconds to a more readable format (0 days 00h 00m 00s)"""
         timedelta = str(datetime.timedelta(seconds=time_in_seconds))
         hours, minutes, seconds = timedelta.split(":")
         return f"{hours}h {minutes}m {seconds}s"
@@ -196,18 +199,17 @@ class Reminders(Cog):
     def time_in_seconds(time: str) -> int:
         """converts time input from user (e.g 23h, 5m, 300s) to time in seconds"""
         time_unit = time[-1:]
+        time_unit_factors = {
+            's': 1,
+            'm': 60,
+            'h': 3600,
+            'd': 86400,
+        }
 
         if time_unit.isdigit():
             return int(time)
-        elif time_unit == "s":
-            return int(time[:-1])
-        elif time_unit == "m":
-            return int(time[:-1]) * 60
-        elif time_unit == "h":
-            return int(time[:-1]) * 3600
-        elif time_unit == "d":
-            return int(time[:-1]) * 86400
+        return int(time[:-1]) * time_unit_factors[time_unit]
 
 
-def setup(bot):
+def setup(bot) -> None:
     bot.add_cog(Reminders(bot))
