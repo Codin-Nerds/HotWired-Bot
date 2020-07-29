@@ -11,7 +11,7 @@ class Facts(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         
-        @command()
+    @command()
     async def randomfact(self, ctx: Context) -> None:
         """Get a randaom fact"""
         randomfact = randfacts.GetFact
