@@ -18,7 +18,8 @@ class Facts(Cog):
         await ctx.send(embed=Embed(
             title="Did You Know?",
             description=randomfact["text"],
-            color=0x690E8
+            color=Color.blurple()
+        ))
             
 def setup(bot: Bot) -> None:
     bot.add_cog(Facts(bot))
@@ -27,4 +28,3 @@ def setup(bot: Bot) -> None:
 
 
        
-
