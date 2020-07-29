@@ -32,7 +32,7 @@ class Facts(Cog):
 # E
 # E
 # E
-# E
+# EF
 
 
 def setup(bot: Bot) -> None:
