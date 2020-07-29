@@ -1,5 +1,5 @@
 import os 
-import Discord 
+from discord import Embed, Color
 import randfacts
 
 from discord.ext.commands import Cog, Context, command
