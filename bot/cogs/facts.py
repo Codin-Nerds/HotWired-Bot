@@ -2,19 +2,16 @@ import os
 import Discord 
 import randfacts
 
+from discord.ext.commands import Cog, Context, command
+
+from bot import config
+from bot.core.bot import Bot
+
 class Facts(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-
-    async def send_error(self, ctx: Context, error: str) -> None:
-        """Sends the Error of Any functions as an Embed."""
-        help_message = f"Type `{config.COMMAND_PREFIX}help` for further assistance"
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.add_field(name=f"Error: {error}", value=help_message)
-        await ctx.send(embed=embed)
-
-
-@command()
+        
+        @command()
     async def randomfact(self, ctx: Context) -> None:
         """Get a randaom fact"""
         randomfact = randfacts.GetFact
@@ -25,6 +22,9 @@ class Facts(Cog):
             
 def setup(bot: Bot) -> None:
     bot.add_cog(Facts(bot))
-                               
+
+
+
+
        
 
