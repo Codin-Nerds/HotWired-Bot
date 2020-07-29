@@ -2,8 +2,15 @@ import os
 import Discord 
 import randfacts
 
-@command
+
+@command()
     async def randomfact(self, ctx: Context) -> None:
         """Get a randaom fact"""
-        fact = randfacts.GetFact
-        await ctx.channel.send(fact]
+        randomfact = randfacts.GetFact
+        await ctx.send(embed=Embed(
+            title="Did you Know?",
+            description=randomfact["text"],
+            color=0x690E8
+                               
+       
+
