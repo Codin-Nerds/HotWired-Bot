@@ -1,10 +1,13 @@
 import os
 from enum import Enum
+from pathlib import Path
 
 from discord import Color
 from yaml import safe_load
 
 DEV_MODE = True
+
+db_location = str(Path.home()) + '/bot.sqlite'
 
 log_channel = 728570503169704014
 contact_channel = 728570526443896934
