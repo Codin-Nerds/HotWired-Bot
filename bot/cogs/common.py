@@ -61,7 +61,7 @@ class Common(Cog):
 
     @command(aliases=["spoll"])
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
-        f"""{config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        """strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
         if question_and_choices is None:
             await ctx.send(f"Usage: {config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
             return
@@ -96,7 +96,7 @@ class Common(Cog):
     # TODO : add github logo thumnail to embed, and some more content.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
-        """GitHub repository"""
+        """Sends a link to the bots GitHub repository"""
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
@@ -109,7 +109,7 @@ class Common(Cog):
     @command()
     @cooldown(1, 10, BucketType.user)
     async def countdown(self, ctx: Context, start: int) -> None:
-        """A Countdown timer, that counts down from the specified time in seconds."""
+        """A Countdown timer that counts down from the specified time in seconds."""
         with suppress(Forbidden):
             await ctx.message.delete()
 
@@ -171,7 +171,9 @@ class Common(Cog):
             key = (await resp.json())['key']
             file_paste = 'https://www.hasteb.in/' + key
 
-            await ctx.send(f"FILE PASTE : {file_paste}")
+            await ctx.send(
+                embed=Embed(title="File pastes", description=file_paste, color=Color.blue())
+            )
 
     def _clean_code(self, code: str) -> str:
         codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)

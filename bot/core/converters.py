@@ -2,10 +2,10 @@ import typing as t
 from ast import literal_eval
 from contextlib import suppress
 
-from bot.utils.errors import MemberNotFound
-
 from discord import Guild, Member, NotFound, User
 from discord.ext.commands import BadArgument, Context, Converter, UserConverter
+
+from bot.utils.errors import MemberNotFound
 
 
 class ActionReason(Converter):

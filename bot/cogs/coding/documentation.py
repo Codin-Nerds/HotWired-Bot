@@ -3,10 +3,8 @@ from functools import partial
 from typing import Literal
 
 import aiohttp
-
-from bs4 import BeautifulSoup
-
 import discord
+from bs4 import BeautifulSoup
 from discord.ext.commands import Context
 
 
