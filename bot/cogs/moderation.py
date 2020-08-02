@@ -6,7 +6,7 @@ from contextlib import suppress
 from datetime import datetime
 
 from bot.core.bot import Bot
-from bot.core.converters import ActionReason, ProcessedMember
+from bot.core.converters import ActionReason, ProcessedMember, ProcessedUser
 from bot.core.decorators import follow_roles
 from bot.utils.formats import Plural
 
@@ -37,7 +37,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     @follow_roles()
-    async def kick(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
+    async def kick(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
         """Kick a User."""
         if not isinstance(member, Member):
             embed = Embed(
@@ -89,7 +89,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     @follow_roles()
-    async def ban(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
+    async def ban(self, ctx: Context, member: ProcessedUser, *, reason: ActionReason = "No specific reason.") -> None:
         """Ban a User."""
         server_embed = Embed(
             title="User Banned",
@@ -125,7 +125,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(ban_members=True)
-    async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
+    async def multiban(self, ctx: Context, members: Greedy[ProcessedUser], *, reason: ActionReason = None) -> None:
         """Bans multiple members from the server."""
         if reason is None:
             reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
@@ -151,7 +151,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, *, user: ProcessedMember) -> None:
+    async def unban(self, ctx: Context, *, user: ProcessedUser) -> None:
         """Unban a User."""
         try:
             await ctx.guild.unban(user)
@@ -230,7 +230,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], *, text: str = None) -> None:
+    async def dm(self, ctx: Context, members: Greedy[t.Union[ProcessedMember, Role]], *, text: str = None) -> None:
         """Dm a List of Specified User from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
@@ -336,7 +336,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_roles=True)
-    async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
+    async def promote(self, ctx: Context, member: ProcessedMember, *, role: Role) -> None:
         """Promote member to role."""
         if role >= ctx.author.top_role:
             embed = Embed(
