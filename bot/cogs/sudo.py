@@ -7,7 +7,7 @@ import time
 import traceback
 import typing as t
 
-from discord import Activity, ActivityType, Color, Embed, Game, Status
+from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group
 import humanize
@@ -20,8 +20,8 @@ from bot.core.bot import Bot
 def uptime(date: str) -> str:
     """Calculate the uptime."""
     days = date.days
-    hours, r = divmod(date.seconds, 3600)
-    minutes, seconds = divmod(r, 60)
+    hours, rest = divmod(date.seconds, 3600)
+    minutes, seconds = divmod(rest, 60)
 
     return f" Days: `{days}`, Hours: `{hours}`, Minutes: `{minutes}`, Seconds: `{seconds}`"
 
@@ -61,9 +61,10 @@ class Sudo(Cog):
     @sudo.command()
     async def load(self, ctx: Context, *, extension: str) -> None:
         """Load a cog."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/cogs/owner.py#L185
         try:
             self.bot.load_extension(f"bot.cogs.{extension}")
-        except Exception:
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
@@ -75,7 +76,7 @@ class Sudo(Cog):
         try:
             self.bot.unload_extension(f"bot.cogs.{extension}")
             self.bot.load_extension(f"bot.cogs.{extension}")
-        except Exception:
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
@@ -83,9 +84,10 @@ class Sudo(Cog):
     @sudo.command()
     async def unload(self, ctx: Context, *, extension: str) -> None:
         """Unload a module."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/cogs/owner.py#L283
         try:
             self.bot.unload_extension(f"bot.cogs.{extension}")
-        except Exception:
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
@@ -117,7 +119,7 @@ class Sudo(Cog):
                     status=Status.online
                 )
                 await ctx.send(f"Successfully changed playing status to **{status_info}**")
-            except Exception as error:
+            except DiscordException as error:
                 await ctx.send(error)
 
         elif status.lower() == "watching":
@@ -129,7 +131,7 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed watching status to **{status_info}**")
-            except Exception as error:
+            except DiscordException as error:
                 await ctx.send(error)
 
         elif status.lower() == "listening":
@@ -141,7 +143,7 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed listening status to **{status_info}**")
-            except Exception as error:
+            except DiscordException as error:
                 await ctx.send(error)
 
     @sudo.command()

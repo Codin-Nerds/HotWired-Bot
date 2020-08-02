@@ -90,6 +90,37 @@ def foo(bar: int, baz: t.Optional[t.Dict[str, str]] = None) -> bool:
     ...
 ```
 
+## Command definition
+
+It's better to sort commands alphabetically in the code. That way, not only will the code be nicer, with all commands nicely sorted, they'll also be sorted alphabetically in the help.
+
+### Subcommands
+
+Subcommands should also be sorted alphabetically, right under the group they belong to.
+
+For example :
+
+```python
+  @commands.command()
+  async def mycommand(self, ctx):
+    pass
+
+  @commands.group()
+  async def mygroup(self, ctx):
+    pass
+
+  @mygroup.command(self, ctx):
+    pass
+
+  @commands.command()
+  async def thecommand(self, ctx):
+    pass
+```
+
+### Decorators
+
+Methods that are decorated with a command (for example, error managing with `@thiscommand.error`) should also be written right under this command, for easier interpretation of the code.
+
 ## Work in Progress (WIP) PRs
 
 Github [provides a PR feature](https://github.com/python-discord/bot/blob/master/CONTRIBUTING.md) that allows PR author to mark it as WIP. This provides both a visual and functional indicator that the contents of the PR are in a draft state and not yet ready for formal review.

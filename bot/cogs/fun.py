@@ -281,7 +281,7 @@ class Fun(Cog):
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
-        """Why not make your decisions with a bot?."""
+        """Let the bot answer a yes/no question for you."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://yesno.wtf/api", headers=self.user_agent) as meme:
                 if meme.status == 200:

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from discord import Color, Embed
+from discord import Color, DiscordException, Embed
 from discord.ext.commands import Bot as Base_Bot
 
 from bot import config
@@ -35,7 +35,9 @@ class Bot(Base_Bot):
                 try:
                     self.load_extension(extension)
                     print(f"Cog {extension} loaded.")
-                except Exception as error:
+                except DiscordException as error:
+                    # More granular error managing is possible
+                    # https://github.com/Faholan/All-Hail-Chaos/blob/master/Chaotic%20Bot.py#L101
                     print(
                         f"Cog {extension} failed to load with {type(error)}: {error}"
                     )
