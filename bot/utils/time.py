@@ -3,8 +3,12 @@ from datetime import datetime
 import typing as t
 
 
-def stringify_timedelta(time_delta: relativedelta) -> str:
-    """Convert `dateutil.relativedelta.relativedelta` into a readable string"""
+def stringify_timedelta(time_delta: relativedelta, min_unit: str = "seconds") -> str:
+    """
+    Convert `dateutil.relativedelta.relativedelta` into a readable string
+
+    `min_unit` is used to specify the printed precision
+    """
     time_dict = {
         "years": time_delta.years,
         "months": time_delta.months,
@@ -20,13 +24,11 @@ def stringify_timedelta(time_delta: relativedelta) -> str:
     time_list = []
 
     for unit, value in time_dict.items():
-        if not value:
-            continue
+        if value:
+            time_list.append(f"{value} {unit if value != 1 else unit[:-1]}")
 
-        if value == 1:
-            unit = unit[:-1]
-
-        time_list.append(f"{value} {unit}")
+        if unit == min_unit:
+            break
 
     if len(time_list) > 1:
         stringified_time = " ".join(time_list[:-1])

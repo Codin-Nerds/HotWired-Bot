@@ -95,7 +95,7 @@ class TimeDelta(Converter):
         re.IGNORECASE
     )
 
-    def convert(self, ctx: Context, duration: str) -> relativedelta:
+    async def convert(self, ctx: Context, duration: str) -> relativedelta:
         """
         Convert a string `duration` to relativedelta.
 
@@ -125,7 +125,7 @@ class CodeBlock(Converter):
     codeblock_parser = re.compile(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`")
     inline_code_parser = re.compile(r"\`(.*\n*)\`")
 
-    def convert(self, ctx: Context, codeblock: str) -> t.Tuple[t.Optional[str], str]:
+    async def convert(self, ctx: Context, codeblock: str) -> t.Tuple[t.Optional[str], str]:
         """
         Convert a string `codeblock` into a tuple which consists of:
         * language (f.e.: `py` or `None` for no language)

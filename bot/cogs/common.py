@@ -1,15 +1,20 @@
 import asyncio
 import textwrap
 import time
+import typing as t
 from contextlib import suppress
 
 import aiohttp
+from dateutil.relativedelta import relativedelta
 from discord import Color, Embed, Forbidden, Member
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
                                   command, cooldown, has_permissions)
 
 from bot import config
 from bot.core.bot import Bot
+from bot.core.converters import TimeDelta
+from bot.utils.time import stringify_timedelta
+from datetime import datetime
 
 
 class Common(Cog):
@@ -105,21 +110,40 @@ class Common(Cog):
     # TODO : beautify this timer with a realtime updating clock image.
     @command()
     @cooldown(1, 10, BucketType.user)
-    async def countdown(self, ctx: Context, start: int) -> None:
-        """A Countdown timer that counts down from the specified time in seconds."""
-        with suppress(Forbidden):
-            await ctx.message.delete()
-
-        embed = Embed(title="TIMER", description=start)
+    async def countdown(self, ctx: Context, duration: TimeDelta, *, description: t.Optional[str]) -> None:
+        """A Countdown timer that counts down for specific duration."""
+        embed = Embed(
+            title="Timer",
+            description=description,
+            color=Color.blue()
+        )
+        embed.add_field(
+            name="**Countdown**",
+            value=stringify_timedelta(duration)
+        )
         message = await ctx.send(embed=embed)
-        while start:
-            minutes, seconds = divmod(start, 60)
-            content = f"{minutes:02d}:{seconds:02d}"
-            embed = Embed(title="TIMER", description=content)
+
+        final_time = datetime.utcnow() + duration
+        while True:
+            if final_time <= datetime.utcnow():
+                break
+            duration = relativedelta(final_time, datetime.utcnow())
+
+            embed.set_field_at(
+                0,
+                name="**Countdown**",
+                value=stringify_timedelta(duration)
+            )
             await message.edit(embed=embed)
-            start -= 1
+
             await asyncio.sleep(1)
-        await message.delete()
+
+        embed.set_field_at(
+            0,
+            name="**Countdown**",
+            value="Timer reached zero!"
+        )
+        await message.edit(embed=embed)
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
