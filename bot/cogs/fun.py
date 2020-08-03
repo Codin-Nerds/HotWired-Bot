@@ -1,14 +1,13 @@
 import os
 import random
 import textwrap
-import typing as t
 import urllib
 from random import choice, randint
 
 import aiohttp
 import discord
 import nekos
-from discord import Color, Embed, Message
+from discord import Color, Embed
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
@@ -100,19 +99,21 @@ class Fun(Cog):
             await ctx.send("Sorry, No Images Found.")
 
     @command()
-    async def chuck(self, ctx: Context) -> t.Union[None, Message]:
+    async def chuck(self, ctx: Context) -> None:
         """Get a random Chuck Norris joke."""
         if randint(0, 1):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://api.chucknorris.io/jokes/random") as r:
                     joke = await r.json()
-                    return await ctx.send(joke["value"])
+                    await ctx.send(joke["value"])
+                    return
         if ctx.guild:
             if not ctx.channel.is_nsfw():
                 async with aiohttp.ClientSession() as session:
                     async with session.get("http://api.icndb.com/jokes/random?exclude=[explicit]") as r:
                         joke = await r.json()
-                        return await ctx.send(joke["value"]["joke"])
+                        await ctx.send(joke["value"]["joke"])
+                        return
 
         async with aiohttp.ClientSession() as session:
             async with session.get("http://api.icndb.com/jokes/random") as r:
