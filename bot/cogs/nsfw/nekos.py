@@ -31,7 +31,7 @@ class Neko(Cog):
         pass
 
     @neko.command()
-    async def neko(self, ctx: Context) -> None:
+    async def nekos(self, ctx: Context) -> None:
         """Gets Neko pics from API."""
         async with ctx.typing():
             sources = ["images/sfw/img/neko", "images/sfw/gif/neko"]
