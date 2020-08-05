@@ -5,9 +5,6 @@ from functools import wraps
 from discord import Color, Embed, Member, User
 from discord.ext.commands import Cog, Context
 
-from bot.core.converters import ProcessedMember
-from bot.utils.errors import MemberNotFound
-
 
 def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
     """
@@ -29,9 +26,8 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                     raise ValueError(f"Specified argument '{argument}' not found.")
 
             if isinstance(user, User):
-                try:
-                    member = await ProcessedMember.get_member(ctx.guild, user)
-                except MemberNotFound:
+                member = await ctx.guild.get_member(user.id)
+                if member is None:
                     # Skip checks in case of bad member
                     await func(self, ctx, *args, **kwargs)
                     return
