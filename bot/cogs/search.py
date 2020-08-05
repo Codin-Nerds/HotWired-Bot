@@ -113,13 +113,9 @@ class Search(Cog, name="Basic"):
             msg = (textwrap.dedent(
                 f"""
                 Showing **{count}** results for `{query_display}`.
-
-
                 **{first_title}** {first_url}
                 {first_desc}
-
                 {other_msg}
-
                 _Powered by HotWired._
                 """
             ))
