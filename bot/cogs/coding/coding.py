@@ -1,7 +1,5 @@
 import asyncio
-import os
 import re
-import sys
 import typing as t
 import urllib.parse
 from contextlib import suppress
@@ -20,12 +18,10 @@ from . import documentation, reference
 from .tiorun import Tio
 from .utility import get_raw, paste
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-# TODO: add pagination to stack overflow results, reference, documentation, man pages
-
 
 class Coding(Cog):
     """To test code and check docs."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -72,33 +68,17 @@ class Coding(Cog):
         "rust": documentation.rust_doc,
     }
 
-    @commands.command(
-        help="""
-        run <language> [--wrapped] [--stats] <code>
-        for command-line-options, compiler-flags and arguments you may
-        add a line starting with this argument, and after a space add
-        your options, flags or args.
-        stats option displays more information on execution consumption
-        wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
-        <code> may be normal code, but also an attached file,
-        or a link from [hastebin](https://hasteb.in) or [Github gist](https://gist.github.com)
-        If you use a link, your command must end with this syntax:
-        `link=<link>` (no space around `=`)
-        for instance : `run python link=https://hastebin.com/resopedahe.py`
-        The link may be the raw version, and with/without the file extension
-        If the output exceeds 40 lines or Discord max message length, it will be put
-        in a new hastebin and the link will be returned.
-        When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
-        Useful to hide your syntax fails or when you forgot to print the result.
-        """,
-        brief="Execute code in a given programming language",
-    )
+    @commands.command()
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
-        options = {"--stats": False, "--wrapped": False}  # the flags to be used when the compiler is needed
+        options = {
+            "--stats": False,
+            "--wrapped": False,
+        }
 
-        lang = language.strip("`").lower()  # strip the "`" characters to obtain code
+        # strip the "`" characters to obtain code
+        lang = language.strip("`").lower()
         options_amount = len(options)
 
         # Setting options and removing them from the beginning of the command
@@ -110,7 +90,7 @@ class Coding(Cog):
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i)  # remove following whitespace character
+                code.pop(i)  # Remove whitespace
 
         code = "".join(code)
 
@@ -129,7 +109,7 @@ class Coding(Cog):
                 compilerFlags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))  # cli options
+                commandLineOptions.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -142,16 +122,21 @@ class Coding(Cog):
         text = None
 
         async with ctx.typing():
-            if ctx.message.attachments:  # if file is sent instead of raw code in codeblocks
+            # if file is sent instead of raw code in codeblocks
+            if (ctx.message.attachments):
                 file = ctx.message.attachments[0]
-                if file.size > 20000:  # check the size of file exceeding max limit
+                # check the size of file exceeding max limit
+                if file.size > 20000:
                     return await ctx.send("File must be smaller than 20 kio.")
 
                 buffer = BytesIO()
                 await ctx.message.attachments[0].save(buffer)
                 text = buffer.read().decode("utf-8")
-            elif code.split(" ")[-1].startswith("link="):  # if link is sent instead of file or codeblocks
-                base_url = urllib.parse.quote_plus(code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]")
+            # if link is sent instead of file or codeblocks
+            elif code.split(" ")[-1].startswith("link="):
+                base_url = urllib.parse.quote_plus(
+                    code.split(" ")[-1][5:].strip("/"), safe=";/?:@&=$,><-[]"
+                )
 
                 url = get_raw(base_url)  # extract the raw url
 
@@ -197,11 +182,12 @@ class Coding(Cog):
                 lang = config.default_languages[lang]
 
             if lang not in self.bot.languages:  # if lang not found
-                matches = "\n".join([language for language in self.bot.languages if lang in language][:10])
+                similar_langs = [language for language in self.bot.languages if lang in language]
+                matches = "\n".join(similar_langs[:10])
                 lang = escape_mentions(lang)
                 message = f"`{lang}` isn't available."
                 if matches:
-                    message = message + f" Maybe you meant {matches}?"  # provide a suggestion.
+                    message = (message + f" Maybe you meant {matches}?")
 
                 await ctx.send(message)
                 return
@@ -215,7 +201,14 @@ class Coding(Cog):
                         text = self.wrapping[beginning].replace("code", text)
                         break
 
-            tio = Tio(lang, text, compilerFlags=compilerFlags, inputs=inputs, commandLineOptions=commandLineOptions, args=args)
+            tio = Tio(
+                lang,
+                text,
+                compilerFlags=compilerFlags,
+                inputs=inputs,
+                commandLineOptions=commandLineOptions,
+                args=args,
+            )
             result = await tio.send()
 
             if not options["--stats"]:
@@ -229,8 +222,12 @@ class Coding(Cog):
                 link = await paste(result)
 
                 if link is None:
-                    return await ctx.send("Your output was too long, but I couldn't make an online bin out of it")
-                return await ctx.send(f"Output was too long (more than 2000 characters or 40 lines) so the hastebn link is: {link}")
+                    return await ctx.send(
+                        "Your output was too long, but I couldn't make an online bin out of it"
+                    )
+                return await ctx.send(
+                    f"Output was too long (more than 2000 characters or 40 lines) so the hastebn link is: {link}"
+                )
 
             zero = "\N{zero width space}"
             result = re.sub("```", f"{zero}`{zero}`{zero}`{zero}", result)
@@ -242,7 +239,11 @@ class Coding(Cog):
         await returned.add_reaction("🗑")
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
-            return user == ctx.author and str(reaction.emoji) == "🗑" and reaction.message.id == returned.id
+            return all(
+                user == ctx.author,
+                str(reaction.emoji) == "🗑",
+                reaction.message.id == returned.id
+            )
 
         try:
             await self.bot.wait_for("reaction_add", timeout=65.0, check=check)
@@ -259,7 +260,9 @@ class Coding(Cog):
 
         async with ctx.typing():
             if not lang.lower() in self.referred:
-                await ctx.send(f"{lang} not available. See `{config.COMMAND_PREFIX}list references` for available ones.")
+                await ctx.send(
+                    f"{lang} not available. See `{config.COMMAND_PREFIX}list references` for available ones."
+                )
                 return
 
         await self.referred[lang.lower()](ctx, query.strip("`"))
@@ -270,7 +273,9 @@ class Coding(Cog):
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
-                await ctx.send(f"{lang} not available. See `{config.COMMAND_PREFIX}list documentations` for available ones.")
+                await ctx.send(
+                    f"{lang} not available. See `{config.COMMAND_PREFIX}list documentations` for available ones."
+                )
                 return
 
         await self.documented[lang.lower()](ctx, query.strip("`"))
@@ -294,11 +299,17 @@ class Coding(Cog):
             return
 
         if group not in choices:
-            emb = discord.Embed(title="Available commands", description=f"`languages`, `{'`, `'.join(choices)}`")
+            emb = discord.Embed(
+                title="Available commands",
+                description=f"`languages`, `{'`, `'.join(choices)}`",
+            )
             await ctx.send(embed=emb)
             return
 
         availables = choices[group]
         description = f"`{'`, `'.join([*availables])}`"
-        emb = discord.Embed(title=f"Available for {group}: {len(availables)}", description=description)
+        emb = discord.Embed(
+            title=f"Available for {group}: {len(availables)}",
+            description=description,
+        )
         await ctx.send(embed=emb)

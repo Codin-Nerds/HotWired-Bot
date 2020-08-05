@@ -1,16 +1,13 @@
-trigger:
-  - master
-
 jobs:
-  - job: 'Install_Packages_and_Lint'
+  - job: "Install_Packages_and_Lint"
     pool:
       vmImage: "ubuntu-20.04"
 
     steps:
       - task: UsePythonVersion@0
-        displayName: Use python 3.8.3
+        displayName: Use python 3.8.5
         inputs:
-          versionSpec: '3.8.3'
+          versionSpec: "3.8.5"
 
       - script: |
           python -m pip install --upgrade pip setuptools wheel pipenv

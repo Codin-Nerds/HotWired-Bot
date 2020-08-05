@@ -6,13 +6,11 @@ from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, group, is_nsfw
 from praw import Reddit as RedditAPI
 from praw.exceptions import MissingRequiredAttributeException
+from loguru import logger
 
 
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
-    embed = Embed(
-        colour=Color.green(),
-        url=randompost.url
-    )
+    embed = Embed(colour=Color.green(), url=randompost.url)
 
     if len(randompost.title) > 0 and len(randompost.title) < 256:
         embed.title = randompost.title
@@ -24,21 +22,21 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
     elif len(randompost.selftext) > 2048:
         embed.description = f"{randompost.selftext[:2000]} Read more..."
 
-    if not randompost.url.startswith('https://v.redd.it/') or randompost.url.startswith("https://youtube.com/"):
+    if not randompost.url.startswith("https://v.redd.it/") or randompost.url.startswith("https://youtube.com/"):
         embed.set_image(url=randompost.url)
 
-    embed.set_footer(
-        text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired",
-    )
+    embed.set_footer(text=f"👍 {randompost.score} | 💬 {len(randompost.comments)} | Powered By HotWired")
+
     embed.set_author(
         name=f"u/{randompost.author}",
         icon_url=randompost.author.icon_img,
-        url=f"https://www.reddit.com/user/{randompost.author}"
+        url=f"https://www.reddit.com/user/{randompost.author}",
     )
+
     embed.add_field(
         name="SubReddit",
         value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
-        inline=False
+        inline=False,
     )
 
     return embed
@@ -55,10 +53,10 @@ class Reddit(Cog):
                 client_id=os.getenv("REDDIT_CLIENT_ID"),
                 client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
                 user_agent=os.getenv("REDDIT_USER_AGENT"),
-                username=os.getenv("REDDIT_USERNAME")
+                username=os.getenv("REDDIT_USERNAME"),
             )
         except MissingRequiredAttributeException:
-            print("Reddit cog requires correct enviroment variables")
+            logger.error("Reddit cog requires correct enviroment variables to run.")
             self.cog_unload()
         self.bot = bot
 
@@ -78,7 +76,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -92,7 +90,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command(aliases=["tech"])
@@ -106,7 +104,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -119,7 +117,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -134,7 +132,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -148,7 +146,7 @@ class Reddit(Cog):
         randompost = random.choice(postlist)
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -162,7 +160,7 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -176,13 +174,13 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
 
     @reddit.command()
     async def new(self, ctx: Context, subreddit: str) -> None:
         """sends you the fresh posts from given subreddit."""
-        subreddit = self.reddit_client.subreddit(f'{subreddit}')
+        subreddit = self.reddit_client.subreddit(f"{subreddit}")
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
 
@@ -199,9 +197,7 @@ class Reddit(Cog):
                     await ctx.send(embed=embed)
 
             else:
-                await ctx.send(
-                    "**STOP!** , **NSFW** commands can only be used in NSFW channels"
-                )
+                await ctx.send("**STOP!** , **NSFW** commands can only be used in NSFW channels")
         else:
             if "https://v.redd.it/" in randompost.url:
                 await ctx.send(randompost.title)
@@ -216,7 +212,7 @@ class Reddit(Cog):
     @reddit.command()
     async def hot(self, ctx: Context, subreddit: str) -> None:
         """sends you the hottest posts from given subreddit."""
-        subreddit = self.reddit_client.subreddit(f'{subreddit}')
+        subreddit = self.reddit_client.subreddit(f"{subreddit}")
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
 
@@ -233,9 +229,7 @@ class Reddit(Cog):
                     embed = await reddit_embed(subreddit, randompost)
                     await ctx.send(embed=embed)
             else:
-                await ctx.send(
-                    "**STOP!** , **NSFW** commands can only be used in NSFW channels"
-                )
+                await ctx.send("**STOP!** , **NSFW** commands can only be used in NSFW channels")
         else:
             if "https://v.redd.it/" in randompost.url:
                 await ctx.send(randompost.title)

@@ -27,16 +27,18 @@ extensions = [
     "bot.cogs.embeds",
     "bot.cogs.comics",
     "bot.cogs.coding",
-    # "bot.cogs.documentation",
+    "bot.cogs.documentation",
     "bot.cogs.reddit",
     "bot.cogs.translate",
+    "bot.cogs.github",
+    "bot.cogs.nasa",
 ]
 
 bot = Bot(
     extensions,
     command_prefix=when_mentioned_or(config.COMMAND_PREFIX),
     activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
-    case_insensitive=True
+    case_insensitive=True,
 )
 
 if __name__ == "__main__":

@@ -72,7 +72,7 @@ class Conversion(Cog):
 
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
-            await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @command(name="hash")
     async def _hash(self, ctx: Context, algorithm: str, *, text: str) -> None:

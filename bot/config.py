@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 from discord import Color
@@ -12,10 +13,8 @@ bug_report_channel = 728570578507923526
 suggestions_channel = 728570594899132456
 complaints_channel = 728570619985264650
 
-
-owner_ids = [688275913535914014, 306876636526280705]
 creator = "The-Codin-Hole team"
-devs = [710400991761137666, 688275913535914014, 306876636526280705]
+devs = [688275913535914014, 306876636526280705, 710400991761137666, 711194921683648523]
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
@@ -35,12 +34,24 @@ admin_invite_link = (
 
 SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
-COMMAND_PREFIX = ">>"
+
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ";")
 
 paste_link = "https://pastebin.com"
 paste_link_2 = "https://hastebin.com"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
+
+
+WEATHER_ICONS = {
+    "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
+    "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
+    "sun": "https://cdn.discordapp.com/attachments/728569086174298112/735550167859593306/sunny.png",
+    "cloud": "https://cdn.discordapp.com/attachments/728569086174298112/735550159781494865/cloudy.png",
+    "partly": "https://cdn.discordapp.com/attachments/728569086174298112/735550162721701979/partly.png",
+    "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png"
+}
+
 
 # Magic 8-Ball responses
 NEGATIVE_REPLIES = [
@@ -98,138 +109,56 @@ ERROR_REPLIES = [
 
 # NSFW Command Possible types
 nsfw_possible = [
-    "feet",
-    "yuri",
-    "trap",
-    "futanari",
-    "hololewd",
-    "lewdkemo",
-    "solog",
-    "feetg",
-    "cum",
-    "erokemo",
-    "les",
-    "wallpaper",
-    "lewdk",
-    "ngif",
-    "tickle",
-    "lewd",
-    "feed",
-    "gecg",
-    "eroyuri",
-    "eron",
-    "cum_jpg",
-    "bj",
-    "nsfw_neko_gif",
-    "solo",
-    "kemonomimi",
-    "nsfw_avatar",
-    "gasm",
-    "poke",
-    "anal",
-    "slap",
-    "hentai",
-    "avatar",
-    "erofeet",
-    "holo",
-    "keta",
-    "blowjob",
-    "pussy",
-    "tits",
-    "holoero",
-    "lizard",
-    "pussy_jpg",
-    "pwankg",
-    "classic",
-    "kuni",
-    "waifu",
-    "pat",
-    "8ball",
-    "kiss",
-    "femdom",
-    "neko",
-    "spank",
-    "cuddle",
-    "erok",
-    "fox_girl",
-    "boobs",
-    "random_hentai_gif",
-    "smallboobs",
-    "hug",
-    "ero",
-    "smug",
-    "goose",
-    "baka",
-    "woof",
+    "feet", "yuri", "trap", "futanari", "hololewd", "lewdkemo",
+    "solog", "feetg", "cum", "erokemo", "les", "wallpaper",
+    "lewdk", "ngif", "tickle", "lewd", "feed", "gecg",
+    "eroyuri", "eron", "cum_jpg", "bj", "nsfw_neko_gif", "solo",
+    "kemonomimi", "nsfw_avatar", "gasm", "poke", "anal", "slap",
+    "hentai", "avatar", "erofeet", "holo", "keta", "blowjob",
+    "pussy", "tits", "holoero", "lizard", "pussy_jpg", "pwankg",
+    "classic", "kuni", "waifu", "pat", "8ball", "kiss",
+    "femdom", "neko", "spank", "cuddle", "erok", "fox_girl",
+    "boobs", "random_hentai_gif", "smallboobs", "hug", "ero", "smug",
+    "goose", "baka", "woof",
 ]
 
 # Possible HTTP Codes for HttpCat
 http_codes = [
-    100,
-    101,
-    200,
-    201,
-    202,
-    204,
-    206,
-    207,
-    300,
-    301,
-    302,
-    303,
-    304,
-    305,
-    307,
-    400,
-    401,
-    402,
-    403,
-    404,
-    405,
-    406,
-    408,
-    409,
-    410,
-    411,
-    412,
-    413,
-    414,
-    416,
-    417,
-    418,
-    420,
-    421,
-    422,
-    423,
-    424,
-    425,
-    426,
-    429,
-    444,
-    450,
-    451,
-    500,
-    502,
-    503,
-    504,
-    506,
-    507,
-    508,
-    509,
-    511,
-    599,
+    100, 101, 200, 201, 202, 204, 206, 207, 300, 301,
+    302, 303, 304, 305, 307, 400, 401, 402, 403, 404,
+    405, 406, 408, 409, 410, 411, 412, 413, 414, 416,
+    417, 418, 420, 421, 422, 423, 424, 425, 426, 429,
+    444, 450, 451, 500, 502, 503, 504, 506, 507, 508,
+    509, 511, 599,
 ]
 
 # Search Engine categories
-basic_search_categories = ["web", "videos", "music", "files", "images", "it", "maps"]
+basic_search_categories = [
+    "web",
+    "videos",
+    "music",
+    "files",
+    "images",
+    "it",
+    "maps",
+]
 
 nekos = {
     "sfw": "https://nekos.life/api/neko",
 }
 
 
-with open('bot/assets/languages.yml', 'r') as file:
+with open("bot/assets/languages.yml", "r") as file:
     default_languages = safe_load(file)
+
+
+# Emojis class
+class Emojis:
+    issue = "<:IssueOpen:725770366714380410>"
+    issue_closed = "<:IssueClosed:725770497039663114>"
+    pull_request = "<:PROpen:725770558582554744>"
+    pull_request_closed = "<:PRClosed:725770652354609234>"
+    merge = "<:PRMerged:725770703600615435>"
 
 
 class Infraction(Enum):

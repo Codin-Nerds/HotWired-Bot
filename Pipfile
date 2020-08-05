@@ -4,10 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
-pre-commit = "*"
-black = "==19.10b0"
-flake8-annotations = "*"
+flake8 = "~=3.8.3"
+pre-commit = "~=2.6.0"
+flake8-annotations = "~=2.3.0"
+flake8-bugbear = "~=20.1.4"
 
 [packages]
 requests = "==2.23.0"
@@ -29,7 +29,11 @@ pynacl = "*"
 lxml = "*"
 bleach = "*"
 aiogoogletrans = "*"
-pyyaml = "*"
+loguru = "~=0.5.1"
+PyYAML = "~=5.3.1"
+"discord.py" = "~=1.3.4"
+html2markdown = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.8"
@@ -37,7 +41,6 @@ python_version = "3.8"
 [scripts]
 start="python -m bot"
 lint = "pre-commit run --all-files"
-precommit = "pre-commit install"
 
 [pipenv]
 allow_prereleases = true
