@@ -4,7 +4,6 @@ from ast import literal_eval
 
 from discord.ext.commands import (
     BadArgument, Context, Converter,
-    MemberConverter, UserConverter
 )
 
 from dateutil.relativedelta import relativedelta

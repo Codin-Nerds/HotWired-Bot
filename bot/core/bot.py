@@ -1,9 +1,5 @@
-from datetime import datetime
-
 import asyncpg
-from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
-from discord.ext.commands import ExtensionError
 from loguru import logger
 
 from bot import config

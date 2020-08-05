@@ -6,7 +6,7 @@ from contextlib import suppress
 from datetime import datetime
 
 import discord
-from discord import Color, Embed, Member, NotFound, Role, TextChannel, User
+from discord import Color, Embed, Forbidden, Member, NotFound, Role, TextChannel, User
 from discord.ext.commands import (
     Cog, Context, Greedy, NoPrivateMessage,
     command, has_permissions

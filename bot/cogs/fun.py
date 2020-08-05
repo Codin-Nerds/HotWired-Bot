@@ -197,7 +197,7 @@ class Fun(Cog):
                     embed.set_image(url=json["file"])
                     await ctx.send(embed=embed)
                 else:
-                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {r.status}]")
+                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {response.status}]")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:

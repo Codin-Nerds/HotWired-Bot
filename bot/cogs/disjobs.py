@@ -5,7 +5,7 @@ from bot.utils.jobfinder import DiscordJobFinder
 
 class Jobs(commands.Cog):
     @commands.command()
-    async def job_find(self, ctx: commands.Context, amount=3):
+    async def job_find(self, ctx: commands.Context, amount=3) -> None:
         """Searches for jobs at discord."""
         await ctx.send(f"Searching for {amount} jobs...")
 
@@ -18,5 +18,5 @@ class Jobs(commands.Cog):
             await ctx.send(embed=job.embed())
 
 
-def setup(bot):
+def setup(bot) -> None:
     bot.add_cog(Jobs(bot))
