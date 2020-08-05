@@ -4,6 +4,15 @@ from enum import Enum
 from discord import Color
 from yaml import safe_load
 
+DATABASE = {
+    "host": "127.0.0.1",
+    "database": os.getenv("DATABASE_NAME"),
+    "user": os.getenv("DATABASE_USER"),
+    "password": os.getenv("DATABASE_PASSWORD"),
+    "min_size": int(os.getenv("POOL_MIN", "20")),
+    "max_size": int(os.getenv("POOL_MAX", "100")),
+}
+
 DEV_MODE = True
 
 log_channel = 728570503169704014
