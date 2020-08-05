@@ -1,12 +1,15 @@
 import asyncio
+import re
 import textwrap
 import time
 from contextlib import suppress
 
 import aiohttp
 from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, has_permissions)
+from discord.ext.commands import (
+    BadArgument, BucketType, Cog, Context,
+    command, cooldown, has_permissions
+)
 
 from bot import config
 from bot.core.bot import Bot
@@ -162,6 +165,32 @@ class Common(Cog):
             await ctx.send(embed=embed)
 
     @command()
+    async def paste(self, ctx: Context, *, text: str) -> None:
+        """Creates a Paste out of the text specified."""
+        async with self.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
+            key = (await resp.json())['key']
+            file_paste = 'https://www.hasteb.in/' + key
+
+            await ctx.send(
+                embed=Embed(title="File pastes", description=file_paste, color=Color.blue())
+            )
+
+    def _clean_code(self, code: str) -> str:
+        codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)
+        if codeblock_match:
+            lang = codeblock_match.group(1)
+            code = codeblock_match.group(2)
+            ret = lang if not code else code
+            if ret[-1] == "\n":
+                ret = ret[:-1]
+            return ret
+
+        simple_match = re.fullmatch(r"\`(.*\n*)\`", code)
+        if simple_match:
+            return simple_match.group(1)
+
+        return code
+
     @cooldown(1, 10, BucketType.user)
     async def shorten(self, ctx: Context, *, link: str) -> None:
         """Makes a link shorter using the tinyurl api"""
