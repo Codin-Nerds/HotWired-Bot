@@ -2,10 +2,12 @@ import random as r
 from discord.ext import commands
 from bot.utils.jobfinder import DiscordJobFinder
 
+
 class Jobs(commands.Cog):
-    @commands.command(name="job-find", help="Searches for jobs at discord.")
-    async def job_find(self, ctx, amount=3):
-        await ctx.send('Searching for {} jobs...'.format(amount))
+    @commands.command()
+    async def job_find(self, ctx: commands.Context, amount=3):
+        """Searches for jobs at discord."""
+        await ctx.send(f"Searching for {amount} jobs...".)
 
         finder = DiscordJobFinder()
 
