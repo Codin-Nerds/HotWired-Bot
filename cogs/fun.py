@@ -142,7 +142,7 @@ class Fun(Cog):
             n = random.randint(0, 1)
             if n == 0:
                 return "https://random.dog/woof"
-            elif n == 1:
+            else:
                 return "https://dog.ceo/api/breeds/image/random"
 
         async with aiohttp.ClientSession() as session:
@@ -201,14 +201,17 @@ class Fun(Cog):
             await ctx.send(f"Something Broke. LOL [{e!s}]")
 
     async def get_answer(self, ans: str) -> str:
+        return_str = ""
         if ans == "yes":
-            return "Yes."
+            return_str = "Yes."
         elif ans == "no":
-            return "NOPE"
+            return_str = "NOPE"
         elif ans == "maybe":
-            return "maaaaaaybe?"
+            return_str = "maaaaaaybe?"
         else:
-            return "Internal Error: Invalid answer LMAOO"
+            return_str = "Internal Error: Invalid answer LMAOO"
+        
+        return return_str
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
