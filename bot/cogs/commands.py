@@ -20,25 +20,24 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
         """Returns the number of members in the server."""
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
-        type = f"""
-                Humans: {ctx.guild.member_count - bots}
+        member_type = f"""
+                Member: {ctx.guild.member_count - bots}
                 Bots: {bots}
             """
         status = f"""
-                {STATUSES[Status.online]} {member_by_status["online"]}
-                {STATUSES[Status.idle]} {member_by_status["idle"]}
-                {STATUSES[Status.dnd]} {member_by_status["dnd"]}
-                {STATUSES[Status.offline]} {member_by_status["offline"]}
+                {STATUSES[Status.online]}: **{member_by_status["online"]}**
+                {STATUSES[Status.idle]}: **{member_by_status["idle"]}**
+                {STATUSES[Status.dnd]}: **{member_by_status["dnd"]}**
+                {STATUSES[Status.offline]}: **{member_by_status["offline"]}**
             """
         embed = Embed(title="Member count", description=ctx.guild.member_count, color=Color.dark_purple())
         embed.add_field(name="**❯❯ Member Status**", value=status)
-        embed.add_field(name="**❯❯ Member Type**", value=type)
+        embed.add_field(name="**❯❯ Member Type**", value=member_type)
         embed.set_author(name=f"SERVER : {ctx.guild.name}")
         embed.set_footer(text="Powered by HotWired")
 
@@ -160,7 +159,7 @@ class Commands(Cog):
                 f"""
                 Text channels: {len(guild.text_channels)}
                 Voice channels: {len(guild.voice_channels)}
-                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {guild.afk_channel.mention}
+                AFK timeout: {round(guild.afk_timeout / 60)}m | AFK channel: {None if guild.afk_channel is None else guild.afk_channel}
                 """
             ),
             inline=False,

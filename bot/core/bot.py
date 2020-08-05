@@ -4,6 +4,7 @@ import asyncpg
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
 from discord.ext.commands import ExtensionError
+from loguru import logger
 
 from bot import config
 
@@ -30,40 +31,19 @@ class Bot(Base_Bot):
                 print("Database connection error. Killing program.")
                 return await self.close()
 
-            # Log new connection
-            self.log_channel = self.get_channel(config.log_channel)
-            embed = Embed(
-                title="Bot Connection",
-                description="New connection initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal(),
-            )
-            await self.log_channel.send(embed=embed)
-
             # Load all extensions
             for extension in self.extension_list:
-                # For finer error managing :
-                # https://github.com/Faholan/All-Hail-Chaos/blob/60b6ce944c66ccea6890019e6a196ac06f1eb55e/Chaotic%20Bot.py#L103
-                try:
+                with logger.catch(message=f"Cog {extension} failed to load"):
                     self.load_extension(extension)
-                    print(f"Cog {extension} loaded.")
-                except ExtensionError as error:
-                    print(
-                        f"Cog {extension} failed to load with {type(error)}: {error}"
-                    )
-        else:
-            embed = Embed(
-                title="Bot Connection",
-                description="Connection re-initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal(),
-            )
-            await self.log_channel.send(embed=embed)
+                    logger.debug(f"Cog {extension} loaded.")
 
-        print("Bot is ready")
+            logger.info("Bot is ready")
+        else:
+            logger.info("Bot connection reinitialized")
 
     async def close(self) -> None:
         """Close the bot and do some cleanup."""
+        logger.info("Closing bot connection")
         await super().close()
         if hasattr(self, "pool"):
             await self.pool.close()

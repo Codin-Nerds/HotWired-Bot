@@ -23,7 +23,7 @@ suggestions_channel = 728570594899132456
 complaints_channel = 728570619985264650
 
 creator = "The-Codin-Hole team"
-devs = [688275913535914014, 306876636526280705, 710400991761137666]
+devs = [688275913535914014, 306876636526280705, 710400991761137666, 711194921683648523]
 
 youtube_url = "https://www.youtube.com/channel/UC3S4lcSvaSIiT3uSRSi7uCQ"
 ig_url = "https://instagram.com/the.codin.hole/"
@@ -44,12 +44,23 @@ admin_invite_link = (
 SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 
 
-COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ">>")
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ";")
 
 paste_link = "https://pastebin.com"
 paste_link_2 = "https://hastebin.com"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
+
+
+WEATHER_ICONS = {
+    "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
+    "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
+    "sun": "https://cdn.discordapp.com/attachments/728569086174298112/735550167859593306/sunny.png",
+    "cloud": "https://cdn.discordapp.com/attachments/728569086174298112/735550159781494865/cloudy.png",
+    "partly": "https://cdn.discordapp.com/attachments/728569086174298112/735550162721701979/partly.png",
+    "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png"
+}
+
 
 # Magic 8-Ball responses
 NEGATIVE_REPLIES = [
