@@ -180,7 +180,7 @@ class Search(Cog, name="Basic"):
             embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
             embed.add_field(name="Type", value=anime["attributes"]["showType"])
             embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
-            embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url_as(format="png"))
+            embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url())
             try:
                 await ctx.send(f"**{title}** - <{url}>", embed=embed)
             except Exception:
