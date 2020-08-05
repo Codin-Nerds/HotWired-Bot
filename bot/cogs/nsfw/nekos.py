@@ -90,7 +90,7 @@ class Neko(Cog):
         await ctx.send(embed=embed)
 
     @neko.command()
-    @is_nsfw
+    @is_nsfw()
     async def furry(self, ctx: Context) -> None:
         """Gets NSFW Images from Neko API."""
         sources = ["images/nsfw/gif/yiff", "images/nsfw/img/yiff_lewd"]
@@ -120,7 +120,7 @@ class Neko(Cog):
         await ctx.send(embed=embed)
 
     @neko.command()
-    @is_nsfw
+    @is_nsfw()
     async def yuri(self, ctx: Context) -> None:
         """Gets NSFW Images from Neko API."""
         sources = ["images/nsfw/gif/yuri", "images/nsfw/img/yuri_lewd", "images/nsfw/img/yuri_ero"]
@@ -130,7 +130,7 @@ class Neko(Cog):
         await ctx.send(embed=embed)
 
     @neko.command()
-    @is_nsfw
+    @is_nsfw()
     async def solo(self, ctx: Context) -> None:
         """Gets NSFW Images from Neko API."""
         sources = ["images/nsfw/gif/girls_solo", "images/nsfw/img/solo_lewd"]
