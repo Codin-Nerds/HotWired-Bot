@@ -6,6 +6,7 @@ from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, group, is_nsfw
 from praw import Reddit as RedditAPI
 from praw.exceptions import MissingRequiredAttributeException
+from loguru import logger
 
 
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
@@ -55,7 +56,7 @@ class Reddit(Cog):
                 username=os.getenv("REDDIT_USERNAME"),
             )
         except MissingRequiredAttributeException:
-            print("Reddit cog requires correct enviroment variables")
+            logger.error("Reddit cog requires correct enviroment variables to run.")
             self.cog_unload()
         self.bot = bot
 
