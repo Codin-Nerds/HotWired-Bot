@@ -11,7 +11,6 @@ class Yandere(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.config = bot.config
 
     @command(aliases=["yan"])
     @is_nsfw()
