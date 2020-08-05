@@ -33,7 +33,6 @@ class Trivia(Cog):
 
     @trivia.command()
     async def start(self, ctx: Context, questions: int = 10) -> None:
-        try:
             """Start a trivia session."""
             def input_check(msg: Message) -> bool:
                 return msg.author == ctx.author and msg.channel == ctx.channel
