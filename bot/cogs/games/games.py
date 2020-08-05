@@ -39,3 +39,19 @@ class Games(Cog):
         embed.add_field(name="Answer", value=answer)
 
         await ctx.send(embed=embed)
+    @command()
+    async def flip_coin():
+        def coin_filp():
+            coin_filp = randint(0, 1)
+            if coin_filp == 0:
+                return "Heads!"
+            else:
+                return  "Tails"
+
+        await ctx.send(coin_filp())
+    from random import randint
+
+    @command()
+    async def dice():
+        dice_roll = randint(1,6)
+        await ctx.send(dice_roll)      
