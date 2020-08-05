@@ -121,6 +121,3 @@ class Trivia(Cog):
                     await ctx.send(f"You took too long to reply, the answer was:\n`{result['correct_answer']}`")
 
                 question_num += 1
-
-        except Exception:
-            await ctx.send(f"```py\n{traceback.format_exc()}```")
