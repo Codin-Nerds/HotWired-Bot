@@ -2,7 +2,7 @@ from bot.core.bot import Bot
 
 from .games import Games
 from .hangman import Hangman
-from .tic_tac_toe import TicTacToe
+# from .tic_tac_toe import TicTacToe
 from .trivia import Trivia
 
 
