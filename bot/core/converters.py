@@ -31,11 +31,14 @@ class ActionReason(Converter):
 
     async def convert(self, ctx: Context, argument: str) -> str:
         """Add ID to the reason and make sure it's withing length."""
-        reason = f"[ID: {ctx.author.id}]: {argument}"
-        if len(reason) > 512:
-            reason_max = 512 - len(reason) + len(argument)
-            raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
-        return argument
+        if argument != "":
+            reason = f"[ID: {ctx.author.id}]: {argument}"
+            if len(reason) > 512:
+                reason_max = 512 - len(reason) + len(argument)
+                raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
+        else:
+            reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
+        return reason
 
 
 class Unicode(Converter):
