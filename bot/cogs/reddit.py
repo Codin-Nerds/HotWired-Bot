@@ -272,6 +272,7 @@ class Reddit(Cog):
     @reddit.command(name="4k")
     @is_nsfw()
     async def _4k(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "4k"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -287,6 +288,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def ass(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "ass"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -302,6 +304,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def anal(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "anal"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -317,6 +320,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def bdsm(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "bdsm"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -332,6 +336,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def blowjob(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "blowjob"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -347,6 +352,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def cunnilingus(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "cunnilingus"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -362,6 +368,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def bottomless(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "bottomless"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -377,6 +384,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def cumshots(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "cumshots"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -392,6 +400,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def deepthroat(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "deepthroat"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -407,6 +416,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def dick(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "dick"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -422,6 +432,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def doublepenetration(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "double_penetration"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -437,6 +448,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def gay(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "gay"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -452,6 +464,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def hentai(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "hentai"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -467,6 +480,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def lesbian(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "lesbian"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -482,6 +496,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def public(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "public"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -497,6 +512,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def rule34(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "rule34"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -512,6 +528,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def trap(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "trap"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
@@ -527,6 +544,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def boobs(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
         sub = "boobs"
         name = random.choice(nsfw_subreddits[sub])
         subreddit = self.reddit_client.subreddit(name)
