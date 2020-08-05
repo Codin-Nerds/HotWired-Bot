@@ -10,5 +10,5 @@ def setup(bot: Bot) -> None:
     """Load the games cogs."""
     bot.add_cog(Hangman(bot))
     bot.add_cog(Games(bot))
-    bot.add_cog(TicTacToe(bot))
+    # bot.add_cog(TicTacToe(bot))
     bot.add_cog(Trivia(bot))
