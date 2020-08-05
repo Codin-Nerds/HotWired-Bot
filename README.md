@@ -6,6 +6,7 @@
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python%203.8-ffe900.svg?longCache=true&style=flat-square&colorB=00a1ff&logo=python&logoColor=88889e)](https://www.python.org/)
 [![made-with-discord.py](https://img.shields.io/badge/Using-discord.py-ffde57.svg?longCache=true&style=flat-square&colorB=4584b6&logo=discord&logoColor=7289DA)](https://github.com/Rapptz/discord.py)
 [![Discord](https://img.shields.io/static/v1?label=The%20Codin'%20Hole&logo=discord&message=%3E200%20members&color=%237289DA&logoColor=white)](https://discord.gg/vP26dCy)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot?ref=badge_shield)
 
 This bot is a Heavy Coded Yet lightWeight, reliable, smooth, automatic worker
 that does everything you need. It's a One stop Shop for everything.
@@ -81,6 +82,9 @@ that does everything you need. It's a One stop Shop for everything.
 -   Make your Custom commands!
 -   Various inbuilt custom commands From the Creator.
 -   More Features Coming Soon. Stay Tuned!
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot?ref=badge_large)
 
 ## Support
 

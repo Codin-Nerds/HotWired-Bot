@@ -119,7 +119,7 @@ class Study(Cog):
         pages = UrbanDictionaryPages(ctx, data)
         await pages.paginate()
 
-    async def _get_soup_object(self, url: str) -> t.Union[None, BeautifulSoup]:
+    async def _get_soup_object(self, url: str) -> t.Optional[BeautifulSoup]:
         try:
             async with self.session.request("GET", url) as response:
                 return BeautifulSoup(await response.text(), "html.parser")
