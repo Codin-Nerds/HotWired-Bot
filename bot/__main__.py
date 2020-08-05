@@ -33,7 +33,8 @@ extensions = [
     "bot.cogs.github",
     "bot.cogs.nasa",
     "bot.cogs.nsfw",
-    "bot.cogs.disjobs"
+    "bot.cogs.disjobs",
+    "bot.cogs.music"
 ]
 
 bot = Bot(
