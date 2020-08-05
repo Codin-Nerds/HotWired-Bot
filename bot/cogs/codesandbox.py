@@ -10,6 +10,7 @@ from discord.ext.commands import Cog, CommandError, Context, command
 
 from bot.core.bot import Bot
 from bot.utils.checks import is_bot_dev
+from bot.core.converters import CodeBlock
 
 
 class CodeSandbox(Cog):
@@ -32,7 +33,7 @@ class CodeSandbox(Cog):
         return is_bot_dev(ctx)
 
     @command(name="eval", hidden=True)
-    async def _eval(self, ctx: Context, *, code: str) -> None:
+    async def _eval(self, ctx: Context, *, code: CodeBlock) -> None:
         """Evaluate the passed code."""
         env = {
             "bot": self.bot,
@@ -45,7 +46,7 @@ class CodeSandbox(Cog):
         }
         env.update(globals())
 
-        code = self._clean_code(code)
+        code = code[1]
         buffer = io.StringIO()
 
         # function placeholder

@@ -1,10 +1,13 @@
+import re
 import typing as t
 from ast import literal_eval
 
-from discord import Guild, Member, NotFound, User
-from discord.ext.commands import BadArgument, Context, Converter, UserConverter
+from discord.ext.commands import (
+    BadArgument, Context, Converter,
+    MemberConverter, UserConverter
+)
 
-from bot.utils.errors import MemberNotFound
+from dateutil.relativedelta import relativedelta
 
 
 class ActionReason(Converter):
@@ -12,11 +15,14 @@ class ActionReason(Converter):
 
     async def convert(self, ctx: Context, argument: str) -> str:
         """Add ID to the reason and make sure it's withing length."""
-        reason = f"[ID: {ctx.author.id}]: {argument}"
-        if len(reason) > 512:
-            reason_max = 512 - len(reason) + len(argument)
-            raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
-        return argument
+        if argument != "":
+            reason = f"[ID: {ctx.author.id}]: {argument}"
+            if len(reason) > 512:
+                reason_max = 512 - len(reason) + len(argument)
+                raise BadArgument(f"Reason is too long ({len(argument)}/{reason_max})")
+        else:
+            reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
+        return reason
 
 
 class Unicode(Converter):
@@ -67,29 +73,75 @@ class Unicode(Converter):
         )
 
 
-class ProcessedUser(UserConverter):
+class TimeDelta(Converter):
+    """Convert given duration string into relativedelta."""
+
+    time_getter = re.compile(
+        r"((?P<years>\d+?) ?(y|yr|yrs|years|year) ?)?"
+        r"((?P<months>\d+?) ?(mo|mon|months|month) ?)?"
+        r"((?P<weeks>\d+?) ?(w|wk|weeks|week) ?)?"
+        r"((?P<days>\d+?) ?(d|days|day) ?)?"
+        r"((?P<hours>\d+?) ?(h|hr|hrs|hours|hour) ?)?"
+        r"((?P<minutes>\d+?) ?(m|min|mins|minutes|minute) ?)?"
+        r"((?P<seconds>\d+?) ?(s|sec|secs|seconds|second))?",
+        re.IGNORECASE
+    )
+
+    async def convert(self, ctx: Context, duration: str) -> relativedelta:
+        """
+        Convert a string `duration` to relativedelta.
+
+        Accepted inputs for `duration` (in order):
+        * years: `y`, `yr`, `yrs`, `years`, `year`
+        * months: `mo`, `mon`, `months`, `month`
+        * weeks: `w`, `wk`, `weeks`, `week`
+        * days: `d`, `days`, `day`
+        * hours: `h`, `hr`, `hrs`, `hours`, `hour`
+        * minutes: `m`, `min`, `mins`, `minutes`, `minute`
+        * seconds: `s`, `sec`, `secs`, `seconds` `second`
+        These inputs are case insensitive.
+        """
+        time_delta = self.time_getter.fullmatch(duration)
+        if not time_delta:
+            raise BadArgument("Invalid duration.")
+
+        duration_dict = {unit: int(amount) for unit, amount in time_delta.groupdict(default=0).items()}
+        return relativedelta(**duration_dict)
+
+
+class CodeBlock(Converter):
     """
-    Try to convert any accepted string into `Member` or `User`.
-
-    When possible try to convert user into `Member` but if not, use `User` instead.
+    Convert given wrapped string in codeblock into a tuple of language and the wrapped string
     """
 
-    @staticmethod
-    async def get_member(guild: Guild, user: User) -> Member:
-        """Get a member from a guild."""
-        try:
-            return guild.get_member(user.id) or await guild.fetch_member(user.id)
-        except NotFound:
-            raise MemberNotFound(f"No member with ID: {user.id} on guild {guild.id}")
+    codeblock_parser = re.compile(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`")
+    inline_code_parser = re.compile(r"\`(.*\n*)\`")
 
-    async def convert(self, ctx: Context, argument: str) -> Member:
-        """Convert the `argument` into `Member` or `User`."""
-        # Try to use UserConverter first
-        user = await super().convert(ctx, argument)
-        try:
-            return await self.get_member(ctx.guild, user)
-        except MemberNotFound:
-            return user
+    async def convert(self, ctx: Context, codeblock: str) -> t.Tuple[t.Optional[str], str]:
+        """
+        Convert a string `codeblock` into a tuple which consists of:
+        * language (f.e.: `py` or `None` for no language)
+        * wrapped_text (the text inside of the codeblock)
 
+        The converter converts:
+        * full codeblocks (```text```, ```py\ntext```, ```\ntext```)
+        * inline codeblocks (`text`)
 
-ProcessedMember = t.Union[Member, ProcessedUser]
+        In case no codeblock was found, original string is returned
+        """
+        codeblock_match = self.codeblock_parser.fullmatch(codeblock)
+        if codeblock_match:
+            lang = codeblock_match.group(1)
+            code = codeblock_match.group(2)
+            if not code:
+                code = lang
+                lang = None
+            if code[-1] == "\n":
+                code = code[:-1]
+            return (lang, code)
+
+        inline_match = self.inline_code_parser.fullmatch(codeblock)
+        if inline_match:
+            return (None, inline_match.group(1))
+
+        return codeblock

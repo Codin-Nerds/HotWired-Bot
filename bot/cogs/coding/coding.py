@@ -71,29 +71,12 @@ class Coding(Cog):
 
     @commands.command()
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
-        """Execute code in a given programming language.
+        """Execute code in a given programming language."""
 
-        run <language> [--wrapped] [--stats] <code>
-        for command-line-options, compiler-flags and arguments you may
-        add a line starting with this argument, and after a space add
-        your options, flags or args.
-        stats option displays more information on execution consumption
-        wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
-        <code> may be normal code, but also an attached file,
-        or a link from [hastebin](https://hasteb.in) or [Github gist](https://gist.github.com)
-        If you use a link, your command must end with this syntax:
-        `link=<link>` (no space around `=`)
-        for instance : `run python link=https://hastebin.com/resopedahe.py`
-        The link may be the raw version, and with/without the file extension
-        If the output exceeds 40 lines or Discord max message length, it will be put
-        in a new hastebin and the link will be returned.
-        When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
-        Useful to hide your syntax fails or when you forgot to print the result.
-        """
         options = {
             "--stats": False,
             "--wrapped": False,
-        }  # the flags to be used when the compiler is needed
+        }
 
         # strip the "`" characters to obtain code
         lang = language.strip("`").lower()
@@ -108,7 +91,7 @@ class Coding(Cog):
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i)  # remove following whitespace character
+                code.pop(i)  # Remove whitespace
 
         code = "".join(code)
 

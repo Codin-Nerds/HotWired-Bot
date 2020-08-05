@@ -1,53 +1,50 @@
 from datetime import datetime
 
-from discord import Color, DiscordException, Embed
+import asyncpg
+from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
+from discord.ext.commands import ExtensionError
+from loguru import logger
 
 from bot import config
 
 
 class Bot(Base_Bot):
-    """Hotwired subclassed bot."""
+    """Subclassed Hotwired bot."""
 
     def __init__(self, extensions: list, *args, **kwargs) -> None:
         """Initialize the subclass."""
         super().__init__(*args, **kwargs)
         self.extension_list = extensions
-        self.initial_call = True
+        self.first_on_ready = True
+
+        self.pool = None
+        self.log_channel = None
 
     async def on_ready(self) -> None:
-        """Do some extra setup."""
-        if self.initial_call:
-            self.initial_call = False
+        """Initialize some stuff once the bot is ready."""
+        if self.first_on_ready:
+            self.first_on_ready = False
 
-            # Log new connection
-            self.log_channel = self.get_channel(config.log_channel)
-            embed = Embed(
-                title="Bot Connection",
-                description="New connection initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal(),
-            )
-            await self.log_channel.send(embed=embed)
+            try:
+                self.pool = await asyncpg.create_pool(**config.DATABASE)
+            except asyncpg.exceptions.PostgresError:
+                print("Database connection error. Killing program.")
+                return await self.close()
 
             # Load all extensions
             for extension in self.extension_list:
-                try:
+                with logger.catch(message=f"Cog {extension} failed to load"):
                     self.load_extension(extension)
-                    print(f"Cog {extension} loaded.")
-                except DiscordException as error:
-                    # More granular error managing is possible
-                    # https://github.com/Faholan/All-Hail-Chaos/blob/master/Chaotic%20Bot.py#L101
-                    print(
-                        f"Cog {extension} failed to load with {type(error)}: {error}"
-                    )
-        else:
-            embed = Embed(
-                title="Bot Connection",
-                description="Connection re-initialized.",
-                timestamp=datetime.utcnow(),
-                color=Color.dark_teal(),
-            )
-            await self.log_channel.send(embed=embed)
+                    logger.debug(f"Cog {extension} loaded.")
 
-        print("Bot is ready")
+            logger.info("Bot is ready")
+        else:
+            logger.info("Bot connection reinitialized")
+
+    async def close(self) -> None:
+        """Close the bot and do some cleanup."""
+        logger.info("Closing bot connection")
+        await super().close()
+        if hasattr(self, "pool"):
+            await self.pool.close()

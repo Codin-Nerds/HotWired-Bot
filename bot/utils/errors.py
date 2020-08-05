@@ -12,3 +12,7 @@ class NSFWException(commands.CheckFailure):
 
 class MemberNotFound(NotFound):
     """Raised when search for Member has failed and no member was found."""
+
+
+class UserNotFound(NotFound):
+    """Raised when search for User has failed and no user was found."""

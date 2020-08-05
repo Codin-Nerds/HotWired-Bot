@@ -1,14 +1,13 @@
 import os
 import random
 import textwrap
-import typing as t
 import urllib
 from random import choice, randint
 
 import aiohttp
 import discord
 import nekos
-from discord import Color, Embed, Message
+from discord import Color, Embed
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
                                   command, cooldown, errors, is_nsfw)
 
@@ -34,6 +33,66 @@ class Fun(Cog):
         self.session = aiohttp.ClientSession()
 
     @command()
+    async def joke(self, ctx: Context) -> None:
+        """Send a random joke."""
+        async with self.session.get("https://mrwinson.me/api/jokes/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                joke = data["joke"]
+                embed = Embed(
+                    description=joke,
+                    color=Color.gold()
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def duck(self, ctx: Context) -> None:
+        """Get a random picture of a duck."""
+        async with self.session.get("https://random-d.uk/api/v2/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def koala(self, ctx: Context) -> None:
+        """Get a random picture of a koala."""
+        async with self.session.get("https://some-random-api.ml/img/koala") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def panda(self, ctx: Context) -> None:
+        """Get a random picture of a panda."""
+        async with self.session.get("https://some-random-api.ml/img/panda",) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold(),
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
     async def catfact(self, ctx: Context) -> None:
         """Send a random cat fact."""
         # I advise you to use a background task to update the facts.
@@ -41,6 +100,7 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
+
         fact = choice(self.all_facts["all"])
         await ctx.send(embed=Embed(
             title="Did you Know?",
@@ -102,19 +162,21 @@ class Fun(Cog):
             await ctx.send("Sorry, No Images Found.")
 
     @command()
-    async def chuck(self, ctx: Context) -> t.Union[None, Message]:
+    async def chuck(self, ctx: Context) -> None:
         """Get a random Chuck Norris joke."""
         if randint(0, 1):
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://api.chucknorris.io/jokes/random") as response:
-                    joke = await response.json()
-                    return await ctx.send(joke["value"])
+                async with session.get("https://api.chucknorris.io/jokes/random") as r:
+                    joke = await r.json()
+                    await ctx.send(joke["value"])
+                    return
         if ctx.guild:
             if not ctx.channel.is_nsfw():
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("http://api.icndb.com/jokes/random?exclude=[explicit]") as response:
-                        joke = await response.json()
-                        return await ctx.send(joke["value"]["joke"])
+                    async with session.get("http://api.icndb.com/jokes/random?exclude=[explicit]") as r:
+                        joke = await r.json()
+                        await ctx.send(joke["value"]["joke"])
+                        return
 
         async with aiohttp.ClientSession() as session:
             async with session.get("http://api.icndb.com/jokes/random") as response:
@@ -135,7 +197,7 @@ class Fun(Cog):
                     embed.set_image(url=json["file"])
                     await ctx.send(embed=embed)
                 else:
-                    await ctx.send(f"Couldn't Fetch cute cats :( [status : {response.status}]")
+                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {r.status}]")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
@@ -146,6 +208,7 @@ class Fun(Cog):
                 colour=0x690E8
             )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
+
             await ctx.send(embed=httpcat_em)
         else:
             await ctx.send("Invalid HTTP Code Specified")
@@ -178,6 +241,7 @@ class Fun(Cog):
                     if shibe_get.host == "random.dog":
                         shibe_img = await shibe_get.text()
                         shibe_url = "https://random.dog/" + shibe_img
+
                     elif shibe_get.host == "dog.ceo":
                         shibe_img = await shibe_get.json()
                         shibe_url = shibe_img["message"]
@@ -202,7 +266,7 @@ class Fun(Cog):
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
-                    await ctx.send(f"Something went Boom! [status : {lizr.status}]")
+                    await ctx.send(f"Something went boom! :( [CODE: {lizr.status}]")
 
     @command(aliases=["leet"])
     async def leetify(self, ctx: Context, *, content: str) -> None:
@@ -256,7 +320,7 @@ class Fun(Cog):
                     )
                     await ctx.send(embed=why_em)
                 else:
-                    await ctx.send(f"Something went Boom! [status : {why.status}]")
+                    await ctx.send(f"Something went Boom! [CODE : {why.status}]")
 
     @command(aliases=["rhash", "robothash", "rh", "rohash"])
     async def robohash(self, ctx: Context, *, meme: str) -> None:
@@ -297,9 +361,9 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"OMFG! [STATUS : {meme.status}]")
 
-    @command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
-    async def joke(self, ctx: Context) -> None:
-        """Dad joke simulator 3017, basically."""
+    @command(aliases=["awdad", "dadpls", "shitjoke", "badjoke"])
+    async def dadjoke(self, ctx: Context) -> None:
+        """Dad joke simulator 3017, basically"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as jok:
                 if jok.status == 200:
@@ -318,6 +382,7 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as r:
                 data = await r.text()
+
         lines = data.split("\n")
         embed = Embed(
             title="Excuses",
@@ -336,12 +401,13 @@ class Fun(Cog):
                 embed = Embed()
                 embed.set_image(url=picture)
                 await ctx.send(embed=embed)
+
         except Exception:
             await ctx.send("Oops, there was a problem!")
 
     @command()
-    async def neko(self, ctx: Context) -> None:
-        """Show a neko."""
+    async def nekos(self, ctx: Context) -> None:
+        """Shows a neko."""
         async with aiohttp.ClientSession() as session:
             async with session.get(config.nekos["sfw"]) as neko:
                 if neko.status == 200:
@@ -362,14 +428,16 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!",
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         await ctx.send(embed=embed)
 
     @command()
@@ -403,7 +471,8 @@ class Fun(Cog):
             color=Color.blurple()
         )
         embed.set_image(
-            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
+            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif"
+        )
         await ctx.send(embed=embed)
 
     @command(aliases=["table", "flip", "tableflip"])
@@ -440,7 +509,8 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
+                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Cookie Giver!",

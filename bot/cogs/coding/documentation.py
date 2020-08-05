@@ -32,8 +32,9 @@ async def python_doc(ctx: Context, text: str) -> None:
 
             content = [f"[{a.string}](https://docs.python.org/3/{a.get('href')})" for a in links]
 
-            embed = discord.Embed(title="Python 3 docs")
             python_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/240px-Python-logo-notext.svg.png"
+
+            embed = discord.Embed(title="Python 3 docs")
             embed.set_thumbnail(url=python_logo)
             embed.add_field(name=f"Results for `{text}`:", value="\n".join(content), inline=False)
 
