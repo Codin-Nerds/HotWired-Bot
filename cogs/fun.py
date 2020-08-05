@@ -68,11 +68,11 @@ class Fun(Cog):
 
     @command()
     @is_nsfw()
-    async def image(self, ctx: Context, type: str) -> None:
+    async def image(self, ctx: Context, img_type: str) -> None:
         """Sends a random image(sfw and nsfw)."""
         try:
             embed = Embed(color=0x690E8)
-            embed.set_image(url=n.img(type))
+            embed.set_image(url=n.img(img_type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
             await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
@@ -165,7 +165,7 @@ class Fun(Cog):
                     await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
     @command()
-    async def lizard(self, ctx) -> None:
+    async def lizard(self, ctx: Context) -> None:
         """Shows a random lizard picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
