@@ -1,7 +1,8 @@
-import requests as r
+import aiohttp
 import random as rd
 import html
 import datetime
+
 from discord import Embed
 
 from bs4 import BeautifulSoup
@@ -21,7 +22,7 @@ class Job:
 
         self._content = html.unescape(attrs['content'])
 
-        with open('page.html', 'w') as file:
+        with open('assets/page.html', 'w') as file:
             file.write(self._content)
 
     def embed(self):
@@ -51,7 +52,10 @@ class DiscordJobFinder:
 
         jobscontent = "https://api.greenhouse.io/v1/boards/discord/jobs?content=true"
 
-        jobs = r.get(jobscontent, headers={"User-Agent": "Job Scraper (Discord Bot)"}).json()['jobs']
+        async with aiohttp.ClientSession() as session:
+            async with session.get(jobscontent, headers={"User-Agent": "Job Scraper (Discord Bot)"}) as resp:
+                jobs = (await resp.json())['jobs']
+                
 
         for job in jobs:
             job = {
