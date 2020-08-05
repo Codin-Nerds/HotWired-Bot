@@ -2,6 +2,10 @@ import textwrap
 import typing as t
 from functools import wraps
 
+from bot.core.converters import ProcessedMember
+from bot.utils.errors import MemberNotFound
+from loguru import logger
+
 from discord import Color, Embed, Member, User
 from discord.ext.commands import Cog, Context
 
@@ -29,6 +33,7 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                 member = await ctx.guild.get_member(user.id)
                 if member is None:
                     # Skip checks in case of bad member
+                    logger.trace("Skipping follow_role check, provided user isn't a valid Member.")
                     await func(self, ctx, *args, **kwargs)
                     return
             elif isinstance(user, Member):
@@ -39,8 +44,10 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
             actor = ctx.author
             # Run the function in case actor has higher role then member, or is a guild owner
             if actor == ctx.guild.owner or member.top_role <= actor.top_role:
+                logger.trace(f"User <@{member.id}> on {member.guild.id} has passed follow_role check.")
                 await func(self, ctx, *args, **kwargs)
             else:
+                logger.trace(f"User <@{member}> on {member.guild.id} has failed follow_role check.")
                 embed = Embed(
                     title="You can't target this user",
                     description=textwrap.dedent(
