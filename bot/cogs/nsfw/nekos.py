@@ -11,7 +11,6 @@ class Neko(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.config = bot.config
 
     async def get(self, url: str, author: User) -> Embed:
         """Gets pictures from Neko API."""
