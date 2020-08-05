@@ -14,7 +14,7 @@ from discord.ext.commands import (
 from loguru import logger
 
 from bot.core.bot import Bot
-from bot.core.converters import ActionReason, ProcessedMember
+from bot.core.converters import ActionReason, ProcessedMember, ProcessedUser
 from bot.core.decorators import follow_roles
 
 
