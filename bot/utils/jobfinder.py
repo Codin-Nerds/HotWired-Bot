@@ -22,9 +22,6 @@ class Job:
 
         self._content = html.unescape(attrs['content'])
 
-        with open('assets/page.html', 'w') as file:
-            file.write(self._content)
-
     def embed(self):
         soup = BeautifulSoup(self._content, 'html.parser')
         colors = [
