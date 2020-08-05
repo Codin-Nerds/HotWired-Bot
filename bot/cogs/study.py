@@ -3,17 +3,15 @@ import textwrap
 import typing as t
 
 import aiohttp
+import discord
+from bs4 import BeautifulSoup
+from discord import Color, Embed
+from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
 from bot.utils.math import get_math_results
 from bot.utils.paginator import Pages
 from bot.utils.wolframscrape import get_wolfram_data
-
-from bs4 import BeautifulSoup
-
-import discord
-from discord import Color, Embed
-from discord.ext.commands import Cog, Context, command
 
 
 class UrbanDictionaryPages(Pages):
@@ -121,7 +119,7 @@ class Study(Cog):
         pages = UrbanDictionaryPages(ctx, data)
         await pages.paginate()
 
-    async def _get_soup_object(self, url: str) -> t.Union[None, BeautifulSoup]:
+    async def _get_soup_object(self, url: str) -> t.Optional[BeautifulSoup]:
         try:
             async with self.session.request("GET", url) as response:
                 return BeautifulSoup(await response.text(), "html.parser")

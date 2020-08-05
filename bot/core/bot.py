@@ -1,6 +1,8 @@
 from discord.ext.commands import Bot as Base_Bot
 from loguru import logger
 
+from bot import config
+
 
 class Bot(Base_Bot):
     def __init__(self, extensions: list, *args, **kwargs) -> None:
