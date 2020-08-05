@@ -318,16 +318,11 @@ class Search(Cog, name="Basic"):
             value=f"**Humidity: **`{humidity}%`\n**Visibility: **`{visibility}km`\n**Weather Summary: **`{weather_description}`",
         )
 
-        if "wind" in weather_description:
-            weather_embed.set_image(url=config.WEATHER_ICONS["wind"])
-        elif "partly" in weather_description:
-            weather_embed.set_image(url=config.WEATHER_ICONS["partly"])
-        elif "cloud" in weather_description:
-            weather_embed.set_image(url=config.WEATHER_ICONS["cloud"])
-        elif "snow" in weather_description:
-            weather_embed.set_image(url=config.WEATHER_ICONS["snow"])
-        elif "rain" in weather_description:
-            weather_embed.set_image(url=config.WEATHER_ICONS["rain"])
+        states = ["wind", "partly", "cloud", "snow", "rain"]
+        for state in states:
+            if state in weather_description:
+                weather_embed.set_image(url=config.WEATHER_ICONS[state])
+                break
         else:
             weather_embed.set_image(url=config.WEATHER_ICONS["sun"])
 
