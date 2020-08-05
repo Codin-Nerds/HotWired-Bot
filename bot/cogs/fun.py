@@ -406,7 +406,7 @@ class Fun(Cog):
             await ctx.send("Oops, there was a problem!")
 
     @command()
-    async def neko(self, ctx: Context) -> None:
+    async def nekos(self, ctx: Context) -> None:
         """Shows a neko."""
         async with aiohttp.ClientSession() as session:
             async with session.get(config.nekos["sfw"]) as neko:
