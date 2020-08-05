@@ -1,6 +1,6 @@
 from bot.core.bot import Bot
 
-from .neko import Neko
+from .nekos import Neko
 from .yandere import Yandere
 
 
