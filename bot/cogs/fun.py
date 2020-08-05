@@ -33,11 +33,72 @@ class Fun(Cog):
         self.session = aiohttp.ClientSession()
 
     @command()
+    async def joke(self, ctx: Context) -> None:
+        """Send a random joke."""
+        async with self.session.get("https://mrwinson.me/api/jokes/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                joke = data["joke"]
+                embed = Embed(
+                    description=joke,
+                    color=Color.gold()
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def duck(self, ctx: Context) -> None:
+        """Get a random picture of a duck."""
+        async with self.session.get("https://random-d.uk/api/v2/random") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def koala(self, ctx: Context) -> None:
+        """Get a random picture of a koala."""
+        async with self.session.get("https://some-random-api.ml/img/koala") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold()
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
+    async def panda(self, ctx: Context) -> None:
+        """Get a random picture of a panda."""
+        async with self.session.get("https://some-random-api.ml/img/panda",) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = Embed(
+                    title="Random Duck!",
+                    color=Color.gold(),
+                )
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
+
+    @command()
     async def catfact(self, ctx: Context) -> None:
         """Sends a random cat fact"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
+
         fact = choice(self.all_facts["all"])
         await ctx.send(embed=Embed(
             title="Did you Know?",
@@ -86,9 +147,7 @@ class Fun(Cog):
     async def image(self, ctx: Context, type: str) -> None:
         """Sends a random image(sfw and nsfw)."""
         try:
-            embed = Embed(
-                color=0x690E8
-            )
+            embed = Embed(color=0x690E8)
             embed.set_image(url=nekos.img(type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
@@ -134,7 +193,7 @@ class Fun(Cog):
                     em.set_image(url=js["file"])
                     await ctx.send(embed=em)
                 else:
-                    await ctx.send(f"Couldn't Fetch cute cats :( [status : {r.status}]")
+                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {r.status}]")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
@@ -145,6 +204,7 @@ class Fun(Cog):
                 colour=0x690E8
             )
             httpcat_em.set_image(url=f"https://http.cat/{http_id}.jpg")
+
             await ctx.send(embed=httpcat_em)
         else:
             await ctx.send("Invalid HTTP Code Specified")
@@ -179,6 +239,7 @@ class Fun(Cog):
                     if shibe_get.host == "random.dog":
                         shibe_img = await shibe_get.text()
                         shibe_url = "https://random.dog/" + shibe_img
+
                     elif shibe_get.host == "dog.ceo":
                         shibe_img = await shibe_get.json()
                         shibe_url = shibe_img["message"]
@@ -203,7 +264,7 @@ class Fun(Cog):
                     liz_em.set_image(url=img["url"])
                     await ctx.send(embed=liz_em)
                 else:
-                    await ctx.send(f"Something went Boom! [status : {lizr.status}]")
+                    await ctx.send(f"Something went boom! :( [CODE: {lizr.status}]")
 
     @command(aliases=["leet"])
     async def leetify(self, ctx: Context, *, content: str) -> None:
@@ -258,16 +319,16 @@ class Fun(Cog):
                     )
                     await ctx.send(embed=why_em)
                 else:
-                    await ctx.send(f"Something went Boom! [status : {why.status}]")
+                    await ctx.send(f"Something went Boom! [CODE : {why.status}]")
 
     @command(aliases=["rhash", "robothash", "rh", "rohash"])
     async def robohash(self, ctx: Context, *, meme: str) -> None:
         """text => robot image thing."""
         try:
-            e = Embed(colour=0x690E8)
+            embed = discord.Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
-            e.set_image(url=f"https://robohash.org/{meme}.png")
-            await ctx.send(embed=e)
+            embed.set_image(url=f"https://robohash.org/{meme}.png")
+            await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"Something Broke. LOL [{e!s}]")
 
@@ -299,8 +360,8 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"OMFG! [STATUS : {meme.status}]")
 
-    @command(aliases=["dadjoke", "awdad", "dadpls", "shitjoke", "badjoke"])
-    async def joke(self, ctx: Context) -> None:
+    @command(aliases=["awdad", "dadpls", "shitjoke", "badjoke"])
+    async def dadjoke(self, ctx: Context) -> None:
         """Dad joke simulator 3017, basically"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as jok:
@@ -321,6 +382,7 @@ class Fun(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as r:
                 data = await r.text()
+
         lines = data.split("\n")
         embed = Embed(
             title="Excuses",
@@ -339,6 +401,7 @@ class Fun(Cog):
                 embed = Embed()
                 embed.set_image(url=picture)
                 await ctx.send(embed=embed)
+
         except Exception:
             await ctx.send("Oops, there was a problem!")
 
@@ -365,14 +428,16 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Slap In The Face!", description=f"{member.mention} got slapped in the face by {ctx.author.mention}!",
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif")
+                url="https://media.giphy.com/media/3XlEk2RxPS1m8/giphy.gif"
+            )
         await ctx.send(embed=embed)
 
     @command()
@@ -406,7 +471,8 @@ class Fun(Cog):
             color=Color.blurple()
         )
         embed.set_image(
-            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif")
+            url="https://media.giphy.com/media/xT9IguC6bxYHsGIRb2/giphy.gif"
+        )
         await ctx.send(embed=embed)
 
     @command(aliases=["table", "flip", "tableflip"])
@@ -443,7 +509,8 @@ class Fun(Cog):
                 color=Color.blurple()
             )
             embed.set_image(
-                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif")
+                url="https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif"
+            )
         else:
             embed = Embed(
                 title="Cookie Giver!",
