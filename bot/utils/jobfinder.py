@@ -1,4 +1,4 @@
-import aiohttp
+import requests
 import random as rd
 import html
 import datetime
@@ -51,10 +51,8 @@ class DiscordJobFinder:
         self._jobs = []
 
         jobscontent = "https://api.greenhouse.io/v1/boards/discord/jobs?content=true"
-
-        async with aiohttp.ClientSession() as session:
-            async with session.get(jobscontent, headers={"User-Agent": "Job Scraper (Discord Bot)"}) as resp:
-                jobs = (await resp.json())['jobs']
+                
+        jobs = requests.get(jobscontent, headers={"User-Agent": "Job Scraper (Discord Bot)"}).json()['jobs']
                 
 
         for job in jobs:
