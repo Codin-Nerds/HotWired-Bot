@@ -7,7 +7,7 @@ class Jobs(commands.Cog):
     @commands.command()
     async def job_find(self, ctx: commands.Context, amount=3):
         """Searches for jobs at discord."""
-        await ctx.send(f"Searching for {amount} jobs...".)
+        await ctx.send(f"Searching for {amount} jobs...")
 
         finder = DiscordJobFinder()
 
