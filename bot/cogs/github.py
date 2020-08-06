@@ -97,7 +97,7 @@ class Github(Cog):
                 embed.title = f"{repo} on GitHub"
                 embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
 
-                await ctx.send(embed=embed
+                await ctx.send(embed=embed)
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Github(bot))
