@@ -1,12 +1,14 @@
+import os
 import re
 import textwrap
 from typing import List
 
 import aiohttp
-import html2text
-from discord import Embed, utils
+from discord import Color, Embed, utils
 from discord.ext.commands import Cog, CommandError, Context, command
+from discord.ext.commands.errors import CommandInvokeError
 
+import html2text
 from bot import config
 from bot.core.bot import Bot
 
@@ -111,13 +113,9 @@ class Search(Cog, name="Basic"):
             msg = (textwrap.dedent(
                 f"""
                 Showing **{count}** results for `{query_display}`.
-
-
                 **{first_title}** {first_url}
                 {first_desc}
-
                 {other_msg}
-
                 _Powered by HotWired._
                 """
             ))
@@ -149,120 +147,182 @@ class Search(Cog, name="Basic"):
         """Look up anime information."""
         base = "https://kitsu.io/api/edge/"
 
-        # Handling
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 async with session.get(base + "anime", params={"filter[text]": query}) as resp:
                     resp = await resp.json()
                     resp = resp["data"]
 
-                    query = utils.escape_mentions(query)
-                    query = utils.escape_markdown(query)
+            query = utils.escape_mentions(query)
+            query = utils.escape_markdown(query)
 
-                    if not resp:
-                        await ctx.send(f"No results for `{query}`.")
-                        return
+            if not resp:
+                await ctx.send(f"No results for `{query}`.")
+                return
 
-                    anime = resp[0]
-                    title = f'{anime["attributes"]["canonicalTitle"]}'
-                    anime_id = anime["id"]
-                    url = f"https://kitsu.io/anime/{anime_id}"
-                    thing = "" if not anime["attributes"]["endDate"] else f' to {anime["attributes"]["endDate"]}'
+            anime = resp[0]
+            title = f'{anime["attributes"]["canonicalTitle"]}'
+            anime_id = anime["id"]
+            url = f"https://kitsu.io/anime/{anime_id}"
+            thing = "" if not anime["attributes"]["endDate"] else f' to {anime["attributes"]["endDate"]}'
 
-                    embed = Embed(title=f"{title}", color=ctx.author.color, rl=url)
-                    embed.description = anime["attributes"]["synopsis"][0:425] + "..."
-                    embed.add_field(name="Average Rating", value=anime["attributes"]["averageRating"])
-                    embed.add_field(name="Popularity Rank", value=anime["attributes"]["popularityRank"])
-                    embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
-                    embed.add_field(name="Status", value=anime["attributes"]["status"])
-                    embed.add_field(name="Aired", value=f"{anime['attributes']['startDate']}{thing}")
-                    embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
-                    embed.add_field(name="Type", value=anime["attributes"]["showType"])
-                    embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
-                    embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url_as(format="png"))
-                    try:
-                        await ctx.send(f"**{title}** - <{url}>", embed=embed)
-                    except Exception:
-                        aired = f"{anime['attributes']['startDate']}{thing}"
-                        template = textwrap.dedent(
-                            f"""
-                            ```
-                            url: {url}
-                            Title: {title}
-                            Average Rating: {anime["attributes"]["averageRating"]}
-                            Popularity Rank: {anime["attributes"]["popularityRank"]}
-                            Age Rating: {anime["attributes"]["ageRating"]}
-                            Status: {anime["attributes"]["status"]}
-                            Aired: {aired}
-                            Type: {anime['attributes']["showType"]}
-                            Powered by HotWired
-                            ```
-                            """
-                        )
-                        await ctx.send(template)
+            embed = Embed(title=f"{title}", color=ctx.author.color, rl=url)
+            embed.description = anime["attributes"]["synopsis"][0:425] + "..."
+            embed.add_field(name="Average Rating", value=anime["attributes"]["averageRating"])
+            embed.add_field(name="Popularity Rank", value=anime["attributes"]["popularityRank"])
+            embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
+            embed.add_field(name="Status", value=anime["attributes"]["status"])
+            embed.add_field(name="Aired", value=f"{anime['attributes']['startDate']}{thing}")
+            embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
+            embed.add_field(name="Type", value=anime["attributes"]["showType"])
+            embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
+            embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url())
+            try:
+                await ctx.send(f"**{title}** - <{url}>", embed=embed)
+            except Exception:
+                aired = f"{anime['attributes']['startDate']}{thing}"
+                template = textwrap.dedent(
+                    f"""
+                    ```
+                    url: {url}
+                    Title: {title}
+                    Average Rating: {anime["attributes"]["averageRating"]}
+                    Popularity Rank: {anime["attributes"]["popularityRank"]}
+                    Age Rating: {anime["attributes"]["ageRating"]}
+                    Status: {anime["attributes"]["status"]}
+                    Aired: {aired}
+                    Type: {anime['attributes']["showType"]}
+                    Powered by HotWired
+                    ```
+                    """
+                )
+                await ctx.send(template)
 
-        @command()
-        async def manga(self, ctx: Context, *, query: str) -> None:
-            """Look up manga information."""
-            base = "https://kitsu.io/api/edge/"
+    @command()
+    async def manga(self, ctx: Context, *, query: str) -> None:
+        """Look up manga information."""
+        base = "https://kitsu.io/api/edge/"
 
-            # Handling
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(base + "manga", params={"filter[text]": query}) as resp:
-                        resp = await resp.json()
-                        resp = resp["data"]
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base + "manga", params={"filter[text]": query}) as resp:
+                    resp = await resp.json()
+                    resp = resp["data"]
 
-                        query = utils.escape_mentions(query)
-                        query = utils.escape_markdown(query)
+            query = utils.escape_mentions(query)
+            query = utils.escape_markdown(query)
 
-                        if not resp:
-                            await ctx.send(f"No results for `{query}`.")
-                            return
+            if not resp:
+                await ctx.send(f"No results for `{query}`.")
+                return
 
-                        manga = resp[0]
-                        title = f'{manga["attributes"]["canonicalTitle"]}'
-                        manga_id = manga["id"]
-                        url = f"https://kitsu.io/manga/{manga_id}"
+            manga = resp[0]
+            title = f'{manga["attributes"]["canonicalTitle"]}'
+            manga_id = manga["id"]
+            url = f"https://kitsu.io/manga/{manga_id}"
 
-                        embed = Embed(title=f"{title}", color=ctx.author.color, url=url)
-                        embed.description = manga["attributes"]["synopsis"][0:425] + "..."
+            embed = Embed(title=title, color=ctx.author.color, url=url)
+            embed.description = manga["attributes"]["synopsis"][0:425] + "..."
 
-                        if manga["attributes"]["averageRating"]:
-                            embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
-                        embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
+            if manga["attributes"]["averageRating"]:
+                embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
+            embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
 
-                        if manga["attributes"]["ageRating"]:
-                            embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
-                        embed.add_field(name="Status", value=manga["attributes"]["status"])
-                        thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
-                        embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
+            if manga["attributes"]["ageRating"]:
+                embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
+            embed.add_field(name="Status", value=manga["attributes"]["status"])
+            thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
+            embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
 
-                        if manga["attributes"]["chapterCount"]:
-                            embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
-                        embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
-                        embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
+            if manga["attributes"]["chapterCount"]:
+                embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
+            embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
+            embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
 
-                        try:
-                            await ctx.send(f"**{title}** - <{url}>", embed=embed)
-                        except Exception:
-                            aired = f"{manga['attributes']['startDate']}{thing}"
-                            template = textwrap.dedent(
-                                f"""
-                                ```
-                                url: {url}
-                                Title: {title}
-                                Average Rating: {manga["attributes"]["averageRating"]}
-                                Popularity Rank: {manga["attributes"]["popularityRank"]}
-                                Age Rating: {manga["attributes"]["ageRating"]}
-                                Status: {manga["attributes"]["status"]}
-                                Aired: {aired}
-                                Type: {manga['attributes']["showType"]}
-                                Powered by HotWired
-                                ```
-                                """
-                            )
-                            await ctx.send(template)
+            try:
+                await ctx.send(f"**{title}** - <{url}>", embed=embed)
+            except Exception:
+                aired = f"{manga['attributes']['startDate']}{thing}"
+                template = textwrap.dedent(
+                    f"""
+                    ```
+                    url: {url}
+                    Title: {title}
+                    Average Rating: {manga["attributes"]["averageRating"]}
+                    Popularity Rank: {manga["attributes"]["popularityRank"]}
+                    Age Rating: {manga["attributes"]["ageRating"]}
+                    Status: {manga["attributes"]["status"]}
+                    Aired: {aired}
+                    Type: {manga['attributes']["showType"]}
+                    Powered by HotWired
+                    ```
+                    """
+                )
+                await ctx.send(template)
+
+    @command()
+    async def weather(self, ctx: Context, *, city: str = None) -> None:
+        """
+        Sends current weather in the given city name.
+
+        eg. `weather london`
+        """
+        try:
+            url_formatted_city = city.replace(" ", "-")
+        except CommandInvokeError:
+            ctx.send("You didn't provide a city")
+
+        async with aiohttp.ClientSession() as session:
+            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={os.getenv('WEATHER_API_KEY')}"
+            async with session.get(weather_lookup_url) as resp:
+                data = await resp.json()
+
+        if data["cod"] == "401":
+            await ctx.send("Invalid API key")
+            return
+        if data["cod"] == "404":
+            await ctx.send("Invalid city name")
+            return
+
+        weather_embed = Embed(
+            title=f"Current Weather in {city.capitalize()}",
+            color=Color.blue()
+        )
+        longtitude = data["coord"]["lon"]
+        lattitude = data["coord"]["lat"]
+        weather_embed.add_field(
+            name="❯❯Coordinates",
+            value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"
+        )
+        actual_temp = round(data["main"]["temp"] / 10, 1)
+        feels_like = round(data["main"]["feels_like"] / 10, 1)
+        weather_embed.add_field(
+            name="❯❯Temperature",
+            value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`"
+        )
+        wind_speed = data["wind"]["speed"]
+        wind_direction = data["wind"]["deg"]
+        weather_embed.add_field(
+            name="❯❯Wind",
+            value=f"**Speed: **`{wind_speed}km/h`\n**Direction: **`{wind_direction}°`",
+        )
+        visibility = round(data["visibility"] / 1000, 2)
+        humidity = data["main"]["humidity"]
+        weather_description = data["weather"][0]["description"]
+        weather_embed.add_field(
+            name="❯❯Miscellaneous",
+            value=f"**Humidity: **`{humidity}%`\n**Visibility: **`{visibility}km`\n**Weather Summary: **`{weather_description}`",
+        )
+
+        states = ["wind", "partly", "cloud", "snow", "rain"]
+        for state in states:
+            if state in weather_description:
+                weather_embed.set_image(url=config.WEATHER_ICONS[state])
+                break
+        else:
+            weather_embed.set_image(url=config.WEATHER_ICONS["sun"])
+
+        await ctx.send(embed=weather_embed)
 
 
 def setup(bot: Bot) -> None:
