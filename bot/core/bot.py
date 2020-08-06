@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import asyncpg
+# import asyncpg
 from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
 from discord.ext.commands import ExtensionError
@@ -25,11 +25,11 @@ class Bot(Base_Bot):
         if self.first_on_ready:
             self.first_on_ready = False
 
-            try:
-                self.pool = await asyncpg.create_pool(**config.DATABASE)
-            except asyncpg.exceptions.PostgresError:
-                print("Database connection error. Killing program.")
-                return await self.close()
+#             try:
+#                 self.pool = await asyncpg.create_pool(**config.DATABASE)
+#             except asyncpg.exceptions.PostgresError:
+#                 print("Database connection error. Killing program.")
+#                 return await self.close()
 
             # Load all extensions
             for extension in self.extension_list:
