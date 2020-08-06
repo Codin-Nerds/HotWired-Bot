@@ -29,6 +29,7 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
 
 
 class Security(Cog):
+    """Security commands made just for you."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -39,7 +40,7 @@ class Security(Cog):
         if not message.attachments or not message.guild:
             return
 
-        elif message.author.permissions_in(message.channel).manage_messages:
+        if message.author.permissions_in(message.channel).manage_messages:
             return
 
         # TODO: Adjust the message and remove only filtered attachments instead of deleting the whole message
@@ -81,4 +82,5 @@ class Security(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Security cog."""
     bot.add_cog(Security(bot))

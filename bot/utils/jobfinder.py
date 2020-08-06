@@ -1,15 +1,15 @@
-import requests
-import random as rd
-import html
 import datetime
+import html
 
-from discord import Embed
+import random as rd
 
 from bs4 import BeautifulSoup
+from discord import Embed
+import requests
 
 
 class Job:
-    def __init__(self, *args, **attrs):
+    def __init__(self, *args, **attrs) -> None:
         self.title = attrs['title']
         self.id = attrs['id']
         self.updated_at = attrs['updated_at']
@@ -22,7 +22,7 @@ class Job:
 
         self._content = html.unescape(attrs['content'])
 
-    def embed(self):
+    def embed(self) -> Embed:
         soup = BeautifulSoup(self._content, 'html.parser')
         colors = [
             0x4e8dd0,
@@ -44,13 +44,12 @@ class Job:
 
 
 class DiscordJobFinder:
-    def __init__(self):
+    def __init__(self) -> None:
         self._jobs = []
 
         jobscontent = "https://api.greenhouse.io/v1/boards/discord/jobs?content=true"
-                
+
         jobs = requests.get(jobscontent, headers={"User-Agent": "Job Scraper (Discord Bot)"}).json()['jobs']
-                
 
         for job in jobs:
             job = {
@@ -67,7 +66,7 @@ class DiscordJobFinder:
             self.jobs.append(Job(**job))
 
     @property
-    def jobs(self):
+    def jobs(self) -> list:
         return self._jobs
 
 

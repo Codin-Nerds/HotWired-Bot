@@ -9,7 +9,9 @@ from praw.exceptions import MissingRequiredAttributeException
 from loguru import logger
 
 
+# This function could be a regular function, even a method
 async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embed:
+    """Make a reddit post an embed."""
     embed = Embed(colour=Color.green(), url=randompost.url)
 
     if len(randompost.title) > 0 and len(randompost.title) < 256:
@@ -68,7 +70,7 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
     return embed
 
 
-with open("bot/assets/subreddit.json", "r") as f:
+with open(os.path.sep.join(("bot", "assets", "subreddit.json")), "r") as f:
     subreddits = json.load(f)
 
 with open("bot/assets/nsfw_subreddit.json", "r") as f:
@@ -76,6 +78,8 @@ with open("bot/assets/nsfw_subreddit.json", "r") as f:
 
 
 class Reddit(Cog):
+    """Reddit, the front page of the Internet."""
+
     def __init__(self, bot: Bot) -> None:
         try:
             self.reddit_client = RedditAPI(
@@ -137,6 +141,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def videos(self, ctx: Context) -> None:
+        """Get a random video post."""
         name = random.choice(subreddits["vid"])
         subreddit = self.reddit_client.subreddit(name)
 
@@ -151,7 +156,7 @@ class Reddit(Cog):
     @reddit.command()
     @is_nsfw()
     async def nsfw(self, ctx: Context) -> None:
-        """Get a nsfw picture."""
+        """Get a NSFW picture."""
         name = random.choice(subreddits["nsfw"])
         subreddit = self.reddit_client.subreddit(name)
 
@@ -207,7 +212,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def new(self, ctx: Context, subreddit: str) -> None:
-        """sends you the fresh posts from given subreddit."""
+        """Retrieve fresh posts from the given subreddit."""
         subreddit = self.reddit_client.subreddit(f"{subreddit}")
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
@@ -239,7 +244,7 @@ class Reddit(Cog):
 
     @reddit.command()
     async def hot(self, ctx: Context, subreddit: str) -> None:
-        """sends you the hottest posts from given subreddit."""
+        """Retrieve the hottest posts from the given subreddit."""
         subreddit = self.reddit_client.subreddit(f"{subreddit}")
         postlist = list(subreddit.hot(limit=10))
         randompost = random.choice(postlist)
@@ -560,4 +565,5 @@ class Reddit(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Reddit cog."""
     bot.add_cog(Reddit(bot))

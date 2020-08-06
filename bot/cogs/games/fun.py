@@ -15,7 +15,7 @@ from bot import config
 from bot.core.bot import Bot
 from bot.utils.errors import ServiceError
 
-file = open("bot/assets" + os.path.sep + "excuses.txt", "r", encoding="utf-8")
+file = open(os.path.sep.join(("bot", "assets", "excuses.txt")), "r", encoding="utf-8")
 excuses = file.readlines()
 file.close()
 
@@ -94,7 +94,9 @@ class Fun(Cog):
 
     @command()
     async def catfact(self, ctx: Context) -> None:
-        """Sends a random cat fact"""
+        """Send a random cat fact."""
+        # I advise you to use a background task to update the facts.
+        # Example : https://github.com/Faholan/All-Hail-Chaos/blob/60b6ce944c66ccea6890019e6a196ac06f1eb55e/cogs/animals.py#L47
         async with aiohttp.ClientSession() as session:
             async with session.get("https://cat-fact.herokuapp.com/facts") as response:
                 self.all_facts = await response.json()
@@ -108,7 +110,7 @@ class Fun(Cog):
 
     @command()
     async def textcat(self, ctx: Context) -> None:
-        """Sends a random textcat"""
+        """Send a random textcat."""
         try:
             embed = Embed(
                 description=nekos.textcat(),
@@ -120,7 +122,7 @@ class Fun(Cog):
 
     @command()
     async def whydoes(self, ctx: Context) -> None:
-        """Sends a random why?__"""
+        """Send a random why."""
         try:
             embed = Embed(
                 description=nekos.why(),
@@ -132,7 +134,7 @@ class Fun(Cog):
 
     @command()
     async def fact(self, ctx: Context) -> None:
-        """Sends a random fact"""
+        """Send a random fact."""
         try:
             embed = Embed(
                 description=nekos.fact(),
@@ -144,11 +146,13 @@ class Fun(Cog):
 
     @command()
     @is_nsfw()
-    async def image(self, ctx: Context, type: str) -> None:
-        """Sends a random image(sfw and nsfw)."""
+    async def image(self, ctx: Context, image_type: str) -> None:
+        """Send a random image. It can be NSFW."""
         try:
-            embed = Embed(color=0x690E8)
-            embed.set_image(url=nekos.img(type))
+            embed = Embed(
+                color=0x690E8
+            )
+            embed.set_image(url=nekos.img(image_type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
             await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
@@ -175,25 +179,25 @@ class Fun(Cog):
                         return
 
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://api.icndb.com/jokes/random") as r:
-                joke = await r.json()
+            async with session.get("http://api.icndb.com/jokes/random") as response:
+                joke = await response.json()
                 await ctx.send(joke["value"]["joke"].replace("&quote", '"'))
 
     @command()
     async def cat(self, ctx: Context) -> None:
         """Random cat images. Awww, so cute! Powered by random.cat."""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as r:
-                if r.status == 200:
-                    js = await r.json()
-                    em = Embed(
+            async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as response:
+                if response.status == 200:
+                    json = await response.json()
+                    embed = Embed(
                         name="random.cat",
                         colour=0x690E8
                     )
-                    em.set_image(url=js["file"])
-                    await ctx.send(embed=em)
+                    embed.set_image(url=json["file"])
+                    await ctx.send(embed=embed)
                 else:
-                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {r.status}]")
+                    await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {response.status}]")
 
     @command()
     async def httpcat(self, ctx: Context, http_id: int) -> None:
@@ -211,7 +215,7 @@ class Fun(Cog):
 
     @command()
     async def fox(self, ctx: Context) -> None:
-        """Sends a random fox picture."""
+        """Send a random fox picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://randomfox.ca/floof/") as response:
                 picture = await response.json()
@@ -224,14 +228,12 @@ class Fun(Cog):
 
     @command()
     async def dog(self, ctx: Context) -> None:
-        """Random doggos just because!"""
-
+        """Random doggos just because."""
         def decide_source() -> str:
-            n = random.randint(0, 1)
-            if n == 0:
+            number = random.randint(0, 1)
+            if number:
                 return "https://random.dog/woof"
-            elif n == 1:
-                return "https://dog.ceo/api/breeds/image/random"
+            return "https://dog.ceo/api/breeds/image/random"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(decide_source(), headers=self.user_agent) as shibe_get:
@@ -255,7 +257,7 @@ class Fun(Cog):
 
     @command()
     async def lizard(self, ctx) -> None:
-        """Shows a random lizard picture."""
+        """Show a random lizard picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
@@ -268,8 +270,7 @@ class Fun(Cog):
 
     @command(aliases=["leet"])
     async def leetify(self, ctx: Context, *, content: str) -> None:
-        """Gives each letter of a given message a different markdown style."""
-
+        """Give each letter of a given message a different markdown style."""
         leetters = {
             "a": ["A", "4"],
             "e": ["E", "3"],
@@ -323,28 +324,28 @@ class Fun(Cog):
 
     @command(aliases=["rhash", "robothash", "rh", "rohash"])
     async def robohash(self, ctx: Context, *, meme: str) -> None:
-        """text => robot image thing."""
+        """Text => robot image thing."""
         try:
-            embed = discord.Embed(colour=0x690E8)
+            embed = Embed(colour=0x690E8)
             meme = urllib.parse.quote_plus(meme)
             embed.set_image(url=f"https://robohash.org/{meme}.png")
             await ctx.send(embed=embed)
-        except Exception as e:
-            await ctx.send(f"Something Broke. LOL [{e!s}]")
+        except Exception as error:
+            await ctx.send(f"Something Broke. LOL [{error}]")
 
     async def get_answer(self, ans: str) -> str:
+        """Format an answer."""
         if ans == "yes":
             return "Yes."
-        elif ans == "no":
+        if ans == "no":
             return "NOPE"
-        elif ans == "maybe":
+        if ans == "maybe":
             return "maaaaaaybe?"
-        else:
-            return "Internal Error: Invalid answer LMAOO"
+        return "Internal Error: Invalid answer LMAOO"
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
-        """Why not make your decisions with a bot?"""
+        """Let the bot answer a yes/no question for you."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://yesno.wtf/api", headers=self.user_agent) as meme:
                 if meme.status == 200:
@@ -374,8 +375,7 @@ class Fun(Cog):
 
     @command(aliases=["bofh", "techproblem"])
     async def excuse(self, ctx: Context) -> None:
-        """
-        Bastard Operator from Hell excuses.
+        """Bastard Operator from Hell excuses.
 
         Source: http://pages.cs.wisc.edu/~ballard/bofh
         """
@@ -420,7 +420,7 @@ class Fun(Cog):
 
     @command()
     async def slap(self, ctx: Context, member: discord.Member = None) -> None:
-        """Slap a User."""
+        """Slap a user."""
         if member == ctx.author.mention or member is None:
             embed = Embed(
                 title="Slap In The Face!",
@@ -442,7 +442,7 @@ class Fun(Cog):
 
     @command()
     async def punch(self, ctx: Context, member: discord.Member = None) -> None:
-        """Punch a User."""
+        """Punch a user."""
         img_links = [
             "https://media.giphy.com/media/13HXKG2HGN8aPK/giphy.gif",
             "https://media.giphy.com/media/dAknWZ0gEXL4A/giphy.gif",
@@ -464,7 +464,7 @@ class Fun(Cog):
 
     @command()
     async def shoot(self, ctx: Context, member: discord.Member) -> None:
-        """Shoot a User."""
+        """Shoot a user."""
         embed = Embed(
             title="Boom! Bam! He's Dead!",
             description=f"{member.mention} shot by {ctx.author.mention} :gun: :boom:",
@@ -491,7 +491,7 @@ class Fun(Cog):
     @command(aliases=["cookies", "cook"])
     @cooldown(1, 30, BucketType.user)
     async def cookie(self, ctx: Context, member: discord.Member) -> None:
-        """Give a User a cookie."""
+        """Give a user a cookie."""
         num = random.randint(1, 4)
 
         author = "You're a" if ctx.author == member else f"{member.mention} is"
@@ -528,6 +528,7 @@ class Fun(Cog):
 
     @cookie.error
     async def cookie_error(self, ctx: Context, error: Exception) -> None:
+        """Manage errors from the cookie command."""
         if isinstance(error, BadArgument):
             embed = Embed(
                 title="❌ERROR",
@@ -539,3 +540,8 @@ class Fun(Cog):
 
 # TODO: kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite
 #  greet punch handholding tickle kill hold pats wave boop
+
+
+def setup(bot: Bot) -> None:
+    """Load the Func cog."""
+    bot.add_cog(Fun(bot))

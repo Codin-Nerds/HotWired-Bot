@@ -6,7 +6,7 @@ from contextlib import suppress
 from datetime import datetime
 
 import discord
-from discord import Color, Embed, Member, NotFound, Role, TextChannel
+from discord import Color, Embed, Forbidden, Member, NotFound, Role, TextChannel, User
 from discord.ext.commands import (
     Cog, Context, Greedy, NoPrivateMessage,
     command, has_permissions
@@ -14,7 +14,7 @@ from discord.ext.commands import (
 from loguru import logger
 
 from bot.core.bot import Bot
-from bot.core.converters import ActionReason, ProcessedMember, ProcessedUser
+from bot.core.converters import ActionReason
 from bot.core.decorators import follow_roles
 
 
@@ -33,8 +33,8 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     @follow_roles()
-    async def kick(self, ctx: Context, member: ProcessedMember, *, reason: ActionReason = "No specific reason.") -> None:
-        """Kick a User."""
+    async def kick(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
+        """Kick a user."""
         if not isinstance(member, Member):
             embed = Embed(
                 title="You can't kick this user",
@@ -47,8 +47,7 @@ class Moderation(Cog):
                 ),
                 color=Color.red(),
             )
-            await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
-            return
+            return await ctx.send(f"Sorry {ctx.author.mention}", embed=embed)
 
         server_embed = Embed(
             title="User Kicked",
@@ -86,8 +85,8 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     @follow_roles()
-    async def ban(self, ctx: Context, member: ProcessedUser, *, reason: ActionReason = "No specific reason.") -> None:
-        """Ban a User."""
+    async def ban(self, ctx: Context, member: User, *, reason: ActionReason = "No specific reason.") -> None:
+        """Ban a user."""
         server_embed = Embed(
             title="User Banned",
             description=textwrap.dedent(
@@ -123,8 +122,11 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def multiban(self, ctx: Context, members: Greedy[ProcessedMember], *, reason: ActionReason = None) -> None:
-        """Bans multiple members from the server."""
+    async def multiban(self, ctx: Context, members: Greedy[Member], *, reason: ActionReason = None) -> None:
+        """Ban multiple members from the server."""
+        if reason is None:
+            reason = f"Action done by {ctx.author} (ID: {ctx.author.id})"
+
         if len(members) == 0:
             return await ctx.send("No members to ban.")
 
@@ -145,8 +147,8 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, *, user: ProcessedUser) -> None:
-        """Unban a User."""
+    async def unban(self, ctx: Context, *, user: User) -> None:
+        """Unban a user."""
         try:
             await ctx.guild.unban(user)
 
@@ -180,8 +182,8 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int, target: ProcessedMember = None) -> None:
-        """Clear specified number of messages."""
+    async def clear(self, ctx: Context, amount: int, target: Member = None) -> None:
+        """Clear the specified number of messages from the channel."""
         if target is None:
             await ctx.message.channel.purge(limit=amount)
         else:
@@ -204,7 +206,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def shift(self, ctx, count: int, target: TextChannel, copy: bool = False) -> None:
-        """Copy or Move specified messages amount to specified channel"""
+        """Copy or Move specified messages amount to specified channel."""
         if not (5 <= count <= 150):
             await ctx.send("Amount of messages shifted must be greater than 0 and smaller than 150")
             return
@@ -227,7 +229,7 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(administrator=True)
-    async def dm(self, ctx: Context, members: Greedy[t.Union[ProcessedMember, Role]], *, text: str = None) -> None:
+    async def dm(self, ctx: Context, members: Greedy[t.Union[Member, Role]], *, text: str = None) -> None:
         """Dm a List of Specified User from Your Guild."""
         embed_data = self.embeds_cog.embeds[ctx.author]
 
@@ -333,9 +335,8 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_roles=True)
-    async def promote(self, ctx: Context, member: ProcessedMember, *, role: Role) -> None:
-        """Promote member to role."""
-        # TODO: Use custom check here
+    async def promote(self, ctx: Context, member: Member, *, role: Role) -> None:
+        """Promote the member to the specified role."""
         if role >= ctx.author.top_role:
             embed = Embed(
                 title="Insufficient permissions",
@@ -421,7 +422,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def cleanup(self, ctx: Context, amount: int = 100) -> None:
-        """Cleans up the bots messages from the channel."""
+        """Clean up the bots messages from the channel."""
         strategy = self._basic_cleanup_strategy
 
         if ctx.me.permissions_in(ctx.channel).manage_messages:
@@ -450,12 +451,13 @@ class Moderation(Cog):
             logger.debug(f"User <@{ctx.author.id}> has cleaned up {amount} bot messages")
             await ctx.send(embed=embed, delete_after=10)
 
-    async def cog_check(self, ctx: Context) -> t.Union[None, bool]:
-        """Make sure these commands can't be executed from DMs."""
-        if ctx.guild is None:
-            raise NoPrivateMessage
-        return True
+    def cog_check(self, ctx: Context) -> bool:
+        """Make sure these commands cannot be executed from DMs."""
+        if ctx.guild:
+            return True
+        raise NoPrivateMessage
 
 
 def setup(bot: Bot) -> None:
+    """Load the Moderation cog."""
     bot.add_cog(Moderation(bot))

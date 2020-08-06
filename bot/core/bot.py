@@ -1,9 +1,7 @@
 from datetime import datetime
 
 # import asyncpg
-from discord import Color, Embed
 from discord.ext.commands import Bot as Base_Bot
-from discord.ext.commands import ExtensionError
 from loguru import logger
 
 from bot import config
@@ -13,6 +11,7 @@ class Bot(Base_Bot):
     """Subclassed Hotwired bot."""
 
     def __init__(self, extensions: list, *args, **kwargs) -> None:
+        """Initialize the subclass."""
         super().__init__(*args, **kwargs)
         self.extension_list = extensions
         self.first_on_ready = True

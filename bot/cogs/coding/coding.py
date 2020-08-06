@@ -28,6 +28,7 @@ class Coding(Cog):
 
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
+        """Background task to update the languages."""
         async with aiohttp.ClientSession() as client_session:
             async with client_session.get("https://tio.run/languages.json") as response:
                 if response.status != 200:
@@ -94,8 +95,8 @@ class Coding(Cog):
 
         code = "".join(code)
 
-        compilerFlags = []
-        commandLineOptions = []
+        compiler_flags = []
+        commandline_options = []
         args = []
         inputs = []
 
@@ -106,10 +107,10 @@ class Coding(Cog):
                 inputs.append(" ".join(line.split(" ")[1:]).strip("`"))
 
             elif line.startswith("compiler-flags "):  # check for flags
-                compilerFlags.extend(line[15:].strip("`").split(" "))
+                compiler_flags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))
+                commandline_options.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -123,7 +124,7 @@ class Coding(Cog):
 
         async with ctx.typing():
             # if file is sent instead of raw code in codeblocks
-            if (ctx.message.attachments):
+            if ctx.message.attachments:
                 file = ctx.message.attachments[0]
                 # check the size of file exceeding max limit
                 if file.size > 20000:
@@ -204,9 +205,9 @@ class Coding(Cog):
             tio = Tio(
                 lang,
                 text,
-                compilerFlags=compilerFlags,
+                compilerFlags=compiler_flags,
                 inputs=inputs,
-                commandLineOptions=commandLineOptions,
+                commandLineOptions=commandline_options,
                 args=args,
             )
             result = await tio.send()
@@ -254,7 +255,7 @@ class Coding(Cog):
 
     @commands.command(aliases=["ref"])
     async def reference(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
+        """Return element reference from given language."""
 
         lang = language.strip("`")
 
@@ -269,7 +270,7 @@ class Coding(Cog):
 
     @commands.command(aliases=["docs"])
     async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
+        """Return element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
@@ -282,7 +283,7 @@ class Coding(Cog):
 
     @commands.command(name="list")
     async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
-        """Lists available choices for other commands."""
+        """List available choices for other commands."""
 
         choices = {
             "documentations": self.documented,

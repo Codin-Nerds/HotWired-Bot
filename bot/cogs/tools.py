@@ -10,6 +10,8 @@ from bot.core.bot import Bot
 
 
 class Tools(Cog):
+    """Some tools for the bot."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
@@ -56,4 +58,5 @@ class Tools(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Tools cog."""
     bot.add_cog(Tools(bot))

@@ -1,5 +1,6 @@
 import os
 import random
+import re
 
 import aiohttp
 from discord import Color, Embed
@@ -10,12 +11,14 @@ NASA_API = os.getenv("NASA_API")
 
 
 def remove_tags(text: str) -> None:
-    import re
+    """Remove tags from text."""
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
 
 class Nasa(Cog):
+    """And she's buying a stairway to heaven..."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -25,7 +28,9 @@ class Nasa(Cog):
     @command(aliases=["apod"])
     @cooldown(16, 60, BucketType.guild)
     async def astronomy_picture(self, ctx: Context) -> None:
-        """Gives you the astronomy picture of the day."""
+        """Give you the astronomy picture of the day."""
+        # There is a ratelimit. Better to use a background task to update
+        # Example : https://github.com/Faholan/All-Hail-Chaos/blob/60b6ce944c66ccea6890019e6a196ac06f1eb55e/cogs/nasa.py#L72
         async with self.session.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API}") as resp:
             data = await resp.json()
 
@@ -154,4 +159,5 @@ class Nasa(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Are you sure all that glitter is gold?"""
     bot.add_cog(Nasa(bot))

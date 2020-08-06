@@ -25,14 +25,17 @@ def to_tio_string(couple: list) -> bytes:
 class Tio:
     """Thanks to FrenchMasterSword For the TIO Wrapper."""
     def __init__(
-        self,
-        language: str,
-        code: str,
-        inputs: str = "",
-        compiler_flags: t.Optional[list] = None,
-        command_line_options: t.Optional[list] = None,
-        args: t.Optional[list] = None
+            self,
+            language: str,
+            code: str,
+            inputs: str = "",
+            compiler_flags: t.Optional[list] = None,
+            command_line_options: t.Optional[list] = None,
+            args: t.Optional[list] = None
     ) -> None:
+        compiler_flags = compiler_flags or []
+        command_line_options = command_line_options or []
+        args = args or []
 
         self.backend = "https://tio.run/cgi-bin/run/api/"
         self.json = "https://tio.run/languages.json"
@@ -58,12 +61,12 @@ class Tio:
             args = []
 
     async def send(self) -> str:
-        session = aiohttp.ClientSession()
+        """Send the query."""
+        async with aiohttp.ClientSession() as client_session:
+            async with client_session.post(self.backend, data=self.request) as response:
+                if response.status != 200:
+                    raise aiohttp.HttpProcessingError(response.status)
 
-        async with session.post(self.backend, data=self.request) as response:
-            if response.status != 200:
-                raise aiohttp.HttpProcessingError(response.status)
-
-            data = await response.read()
-            data = data.decode("utf-8")
-            return data.replace(data[:16], "")  # remove token
+                data = await response.read()
+                data = data.decode("utf-8")
+                return data.replace(data[:16], "")  # remove token

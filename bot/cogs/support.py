@@ -8,6 +8,8 @@ from bot.core.bot import Bot
 
 
 class Support(Cog):
+    """Support is cool."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -24,9 +26,9 @@ class Support(Cog):
 
     @command()
     async def support(self, ctx: Context) -> None:
-        """Get an invite link to the bots support server."""
+        """Get an invite link to the bot's support server."""
         embed = Embed(
-            title="Need Support? OR Want to give Feedback?",
+            title="Do you need support or want to give some feedback?",
             description=textwrap.dedent(
                 "If you have any **problems with the bot** or "
                 "if you have any **suggestions/feedback** be sure to use the support commands or join the Support Server!"
@@ -40,7 +42,7 @@ class Support(Cog):
 
     @command()
     async def contact(self, ctx: Context, *, message: str = "Contact Notification!") -> None:
-        """Contact the Developers for something important."""
+        """Contact the developers for something important."""
         contact_channel = self.bot.get_channel(config.contact_channel)
 
         embed = Embed(
@@ -56,7 +58,7 @@ class Support(Cog):
 
     @command()
     async def bug(self, ctx: Context, *, message: str = "Bug Report!") -> None:
-        """Report the developers about a Bug."""
+        """Report a bug to the developers."""
         bug_report_channel = self.bot.get_channel(config.bug_report_channel)
 
         embed = Embed(
@@ -72,7 +74,7 @@ class Support(Cog):
 
     @command()
     async def support_msg(self, ctx: Context, *, message: str = "Support Required!") -> None:
-        """Send a support message to the developers."""
+        """Send a message to the support."""
         support_channel = self.bot.get_channel(config.support_channel)
 
         embed = Embed(
@@ -101,7 +103,7 @@ class Support(Cog):
 
     @command()
     async def suggestions(self, ctx: Context, *, message: str) -> None:
-        """Send a new idea or suggestion to the developers."""
+        """Give a new idea or send a suggestion to the developers."""
         suggestions_channel = self.bot.get_channel(config.suggestions_channel)
 
         embed = Embed(
@@ -144,4 +146,5 @@ class Support(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Support cog."""
     bot.add_cog(Support(bot))

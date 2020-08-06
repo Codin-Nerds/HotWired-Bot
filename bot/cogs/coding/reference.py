@@ -13,6 +13,7 @@ from discord.ext.commands import Context
 
 
 def markdownify(html: str) -> str:
+    """Convert markdown to HTML."""
     return MarkdownConverter(bullets="•").convert(html)
 
 
@@ -36,7 +37,7 @@ async def mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
 
 
 async def html_ref(ctx: Context, text: str) -> None:
-    """Displays information on an HTML tag."""
+    """Display information on an HTML tag."""
     text = text.strip("<>`")
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{text}"
@@ -54,7 +55,7 @@ async def html_ref(ctx: Context, text: str) -> None:
 
 
 async def _http_ref(part: str, ctx: Context, text: str) -> None:
-    """Displays information about HTTP protocol."""
+    """Display information about HTTP protocol."""
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
@@ -76,7 +77,7 @@ csp_directives = partial(_http_ref, "Headers/Content-Security-Policy")
 
 
 async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
-    """Displays a git help page."""
+    """Display a git help page."""
     text = text.strip("`")
 
     if part and text == "git":
@@ -117,7 +118,7 @@ git_tutorial_ref = partial(_git_main_ref, "")
 
 
 async def sql_ref(ctx: Context, text: str) -> Message:
-    """Displays reference on an SQL statement."""
+    """Display reference on an SQL statement."""
     text = text.strip("`").lower()
 
     if text in ("check", "unique", "not null"):
@@ -155,7 +156,7 @@ async def sql_ref(ctx: Context, text: str) -> Message:
 
 
 async def haskell_ref(ctx: Context, text: str) -> Message:
-    """Displays information on given Haskell topic."""
+    """Display information on given Haskell topic."""
     text = text.strip("`")
 
     snake = "_".join(text.split(" "))
