@@ -74,7 +74,6 @@ class Github(Cog):
         Show info about a given GitHub repository.
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
-        embed = Embed(color=Color.blue())
         async with await self.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
             response = await resp.json()
 
@@ -90,13 +89,18 @@ class Github(Cog):
             if response["description"] == "":
                 desc = "No description provided."
             else:
-                desc = response["description"]
-                stars = response["stargazers_count"]
-                forks = response["forks_count"]
-                cmd = f'git clone {response["clone_url"]}'
-                embed.title = f"{repo} on GitHub"
-                embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
-
+                embed = Embed(color=Color.blue(), timestamp=ctx.message.created_at)
+                embed.set_author(name=f"[{repo} on GitHub]({resonse['html_url']})", icon_url=ctx.guild.icon_url)
+                embed.set_footer(text=f"Requested by {ctx.author} | Powered by HotWired")
+                embed.set_thumbnail(url=ctx.author.avatar_url)
+                embed.set_image(url=repsonse['owner']["avatar_url"])
+                embed.add_field(name='Description', value=response["description"])
+                embed.add_field(name="Gazers", value=response["stargazers_count"])
+                embed.add_field(name=''Forks', value=response["forks_count"])
+                embed.add_field(name='Clone', value=f'git clone {response["clone_url"]}')
+                embed.add_field(name='Language', value=response['language'])
+                embed.add_field(name='License', value=f"{response['license']['name']}")
+                 
                 await ctx.send(embed=embed)
 
 def setup(bot: Bot) -> None:
