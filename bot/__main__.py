@@ -13,7 +13,6 @@ extensions = [
     "bot.cogs.codesandbox",
     "bot.cogs.coding",
     "bot.cogs.commands",
-
     "bot.cogs.comics",
     "bot.cogs.common",
     "bot.cogs.conversion",
@@ -21,7 +20,6 @@ extensions = [
     "bot.cogs.embeds",
     "bot.cogs.emotes",
     "bot.cogs.events",
-    "bot.cogs.fun",
     "bot.cogs.games",
     "bot.cogs.github",
     "bot.cogs.help",

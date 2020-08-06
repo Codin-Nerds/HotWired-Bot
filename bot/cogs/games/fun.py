@@ -539,7 +539,3 @@ class Fun(Cog):
 
 # TODO: kiss, hug, pat => commands to be added cuddle hug insult kiss lick nom pat poke slap stare highfive bite
 #  greet punch handholding tickle kill hold pats wave boop
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Fun(bot))

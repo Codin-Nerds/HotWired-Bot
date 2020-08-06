@@ -227,7 +227,3 @@ class Comics(Cog):
             embed.set_image(url="attachment://sarahscribbles.png")
             file = File(img, "sarahscribbles.png")
             await ctx.send(file=file, embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Comics(bot))
