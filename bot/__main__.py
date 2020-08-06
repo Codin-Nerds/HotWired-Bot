@@ -24,6 +24,7 @@ extensions = [
     "bot.cogs.fun",
     "bot.cogs.games",
     "bot.cogs.github",
+    "bot.cogs.help",
     "bot.cogs.moderation",
     "bot.cogs.nasa",
     "bot.cogs.reddit",
