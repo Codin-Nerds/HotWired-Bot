@@ -96,7 +96,7 @@ class Github(Cog):
                 embed.set_image(url=repsonse['owner']["avatar_url"])
                 embed.add_field(name='Description', value=response["description"])
                 embed.add_field(name="Gazers", value=response["stargazers_count"])
-                embed.add_field(name=''Forks', value=response["forks_count"])
+                embed.add_field(name='Forks', value=response["forks_count"])
                 embed.add_field(name='Clone', value=f'git clone {response["clone_url"]}')
                 embed.add_field(name='Language', value=response['language'])
                 embed.add_field(name='License', value=f"{response['license']['name']}")
