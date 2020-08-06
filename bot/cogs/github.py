@@ -72,7 +72,6 @@ class Github(Cog):
     async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
         """
         Show info about a given GitHub repository.
-
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
         embed = Embed(color=Color.blue())
@@ -82,22 +81,23 @@ class Github(Cog):
         if resp.status in BAD_RESPONSES:
             await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
+        
+        try:
+            temp =  response["message"]
+            await ctx.send(f"ERROR: Not Found!")
+        except KeyError:
+          
+            if response["description"] == "":
+                desc = "No description provided."
+            else:
+                desc = response["description"]
+                stars = response["stargazers_count"]
+                forks = response["forks_count"]
+                cmd = f'git clone {response["clone_url"]}'
+                embed.title = f"{repo} on GitHub"
+                embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
 
-        if response["message"]:
-            await ctx.send(f"ERROR: {response['message']}")
-        if response["description"] == "":
-            desc = "No description provided."
-        else:
-            desc = response["description"]
-
-        stars = response["stargazers_count"]
-        forks = response["forks_count"]
-        cmd = f'git clone {response["clone_url"]}'
-        embed.title = f"{repo} on GitHub"
-        embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
-
-        await ctx.send(embed=embed)
-
+                await ctx.send(embed=embed
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Github(bot))
