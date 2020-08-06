@@ -1,10 +1,6 @@
-from datetime import datetime
-
 # import asyncpg
 from discord.ext.commands import Bot as Base_Bot
 from loguru import logger
-
-from bot import config
 
 
 class Bot(Base_Bot):
