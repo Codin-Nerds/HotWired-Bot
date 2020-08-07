@@ -61,7 +61,7 @@ class Emote:
                     return emote["code"]
         raise ValueError("That wasn't supposed to happen")
 
-    def get_image(self) -> io.BytesIO:
+    async def get_image(self) -> io.BytesIO:
         """Get the image for this emote."""
         if self.emote_type == "twitch":
             async with self.session.get(f"https://static-cdn.jtvnw.net/emoticons/v1/{self.emote_id}/3.0") as resp:
