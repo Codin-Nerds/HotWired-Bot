@@ -146,13 +146,11 @@ class Fun(Cog):
 
     @command()
     @is_nsfw()
-    async def image(self, ctx: Context, image_type: str) -> None:
-        """Send a random image. It can be NSFW."""
+    async def image(self, ctx: Context, img_type: str) -> None:
+        """Sends a random image(sfw and nsfw)."""
         try:
-            embed = Embed(
-                color=0x690E8
-            )
-            embed.set_image(url=nekos.img(image_type))
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=nekos.img(img_type))
             await ctx.send(embed=embed)
         except errors.NSFWChannelRequired:
             await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
@@ -256,8 +254,8 @@ class Fun(Cog):
                     await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
     @command()
-    async def lizard(self, ctx) -> None:
-        """Show a random lizard picture."""
+    async def lizard(self, ctx: Context) -> None:
+        """Shows a random lizard picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
@@ -334,14 +332,17 @@ class Fun(Cog):
             await ctx.send(f"Something Broke. LOL [{error}]")
 
     async def get_answer(self, ans: str) -> str:
-        """Format an answer."""
+        return_str = ""
         if ans == "yes":
-            return "Yes."
-        if ans == "no":
-            return "NOPE"
-        if ans == "maybe":
-            return "maaaaaaybe?"
-        return "Internal Error: Invalid answer LMAOO"
+            return_str = "Yes."
+        elif ans == "no":
+            return_str = "NOPE"
+        elif ans == "maybe":
+            return_str = "maaaaaaybe?"
+        else:
+            return_str = "Internal Error: Invalid answer LMAOO"
+
+        return return_str
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
@@ -542,9 +543,8 @@ class Fun(Cog):
     async def tweet(self, ctx: Context, username: str, *, text: str) -> None:
         """Tweet as someone."""
         async with ctx.typing():
-            async with self.session.get("https://nekobot.xyz/api/imagegen?type=tweet"
-                                        f"&username={username}"
-                                        f"&text={text}") as r:
+            base_url = "https://nekobot.xyz/api/imagegen?type=tweet"
+            async with self.session.get(f"{base_url}&username={username}&text={text}") as r:
                 res = await r.json()
 
             embed = Embed(color=Color.dark_green())
