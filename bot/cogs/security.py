@@ -43,8 +43,6 @@ class Security(Cog):
         if message.author.permissions_in(message.channel).manage_messages:
             return
 
-        # TODO: Adjust the message and remove only filtered attachments instead of deleting the whole message
-
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
         is_blocked = file_extensions - set(whitelist)
 

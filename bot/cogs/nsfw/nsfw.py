@@ -462,3 +462,99 @@ class Nsfw(Cog):
         await ctx.send(embed=embed)
         if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
             await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def ahegao(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "ahegao"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def group(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "group"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def milf(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "milf"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def thigh(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "thigh"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def redhead(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "redhead"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)
+
+    @nsfw.command()
+    @is_nsfw()
+    async def wild(self, ctx: Context) -> None:
+        """Shows a NSFW Picture."""
+        sub = "wild"
+        name = random.choice(nsfw_subreddits[sub])
+        subreddit = self.reddit_client.subreddit(name)
+
+        postlist = list(subreddit.hot(limit=100))
+        randompost = random.choice(postlist)
+
+        embed = await reddit_embed(subreddit, randompost)
+        await ctx.send(embed=embed)
+        if ("https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url):
+            await ctx.send(randompost.url)

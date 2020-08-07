@@ -296,7 +296,7 @@ class Study(Cog):
         except discord.Forbidden:
             await ctx.send(
                 embed=Embed(
-                    description=f"I'm not allowed to do embeds here...\n{url}",
+                    description=f"I'm not allowed to do embeds here!\n{url}",
                     color=Color.gold()
                 )
             )

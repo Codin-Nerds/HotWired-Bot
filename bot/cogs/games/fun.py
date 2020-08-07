@@ -9,7 +9,7 @@ import aiohttp
 import discord
 from discord import Color, Embed
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown)
+                                  command, cooldown, is_nsfw)
 
 from bot import config
 from bot.core.bot import Bot
@@ -144,6 +144,19 @@ class Fun(Cog):
             await ctx.send('Couldn\'t Fetch any "Fact" :(')
 
     @command()
+    @is_nsfw()
+    async def image(self, ctx: Context, img_type: str) -> None:
+        """Sends a random image(sfw and nsfw)."""
+        try:
+            embed = Embed(color=0x690E8)
+            embed.set_image(url=nekos.img(img_type))
+            await ctx.send(embed=embed)
+        except nekos.errors.InvalidArgument:
+            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
+        except nekos.errors.NothingFound:
+            await ctx.send("Sorry, No Images Found.")
+
+    @command()
     async def chuck(self, ctx: Context) -> None:
         """Get a random Chuck Norris joke."""
         if randint(0, 1):
@@ -239,8 +252,8 @@ class Fun(Cog):
                     await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
     @command()
-    async def lizard(self, ctx) -> None:
-        """Show a random lizard picture."""
+    async def lizard(self, ctx: Context) -> None:
+        """Shows a random lizard picture."""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://nekos.life/api/lizard", headers=self.user_agent) as lizr:
                 if lizr.status == 200:
@@ -317,14 +330,17 @@ class Fun(Cog):
             await ctx.send(f"Something Broke. LOL [{error}]")
 
     async def get_answer(self, ans: str) -> str:
-        """Format an answer."""
+        return_str = ""
         if ans == "yes":
-            return "Yes."
-        if ans == "no":
-            return "NOPE"
-        if ans == "maybe":
-            return "maaaaaaybe?"
-        return "Internal Error: Invalid answer LMAOO"
+            return_str = "Yes."
+        elif ans == "no":
+            return_str = "NOPE"
+        elif ans == "maybe":
+            return_str = "maaaaaaybe?"
+        else:
+            return_str = "Internal Error: Invalid answer LMAOO"
+
+        return return_str
 
     @command(aliases=["shouldi", "ask"])
     async def yesno(self, ctx: Context, *, question: str) -> None:
@@ -506,6 +522,31 @@ class Fun(Cog):
                 color=Color.red()
             )
             await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def tweet(self, ctx: Context, username: str, *, text: str) -> None:
+        """Tweet as someone."""
+        async with ctx.typing():
+            base_url = "https://nekobot.xyz/api/imagegen?type=tweet"
+            async with self.session.get(f"{base_url}&username={username}&text={text}") as r:
+                res = await r.json()
+
+            embed = Embed(color=Color.dark_green())
+            embed.set_image(url=res["message"])
+        await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def clyde(self, ctx: Context, *, text: str) -> None:
+        """Make clyde say something."""
+        async with ctx.typing():
+            async with self.session.get(f"https://nekobot.xyz/api/imagegen?type=clyde&text={text}") as r:
+                res = await r.json()
+
+            embed = discord.Embed(color=Color.dark_green())
+            embed.set_image(url=res["message"])
+        await ctx.send(embed=embed)
 
 
 def setup(bot: Bot) -> None:

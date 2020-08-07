@@ -190,8 +190,7 @@ class Coding(Cog):
                 if matches:
                     message = (message + f" Maybe you meant {matches}?")
 
-                await ctx.send(message)
-                return
+                return await ctx.send(message)
 
             if options["--wrapped"]:
                 if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):
@@ -256,9 +255,7 @@ class Coding(Cog):
     @commands.command(aliases=["ref"])
     async def reference(self, ctx: Context, language: str, *, query: str) -> None:
         """Return element reference from given language."""
-
         lang = language.strip("`")
-
         async with ctx.typing():
             if not lang.lower() in self.referred:
                 await ctx.send(

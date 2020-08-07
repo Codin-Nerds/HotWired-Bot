@@ -1,10 +1,23 @@
+import json
 import os
-
-from discord import Game
-from discord.ext.commands import when_mentioned_or
 
 from bot import config
 from bot.core.bot import Bot
+
+from discord import Game
+
+
+def get_prefix(client, message) -> str:
+    with open("bot/assets/prefixes.json", "r") as file:
+        prefixes = json.load(file)
+
+    try:
+        prefix = prefixes[str(message.guild.id)]
+    except KeyError:
+        prefix = config.COMMAND_PREFIX
+
+    return prefix
+
 
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
@@ -49,8 +62,8 @@ extensions = [
 
 bot = Bot(
     extensions,
-    command_prefix=when_mentioned_or(PREFIX),
-    activity=Game(name=f"Ping me using {PREFIX}help"),
+    command_prefix=get_prefix,
+    activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
     case_insensitive=True,
 )
 

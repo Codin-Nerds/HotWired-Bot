@@ -28,7 +28,7 @@ class SafesearchFail(CommandError):
     """Thrown when a query contains NSFW content."""
 
 
-class Search(Cog, name="Basic"):
+class Search(Cog):
     """Search the web for a variety of different resources."""
 
     def __init__(self, bot: Bot) -> None:
@@ -103,22 +103,27 @@ class Search(Cog, name="Basic"):
                 title = self.tomd.handle(result["title"]).rstrip("\n")
                 url = result["url"]
                 other_results.append(f"**{title}** {url}")
-            other_msg: str = "\n".join(other_results)
+            other_msg = "\n\n".join(other_results).strip()
 
             # Builds message
-            msg = (textwrap.dedent(
+            msg = textwrap.dedent(
                 f"""
-                Showing **{count}** results for `{query_display}`.
-                **{first_title}** {first_url}
+                [{first_title}]({first_url})
                 {first_desc}
                 {other_msg}
-                _Powered by HotWired._
                 """
-            ))
+            )
 
             msg = re.sub(r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\." r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)", r"<\1>", msg)
 
-            await ctx.send(msg)
+            embed = Embed(
+                title="Search Results",
+                description=msg,
+                color=Color.blue()
+            )
+            embed.set_footer(text=f"Showing {count} results for {query_display} | Powered by HotWired.")
+
+            await ctx.send(embed=embed)
 
     @command()
     async def search(self, ctx: Context, category: str, *, query: str) -> None:
@@ -171,7 +176,7 @@ class Search(Cog, name="Basic"):
             embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
             embed.add_field(name="Type", value=anime["attributes"]["showType"])
             embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
-            embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url())
+            embed.set_footer(text=f"Requested by {ctx.author.name} | Powered by HotWired", icon_url=ctx.author.avatar_url)
             try:
                 await ctx.send(f"**{title}** - <{url}>", embed=embed)
             except Exception:
@@ -267,8 +272,14 @@ class Search(Cog, name="Basic"):
         except CommandInvokeError:
             ctx.send("You didn't provide a city")
 
+        WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+
+        if WEATHER_API_KEY is None:
+            await ctx.send("Fetch Error!")
+            return
+
         async with aiohttp.ClientSession() as session:
-            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={os.getenv('WEATHER_API_KEY')}"
+            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}&appid={WEATHER_API_KEY}"
             async with session.get(weather_lookup_url) as resp:
                 data = await resp.json()
 
@@ -286,26 +297,26 @@ class Search(Cog, name="Basic"):
         longtitude = data["coord"]["lon"]
         lattitude = data["coord"]["lat"]
         weather_embed.add_field(
-            name="❯❯Coordinates",
+            name="❯❯ Coordinates",
             value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"
         )
         actual_temp = round(data["main"]["temp"] / 10, 1)
         feels_like = round(data["main"]["feels_like"] / 10, 1)
         weather_embed.add_field(
-            name="❯❯Temperature",
+            name="❯❯ Temperature",
             value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`"
         )
         wind_speed = data["wind"]["speed"]
         wind_direction = data["wind"]["deg"]
         weather_embed.add_field(
-            name="❯❯Wind",
+            name="❯❯ Wind",
             value=f"**Speed: **`{wind_speed}km/h`\n**Direction: **`{wind_direction}°`",
         )
         visibility = round(data["visibility"] / 1000, 2)
         humidity = data["main"]["humidity"]
         weather_description = data["weather"][0]["description"]
         weather_embed.add_field(
-            name="❯❯Miscellaneous",
+            name="❯❯ Miscellaneous",
             value=f"**Humidity: **`{humidity}%`\n**Visibility: **`{visibility}km`\n**Weather Summary: **`{weather_description}`",
         )
 

@@ -236,6 +236,7 @@ class Sudo(Cog):
         """Only devs can use this."""
         if ctx.author.id in config.devs:
             return True
+
         embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
         await ctx.send(embed=embed)
 

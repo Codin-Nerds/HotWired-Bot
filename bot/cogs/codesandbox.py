@@ -100,11 +100,7 @@ class CodeSandbox(Cog):
         )
 
         def check(message) -> bool:
-            return all(
-                message.author.id == ctx.author.id,
-                message.channel.id == ctx.channel.id,
-                message.content.startswith("`")
-            )
+            message.author.id == ctx.author.id and message.channel.id == ctx.channel.id and message.content.startswith("`")
 
         while True:
             try:
@@ -140,7 +136,7 @@ class CodeSandbox(Cog):
                     code = compile(cleaned, "<repl session>", "exec")
                 except SyntaxError as error:
                     # This is undefined, but I don't know what it is
-                    await ctx.send(self.get_syntax_error(error))
+                    await ctx.send(error)
                     continue
 
             variables["message"] = response

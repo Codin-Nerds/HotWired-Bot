@@ -1,3 +1,4 @@
+import json
 import re
 import textwrap
 import traceback
@@ -85,6 +86,14 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(guild.id)] = PREFIX
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
         """Send message upon joining a guild, and log it."""
         logchannel = self.bot.get_channel(config.log_channel)
 
@@ -145,6 +154,14 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes.pop(str(guild.id))
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
         """Log guild removal."""
         logchannel = self.bot.get_channel(config.log_channel)
 

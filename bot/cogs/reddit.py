@@ -73,9 +73,6 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> Embe
 with open(os.path.sep.join(("bot", "assets", "subreddit.json")), "r") as f:
     subreddits = json.load(f)
 
-with open("bot/assets/nsfw_subreddit.json", "r") as f:
-    nsfw_subreddits = json.load(f)
-
 
 class Reddit(Cog):
     """Reddit, the front page of the Internet."""

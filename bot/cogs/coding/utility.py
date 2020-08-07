@@ -19,14 +19,14 @@ async def paste(text: str) -> str:
 def get_paste_link(link: str) -> str:
     domain = link.split("/")[2]
 
-    if domain == "hasteb.in":
+    if domain == "hastebin.com":
         if "/raw/" in link:
             return link
 
         token = link.split("/")[-1]  # Get the file paste token
 
         if "." in token:
-            token = token[: token.rfind(".")]  # Revome the extension
+            token = token[: token.rfind(".")]  # Remove the extension
 
         return f"https://hasteb.in/raw/{token}"
     else:
