@@ -2,11 +2,11 @@ import base64
 import hashlib
 import textwrap
 
-from bot import config
-from bot.core.bot import Bot
-
 from discord import Embed
 from discord.ext.commands import Cog, Context, command
+
+from bot import config
+from bot.core.bot import Bot
 
 
 class Conversion(Cog):
@@ -51,8 +51,7 @@ class Conversion(Cog):
 
     @command()
     async def byteconvert(self, ctx: Context, value: int, unit: str = "Mio") -> None:
-        """
-        Convert into Bytes.
+        """Convert into Bytes.
 
         Accepted units are: `O`, `Kio`, `Mio`, `Gio`, `Tio`, `Pio`, `Eio`, `Zio`, `Yio`
         """
@@ -72,7 +71,7 @@ class Conversion(Cog):
 
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
-            await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @command(name="hash")
     async def _hash(self, ctx: Context, algorithm: str, *, text: str) -> None:
@@ -131,4 +130,5 @@ class Conversion(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Conversion cog"""
     bot.add_cog(Conversion(bot))

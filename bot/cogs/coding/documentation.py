@@ -3,15 +3,13 @@ from functools import partial
 from typing import Literal
 
 import aiohttp
-
-from bs4 import BeautifulSoup
-
 import discord
+from bs4 import BeautifulSoup
 from discord.ext.commands import Context
 
 
 async def python_doc(ctx: Context, text: str) -> None:
-    """Filters python.org results based on your query."""
+    """Filter python.org results based on your query."""
     text = text.strip("`")
     url = "https://docs.python.org/3/genindex-all.html"
 
@@ -34,8 +32,9 @@ async def python_doc(ctx: Context, text: str) -> None:
 
             content = [f"[{a.string}](https://docs.python.org/3/{a.get('href')})" for a in links]
 
-            embed = discord.Embed(title="Python 3 docs")
             python_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/240px-Python-logo-notext.svg.png"
+
+            embed = discord.Embed(title="Python 3 docs")
             embed.set_thumbnail(url=python_logo)
             embed.add_field(name=f"Results for `{text}`:", value="\n".join(content), inline=False)
 
@@ -44,7 +43,6 @@ async def python_doc(ctx: Context, text: str) -> None:
 
 async def cppreference(language: Literal["C", "C++"], ctx: Context, text: str) -> None:
     """Search something on cppreference."""
-
     text = text.strip("`")
 
     base_url = "https://cppreference.com/w/cpp/index.php?title=Special:Search&search=" + text
@@ -59,7 +57,7 @@ async def cppreference(language: Literal["C", "C++"], ctx: Context, text: str) -
 
             uls = soup.find_all("ul", class_="mw-search-results")
 
-            if not len(uls):
+            if not uls:
                 return await ctx.send("No results")
 
             if language == "C":
@@ -88,7 +86,6 @@ cpp_doc = partial(cppreference, "C++")
 
 async def haskell_doc(ctx: Context, text: str) -> None:
     """Search something on wiki.haskell.org."""
-
     text = text.strip("`")
 
     snake = "_".join(text.split(" "))
@@ -123,8 +120,7 @@ async def haskell_doc(ctx: Context, text: str) -> None:
 
 
 async def rust_doc(ctx, text: str) -> None:
-    """Get the doc.rust-lang.org results based on your query"""
-
+    """Get the doc.rust-lang.org results based on your query."""
     text = text.strip('`')
     if text.startswith("std::"):
         text = text[5:]
@@ -134,7 +130,7 @@ async def rust_doc(ctx, text: str) -> None:
     async with aiohttp.ClientSession() as client_session:
         async with client_session.get(url) as response:
             if response.status != 200:
-                return await ctx.send('An error occurred (status code: {response.status}). Retry later.')
+                return await ctx.send(f'An error occurred (status code: {response.status}). Retry later.')
 
             soup = BeautifulSoup(str(await response.text()), 'lxml')
 

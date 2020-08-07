@@ -1,28 +1,24 @@
 import os
 import random
+import re
 
 import aiohttp
-
 from discord import Color, Embed
-from discord.ext.commands import (
-    Bot,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown
-)
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
 
 NASA_API = os.getenv("NASA_API")
 
 
 def remove_tags(text: str) -> None:
-    import re
+    """Remove tags from text."""
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
 
 class Nasa(Cog):
+    """And she's buying a stairway to heaven..."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -32,7 +28,9 @@ class Nasa(Cog):
     @command(aliases=["apod"])
     @cooldown(16, 60, BucketType.guild)
     async def astronomy_picture(self, ctx: Context) -> None:
-        """Gives you the astronomy picture of the day."""
+        """Give you the astronomy picture of the day."""
+        # There is a ratelimit. Better to use a background task to update
+        # Example : https://github.com/Faholan/All-Hail-Chaos/blob/60b6ce944c66ccea6890019e6a196ac06f1eb55e/cogs/nasa.py#L72
         async with self.session.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API}") as resp:
             data = await resp.json()
 
@@ -52,7 +50,7 @@ class Nasa(Cog):
 
     @command(aliases=["nsearch"])
     async def nasa_search(self, ctx: Context, *, query: str) -> None:
-        """Search for a query on Nasa."""
+        """Search for a query on NASA's website."""
         async with self.session.get(f"https://images-api.nasa.gov/search?q={query}") as resp:
             data = await resp.json()
 
@@ -74,7 +72,7 @@ class Nasa(Cog):
 
     @command(aliases=["nid"])
     async def nasa_id(self, ctx: Context, id: str) -> None:
-        """Search for a picture on Nasa with nasa id."""
+        """Search for a picture on NASA's website with an id."""
         async with self.session.get(f"https://images-api.nasa.gov/asset/{id}") as resp:
             data = await resp.json()
 
@@ -90,7 +88,7 @@ class Nasa(Cog):
 
     @command(aliases=["nasapatent"])
     async def nasa_patent(self, ctx: Context, *, patent: str) -> None:
-        """Search for a picture on Nasa with nasa id."""
+        """Search for a NASA patent."""
         async with self.session.get(f"https://api.nasa.gov/techtransfer/patent/?{patent}&api_key={NASA_API}") as resp:
             data = await resp.json()
 
@@ -161,4 +159,5 @@ class Nasa(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Are you sure all that glitter is gold?"""
     bot.add_cog(Nasa(bot))

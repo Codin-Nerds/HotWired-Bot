@@ -2,18 +2,16 @@ import io
 import random
 
 import aiohttp
+from bs4 import BeautifulSoup
+from discord import Color, Embed, File
+from discord.ext.commands import Cog, Context, command
 
 from bot import config
 from bot.core.bot import Bot
 
-from bs4 import BeautifulSoup
-
-from discord import Color, Embed, File
-from discord.ext.commands import Cog, Context, command
-
 
 class Comics(Cog):
-    """Print random comics from popular sources."""
+    """View random comics from popular sources."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -21,8 +19,7 @@ class Comics(Cog):
 
     @command()
     async def ohno(self, ctx: Context) -> None:
-        """Webcomic Name comics."""
-
+        """Send a random 'Webcomic Name' comic."""
         url = "http://webcomicname.com/random"
 
         async with ctx.typing():
@@ -41,14 +38,11 @@ class Comics(Cog):
 
     @command()
     async def smbc(self, ctx: Context) -> None:
-        """Saturday Morning comic."""
-
+        """Send a random 'Saturday Morning' comic."""
         url = "http://www.smbc-comics.com/comic/archive"
 
         async with ctx.typing():
-            async with self.session.get(
-                url, headers={"Connection": "keep-alive"}
-            ) as response:
+            async with self.session.get(url, headers={"Connection": "keep-alive"}) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             all_comics = soup.find("select", attrs={"name": "comic"})
@@ -60,7 +54,7 @@ class Comics(Cog):
             comic_url = f"http://www.smbc-comics.com/{random_comic}"
 
             async with self.session.get(
-                comic_url, headers={"Connection": "keep-alive"}
+                    comic_url, headers={"Connection": "keep-alive"}
             ) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 img_url = soup.find(property="og:image")["content"]
@@ -75,8 +69,7 @@ class Comics(Cog):
 
     @command()
     async def pbf(self, ctx: Context) -> None:
-        """The Perry Bible comic."""
-
+        """Send a random 'The Perry Bible' comic."""
         url = "http://pbfcomics.com/random"
 
         async with ctx.typing():
@@ -95,8 +88,7 @@ class Comics(Cog):
 
     @command()
     async def cah(self, ctx: Context) -> None:
-        """Cyanide and Happiness comic."""
-
+        """Send a random 'Cyanide and Happiness' comic."""
         url = "http://explosm.net/comics/random"
 
         async with ctx.typing():
@@ -117,7 +109,7 @@ class Comics(Cog):
 
     @command()
     async def xkcd(self, ctx: Context, comic_type: str = "latest") -> None:
-        """Get your favorite xkcd comics."""
+        """See the latest/a random 'xkcd' comic."""
         comic_type = comic_type.lower()
 
         if comic_type not in ["latest", "random"]:
@@ -127,16 +119,16 @@ class Comics(Cog):
 
         if comic_type == "random":
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://xkcd.com/info.0.json") as r:
-                    data = await r.json()
+                async with session.get("https://xkcd.com/info.0.json") as response:
+                    data = await response.json()
                 random_comic = random.randint(1, data["num"])
 
                 url = f"https://xkcd.com/{random_comic}/info.0.json"
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as r:
-                if r.status == 200:
-                    data = await r.json()
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
                     day, month, year = data["day"], data["month"], data["year"]
                     comic_num = data["num"]
 
@@ -170,8 +162,7 @@ class Comics(Cog):
 
     @command()
     async def mrls(self, ctx: Context) -> None:
-        """Mr. Lovenstein comic."""
-
+        """Send a random 'Mr. Lovenstein' comic."""
         url = "http://www.mrlovenstein.com/shuffle"
 
         async with ctx.typing():
@@ -190,8 +181,7 @@ class Comics(Cog):
 
     @command()
     async def chainsaw(self, ctx: Context) -> None:
-        """Chainsawsuit comic."""
-
+        """Send a random 'Chainsawsuit' comic."""
         url = "http://chainsawsuit.com/comic/random/?random&nocache=1"
 
         async with ctx.typing():
@@ -210,8 +200,7 @@ class Comics(Cog):
 
     @command()
     async def sarah(self, ctx: Context) -> None:
-        """Sarah's Scribbles"""
-
+        """Send a random 'Sarah's Scribbles' comic."""
         url = "http://www.gocomics.com/random/sarahs-scribbles"
 
         async with ctx.typing():
@@ -232,4 +221,5 @@ class Comics(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Comics cog."""
     bot.add_cog(Comics(bot))

@@ -3,31 +3,34 @@ import textwrap
 import typing as t
 
 import aiohttp
+import discord
+from bs4 import BeautifulSoup
+from discord import Color, Embed
+from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
 from bot.utils.math import get_math_results
 from bot.utils.paginator import Pages
 from bot.utils.wolframscrape import get_wolfram_data
 
-from bs4 import BeautifulSoup
-
-import discord
-from discord import Color, Embed
-from discord.ext.commands import Cog, Context, command
-
 
 class UrbanDictionaryPages(Pages):
+    """Urban dictionnary is life."""
+
     BRACKETED = re.compile(r"(\[(.+?)\])")
 
     def __init__(self, ctx: Context, data: t.List[str]) -> None:
+        """Initialize the pages."""
         super().__init__(ctx, entries=data, per_page=1)
 
     def get_page(self, page: int) -> str:
+        """Get the page associated to the index."""
         return self.entries[page - 1]
 
     def cleanup_definition(self, definition: str, *, regex: str = BRACKETED) -> str:
-        def repl(m) -> str:
-            word = m.group(2)
+        """Cleanup the definition."""
+        def repl(message) -> str:
+            word = message.group(2)
             return f'[{word}](http://{word.replace(" ", "-")}.urbanup.com)'
 
         ret = regex.sub(repl, definition)
@@ -42,26 +45,28 @@ class UrbanDictionaryPages(Pages):
         else:
             title = entry["word"]
 
-        self.embed = e = Embed(colour=0xE86222, title=title, url=entry["permalink"])
-        e.set_footer(text=f'Author : {entry["author"]}')
-        e.description = self.cleanup_definition(entry["definition"])
+        self.embed = embed = Embed(colour=0xE86222, title=title, url=entry["permalink"])
+        embed.set_footer(text=f'Author : {entry["author"]}')
+        embed.description = self.cleanup_definition(entry["definition"])
 
         try:
             date = discord.utils.parse_time(entry["written_on"][0:-1])
         except (ValueError, KeyError):
             pass
         else:
-            e.timestamp = date
+            embed.timestamp = date
 
 
 class Study(Cog):
+    """We love studying."""
+
     def __init__(self, bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
-        """Calculate an equation"""
+        """Calculate an equation."""
         res = get_math_results(equation)
 
         if res.lower() == "invalid equation":
@@ -80,7 +85,7 @@ class Study(Cog):
 
     @command(aliases=["wq", "wolframquestion", "wquestion"])
     async def ask_question(self, ctx: Context, conversation_mode: str = "true", *, question: str) -> None:
-        """Ask the answer of an question"""
+        """Get the answer of a question."""
         data = get_wolfram_data(question, conversation_mode)
 
         embed = Embed(title="Question Results")
@@ -92,7 +97,7 @@ class Study(Cog):
 
     @command(aliases=["dict"])
     async def urban(self, ctx: Context, *, word: str) -> None:
-        """Searches urban dictionary."""
+        """Search urban dictionary."""
         url = "http://api.urbandictionary.com/v0/define"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params={"term": word}) as resp:
@@ -121,7 +126,7 @@ class Study(Cog):
         pages = UrbanDictionaryPages(ctx, data)
         await pages.paginate()
 
-    async def _get_soup_object(self, url: str) -> t.Union[None, BeautifulSoup]:
+    async def _get_soup_object(self, url: str) -> t.Optional[BeautifulSoup]:
         try:
             async with self.session.request("GET", url) as response:
                 return BeautifulSoup(await response.text(), "html.parser")
@@ -130,7 +135,7 @@ class Study(Cog):
 
     @command()
     async def antonym(self, ctx: Context, *, word: str) -> None:
-        """Displays antonyms for a given word."""
+        """Get antonyms for a given word."""
         search_msg = await ctx.send("Searching...")
         search_term = word.split(" ", 1)[0]
         result = await self._antonym(ctx, search_term)
@@ -155,7 +160,7 @@ class Study(Cog):
 
     @command()
     async def define(self, ctx: Context, *, word: str) -> None:
-        """Displays definitions of a given word."""
+        """Get definitions for a given word."""
         search_msg = await ctx.send("Searching...")
         search_term = word.split(" ", 1)[0]
         result = await self._definition(ctx, search_term)
@@ -189,16 +194,15 @@ class Study(Cog):
         out = {}
         if not lists:
             return
-        for a in types:
-            reg = str(lists[types.index(a)])
+        for _type in types:
+            reg = str(lists[types.index(_type)])
             meanings = []
-            for x in re.findall(r">\s\((.*?)\)\s<", reg):
-                if "often followed by" in x:
+            for result in re.findall(r">\s\((.*?)\)\s<", reg):
+                if "often followed by" in result:
                     pass
-                elif len(x) > 5 or " " in str(x):
-                    meanings.append(x)
-            name = a.text
-            out[name] = meanings
+                elif len(result) > 5 or " " in str(result):
+                    meanings.append(result)
+            out[_type.text] = meanings
         return out
 
     async def _synonym(self, ctx: Context, word: str) -> list:
@@ -216,7 +220,7 @@ class Study(Cog):
 
     @command()
     async def synonym(self, ctx: Context, *, word: str) -> None:
-        """Displays synonyms for a given word."""
+        """Get synonyms for a given word."""
         search_msg = await ctx.send("Searching...")
         search_term = word.split(" ", 1)[0]
         result = await self._synonym(ctx, search_term)
@@ -250,7 +254,7 @@ class Study(Cog):
 
         async with aiohttp.ClientSession(connector=conn) as session:
             async with session.get(
-                self.base_url, params=payload, headers=self.headers
+                    self.base_url, params=payload, headers=self.headers
             ) as res:
                 result = await res.json()
 
@@ -286,11 +290,12 @@ class Study(Cog):
         except discord.Forbidden:
             await ctx.send(
                 embed=Embed(
-                    description=f"I'm not allowed to do embeds here...\n{url}",
+                    description=f"I'm not allowed to do embeds here!\n{url}",
                     color=Color.gold()
                 )
             )
 
 
 def setup(bot: Bot) -> None:
+    """Load the Study cog."""
     bot.add_cog(Study(bot))

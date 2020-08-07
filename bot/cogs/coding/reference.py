@@ -1,34 +1,35 @@
+import aiohttp
 import re
 import typing as t
 import urllib.parse
-from functools import partial
 
-import aiohttp
-
+from markdownify import MarkdownConverter
 from bs4 import BeautifulSoup
+
+from functools import partial
 
 from discord import Embed, Message
 from discord.ext.commands import Context
 
-from markdownify import MarkdownConverter
-
 
 def markdownify(html: str) -> str:
+    """Convert markdown to HTML."""
     return MarkdownConverter(bullets="•").convert(html)
 
 
 async def mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
     """Get tag formatted content from given url from developers.mozilla.org."""
-    async with aiohttp.ClientSession() as client_session:
-        async with client_session.get(url) as response:
-            if response.status == 404:
-                return await ctx.send("No results")
-            if response.status != 200:
-                return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
+    session = aiohttp.ClientSession()
 
-            body = BeautifulSoup(await response.text(), "lxml").find("body")
+    async with session.get(url) as response:
+        if response.status == 404:
+            return await ctx.send("No results")
 
-    # First tag not empty
+        if response.status != 200:
+            return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
+
+        body = BeautifulSoup(await response.text(), "lxml").find("body")
+
     contents = body.find(id="wikiArticle").find(lambda x: x.name == "p" and x.text)
     result = markdownify(contents).replace("(/en-US/docs", "(https://developer.mozilla.org/en-US/docs")
 
@@ -36,7 +37,7 @@ async def mozilla_doc(ctx: Context, url: str) -> t.Union[Message, str]:
 
 
 async def html_ref(ctx: Context, text: str) -> None:
-    """Displays information on an HTML tag."""
+    """Display information on an HTML tag."""
     text = text.strip("<>`")
 
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{text}"
@@ -44,7 +45,6 @@ async def html_ref(ctx: Context, text: str) -> None:
 
     output = await mozilla_doc(ctx, url)
     if not isinstance(output, str):
-        # Error message already sent
         return
 
     embed = Embed(title=text, description=output, url=url)
@@ -55,13 +55,12 @@ async def html_ref(ctx: Context, text: str) -> None:
 
 
 async def _http_ref(part: str, ctx: Context, text: str) -> None:
-    """Displays information about HTTP protocol."""
+    """Display information about HTTP protocol."""
     base_url = f"https://developer.mozilla.org/en-US/docs/Web/HTTP/{part}/{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
     output = await mozilla_doc(ctx, url)
     if not isinstance(output, str):
-        # Error message already sent
         return
 
     embed = Embed(title=text, description=output, url=url)
@@ -78,20 +77,20 @@ csp_directives = partial(_http_ref, "Headers/Content-Security-Policy")
 
 
 async def _git_main_ref(part: str, ctx: Context, text: str) -> Message:
-    """Displays a git help page."""
+    """Display a git help page."""
     text = text.strip("`")
 
     if part and text == "git":
-        # just 'git'
         part = ""
+
     if not part and not text.startswith("git"):
-        # gittutorial, giteveryday...
         part = "git"
+
     base_url = f"https://git-scm.com/docs/{part}{text}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
-        async with client_session.get(url) as response:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
             if str(response.url) == "https://git-scm.com/docs":
@@ -119,17 +118,19 @@ git_tutorial_ref = partial(_git_main_ref, "")
 
 
 async def sql_ref(ctx: Context, text: str) -> Message:
-    """Displays reference on an SQL statement."""
+    """Display reference on an SQL statement."""
     text = text.strip("`").lower()
+
     if text in ("check", "unique", "not null"):
         text += " constraint"
+
     text = re.sub(" ", "-", text)
 
     base_url = f"http://www.sqltutorial.org/sql-{text}/"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
-        async with client_session.get(url) as response:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
 
@@ -141,6 +142,7 @@ async def sql_ref(ctx: Context, text: str) -> Message:
             for tag in tuple(intro.next_siblings):
                 if tag.name == "h2" and tag.text.startswith("SQL "):
                     break
+
                 if tag.name == "p":
                     ps.append(tag)
 
@@ -154,7 +156,7 @@ async def sql_ref(ctx: Context, text: str) -> Message:
 
 
 async def haskell_ref(ctx: Context, text: str) -> Message:
-    """Displays information on given Haskell topic."""
+    """Display information on given Haskell topic."""
     text = text.strip("`")
 
     snake = "_".join(text.split(" "))
@@ -162,10 +164,11 @@ async def haskell_ref(ctx: Context, text: str) -> Message:
     base_url = f"https://wiki.haskell.org/{snake}"
     url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
-    async with aiohttp.ClientSession() as client_session:
-        async with client_session.get(url) as response:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
             if response.status == 404:
                 return await ctx.send(f"No results for `{text}`")
+
             if response.status != 200:
                 return await ctx.send(f"An error occurred (status code: {response.status}). Retry later.")
 

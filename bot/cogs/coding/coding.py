@@ -6,14 +6,13 @@ from contextlib import suppress
 from io import BytesIO
 
 import aiohttp
-
-from bot import config
-from bot.core.bot import Bot
-
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog, Context
 from discord.utils import escape_mentions
+
+from bot import config
+from bot.core.bot import Bot
 
 from . import documentation, reference
 from .tiorun import Tio
@@ -29,6 +28,7 @@ class Coding(Cog):
 
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
+        """Background task to update the languages."""
         async with aiohttp.ClientSession() as client_session:
             async with client_session.get("https://tio.run/languages.json") as response:
                 if response.status != 200:
@@ -69,34 +69,14 @@ class Coding(Cog):
         "rust": documentation.rust_doc,
     }
 
-    @commands.command(
-        help="""
-        run <language> [--wrapped] [--stats] <code>
-        for command-line-options, compiler-flags and arguments you may
-        add a line starting with this argument, and after a space add
-        your options, flags or args.
-        stats option displays more information on execution consumption
-        wrapped allows you to not put main function in some languages, which you can see in `list wrapped argument`
-        <code> may be normal code, but also an attached file,
-        or a link from [hastebin](https://hasteb.in) or [Github gist](https://gist.github.com)
-        If you use a link, your command must end with this syntax:
-        `link=<link>` (no space around `=`)
-        for instance : `run python link=https://hastebin.com/resopedahe.py`
-        The link may be the raw version, and with/without the file extension
-        If the output exceeds 40 lines or Discord max message length, it will be put
-        in a new hastebin and the link will be returned.
-        When the code returns your output, you may delete it by clicking :wastebasket: in the following minute.
-        Useful to hide your syntax fails or when you forgot to print the result.
-        """,
-        brief="Execute code in a given programming language",
-    )
+    @commands.command()
     async def run(self, ctx: Context, language: str, *, code: str = "") -> t.Union[None, str]:
         """Execute code in a given programming language."""
 
         options = {
             "--stats": False,
             "--wrapped": False,
-        }  # the flags to be used when the compiler is needed
+        }
 
         # strip the "`" characters to obtain code
         lang = language.strip("`").lower()
@@ -111,12 +91,12 @@ class Coding(Cog):
                 options[option] = True
                 i = code.index(option)
                 code.pop(i)
-                code.pop(i)  # remove following whitespace character
+                code.pop(i)  # Remove whitespace
 
         code = "".join(code)
 
-        compilerFlags = []
-        commandLineOptions = []
+        compiler_flags = []
+        commandline_options = []
         args = []
         inputs = []
 
@@ -127,10 +107,10 @@ class Coding(Cog):
                 inputs.append(" ".join(line.split(" ")[1:]).strip("`"))
 
             elif line.startswith("compiler-flags "):  # check for flags
-                compilerFlags.extend(line[15:].strip("`").split(" "))
+                compiler_flags.extend(line[15:].strip("`").split(" "))
 
             elif line.startswith("command-line-options "):
-                commandLineOptions.extend(line[21:].strip("`").split(" "))
+                commandline_options.extend(line[21:].strip("`").split(" "))
 
             elif line.startswith("arguments "):
                 args.extend(line[10:].strip("`").split(" "))  # arguments
@@ -144,7 +124,7 @@ class Coding(Cog):
 
         async with ctx.typing():
             # if file is sent instead of raw code in codeblocks
-            if (ctx.message.attachments):
+            if ctx.message.attachments:
                 file = ctx.message.attachments[0]
                 # check the size of file exceeding max limit
                 if file.size > 20000:
@@ -210,8 +190,7 @@ class Coding(Cog):
                 if matches:
                     message = (message + f" Maybe you meant {matches}?")
 
-                await ctx.send(message)
-                return
+                return await ctx.send(message)
 
             if options["--wrapped"]:
                 if not (any(map(lambda x: lang.split("-")[0] == x, self.wrapping))) or lang in ("cs-mono-shell", "cs-csi"):
@@ -225,9 +204,9 @@ class Coding(Cog):
             tio = Tio(
                 lang,
                 text,
-                compilerFlags=compilerFlags,
+                compilerFlags=compiler_flags,
                 inputs=inputs,
-                commandLineOptions=commandLineOptions,
+                commandLineOptions=commandline_options,
                 args=args,
             )
             result = await tio.send()
@@ -275,10 +254,8 @@ class Coding(Cog):
 
     @commands.command(aliases=["ref"])
     async def reference(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
-
+        """Return element reference from given language."""
         lang = language.strip("`")
-
         async with ctx.typing():
             if not lang.lower() in self.referred:
                 await ctx.send(
@@ -290,7 +267,7 @@ class Coding(Cog):
 
     @commands.command(aliases=["docs"])
     async def documentation(self, ctx: Context, language: str, *, query: str) -> None:
-        """Returns element reference from given language."""
+        """Return element reference from given language."""
         lang = language.strip("`")
         async with ctx.typing():
             if not lang.lower() in self.documented:
@@ -303,7 +280,7 @@ class Coding(Cog):
 
     @commands.command(name="list")
     async def _list(self, ctx: Context, *, group: t.Optional[str] = None) -> None:
-        """Lists available choices for other commands."""
+        """List available choices for other commands."""
 
         choices = {
             "documentations": self.documented,

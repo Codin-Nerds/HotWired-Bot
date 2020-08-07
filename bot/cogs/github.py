@@ -1,11 +1,11 @@
 import textwrap
 
 import aiohttp
+from discord import Color, Embed
+from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
+                                  cooldown)
 
 from bot.config import Emojis
-
-from discord import Color, Embed
-from discord.ext.commands import Bot, BucketType, Cog, Context, command, cooldown
 
 BAD_RESPONSES = {
     404: "Issue/pull request not Found! Please enter a valid PR Number!",
@@ -14,16 +14,18 @@ BAD_RESPONSES = {
 
 
 class Github(Cog):
+    """Add GitHub integration to the bot."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
-    async def issue(self, ctx: Context, number: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
+    async def issue(self, ctx: Context, issue_num: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
-        url = f"https://api.github.com/repos/{user}/{repository}/issues/{number}"
-        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{number}/merge"
+        url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
+        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}/merge"
 
         async with self.session.get(url) as resp:
             json_data = await resp.json()
@@ -59,7 +61,7 @@ class Github(Cog):
                 f"""
                 Repository : **{user}/{repository}**
                 Title : **{json_data.get('title')}**
-                ID : **`{number}`**
+                ID : **`{issue_num}`**
                 Link :  [Here]({issue_url})
                 """
             )
@@ -70,8 +72,7 @@ class Github(Cog):
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
-        """
-        Show info about a given GitHub repository.
+        """Show info about a given GitHub repository.
 
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
@@ -100,4 +101,5 @@ class Github(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the GitHub cog."""
     bot.add_cog(Github(bot))

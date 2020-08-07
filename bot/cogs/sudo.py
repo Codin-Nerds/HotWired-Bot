@@ -7,21 +7,21 @@ import time
 import traceback
 import typing as t
 
-import GPUtil
-import humanize
-from discord import (Activity, ActivityType, Color, Embed, Game,
-                     InvalidArgument, Status)
+from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
 from discord import __version__ as discord_version
-from discord.ext.commands import Cog, Context, check, group
+from discord.ext.commands import Cog, Context, group
+import humanize
 
 from bot import config
 from bot.core.bot import Bot
 
 
+# Wrong typehint for date
 def uptime(date: str) -> str:
+    """Calculate the uptime."""
     days = date.days
-    hours, r = divmod(date.seconds, 3600)
-    minutes, seconds = divmod(r, 60)
+    hours, rest = divmod(date.seconds, 3600)
+    minutes, seconds = divmod(rest, 60)
 
     return f" Days: `{days}`, Hours: `{hours}`, Minutes: `{minutes}`, Seconds: `{seconds}`"
 
@@ -41,78 +41,69 @@ class Sudo(Cog):
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
         if days:
-            return f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+            formatted = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
         else:
-            return f"{hours} hr, {minutes} mins, and {seconds} secs"
-
-    async def is_owner(ctx: Context) -> t.Union[bool, None]:
-        if ctx.author.id in config.devs:
-            return True
-        else:
-            embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
-            await ctx.send(embed=embed)
+            formatted = f"{hours} hr, {minutes} mins, and {seconds} secs"
+        return formatted
 
     @group(hidden=True)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
-        pass
 
-    @sudo.command()
-    @check(is_owner)
+    @sudo.command(aliases=["shutdown"])
     async def shutoff(self, ctx: Context) -> None:
+        """Turn the bot off."""
         if ctx.author.id in config.devs:
             await ctx.message.add_reaction("✅")
             print("Shutting Down!")
             await self.bot.logout()
 
     @sudo.command()
-    @check(is_owner)
     async def load(self, ctx: Context, *, extension: str) -> None:
-        """Loads a cog."""
+        """Load a cog."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/cogs/owner.py#L185
         try:
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
+            self.bot.load_extension(f"bot.cogs.{extension}")
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command(name="reload")
-    @check(is_owner)
     async def _reload(self, ctx: Context, *, extension: str) -> None:
-        """Reloads a module."""
+        """Reload a module."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/Chaotic%20Bot.py#L163
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
-            self.bot.load_extension(f"cogs.{extension}")
-        except Exception:
+            self.bot.unload_extension(f"bot.cogs.{extension}")
+            self.bot.load_extension(f"bot.cogs.{extension}")
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
     async def unload(self, ctx: Context, *, extension: str) -> None:
-        """Unloads a module."""
+        """Unload a module."""
+        # https://github.com/Faholan/All-Hail-Chaos/blob/master/cogs/owner.py#L283
         try:
-            self.bot.unload_extension(f"cogs.{extension}")
-        except Exception:
+            self.bot.unload_extension(f"bot.cogs.{extension}")
+        except DiscordException:
             await ctx.send(f"```py\n{traceback.format_exc()}\n```")
         else:
             await ctx.send("\N{SQUARED OK}")
 
     @sudo.command()
-    @check(is_owner)
     async def restart(self, ctx: Context) -> None:
-        """Restart The bot."""
+        """Restart the bot."""
         await ctx.message.add_reaction("✅")
         await self.bot.logout()
         time.sleep(2)
         os.system("pipenv run start")
-        # os.system("python3.8 -m pipenv run start")
 
-    @sudo.command()
+    @sudo.command(aliases=["status"])
     async def botstatus(self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]) -> None:
-        """
-        Change the status of the bot
+        """Change the status of the bot.
+
         `botstatus playing <new status>` - Change playing status
         `botstatus watching <new status>` - Change watching status
         `botstatus listening <new status>` - Change listening status
@@ -128,10 +119,8 @@ class Sudo(Cog):
                     status=Status.online
                 )
                 await ctx.send(f"Successfully changed playing status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except DiscordException as error:
+                await ctx.send(error)
 
         elif status.lower() == "watching":
             try:
@@ -142,10 +131,8 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed watching status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except DiscordException as error:
+                await ctx.send(error)
 
         elif status.lower() == "listening":
             try:
@@ -156,10 +143,8 @@ class Sudo(Cog):
                     )
                 )
                 await ctx.send(f"Successfully changed listening status to **{status_info}**")
-            except InvalidArgument as e:
-                await ctx.send(e)
-            except Exception as e:
-                await ctx.send(e)
+            except DiscordException as error:
+                await ctx.send(error)
 
     @sudo.command()
     async def stats(self, ctx: Context) -> None:
@@ -223,28 +208,6 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @sudo.command()
-    async def gpuinfo(self, ctx: Context) -> None:
-        """Get detailed GPU info."""
-        embed = Embed(title="BOT GPU INFO", color=Color.red())
-
-        for gpu in GPUtil.getGPUs():
-            gpu_details = textwrap.dedent(
-                f"""
-                • Load: {gpu.load*100}%
-                • Temperature: {gpu.temperature} °C
-                • Free Memory: {gpu.memoryFree}MB
-                • Used Memory: {gpu.memoryUsed}MB
-                • Total Memory: {gpu.memoryTotal}MB
-                • UUID: {gpu.uuid}
-                """
-            )
-            embed.add_field(
-                name=f"**❯❯ GPU: {gpu.name}({gpu.id})**", value=gpu_details, inline=False,
-            )
-
-        await ctx.send(embed=embed)
-
     @sudo.command(aliases=['slist', 'serverlist'])
     async def guildlist(self, ctx: Context, page: int = 1) -> None:
         """List the guilds I am in."""
@@ -270,6 +233,15 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
+    @staticmethod
+    async def cog_check(ctx: Context) -> t.Union[bool, None]:
+        """Only devs can use this."""
+        if ctx.author.id in config.devs:
+            return True
+        embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
+        await ctx.send(embed=embed)
+
 
 def setup(bot: Bot) -> None:
+    """Load the Sudo cog."""
     bot.add_cog(Sudo(bot))
