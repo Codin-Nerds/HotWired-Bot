@@ -12,7 +12,7 @@ class Bot(Base_Bot):
         self.extension_list = extensions
         self.first_on_ready = True
 
-        self.pool = None
+        # self.pool = None
         self.log_channel = None
 
     async def on_ready(self) -> None:
@@ -40,5 +40,5 @@ class Bot(Base_Bot):
         """Close the bot and do some cleanup."""
         logger.info("Closing bot connection")
         await super().close()
-        if hasattr(self, "pool"):
-            await self.pool.close()
+        # if hasattr(self, "pool"):
+        #     await self.pool.close()

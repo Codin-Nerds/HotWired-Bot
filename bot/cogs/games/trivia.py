@@ -105,7 +105,7 @@ class Trivia(Cog):
 
             try:
                 second_guess = await self.bot.wait_for("message", timeout=5, check=input_check)
-                content = second_guess.content().strip().lower()
+                content = second_guess.content.strip().lower()
 
                 if content == result["correct_answer"].lower() or content in result["correct_answer"]:
                     # TODO: make a point system, the following code is placeholder

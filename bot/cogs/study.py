@@ -67,7 +67,7 @@ class Study(Cog):
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
         """Calculate an equation."""
-        res = get_math_results(equation)
+        res = await get_math_results(equation)
 
         if res.lower() == "invalid equation":
             emb = Embed(title="ERROR!", description="❌ Invalid Equation Specified, Please Recheck the Equation", color=Color.red())
@@ -86,7 +86,7 @@ class Study(Cog):
     @command(aliases=["wq", "wolframquestion", "wquestion"])
     async def ask_question(self, ctx: Context, conversation_mode: str = "true", *, question: str) -> None:
         """Get the answer of a question."""
-        data = get_wolfram_data(question, conversation_mode)
+        data = await get_wolfram_data(question, conversation_mode)
 
         embed = Embed(title="Question Results")
         embed.add_field(name="**❯❯ Question**", value=question, inline=False)
@@ -128,8 +128,8 @@ class Study(Cog):
 
     async def _get_soup_object(self, url: str) -> t.Optional[BeautifulSoup]:
         try:
-            async with self.session.request("GET", url) as response:
-                return BeautifulSoup(await response.text(), "html.parser")
+            async with self.session.get(url) as response:
+                return BeautifulSoup((await response.text()), "html.parser")
         except Exception:
             return None
 
@@ -167,6 +167,7 @@ class Study(Cog):
         str_buffer = ""
         if not result:
             return await search_msg.edit(content="This word is not in the dictionary.")
+
         for key in result:
             str_buffer += f"\n**{key}**: \n"
             counter = 1
@@ -203,19 +204,24 @@ class Study(Cog):
                 elif len(result) > 5 or " " in str(result):
                     meanings.append(result)
             out[_type.text] = meanings
+
         return out
 
     async def _synonym(self, ctx: Context, word: str) -> list:
         data = await self._get_soup_object(f"http://www.thesaurus.com/browse/{word}")
+
         if not data:
             return await ctx.send("Error fetching data.")
         section = data.find_all("ul", {"class": "css-1ytlws2 et6tpn80"})
+
         try:
             section[1]
         except IndexError:
             return
+
         spans = section[0].findAll("li")
         synonyms = [span.text for span in spans[:50]]
+
         return synonyms
 
     @command()
