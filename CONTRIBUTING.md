@@ -51,7 +51,7 @@ Tell us that `foo` accepts an `int` and a `dict` with `str` keys and values, and
 
 All functions declarations should be type hinted in code contributed to this repository
 
-## AutoDoc Formatting Directive
+## Docstring Formatting Directive
 
 Many documentation packages provide support for automatic documentation generation from the codebase's docstrings. These tools utilize special formatting directives to enable richer formatting in the generated documentation.
 
@@ -89,6 +89,72 @@ def foo(bar: int, baz: t.Optional[t.Dict[str, str]] = None) -> bool:
     """
     ...
 ```
+
+To provide further instruction on our docstring formatting syntax, here are the formatting options
+
+```py
+from discord.ext.commands import Context, command
+
+@command()
+def foo(ctx: Context, value: str) -> None:
+  """Short description of a command."""
+
+@command()
+def bar(ctx: Context, value: str) -> None:
+  """
+  Longer single-line description of a command.
+  """
+
+@command()
+def foobar(ctx: Context, value: str) -> None:
+  """
+  Title for a longer description (might also be a short explanation).
+
+  Detailed multiline description.
+  This may include the full explanation of how this command works.
+
+  We can also have multiple sections like this.
+  Or when necessary a list of accepted parameters and their explanation.
+
+  Parameters:
+  * value: str
+      This is the `value` of this command.
+      It is only a placeholder for this very explanation.
+  """
+```
+
+Note that we end each sentence in docstrings with `.` to keep everything consistent
+
+## Command definition
+
+It's better to sort commands alphabetically in the code. That way, not only will the code be nicer, with all commands nicely sorted, they'll also be sorted alphabetically in the help.
+
+### Subcommands
+
+Subcommands should also be sorted alphabetically, right under the group they belong to.
+
+For example :
+
+```python
+  @commands.command()
+  async def mycommand(self, ctx):
+    pass
+
+  @commands.group()
+  async def mygroup(self, ctx):
+    pass
+
+  @mygroup.command(self, ctx):
+    pass
+
+  @commands.command()
+  async def thecommand(self, ctx):
+    pass
+```
+
+### Decorators
+
+Methods that are decorated with a command (for example, error managing with `@thiscommand.error`) should also be written right under this command, for easier interpretation of the code.
 
 ## Work in Progress (WIP) PRs
 

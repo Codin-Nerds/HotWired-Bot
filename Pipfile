@@ -4,34 +4,44 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
-pre-commit = "*"
-black = "==19.10b0"
-flake8-annotations = "*"
+flake8 = "~=3.8.3"
+pre-commit = "~=2.6.0"
+flake8-annotations = "~=2.3.0"
+flake8-bugbear = "~=20.1.4"
 
 [packages]
-psutil = "==5.7.0"
 requests = "==2.23.0"
 aiohttp = "==3.6.2"
 beautifulsoup4 = "==4.9.1"
 discord = "==1.0.1"
 markdownify = "==0.4.1"
-stackexchange = "==0.5.0"
 tabulate = "==0.8.7"
 GPUtil = "==1.4.0"
 html2text = "*"
 "nekos.py" = "*"
-googletrans = "*"
 html5lib = "*"
+humanize = "*"
+praw = "*"
+asyncpg = "*"
+py-stackexchange = "*"
+youtube-dl = "*"
+pynacl = "*"
+lxml = "*"
+bleach = "*"
+aiogoogletrans = "*"
+loguru = "~=0.5.1"
+PyYAML = "~=5.3.1"
+"discord.py" = "~=1.4.0"
+html2markdown = "*"
+python-dateutil = "*"
+discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-ext-menus.git"}
 
 [requires]
 python_version = "3.8"
 
 [scripts]
-start="python -u ./main.py"
+start="python -m bot"
 lint = "pre-commit run --all-files"
-precommit = "pre-commit install"
-autoformat = "black ."
 
 [pipenv]
 allow_prereleases = true
