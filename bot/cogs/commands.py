@@ -1,4 +1,5 @@
 import datetime
+import json
 import textwrap
 import typing as t
 from collections import Counter
@@ -7,6 +8,7 @@ from discord import ActivityType, Color, Embed, Guild, Member, Status, User
 from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
+from bot import config
 
 STATUSES = {
     Status.online: "ONLINE",
@@ -22,6 +24,33 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    @command()
+    async def changeprefix(self, ctx: Context, prefix: str) -> None:
+        """Changes the prefix for the bot."""
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = prefix
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
+
+    @command()
+    async def resetprefix(self, ctx: Context, prefix: str) -> None:
+        """Resets the prefix of the bot to original one."""
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = config.COMMAND_PREFIX
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
+
+    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
         """Get the number of members in the server."""
