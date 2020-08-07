@@ -33,7 +33,7 @@ class Emote:
         self.name = self.get_name()
         self.image = self.get_image()
 
-    def get_name(self) -> str:
+    async def get_name(self) -> str:
         """Get the name of this emote."""
         if self.emote_type == "twitch":
             api_url = "https://api.twitchemotes.com/api/v4/emotes"
