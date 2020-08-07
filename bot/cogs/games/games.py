@@ -1,7 +1,7 @@
 import aiohttp
 import random
 
-from discord import Color, Embed
+from discord import Color, Embed, Member
 from discord.ext.commands import Cog, Context, command
 
 from bot import config
@@ -70,3 +70,69 @@ class Games(Cog):
         pokemon_embed.add_field(name="❯❯Abilities", value="\n".join(ability_names), inline=True)
 
         await ctx.send(embed=pokemon_embed)
+
+    @command(aliases=["wyr"])
+    async def wouldyourather(self, ctx: Context) -> None:
+        """Would you rather?."""
+        strings = config.talk_games["wyr"]
+        choices = len(strings)
+        i = random.randint(0, choices - 1)
+
+        embed = Embed(
+            title="Would you rather?",
+            description=f"Would you rather ..{strings[i]}",
+            color=Color.dark_magenta()
+        )
+        await ctx.send(embed=embed)
+
+    @command(aliases=["havei"])
+    async def haveiever(self, ctx: Context) -> None:
+        """Have i Ever?."""
+        strings = config.talk_games["nhie"]
+        choices = len(strings)
+        i = random.randint(0, choices - 1)
+
+        embed = Embed(
+            title="Have I ever?",
+            description=f"Have you ever ..{strings[i]}",
+            color=Color.dark_magenta()
+        )
+        await ctx.send(embed=embed)
+
+    @command()
+    async def truth(self, ctx: Context, *, user: Member) -> None:
+        """Ask a truth question to a random user."""
+        strings = config.talk_games["truths"]
+        str_len = len(strings)
+        random_truth = random.randint(0, str_len - 1)
+
+        # TODO: choose only non-offline users
+        member_len = len(ctx.guild.members)
+        random_user = random.randint(0, member_len - 1)
+        name = ctx.guild.members[random_user].mention
+
+        embed = Embed(
+            title=f"{ctx.author.name} asked {user.name}",
+            description=strings[random_truth].format(name=name),
+            color=Color.dark_magenta()
+        )
+        await ctx.send(embed=embed)
+
+    @command()
+    async def dare(self, ctx: Context, *, user: Member) -> None:
+        """Dare someone."""
+        strings = config.talk_games["dares"]
+        str_len = len(strings)
+        random_dare = random.randint(0, str_len - 1)
+
+        # TODO: choose only non-offline users
+        member_len = len(ctx.guild.members)
+        random_user = random.randint(0, member_len - 1)
+        name = ctx.guild.members[random_user].mention
+
+        embed = Embed(
+            title=f"{ctx.author.name} dared {user.name}",
+            description=strings[random_dare].format(name=name),
+            color=Color.dark_magenta()
+        )
+        await ctx.send(embed=embed)
