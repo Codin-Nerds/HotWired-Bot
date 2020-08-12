@@ -7,16 +7,11 @@ from bot.core.bot import Bot
 from discord import Game
 
 
-def get_prefix(client, message) -> str:
+def get_prefix(_, message) -> str:
     with open("bot/assets/prefixes.json", "r") as file:
         prefixes = json.load(file)
 
-    try:
-        prefix = prefixes[str(message.guild.id)]
-    except KeyError:
-        prefix = config.COMMAND_PREFIX
-
-    return prefix
+    return prefixes.get(str(message.guild.id))
 
 
 TOKEN = os.getenv("BOT_TOKEN")
