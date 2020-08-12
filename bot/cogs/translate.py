@@ -42,7 +42,7 @@ class Translator(Cog):
         )
         embed = Embed(
             title="Translation",
-            description=f"Sentence : **{sentence}**\nTranslation : **{translation.text}**\nType : **{translation.src} > {translation.dest}**",
+            description=f"Sentence : **{sentence}**\n\nTranslation : **{translation.text}**\n\nType : **{translation.src} > {translation.dest}**",
             color=Color.gold(),
         )
         await ctx.send(embed=embed)

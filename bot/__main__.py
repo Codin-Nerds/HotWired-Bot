@@ -39,7 +39,7 @@ extensions = [
     "bot.cogs.games",
     "bot.cogs.github",
 
-    "bot.cogs.help",
+    # "bot.cogs.help",
 
     "bot.cogs.moderation",
     "bot.cogs.music",

@@ -16,7 +16,6 @@ from bot import config
 from bot.core.bot import Bot
 
 
-# Wrong typehint for date
 def uptime(date: str) -> str:
     """Calculate the uptime."""
     days = date.days
@@ -233,11 +232,11 @@ class Sudo(Cog):
 
         await ctx.send(embed=embed)
 
-    @staticmethod
-    async def cog_check(ctx: Context) -> t.Union[bool, None]:
+    async def cog_check(self, ctx: Context) -> t.Union[bool, None]:
         """Only devs can use this."""
         if ctx.author.id in config.devs:
             return True
+
         embed = Embed(description="This is an owner-only command, you cannot invoke this.", color=Color.red())
         await ctx.send(embed=embed)
 

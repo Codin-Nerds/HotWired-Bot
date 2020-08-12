@@ -1,6 +1,6 @@
 import typing as t
 
-import requests
+import aiohttp
 
 RESPONSES = {
     200: True,
@@ -44,18 +44,19 @@ def base_calculator(base: int, num1: str, num2: str, operator: t.Literal["+", "-
         return "N/A (ZERO DIVISION)"
 
 
-# TODO : use aiohttp
-def get_math_results(equation: str) -> str:
+async def get_math_results(equation: str) -> str:
     """Use `api.mathjs.org` to calculate any given equation."""
     params = {"expr": equation}
     url = "http://api.mathjs.org/v4/"
-    r = requests.get(url, params=params)
-
-    try:
-        response = RESPONSES[r.status_code]
-    except KeyError:
-        response = "Invalid Equation"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as resp:
+            r = await resp.text()
+            try:
+                response = RESPONSES[resp.status]
+            except KeyError:
+                response = "Invalid Equation"
 
     if response is True:
-        return r.text
+        return r
+
     return response

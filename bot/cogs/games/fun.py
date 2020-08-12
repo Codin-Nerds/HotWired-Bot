@@ -4,16 +4,15 @@ import textwrap
 import urllib
 from random import choice, randint
 
+import nekos
 import aiohttp
 import discord
-import nekos
 from discord import Color, Embed
 from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, errors, is_nsfw)
+                                  command, cooldown, is_nsfw)
 
 from bot import config
 from bot.core.bot import Bot
-from bot.utils.errors import ServiceError
 
 file = open(os.path.sep.join(("bot", "assets", "excuses.txt")), "r", encoding="utf-8")
 excuses = file.readlines()
@@ -69,10 +68,10 @@ class Fun(Cog):
             if resp.status == 200:
                 data = await resp.json()
                 embed = Embed(
-                    title="Random Duck!",
+                    title="Random Koala!",
                     color=Color.gold()
                 )
-                embed.set_image(url=data["url"])
+                embed.set_image(url=data["link"])
                 await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
@@ -84,10 +83,10 @@ class Fun(Cog):
             if resp.status == 200:
                 data = await resp.json()
                 embed = Embed(
-                    title="Random Duck!",
+                    title="Random Panda!",
                     color=Color.gold(),
                 )
-                embed.set_image(url=data["url"])
+                embed.set_image(url=data["link"])
                 await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Something went boom! :( [CODE: {resp.status}]")
@@ -152,8 +151,6 @@ class Fun(Cog):
             embed = Embed(color=0x690E8)
             embed.set_image(url=nekos.img(img_type))
             await ctx.send(embed=embed)
-        except errors.NSFWChannelRequired:
-            await ctx.send("Hey dude! Go use this command in a NSFW Channel, this ain't ur home.")
         except nekos.errors.InvalidArgument:
             await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
         except nekos.errors.NothingFound:
@@ -168,6 +165,7 @@ class Fun(Cog):
                     joke = await r.json()
                     await ctx.send(joke["value"])
                     return
+
         if ctx.guild:
             if not ctx.channel.is_nsfw():
                 async with aiohttp.ClientSession() as session:
@@ -185,14 +183,14 @@ class Fun(Cog):
     async def cat(self, ctx: Context) -> None:
         """Random cat images. Awww, so cute! Powered by random.cat."""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://aws.random.cat/meow", headers=self.user_agent) as response:
+            async with session.get("https://some-random-api.ml/img/cat") as response:
                 if response.status == 200:
                     json = await response.json()
                     embed = Embed(
                         name="random.cat",
                         colour=0x690E8
                     )
-                    embed.set_image(url=json["file"])
+                    embed.set_image(url=json["link"])
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send(f"Couldn't Fetch cute cats :( [CODE: {response.status}]")
@@ -405,19 +403,6 @@ class Fun(Cog):
 
         except Exception:
             await ctx.send("Oops, there was a problem!")
-
-    @command()
-    async def nekos(self, ctx: Context) -> None:
-        """Shows a neko."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(config.nekos["sfw"]) as neko:
-                if neko.status == 200:
-                    img = await neko.json()
-                    neko_em = Embed(colour=0x690E8)
-                    neko_em.set_image(url=img["neko"])
-                    await ctx.send(embed=neko_em)
-                else:
-                    raise ServiceError(f"ERROR CODE: {neko.status})")
 
     @command()
     async def slap(self, ctx: Context, member: discord.Member = None) -> None:

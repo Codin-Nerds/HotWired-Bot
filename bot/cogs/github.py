@@ -15,7 +15,6 @@ BAD_RESPONSES = {
 
 class Github(Cog):
     """Add GitHub integration to the bot."""
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -83,21 +82,33 @@ class Github(Cog):
         if resp.status in BAD_RESPONSES:
             await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
+        try:
+            if response["message"]:
+                await ctx.send(f"ERROR: {response['message']}")
+        except KeyError:
 
-        if response["message"]:
-            await ctx.send(f"ERROR: {response['message']}")
-        if response["description"] == "":
-            desc = "No description provided."
-        else:
-            desc = response["description"]
+            if response["description"] == "":
+                desc = "No description provided."
+            else:
+                desc = response["description"]
 
-        stars = response["stargazers_count"]
-        forks = response["forks_count"]
-        cmd = f'git clone {response["clone_url"]}'
-        embed.title = f"{repo} on GitHub"
-        embed.description = f"**{desc}**\nStars: {stars} Forks: {forks}\n Command: {cmd}"
+            description = textwrap.dedent(
+                f"""
+                Description: **{desc}**
+                Stars: **{response["stargazers_count"]}**
+                Forks: **{response["forks_count"]}**
+                Language: **{response["language"]}**
+                License: **{response["license"]["name"]}**
+                Command: **git clone {response["clone_url"]}**
+                Link: [here]({response["html_url"]})
+                """
+            )
 
-        await ctx.send(embed=embed)
+            embed.title = f"{repo} on GitHub"
+            embed.description = description
+            embed.set_thumbnail(url=response["owner"]["avatar_url"])
+
+            await ctx.send(embed=embed)
 
 
 def setup(bot: Bot) -> None:

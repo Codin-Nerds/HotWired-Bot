@@ -1,4 +1,4 @@
-import requests
+import aiohttp
 
 from random import choice
 
@@ -16,8 +16,9 @@ class Yandere(Cog):
     @is_nsfw()
     async def yandere(self, ctx: Context, tag: str = "yandere") -> None:
         """Searches Yande.re for NSFW pics."""
-        url = requests.get(f"https://yande.re/post.json?limit=20&tags={tag}")
-        url = url.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://yande.re/post.json?limit=20&tags={tag}") as response:
+                url = await response.json()
 
         try:
             image = choice(url)

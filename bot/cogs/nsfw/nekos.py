@@ -1,14 +1,16 @@
-import requests
+import aiohttp
 
 from random import choice
+
+import nekos
 
 from discord import Color, Embed, User
 from discord.ext.commands import Cog, Context, Bot, group, is_nsfw
 
+from bot import config
+
 
 class Neko(Cog):
-    conf = {}
-
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -16,8 +18,9 @@ class Neko(Cog):
         """Gets pictures from Neko API."""
         base = 'https://api.nekos.dev/api/v3/'
 
-        req = requests.get(base + url)
-        req = req.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(base + url) as response:
+                req = await response.json()
 
         embed = Embed(color=Color.red())
         embed.title = f"Requested by {author.name}"
@@ -26,7 +29,7 @@ class Neko(Cog):
 
     @group()
     async def neko(self, ctx: Context) -> None:
-        """Neko Commands Base"""
+        """Neko Commands Group."""
         pass
 
     @neko.command()
@@ -184,3 +187,37 @@ class Neko(Cog):
 
         embed = await self.get(source, ctx.author)
         await ctx.send(embed=embed)
+
+    @neko.command()
+    @is_nsfw()
+    async def image(self, ctx: Context, image_type: str = None) -> None:
+        """
+        Send a random image. It can be NSFW.
+
+        Image Categories:
+        ```
+        "feet", "yuri", "trap", "futanari", "hololewd", "lewdkemo",
+        "solog", "feetg", "cum", "erokemo", "les", "wallpaper",
+        "lewdk", "ngif", "tickle", "lewd", "feed", "gecg",
+        "eroyuri", "eron", "cum_jpg", "bj", "nsfw_neko_gif", "solo",
+        "kemonomimi", "nsfw_avatar", "gasm", "poke", "anal", "slap",
+        "hentai", "avatar", "erofeet", "holo", "keta", "blowjob",
+        "pussy", "tits", "holoero", "lizard", "pussy_jpg", "pwankg",
+        "classic", "kuni", "waifu", "pat", "8ball", "kiss",
+        "femdom", "neko", "spank", "cuddle", "erok", "fox_girl",
+        "boobs", "random_hentai_gif", "smallboobs", "hug", "ero", "smug",
+        "goose", "baka", "woof"
+        ```
+        """
+        if image_type is None:
+            await ctx.send(f"Possible types are : ```{', '.join(config.nsfw_possible)}```")
+        try:
+            embed = Embed(
+                color=0x690E8
+            )
+            embed.set_image(url=nekos.img(image_type))
+            await ctx.send(embed=embed)
+        except nekos.errors.InvalidArgument:
+            await ctx.send(f"Invalid type! Possible types are : ```{', '.join(config.nsfw_possible)}```")
+        except nekos.errors.NothingFound:
+            await ctx.send("Sorry, No Images Found.")
