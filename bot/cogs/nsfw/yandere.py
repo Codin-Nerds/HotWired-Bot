@@ -1,23 +1,23 @@
-import requests
-
 from random import choice
 
+import aiohttp
 from discord import Color, Embed
 from discord.ext.commands import Bot, Cog, Context, is_nsfw, command
 
 
 class Yandere(Cog):
-    conf = {}
+    """Yande.re cog."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     @command(aliases=["yan"])
     @is_nsfw()
     async def yandere(self, ctx: Context, tag: str = "yandere") -> None:
-        """Searches Yande.re for NSFW pics."""
-        url = requests.get(f"https://yande.re/post.json?limit=20&tags={tag}")
-        url = url.json()
+        """Search Yande.re for NSFW pics."""
+        async with self.session.get(f"https://yande.re/post.json?limit=20&tags={tag}") as response:
+            url = await response.json()
 
         try:
             image = choice(url)
