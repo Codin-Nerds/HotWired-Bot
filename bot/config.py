@@ -32,13 +32,11 @@ github_repo_link = "https://github.com/The-Codin-Hole/HotWired-Bot"
 discord_server = "https://discord.gg/CgH6Sj6"
 
 invite_link = (
-    "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=2020835191"
-    "&scope=bot "
+    "https://discord.com/api/oauth2/authorize?client_id=742983334564462673&permissions=1610608374&scope=bot"
 )
 
 admin_invite_link = (
-    "https://discord.com/api/oauth2/authorize?client_id=715545167649570977&permissions=8"
-    "&scope=bot "
+    "https://discord.com/api/oauth2/authorize?client_id=742983334564462673&permissions=8&scope=bot"
 )
 
 SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
@@ -47,7 +45,7 @@ SUPPORT_SERVER = "https://discord.gg/7e9zKFr"
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ">>")
 
 paste_link = "https://pastebin.com"
-paste_link_2 = "https://hastebin.com"
+paste_link_2 = "https://hasteb.in"
 
 line_img_url = "https://cdn.discordapp.com/attachments/581139962611892229/692712698487767080/animated_line.gif"
 
