@@ -27,7 +27,7 @@ that does everything you need. It's a One stop Shop for everything.
     -   Eval License
     -   Captcha Verification
     -   Verified License
--   With web dashboard, management made easy through discord, and Dahboard
+-   With web dashboard, management made easy through discord, and Dashboard
 -   Inbuilt Compiler for programmers, **160+ Languages**!
     -   Python
     -   C++
