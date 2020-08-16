@@ -62,7 +62,6 @@ class Study(Cog):
 
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
@@ -128,7 +127,7 @@ class Study(Cog):
 
     async def _get_soup_object(self, url: str) -> t.Optional[BeautifulSoup]:
         try:
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 return BeautifulSoup((await response.text()), "html.parser")
         except Exception:
             return None

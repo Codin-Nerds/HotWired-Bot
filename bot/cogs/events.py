@@ -19,7 +19,6 @@ class Events(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.dev_mode = config.DEV_MODE
-        self.session = aiohttp.ClientSession()
 
     @staticmethod
     def get_link_code(string: str) -> str:
@@ -56,7 +55,7 @@ class Events(Cog):
 
             for invite in base_url:
                 try:
-                    async with self.session.get(invite) as response:
+                    async with self.bot.session.get(invite) as response:
                         invite = str(response.url)
                 except aiohttp.ClientConnectorError:
                     continue
@@ -72,7 +71,7 @@ class Events(Cog):
         logchannel = self.bot.get_channel(config.log_channel)
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
-            async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
+            async with self.bot.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
                 error_message = "https://www.hasteb.in/" + (await resp.json())["key"]
 
         embed = Embed(color=Color.red(), description=error_message, title=event)

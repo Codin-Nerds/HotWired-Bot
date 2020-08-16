@@ -1,7 +1,6 @@
 from contextlib import suppress
 from os.path import splitext
 
-import aiohttp
 from discord import Color, Embed, Message, NotFound
 from discord.ext.commands import Cog
 
@@ -32,7 +31,6 @@ class Security(Cog):
     """Security commands made just for you."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -62,7 +60,7 @@ class Security(Cog):
                 for attachment in message.attachments:
                     content = await attachment.read()
 
-                    async with self.session.post("https://hasteb.in/documents", data=content) as resp:
+                    async with self.bot.session.post("https://hasteb.in/documents", data=content) as resp:
                         key = (await resp.json())['key']
                         file_paste = 'https://www.hasteb.in/' + key
 

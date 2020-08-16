@@ -3,7 +3,6 @@ import re
 import typing as t
 
 import discord
-import aiohttp
 from discord.ext.commands import BadArgument, Cog, Context, command
 from discord.utils import get
 
@@ -25,8 +24,6 @@ class Emote:
     content_re = re.compile(r"^\b(twitch|bttv|ffz)\b\s([\w\d]+)(?:\s(.+))?$", re.I | re.M)
 
     def __init__(self, emote_type: str, emote_id: str, emote_channel: t.Optional[str]) -> None:
-        self.session = aiohttp.ClientSession()
-
         self.emote_type = emote_type
         self.emote_id = emote_id
         self.emote_channel = emote_channel
@@ -37,13 +34,13 @@ class Emote:
         """Get the name of this emote."""
         if self.emote_type == "twitch":
             api_url = "https://api.twitchemotes.com/api/v4/emotes"
-            async with self.session.get(api_url, params={"id": self.emote_id}) as resp:
+            async with self.bot.session.get(api_url, params={"id": self.emote_id}) as resp:
                 api_res = await resp.json()
             return api_res[0]["code"]
 
         if self.emote_type == "frf":
             api_url = f"https://api.frankerfacez.com/v1/emote/{self.emote_id}"
-            async with self.session.get(api_url) as resp:
+            async with self.bot.session.get(api_url) as resp:
                 api_res = await resp.json()
             return api_res["emote"]["name"]
 
@@ -53,7 +50,7 @@ class Emote:
             else:
                 api_url = f"https://api.betterttv.net/2/channels/{self.emote_channel}"
 
-            async with self.session.get(api_url) as resp:
+            async with self.bot.session.get(api_url) as resp:
                 api_res = await resp.json()
 
             for emote in api_res["emotes"]:
@@ -64,15 +61,15 @@ class Emote:
     async def get_image(self) -> io.BytesIO:
         """Get the image for this emote."""
         if self.emote_type == "twitch":
-            async with self.session.get(f"https://static-cdn.jtvnw.net/emoticons/v1/{self.emote_id}/3.0") as resp:
+            async with self.bot.session.get(f"https://static-cdn.jtvnw.net/emoticons/v1/{self.emote_id}/3.0") as resp:
                 api_res = await resp.content
 
         elif self.emote_type == "bttv":
-            async with self.session.get(f"https://cdn.betterttv.net/emote/{self.emote_id}/3x") as resp:
+            async with self.bot.session.get(f"https://cdn.betterttv.net/emote/{self.emote_id}/3x") as resp:
                 api_res = await resp.content
 
         elif self.emote_type == "ffz":
-            async with self.session.get(f"https://cdn.frankerfacez.com/emoticon/{self.emote_id}/4") as resp:
+            async with self.bot.session.get(f"https://cdn.frankerfacez.com/emoticon/{self.emote_id}/4") as resp:
                 api_res = await resp.content
 
         return io.BytesIO(api_res)

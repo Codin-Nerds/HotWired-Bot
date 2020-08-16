@@ -2,7 +2,6 @@ import json
 import os
 import urllib
 
-import aiohttp
 import bleach
 import stackexchange
 from discord import Color, Embed
@@ -20,7 +19,6 @@ class Documentation(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @cooldown(1, 8, BucketType.user)
     @command(aliases=["stackoverflow", "overflow"])
@@ -60,7 +58,7 @@ class Documentation(Cog):
 
         async with ctx.typing():
             # Get API query responses
-            async with self.session.get(query_url) as response:
+            async with self.bot.session.get(query_url) as response:
                 if response.status != 200:
                     await ctx.send(f"An error occurred (status code: {response.status})")
                     return
@@ -78,7 +76,7 @@ class Documentation(Cog):
             url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
             # Load man page from first result
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 if response.status != 200:
                     await ctx.send(f"An error occurred (status code: {response.status})")
                     return

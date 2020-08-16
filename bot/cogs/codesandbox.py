@@ -19,7 +19,7 @@ class CodeSandbox(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self._last_eval_result = None
-        self.sessions = []
+        self.bot.sessions = []
 
     @staticmethod
     def _clean_code(code: str) -> str:
@@ -89,12 +89,12 @@ class CodeSandbox(Cog):
             "_": None,
         }
 
-        if ctx.channel.id in self.sessions:
+        if ctx.channel.id in self.bot.sessions:
             raise CommandError(
                 message=f"Error: duplicate REPL session in `{ctx.channel.name}`."
             )
 
-        self.sessions.append(ctx.channel.id)
+        self.bot.sessions.append(ctx.channel.id)
         await ctx.send(
             "Enter code to execute or evaluate. `exit()` or `quit` to exit."
         )
@@ -111,14 +111,14 @@ class CodeSandbox(Cog):
                 )
             except asyncio.TimeoutError:
                 await ctx.send("Exiting REPL session.")
-                self.sessions.remove(ctx.channel.id)
+                self.bot.sessions.remove(ctx.channel.id)
                 break
 
             cleaned = self._clean_code(response.content)
 
             if cleaned in ("quit", "exit", "exit()"):
                 await ctx.send("Exiting.")
-                self.sessions.remove(ctx.channel.id)
+                self.bot.sessions.remove(ctx.channel.id)
                 return
 
             executor = exec

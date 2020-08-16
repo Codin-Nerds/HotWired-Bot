@@ -5,7 +5,6 @@ import time
 import typing as t
 from contextlib import suppress
 
-import aiohttp
 from dateutil.relativedelta import relativedelta
 from discord import Color, Embed, Forbidden, Member
 from discord.ext.commands import (
@@ -25,7 +24,6 @@ class Common(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     # TODO : Add custom command support after db integration
     @command()
@@ -96,7 +94,7 @@ class Common(Cog):
             "multi": False
         }
 
-        async with self.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
+        async with self.bot.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
             data = await r.json()
 
         strawpoll_id = data["id"]
@@ -195,7 +193,7 @@ class Common(Cog):
     @command()
     async def paste(self, ctx: Context, *, text: str) -> None:
         """Creates a Paste out of the text specified."""
-        async with self.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
+        async with self.bot.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
             key = (await resp.json())['key']
             file_paste = 'https://www.hasteb.in/' + key
 
@@ -229,7 +227,7 @@ class Common(Cog):
         url = link.strip("<>")
         url = f"http://tinyurl.com/api-create.php?url={url}"
 
-        async with self.session.get(url) as resp:
+        async with self.bot.session.get(url) as resp:
             if resp.status != 200:
                 await ctx.send("Error retrieving shortened URL, please try again in a minute.")
                 return

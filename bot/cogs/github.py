@@ -1,6 +1,5 @@
 import textwrap
 
-import aiohttp
 from discord import Color, Embed
 from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
                                   cooldown)
@@ -17,7 +16,6 @@ class Github(Cog):
     """Add GitHub integration to the bot."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
@@ -26,7 +24,7 @@ class Github(Cog):
         url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
         merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}/merge"
 
-        async with self.session.get(url) as resp:
+        async with self.bot.session.get(url) as resp:
             json_data = await resp.json()
 
         if resp.status in BAD_RESPONSES:
@@ -41,7 +39,7 @@ class Github(Cog):
                 title = "Issue Closed"
                 icon_url = Emojis.issue_closed
         else:
-            async with self.session.get(merge_url) as merge:
+            async with self.bot.session.get(merge_url) as merge:
                 if json_data.get("state") == "open":
                     title = "PR Opened"
                     icon_url = Emojis.pull_request
@@ -76,7 +74,7 @@ class Github(Cog):
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
         embed = Embed(color=Color.blue())
-        async with await self.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
+        async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
             response = await resp.json()
 
         if resp.status in BAD_RESPONSES:

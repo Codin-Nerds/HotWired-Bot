@@ -1,7 +1,5 @@
 import asyncio
 
-import aiohttp
-
 from collections import defaultdict
 
 from discord import Color, Embed, Message
@@ -22,7 +20,6 @@ class Trivia(Cog):
     """The Cog that handles Trivia commands."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
         self.players = defaultdict(lambda: defaultdict(list))
 
     @group(aliases=["quiz"])
@@ -39,7 +36,7 @@ class Trivia(Cog):
             await ctx.send("Invalid range! Number of questions must be between 5 and 200.")
             return
 
-        async with self.session.get(f"https://opentdb.com/api.php?amount={questions}&type=multiple") as resp:
+        async with self.bot.session.get(f"https://opentdb.com/api.php?amount={questions}&type=multiple") as resp:
             data = await resp.json()
 
         for result in data["results"]:

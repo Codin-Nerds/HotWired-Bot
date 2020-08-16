@@ -24,7 +24,6 @@ class Coding(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @tasks.loop(hours=1)
     async def update_languages(self) -> None:
@@ -141,7 +140,7 @@ class Coding(Cog):
 
                 url = get_raw(base_url)  # extract the raw url
 
-                async with self.session.get(url) as response:
+                async with self.bot.session.get(url) as response:
                     if response.status == 404:
                         return await ctx.send("Nothing found. Check your link")
                     elif response.status != 200:

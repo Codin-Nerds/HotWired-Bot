@@ -29,12 +29,11 @@ class Fun(Cog):
             "User-Agent": "HotWired",
             "Accept": "text/plain",
         }
-        self.session = aiohttp.ClientSession()
 
     @command()
     async def joke(self, ctx: Context) -> None:
         """Send a random joke."""
-        async with self.session.get("https://mrwinson.me/api/jokes/random") as resp:
+        async with self.bot.session.get("https://mrwinson.me/api/jokes/random") as resp:
             if resp.status == 200:
                 data = await resp.json()
                 joke = data["joke"]
@@ -49,7 +48,7 @@ class Fun(Cog):
     @command()
     async def duck(self, ctx: Context) -> None:
         """Get a random picture of a duck."""
-        async with self.session.get("https://random-d.uk/api/v2/random") as resp:
+        async with self.bot.session.get("https://random-d.uk/api/v2/random") as resp:
             if resp.status == 200:
                 data = await resp.json()
                 embed = Embed(
@@ -64,7 +63,7 @@ class Fun(Cog):
     @command()
     async def koala(self, ctx: Context) -> None:
         """Get a random picture of a koala."""
-        async with self.session.get("https://some-random-api.ml/img/koala") as resp:
+        async with self.bot.session.get("https://some-random-api.ml/img/koala") as resp:
             if resp.status == 200:
                 data = await resp.json()
                 embed = Embed(
@@ -79,7 +78,7 @@ class Fun(Cog):
     @command()
     async def panda(self, ctx: Context) -> None:
         """Get a random picture of a panda."""
-        async with self.session.get("https://some-random-api.ml/img/panda",) as resp:
+        async with self.bot.session.get("https://some-random-api.ml/img/panda",) as resp:
             if resp.status == 200:
                 data = await resp.json()
                 embed = Embed(
@@ -395,7 +394,7 @@ class Fun(Cog):
     async def inspireme(self, ctx: Context) -> None:
         """Fetch a random "inspirational message" from the bot."""
         try:
-            async with self.session.get("http://inspirobot.me/api?generate=true") as page:
+            async with self.bot.session.get("http://inspirobot.me/api?generate=true") as page:
                 picture = await page.text(encoding="utf-8")
                 embed = Embed()
                 embed.set_image(url=picture)
@@ -529,7 +528,7 @@ class Fun(Cog):
         """Tweet as someone."""
         async with ctx.typing():
             base_url = "https://nekobot.xyz/api/imagegen?type=tweet"
-            async with self.session.get(f"{base_url}&username={username}&text={text}") as r:
+            async with self.bot.session.get(f"{base_url}&username={username}&text={text}") as r:
                 res = await r.json()
 
             embed = Embed(color=Color.dark_green())
@@ -541,7 +540,7 @@ class Fun(Cog):
     async def clyde(self, ctx: Context, *, text: str) -> None:
         """Make clyde say something."""
         async with ctx.typing():
-            async with self.session.get(f"https://nekobot.xyz/api/imagegen?type=clyde&text={text}") as r:
+            async with self.bot.session.get(f"https://nekobot.xyz/api/imagegen?type=clyde&text={text}") as r:
                 res = await r.json()
 
             embed = discord.Embed(color=Color.dark_green())

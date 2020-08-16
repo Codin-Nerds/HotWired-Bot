@@ -15,7 +15,6 @@ class Comics(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @command()
     async def ohno(self, ctx: Context) -> None:
@@ -23,12 +22,12 @@ class Comics(Cog):
         url = "http://webcomicname.com/random"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(title="Random Webcomic", color=Color.blurple())
@@ -42,7 +41,7 @@ class Comics(Cog):
         url = "http://www.smbc-comics.com/comic/archive"
 
         async with ctx.typing():
-            async with self.session.get(url, headers={"Connection": "keep-alive"}) as response:
+            async with self.bot.session.get(url, headers={"Connection": "keep-alive"}) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             all_comics = soup.find("select", attrs={"name": "comic"})
@@ -53,13 +52,13 @@ class Comics(Cog):
             random_comic = random.choice(all_comics_url_stubs)
             comic_url = f"http://www.smbc-comics.com/{random_comic}"
 
-            async with self.session.get(
+            async with self.bot.session.get(
                     comic_url, headers={"Connection": "keep-alive"}
             ) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(title="Random Sunday Morning", color=Color.blurple())
@@ -73,12 +72,12 @@ class Comics(Cog):
         url = "http://pbfcomics.com/random"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(title="Random Perry Bible", color=Color.blurple())
@@ -92,12 +91,12 @@ class Comics(Cog):
         url = "http://explosm.net/comics/random"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(
@@ -166,12 +165,12 @@ class Comics(Cog):
         url = "http://www.mrlovenstein.com/shuffle"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = f"http://www.mrlovenstein.com{soup.find(id='comic_main_image')['src']}"
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(title="Random Mr. Lovenstein", color=Color.blurple())
@@ -185,12 +184,12 @@ class Comics(Cog):
         url = "http://chainsawsuit.com/comic/random/?random&nocache=1"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(title="Random Chainsawsuit", color=Color.blurple())
@@ -204,12 +203,12 @@ class Comics(Cog):
         url = "http://www.gocomics.com/random/sarahs-scribbles"
 
         async with ctx.typing():
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             img_url = soup.find(property="og:image")["content"]
 
-            async with self.session.get(img_url) as response:
+            async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
             embed = Embed(
