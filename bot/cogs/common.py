@@ -1,21 +1,29 @@
 import asyncio
+import re
 import textwrap
 import time
+import typing as t
 from contextlib import suppress
 
-import aiohttp
+from dateutil.relativedelta import relativedelta
 from discord import Color, Embed, Forbidden, Member
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, has_permissions)
+from discord.ext.commands import (
+    BadArgument, BucketType, Cog, Context,
+    command, cooldown, has_permissions
+)
 
 from bot import config
 from bot.core.bot import Bot
+from bot.core.converters import TimeDelta
+from bot.utils.time import stringify_timedelta
+from datetime import datetime
 
 
 class Common(Cog):
+    """Common commands."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     # TODO : Add custom command support after db integration
     @command()
@@ -26,7 +34,7 @@ class Common(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def ping(self, ctx: Context) -> None:
-        """Shows bot ping."""
+        """Show bot ping."""
         start = time.perf_counter()
         embed = Embed(title="Info", description="Pong!", color=Color.blurple())
         message = await ctx.send(embed=embed)
@@ -38,8 +46,7 @@ class Common(Cog):
     # TODO : after db integration, add Time Limit, and grand announcement, when the poll is over.
     @command(aliases=("poll",))
     async def vote(self, ctx: Context, title: str, *options: str) -> None:
-        """
-        Build a quick voting poll with matching reactions with the provided options.
+        """Build a quick voting poll with matching reactions with the provided options.
 
         A maximum of 20 options can be provided, as Discord supports a max of 20
         reactions on a single message.
@@ -58,10 +65,13 @@ class Common(Cog):
 
     @command(aliases=["spoll"])
     async def strawpoll(self, ctx: Context, *, question_and_choices: str = None) -> None:
-        """strawpoll my question | answer a | answer b | answer c\nAt least two answers required."""
+        """Strawpoll my question.
+
+        Syntax : answer a | answer b | answer c
+        At least two answers required.
+        """
         if question_and_choices is None:
-            await ctx.send(f"Usage: {config.COMMAND_PREFIX}strawpoll my question | answer a | answer b | answer c\nAt least two answers required.")
-            return
+            return await ctx.send_help("strawpoll")
 
         if "|" in question_and_choices:
             delimiter = "|"
@@ -71,7 +81,7 @@ class Common(Cog):
 
         if len(question_and_choices) == 1:
             return await ctx.send("Not enough choices supplied")
-        elif len(question_and_choices) >= 31:
+        if len(question_and_choices) >= 31:
             return await ctx.send("Too many choices")
 
         question, *choices = question_and_choices
@@ -84,16 +94,16 @@ class Common(Cog):
             "multi": False
         }
 
-        async with self.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
+        async with self.bot.session.post("https://www.strawpoll.me/api/v2/polls", headers=header, json=payload) as r:
             data = await r.json()
 
-        id = data["id"]
-        await ctx.send(f"http://www.strawpoll.me/{id}")
+        strawpoll_id = data["id"]
+        await ctx.send(f"http://www.strawpoll.me/{strawpoll_id}")
 
     # TODO : add github logo thumnail to embed, and some more content.
     @command(aliases=["git"])
     async def github(self, ctx: Context) -> None:
-        """Sends a link to the bots GitHub repository"""
+        """Send a link to the bots GitHub repository."""
         await ctx.send(
             embed=Embed(
                 title="Github Repo",
@@ -105,25 +115,44 @@ class Common(Cog):
     # TODO : beautify this timer with a realtime updating clock image.
     @command()
     @cooldown(1, 10, BucketType.user)
-    async def countdown(self, ctx: Context, start: int) -> None:
-        """A Countdown timer that counts down from the specified time in seconds."""
-        with suppress(Forbidden):
-            await ctx.message.delete()
-
-        embed = Embed(title="TIMER", description=start)
+    async def countdown(self, ctx: Context, duration: TimeDelta, *, description: t.Optional[str] = Embed.Empty) -> None:
+        """A countdown timer that counts down for the specific duration."""
+        embed = Embed(
+            title="Timer",
+            description=description,
+            color=Color.blue()
+        )
+        embed.add_field(
+            name="**Countdown**",
+            value=stringify_timedelta(duration)
+        )
         message = await ctx.send(embed=embed)
-        while start:
-            minutes, seconds = divmod(start, 60)
-            content = f"{minutes:02d}:{seconds:02d}"
-            embed = Embed(title="TIMER", description=content)
+
+        final_time = datetime.utcnow() + duration
+        while True:
+            if final_time <= datetime.utcnow():
+                break
+            duration = relativedelta(final_time, datetime.utcnow())
+
+            embed.set_field_at(
+                0,
+                name="**Countdown**",
+                value=stringify_timedelta(duration)
+            )
             await message.edit(embed=embed)
-            start -= 1
+
             await asyncio.sleep(1)
-        await message.delete()
+
+        embed.set_field_at(
+            0,
+            name="**Countdown**",
+            value="Timer reached zero!"
+        )
+        await message.edit(embed=embed)
 
     @command(aliases=["asking"])
     async def howtoask(self, ctx: Context) -> None:
-        """How to ask a Question."""
+        """How to ask a question."""
         embed = Embed(
             title="How To Ask a Question?",
             description=textwrap.dedent(
@@ -143,7 +172,7 @@ class Common(Cog):
 
     @command(aliases=["thank", "ty"])
     async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
-        """Thank a User."""
+        """Thank a user."""
         if ctx.author == member:
             embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
@@ -162,9 +191,35 @@ class Common(Cog):
             await ctx.send(embed=embed)
 
     @command()
+    async def paste(self, ctx: Context, *, text: str) -> None:
+        """Creates a Paste out of the text specified."""
+        async with self.bot.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
+            key = (await resp.json())['key']
+            file_paste = 'https://www.hasteb.in/' + key
+
+            await ctx.send(
+                embed=Embed(title="File pastes", description=file_paste, color=Color.blue())
+            )
+
+    def _clean_code(self, code: str) -> str:
+        codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)
+        if codeblock_match:
+            lang = codeblock_match.group(1)
+            code = codeblock_match.group(2)
+            ret = lang if not code else code
+            if ret[-1] == "\n":
+                ret = ret[:-1]
+            return ret
+
+        simple_match = re.fullmatch(r"\`(.*\n*)\`", code)
+        if simple_match:
+            return simple_match.group(1)
+
+        return code
+
     @cooldown(1, 10, BucketType.user)
     async def shorten(self, ctx: Context, *, link: str) -> None:
-        """Makes a link shorter using the tinyurl api"""
+        """Make a link shorter using the tinyurl api."""
         if not link.startswith("https://"):
             await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")
             return
@@ -172,7 +227,7 @@ class Common(Cog):
         url = link.strip("<>")
         url = f"http://tinyurl.com/api-create.php?url={url}"
 
-        async with self.session.get(url) as resp:
+        async with self.bot.session.get(url) as resp:
             if resp.status != 200:
                 await ctx.send("Error retrieving shortened URL, please try again in a minute.")
                 return
@@ -188,4 +243,5 @@ class Common(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Common cog."""
     bot.add_cog(Common(bot))

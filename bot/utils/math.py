@@ -1,6 +1,6 @@
 import typing as t
 
-import requests
+import aiohttp
 
 RESPONSES = {
     200: True,
@@ -16,13 +16,15 @@ def to_base(base: t.Literal[2, 8, 16], number: int) -> str:
     """Convert any passed integer into given base as string."""
     if base == 2:
         return bin(number).replace("0b", "")
-    elif base == 8:
+    if base == 8:
         return oct(number).replace("0o", "")
-    elif base == 16:
+    if base == 16:
         return hex(number).replace("0x", "")
+    raise ValueError("Unkown based used.")
 
 
 def base_calculator(base: int, num1: str, num2: str, operator: t.Literal["+", "-", "*", "/"]) -> str:
+    """I love calculators."""
     try:
         num1 = int(num1, base)
         num2 = int(num2, base)
@@ -42,18 +44,19 @@ def base_calculator(base: int, num1: str, num2: str, operator: t.Literal["+", "-
         return "N/A (ZERO DIVISION)"
 
 
-def get_math_results(equation: str) -> str:
-    """Use `api.mathjs.org` to calculate any given equation"""
+async def get_math_results(equation: str) -> str:
+    """Use `api.mathjs.org` to calculate any given equation."""
     params = {"expr": equation}
     url = "http://api.mathjs.org/v4/"
-    r = requests.get(url, params=params)
-
-    try:
-        response = RESPONSES[r.status_code]
-    except KeyError:
-        response = "Invalid Equation"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as resp:
+            r = await resp.text()
+            try:
+                response = RESPONSES[resp.status]
+            except KeyError:
+                response = "Invalid Equation"
 
     if response is True:
-        return r.text
-    else:
-        return response
+        return r
+
+    return response

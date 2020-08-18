@@ -1,4 +1,5 @@
 import datetime
+import json
 import textwrap
 import typing as t
 from collections import Counter
@@ -7,6 +8,7 @@ from discord import ActivityType, Color, Embed, Guild, Member, Status, User
 from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
+from bot import config
 
 STATUSES = {
     Status.online: "ONLINE",
@@ -17,12 +19,41 @@ STATUSES = {
 
 
 class Commands(Cog):
+    """Common commands."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @command()
+    async def changeprefix(self, ctx: Context, prefix: str) -> None:
+        """Changes the prefix for the bot."""
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = prefix
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
+
+    @command()
+    async def resetprefix(self, ctx: Context, prefix: str) -> None:
+        """Resets the prefix of the bot to original one."""
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(ctx.guild.id)] = config.COMMAND_PREFIX
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        await ctx.send(f"Prefix changed to **{prefix}**")
+
+    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
+    @command()
     async def members(self, ctx: Context) -> None:
-        """Returns the number of members in the server."""
+        """Get the number of members in the server."""
         member_by_status = Counter(str(m.status) for m in ctx.guild.members)
         bots = len([member for member in ctx.guild.members if member.bot])
         member_type = f"""
@@ -52,6 +83,7 @@ class Commands(Cog):
     async def userinfo(self, ctx: Context, user: t.Optional[t.Union[Member, User]] = None) -> None:
         """
         Get information about you, or a specified member.
+
         `user` can be a user Mention, Name, or ID.
         """
         if not user:
@@ -131,6 +163,7 @@ class Commands(Cog):
         return embed
 
     def get_server_embed(self, guild: Guild) -> Embed:
+        """Get the information Embed from a guild."""
         embed = Embed(
             title="Server's stats and information.",
             description=guild.description if guild.description else None,
@@ -172,4 +205,5 @@ class Commands(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Commands cog"""
     bot.add_cog(Commands(bot))

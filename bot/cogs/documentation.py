@@ -2,7 +2,6 @@ import json
 import os
 import urllib
 
-import aiohttp
 import bleach
 import stackexchange
 from discord import Color, Embed
@@ -16,14 +15,15 @@ StackExchangeToken = os.getenv("STACKEXCHANGE")
 
 
 class Documentation(Cog):
+    """I love documentation."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @cooldown(1, 8, BucketType.user)
     @command(aliases=["stackoverflow", "overflow"])
     async def stack_overflow(self, ctx: Context, *, query: str) -> None:
-        """Queries Stackoverflow and gives you top results."""
+        """Query Stackoverflow and get the top results."""
         async with ctx.typing():
             site = stackexchange.Site(stackexchange.StackOverflow, StackExchangeToken)
             site.impose_throttling = True
@@ -51,14 +51,14 @@ class Documentation(Cog):
             await ctx.send(embed=embed)
 
     @command()
-    async def man(self, ctx: Context, *, command: str) -> None:
-        """Returns the manual's page for a linux command."""
-        base_query = f"https://www.mankier.com/api/v2/mans/?q={command}"
+    async def man(self, ctx: Context, *, program: str) -> None:
+        """Return the manual's page for a linux command."""
+        base_query = f"https://www.mankier.com/api/v2/mans/?q={program}"
         query_url = urllib.parse.quote_plus(base_query, safe=";/?:@&=$,><-[]")
 
         async with ctx.typing():
             # Get API query responses
-            async with self.session.get(query_url) as response:
+            async with self.bot.session.get(query_url) as response:
                 if response.status != 200:
                     await ctx.send(f"An error occurred (status code: {response.status})")
                     return
@@ -76,7 +76,7 @@ class Documentation(Cog):
             url = urllib.parse.quote_plus(base_url, safe=";/?:@&=$,><-[]")
 
             # Load man page from first result
-            async with self.session.get(url) as response:
+            async with self.bot.session.get(url) as response:
                 if response.status != 200:
                     await ctx.send(f"An error occurred (status code: {response.status})")
                     return
@@ -98,15 +98,16 @@ class Documentation(Cog):
             # TODO: Solve this with pagination
             try:
                 await ctx.send(embed=embed)
-            except HTTPException as e:
-                if e.code == 50035:
+            except HTTPException as error:
+                if error.code == 50035:
                     await ctx.send(embed=Embed(
                         description="Body is too long to show",
                         color=Color.red()
                     ))
                 else:
-                    raise e
+                    raise error
 
 
 def setup(bot: Bot) -> None:
+    """Load the Documentation cog"""
     bot.add_cog(Documentation(bot))

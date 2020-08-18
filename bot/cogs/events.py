@@ -1,3 +1,4 @@
+import json
 import re
 import textwrap
 import traceback
@@ -13,17 +14,20 @@ PREFIX = config.COMMAND_PREFIX
 
 
 class Events(Cog):
+    """Some events, packed in a cog."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.dev_mode = config.DEV_MODE
-        self.session = aiohttp.ClientSession()
 
     @staticmethod
     def get_link_code(string: str) -> str:
+        """Get the code from a link."""
         return string.split("/")[-1]
 
     @staticmethod
     async def is_our_invite(full_link: str, guild: Guild) -> bool:
+        """Check if the full link is an invite for the given guild."""
         guild_invites = await guild.invites()
         for invite in guild_invites:
             # discord.gg/code resolves to https://discordapp.com/invite/code after using session.get(invite)
@@ -33,16 +37,17 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
+        """Prevent people from posting other servers' invites."""
         # Check that the message is not from bot account
         if message.author.bot:
             return
 
         # DM Check.
-        elif message.guild is None:
+        if not message.guild:
             return
 
         # Is an Admin.
-        elif message.author.guild_permissions.administrator:
+        if message.author.guild_permissions.administrator:
             return
 
         if "https:" in message.content or "http:" in message.content:
@@ -50,7 +55,7 @@ class Events(Cog):
 
             for invite in base_url:
                 try:
-                    async with self.session.get(invite) as response:
+                    async with self.bot.session.get(invite) as response:
                         invite = str(response.url)
                 except aiohttp.ClientConnectorError:
                     continue
@@ -58,19 +63,21 @@ class Events(Cog):
                 if "discordapp.com/invite/" in invite or "discord.gg/" in invite:
                     if not await Events.is_our_invite(invite, message.guild):
                         await message.channel.send(f"{message.author.mention} You are not allowed to post other Server's invites!")
+                        await message.delete()
 
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:
+        """Error manager."""
         logchannel = self.bot.get_channel(config.log_channel)
-
         error_message = f"```py\n{traceback.format_exc()}\n```"
         if len(error_message) > 2000:
-            async with self.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
+            async with self.bot.session.post("https://www.hasteb.in/documents", data=error_message) as resp:
                 error_message = "https://www.hasteb.in/" + (await resp.json())["key"]
 
         embed = Embed(color=Color.red(), description=error_message, title=event)
 
         if not self.dev_mode:
+            # self.error_hook is undefined
             await self.error_hook.send(embed=embed)
         else:
             traceback.print_exc()
@@ -78,6 +85,15 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(guild.id)] = PREFIX
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        """Send message upon joining a guild, and log it."""
         logchannel = self.bot.get_channel(config.log_channel)
 
         embed = Embed(
@@ -137,10 +153,20 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
+        with open("bot/assets/prefixes.json", "r") as file:
+            prefixes = json.load(file)
+
+        prefixes.pop(str(guild.id))
+
+        with open("bot/assets/prefixes.json", "w") as file:
+            json.dump(prefixes, file, indent=4)
+
+        """Log guild removal."""
         logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 
 
 def setup(bot: Bot) -> None:
+    """Load the Events cog."""
     bot.add_cog(Events(bot))
