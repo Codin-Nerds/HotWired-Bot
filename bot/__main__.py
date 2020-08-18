@@ -23,6 +23,8 @@ TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
 
 extensions = [
+    "bot.cogs.asciiart",
+
     "bot.cogs.codesandbox",
     "bot.cogs.coding",
     "bot.cogs.commands",
@@ -39,7 +41,7 @@ extensions = [
     "bot.cogs.games",
     "bot.cogs.github",
 
-    # "bot.cogs.help",
+    "bot.cogs.help",
 
     "bot.cogs.moderation",
     "bot.cogs.music",
