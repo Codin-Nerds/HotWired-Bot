@@ -18,7 +18,7 @@ class Bot(Base_Bot):
 
         self.pool = None
         self.log_channel = None
-        self.bot.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession()
 
     async def on_ready(self) -> None:
         """Initialize some stuff once the bot is ready."""
