@@ -1,10 +1,9 @@
 import datetime
-import json
 import textwrap
 import typing as t
 from collections import Counter
 
-from discord import ActivityType, Color, Embed, Guild, Member, Status, User
+from discord import ActivityType, Color, Embed, Guild, Member, Status, User, utils
 from discord.ext.commands import Cog, Context, command
 
 from bot.core.bot import Bot
@@ -25,32 +24,45 @@ class Commands(Cog):
         self.bot = bot
 
     @command()
-    async def changeprefix(self, ctx: Context, prefix: str) -> None:
+    async def changeprefix(self, ctx: Context, prefix: str = None) -> None:
         """Changes the prefix for the bot."""
-        with open("bot/assets/prefixes.json", "r") as file:
-            prefixes = json.load(file)
+        if prefix:
+            async with self.bot.pool.acquire(timeout=5) as database:
+                ctx_id = self.bot.get_id(ctx)
 
-        prefixes[str(ctx.guild.id)] = prefix
+                await database.execute(
+                    "INSERT INTO public.prefixes VALUES ($1, $2) ON CONFLICT (ctx_id) DO UPDATE SET prefix=$2",
+                    ctx_id,
+                    prefix,
+                )
+                self.bot.prefix_dict[ctx_id] = prefix
+                return await ctx.send(
+                    f"Prefix changed to `{utils.escape_markdown(prefix)}`"
+                )
 
-        with open("bot/assets/prefixes.json", "w") as file:
-            json.dump(prefixes, file, indent=4)
-
-        await ctx.send(f"Prefix changed to **{prefix}**")
+        old_prefix = utils.escape_markdown(
+            await self.bot.get_prefix(ctx.message, False)
+        )
+        await ctx.send(f"The prefix for this channel is `{old_prefix}`")
 
     @command()
-    async def resetprefix(self, ctx: Context, prefix: str) -> None:
+    async def resetprefix(self, ctx: Context) -> None:
         """Resets the prefix of the bot to original one."""
-        with open("bot/assets/prefixes.json", "r") as file:
-            prefixes = json.load(file)
+        prefix = config.COMMAND_PREFIX
 
-        prefixes[str(ctx.guild.id)] = config.COMMAND_PREFIX
+        async with self.bot.pool.acquire(timeout=5) as database:
+            ctx_id = self.bot.get_id(ctx)
 
-        with open("bot/assets/prefixes.json", "w") as file:
-            json.dump(prefixes, file, indent=4)
+            await database.execute(
+                "INSERT INTO public.prefixes VALUES ($1, $2) ON CONFLICT (ctx_id) DO UPDATE SET prefix=$2",
+                ctx_id,
+                prefix,
+            )
+            self.bot.prefix_dict[ctx_id] = prefix
+            return await ctx.send(
+                f"Prefix changed to `{utils.escape_markdown(prefix)}`"
+            )
 
-        await ctx.send(f"Prefix changed to **{prefix}**")
-
-    # TODO : add number of bots, humans, dnd users, idle users, online users, and offline users, maybe device type too
     @command()
     async def members(self, ctx: Context) -> None:
         """Get the number of members in the server."""

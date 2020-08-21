@@ -35,6 +35,8 @@ PyYAML = "~=5.3.1"
 html2markdown = "*"
 python-dateutil = "*"
 discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-ext-menus.git"}
+pyfiglet = "*"
+ascii = "*"
 
 [requires]
 python_version = "3.8"

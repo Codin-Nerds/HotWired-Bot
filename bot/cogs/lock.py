@@ -1,7 +1,6 @@
 import re
 import textwrap
-
-import aiohttp
+import typing
 
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Cog, Context, command, has_permissions, Greedy
@@ -17,22 +16,20 @@ class Lock(Cog):
         self.lock_cache = {}  # guild_id: lock_state
         self.link_cache = {}  # guild_id: link_state
 
-    # STATIC METHODS
+    # STATICMETHODS
 
     @staticmethod
-    def get_link_code(string: str) -> str:
-        """Get the code from a link."""
-        return string.split("/")[-1]
+    def get_codes(string: str) -> typing.List[str]:
+        """Get the invite codes codes from a link."""
+        return re.findall(
+            r"(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|(?:discordapp|discord)\.com\/invite)\/([a-z\-\_]+)",
+            string,
+        )
 
     @staticmethod
-    async def is_our_invite(full_link: str, guild: Guild) -> bool:
-        """Check if the full link is an invite for the given guild."""
-        guild_invites = await guild.invites()
-        for invite in guild_invites:
-            # discord.gg/code resolves to https://discordapp.com/invite/code after using session.get(invite)
-            if Lock.get_link_code(invite.url) == Lock.get_link_code(full_link):
-                return True
-        return False
+    async def is_our_invite(fragment: str, guild: Guild) -> bool:
+        """Check if the invite code is an invite for the given guild."""
+        return fragment in [invite.code for invite in await guild.invites()]
 
     # DATABASE METHODS
 
@@ -93,31 +90,71 @@ class Lock(Cog):
 
     @Cog.listener("on_message")
     async def apply_link(self, message: Message) -> None:
+        """Apply the link_lock status."""
         status = await self.get_link(message.guild.id)
 
-        if status == 2:
-            if "https:" in message.content or "http:" in message.content:
-                base_url = re.findall(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", message.content)
+        if status >= 2:
+            for code in self.get_codes(message.content):
+                if not await self.is_our_invite(code, message.guild):
+                    await message.channel.send(
+                        f"{message.author.mention}, you are not allowed to post other servers' invites!"
+                    )
+                    await message.delete()
+            return
 
-                for invite in base_url:
-                    try:
-                        async with self.bot.session.get(invite) as response:
-                            invite = str(response.url)
-                    except aiohttp.ClientConnectorError:
-                        continue
-
-                    if re.match(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", invite):
-                        if not await Lock.is_our_invite(invite, message.guild):
-                            await message.channel.send(f"{message.author.mention} You are not allowed to post other Server's invites!")
-                            await message.delete()
+        if status == 1:
+            if "http://" in message or "https://" in message:
+                await message.channel.send(
+                    f"{message.author.mention}, you are not allowed to post any links here!"
+                )
+                await message.delete()
+            return
 
     # -------COMMANDS--------
-    @command()
+    @command(name="link-lock", aliases=["linklock", "l-lock"])
     async def link_lock(self, ctx: Context) -> None:
-        pass
+        """Prevent everybody from posting other server's invites."""
+        status = await self.get_link(ctx.guild.id)
 
-    @command()
+        if status:
+            link_status = 'Link' if status == 1 else 'Discord Invite'
+
+            embed = Embed(
+                title="Link Lock Error!",
+                description=(
+                    f"⚠️ {link_status} Lock is already "
+                    "enabled on this server! Please use "
+                    f"**`{ctx.prefix}link-unlock`** to lift this lock!"
+                ),
+            )
+            await ctx.send(embed=embed)
+            return
+
+        self.link_cache[ctx.guild.id] = 1
+
+        async with self.bot.pool.acquire() as database:
+            await database.execute(
+                "UPDATE public.lock SET link_state=1 WHERE guild_id=$1",
+                ctx.guild.id,
+            )
+
+        desc = textwrap.dedent(
+            f"""
+            **Lock type**: ⚙️Discord Link Lock
+            **Enabler**: {ctx.author.mention}
+            **INFO**: No user can now post any link on the server.
+            """
+        )
+        embed = Embed(
+            title="Link Lock Enabled",
+            description=desc,
+            color=Color.blue()
+        )
+        await ctx.send(embed=embed)
+
+    @command(name="invite-lock", aliases=["invitelock", "i-lock"])
     async def invite_lock(self, ctx: Context) -> None:
+        """Lock invites on the server."""
         status = await self.get_link(ctx.guild.id)
 
         if status:
@@ -156,8 +193,9 @@ class Lock(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command()
+    @command(name="link-unlock", aliases=["linkunlock", "l-unlock"])
     async def link_unlock(self, ctx: Context) -> None:
+        """Remove the link lock."""
         status = await self.get_link(ctx.guild.id)
 
         if not status:

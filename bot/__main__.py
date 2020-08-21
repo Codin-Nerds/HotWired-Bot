@@ -1,22 +1,14 @@
-import json
 import os
 
 from bot import config
 from bot.core.bot import Bot
 
-from discord import Game
+from discord import Game, Message
 
 
-def get_prefix(client, message) -> str:
-    with open("bot/assets/prefixes.json", "r") as file:
-        prefixes = json.load(file)
-
-    try:
-        prefix = prefixes[str(message.guild.id)]
-    except KeyError:
-        prefix = config.COMMAND_PREFIX
-
-    return prefix
+async def command_prefix(bot: Bot, message: Message) -> str:
+    """Define the prefix of the commands."""
+    return await bot.get_prefix(message)
 
 
 TOKEN = os.getenv("BOT_TOKEN")
@@ -43,6 +35,8 @@ extensions = [
 
     "bot.cogs.help",
 
+    "bot.cogs.lock",
+
     "bot.cogs.moderation",
     "bot.cogs.music",
 
@@ -64,7 +58,7 @@ extensions = [
 
 bot = Bot(
     extensions,
-    command_prefix=get_prefix,
+    command_prefix=command_prefix,
     activity=Game(name=f"Ping me using {config.COMMAND_PREFIX}help"),
     case_insensitive=True,
 )

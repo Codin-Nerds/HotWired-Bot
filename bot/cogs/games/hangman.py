@@ -5,7 +5,7 @@ from collections import defaultdict
 from os import path
 
 from discord import Color, Embed, Guild, Member, Message, TextChannel
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Context
 
 from bot import config
 from bot.core.bot import Bot
@@ -182,14 +182,3 @@ class HangmanGame:
         """Create a game with random word"""
         word = random.choice(HangmanGame.word_list)
         return cls(ctx.bot, ctx.guild, ctx.channel, ctx.author, word)
-
-
-class Hangman(Cog):
-    def __init__(self, bot: Bot) -> None:
-        self.bot = bot
-
-    @command()
-    async def hangman(self, ctx: Context) -> None:
-        """Play game of Hangman."""
-        hangman_game = HangmanGame.random(ctx)
-        await hangman_game.play()

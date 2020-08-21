@@ -6,10 +6,8 @@ import discord
 from discord.ext import commands
 from discord.ext import menus
 
-from bot.core.bot import Bot
 
-
-class Game(menus.Menu):
+class TTT_Game(menus.Menu):
     """Tic-tac-Toe menu."""
 
     emojis = [
@@ -194,16 +192,3 @@ class Game(menus.Menu):
     async def on_stop(self, payload: discord.RawReactionActionEvent) -> None:
         """Stop button."""
         await self.stop()
-
-
-class TicTacToe(commands.Cog):
-    """Tic-Tac-Toe Game."""
-
-    def __init__(self, bot: Bot) -> None:
-        self.bot = bot
-
-    @commands.command(aliases=["ttt", "tictactoe"])
-    async def tic_tac_toe(self, ctx: commands.Context, opponent: discord.Member = None) -> None:
-        """Play a game of Tic-Tac-Toe."""
-        game = Game(ctx.author, opponent, clear_reactions_after=True)
-        await game.start(ctx)

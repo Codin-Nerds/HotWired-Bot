@@ -1,9 +1,6 @@
-import json
-import re
 import textwrap
 import traceback
 
-import aiohttp
 from discord import Color, Embed, Guild, Message
 from discord.ext.commands import Cog
 
@@ -20,21 +17,6 @@ class Events(Cog):
         self.bot = bot
         self.dev_mode = config.DEV_MODE
 
-    @staticmethod
-    def get_link_code(string: str) -> str:
-        """Get the code from a link."""
-        return string.split("/")[-1]
-
-    @staticmethod
-    async def is_our_invite(full_link: str, guild: Guild) -> bool:
-        """Check if the full link is an invite for the given guild."""
-        guild_invites = await guild.invites()
-        for invite in guild_invites:
-            # discord.gg/code resolves to https://discordapp.com/invite/code after using session.get(invite)
-            if Events.get_link_code(invite.url) == Events.get_link_code(full_link):
-                return True
-        return False
-
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
         """Prevent people from posting other servers' invites."""
@@ -50,20 +32,15 @@ class Events(Cog):
         if message.author.guild_permissions.administrator:
             return
 
-        if "https:" in message.content or "http:" in message.content:
-            base_url = re.findall(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", message.content)
+        # if self.bot.mention in message:
+        #     prefix = self.bot.prefix_dict.get(
+        #         self.bot.get_id(message),
+        #         self.bot.default_prefix
+        #     )
 
-            for invite in base_url:
-                try:
-                    async with self.bot.session.get(invite) as response:
-                        invite = str(response.url)
-                except aiohttp.ClientConnectorError:
-                    continue
+        #     await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{prefix}`")
 
-                if "discordapp.com/invite/" in invite or "discord.gg/" in invite:
-                    if not await Events.is_our_invite(invite, message.guild):
-                        await message.channel.send(f"{message.author.mention} You are not allowed to post other Server's invites!")
-                        await message.delete()
+        # await self.bot.process_commands(message)
 
     @Cog.listener()
     async def on_error(self, event: str, *args, **kwargs) -> None:
@@ -85,14 +62,6 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: Guild) -> None:
-        with open("bot/assets/prefixes.json", "r") as file:
-            prefixes = json.load(file)
-
-        prefixes[str(guild.id)] = PREFIX
-
-        with open("bot/assets/prefixes.json", "w") as file:
-            json.dump(prefixes, file, indent=4)
-
         """Send message upon joining a guild, and log it."""
         logchannel = self.bot.get_channel(config.log_channel)
 
@@ -153,15 +122,6 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_guild_remove(self, guild: Guild) -> None:
-        with open("bot/assets/prefixes.json", "r") as file:
-            prefixes = json.load(file)
-
-        prefixes.pop(str(guild.id))
-
-        with open("bot/assets/prefixes.json", "w") as file:
-            json.dump(prefixes, file, indent=4)
-
-        """Log guild removal."""
         logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
