@@ -3,15 +3,21 @@ import json
 from random import choice, choices, randint, sample
 
 from discord import File, Error
-from discord.ext.commands import (Bot, Cog, CommandInvokeError, Context,
-                                  command, has_permissions)
+from discord.ext.commands import (
+    Bot,
+    Cog,
+    CommandInvokeError,
+    Context,
+    command,
+    has_permissions
+)
 from discord.utils import get
 
 
 class Verification(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.config_full = json.loads(open("assets/config.json").read())
+        self.config_full = json.loads(open("assets/config.json").read())  # Change with postgres cache
         self.word_list_refresh_rate = 99
         self.word_cache_size = 1000
 

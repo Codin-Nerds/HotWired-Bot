@@ -2,8 +2,9 @@ import json
 import textwrap
 import typing as t
 from collections import defaultdict
+from contextlib import suppress
 
-from discord import Color, Embed, Member, TextChannel
+from discord import Color, Embed, Member, TextChannel, Channel, Forbidden
 from discord.errors import HTTPException
 from discord.ext.commands import Cog, ColourConverter, Context, group
 
@@ -317,6 +318,29 @@ class Embeds(Cog):
     async def dump(self, ctx: Context) -> None:
         """Export JSON from current Embed."""
         embed_parser = JsonEmbedParser.from_embed(ctx, self.embeds[ctx.author])
+        json = embed_parser.make_json()
+        await ctx.send(f"```json\n{json}```")
+
+    @embed_group.command()
+    async def message_dump(self, ctx: Context, channel: Channel, message_id: int) -> None:
+        """Dump an embed with it's ID."""
+        member = channel.server and channel.server.get_member(ctx.message.author.id)
+
+        if channel != ctx.message.channel and not member:
+            await ctx.send("Private Channel, or Invalid Server.")
+            return
+
+        with suppress(Forbidden):
+            msg = await self.bot.get_message(channel, str(message_id))
+
+        if msg.author.id != self.bot.user.id:
+            await ctx.send("Invalid User's Message.")
+            return
+        elif not msg.embeds:
+            await ctx.send("No embeds in The Message.")
+            return
+
+        embed_parser = JsonEmbedParser.from_embed(ctx, msg)
         json = embed_parser.make_json()
         await ctx.send(f"```json\n{json}```")
 
