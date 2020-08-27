@@ -64,7 +64,7 @@ class Common(Cog):
 
         desc = textwrap.dedent(
             f"""
-            :ping_pong: Pong! 
+            :ping_pong: Pong!
             Bot ping: ({duration}ms)
             Discord Server Ping: ({discord_ms}ms)
             """
