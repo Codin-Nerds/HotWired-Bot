@@ -15,6 +15,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
 
 extensions = [
+    "bot.cogs.announcements",
     "bot.cogs.asciiart",
 
     "bot.cogs.codesandbox",
