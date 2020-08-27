@@ -35,7 +35,7 @@ class Announcements(Cog):
         if role in ctx.author.roles:
             await ctx.send("You're already subscribed!")
         else:
-            ctx.author.add_roles(role)
+            await ctx.author.add_roles(role)
             await ctx.send("You're Finally Subscribed!")
 
     @command()
@@ -54,7 +54,7 @@ class Announcements(Cog):
         if role not in ctx.author.roles:
             await ctx.send("You're already unsubscribed!")
         else:
-            ctx.author.remove_roles(role)
+            await ctx.author.remove_roles(role)
             await ctx.send("Oh No! You unsubscribed!")
 
     @command()
