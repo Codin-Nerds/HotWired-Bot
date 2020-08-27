@@ -18,7 +18,7 @@ class Common(Cog):
         self.bot = bot
 
     @command()
-    def subscribe(self, ctx: Context) -> None:
+    async def subscribe(self, ctx: Context) -> None:
         async with self.bot.pool.acquire() as database:
             row = await database.fetchrow(
                 "SELECT * FROM public.subscribe WHERE guild_id=$1",
@@ -36,7 +36,7 @@ class Common(Cog):
             await ctx.send("You're Finally Subscribed!")
 
     @command()
-    def unsubscribe(self, ctx: Context) -> None:
+    async def unsubscribe(self, ctx: Context) -> None:
         async with self.bot.pool.acquire() as database:
             row = await database.fetchrow(
                 "SELECT * FROM public.subscribe WHERE guild_id=$1",
@@ -55,7 +55,7 @@ class Common(Cog):
 
     @command()
     @check(manage_roles=True)
-    def announcement_role(self, ctx: Context, role: Role) -> None:
+    async def announcement_role(self, ctx: Context, role: Role) -> None:
         if isinstance(role, Role):
             role = role.id
 
