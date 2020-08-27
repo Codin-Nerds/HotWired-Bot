@@ -886,7 +886,6 @@ talk_games = {
     ],
 }
 
-from Other import scheduler
 import random
 import datetime
 import time
@@ -899,7 +898,6 @@ class Variables:
     DEADLINE = 1200
     TIMEOUT = 360
 
-    scheduler = scheduler.Scheduler()
     eng_dict = None
     randwords = list()
 
