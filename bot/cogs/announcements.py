@@ -9,16 +9,18 @@ from discord.ext.commands import (
     command,
     check,
 )
+from bot.core.bot import Bot
 
 
-class Common(Cog):
-    """Common commands."""
+class Announcements(Cog):
+    """Commands to get pinged while announcement commands."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @command()
     async def subscribe(self, ctx: Context) -> None:
+        """Subscribe to pings."""
         async with self.bot.pool.acquire() as database:
             row = await database.fetchrow(
                 "SELECT * FROM public.subscribe WHERE guild_id=$1",
@@ -37,6 +39,7 @@ class Common(Cog):
 
     @command()
     async def unsubscribe(self, ctx: Context) -> None:
+        """Unsubscribe from pings."""
         async with self.bot.pool.acquire() as database:
             row = await database.fetchrow(
                 "SELECT * FROM public.subscribe WHERE guild_id=$1",
@@ -56,6 +59,7 @@ class Common(Cog):
     @command()
     @check(manage_roles=True)
     async def announcement_role(self, ctx: Context, role: Role) -> None:
+        """Add the announcement role."""
         if isinstance(role, Role):
             role = role.id
 
@@ -71,4 +75,4 @@ class Common(Cog):
 
 def setup(bot: Bot) -> None:
     """Load the Common cog."""
-    bot.add_cog(Common(bot))
+    bot.add_cog(Announcements(bot))
