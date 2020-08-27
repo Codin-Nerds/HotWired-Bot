@@ -74,6 +74,7 @@ class Announcements(Cog):
                 role
             )
 
+        role = ctx.guild.get_role(role)
         await ctx.send(f"The role has been Successfully to {role.mention}")
 
 
