@@ -45,7 +45,6 @@ class Common(Cog):
         await ctx.send("Hey there Buddy! How's it Going?")
 
     @command()
-    @has_permissions(manage_messages=True)
     async def ping(self, ctx: Context) -> None:
         """Show bot ping."""
         start = time.perf_counter()
@@ -65,9 +64,9 @@ class Common(Cog):
         desc = textwrap.dedent(
             f"""
             :ping_pong: Pong!
-            Bot ping: ({duration}ms)
-            Discord Server Ping: ({discord_ms}ms)
-            Speed Ping: ({round(self.bot.latency * 1000)}ms)
+            Bot ping: **{duration}ms
+            Discord Server Ping: **{discord_ms}**
+            Speed Ping: **{round(self.bot.latency * 1000)}ms**
             """
         )
 
