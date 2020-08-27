@@ -32,7 +32,7 @@ class Announcements(Cog):
             await ctx.send("ERROR! The Announcement role hasn't been configured for this server!")
 
         role = utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
-        if role in user.roles:
+        if role in ctx.author.roles:
             await ctx.send("You're already subscribed!")
         else:
             user.add_roles(role)
@@ -51,7 +51,7 @@ class Announcements(Cog):
             await ctx.send("ERROR! The Announcement role hasn't been configured for this server!")
 
         role = utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
-        if role not in user.roles:
+        if role not in ctx.author.roles:
             await ctx.send("You're already unsubscribed!")
         else:
             user.remove_roles(role)
@@ -66,7 +66,10 @@ class Announcements(Cog):
 
         async with self.bot.pool.acquire() as database:
             await database.execute(
-                "INSERT INTO public.subscribe (guild_id, role_id) VALUES ($1, $2)",
+                """
+                INSERT INTO public.subscribe (guild_id, role_id) VALUES ($1, $2)
+                ON CONFLICT (guild_id) DO UPDATE SET role_id=$2
+                """,
                 ctx.guild.id,
                 role
             )
