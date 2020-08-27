@@ -7,7 +7,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-    check,
+    has_permissions
 )
 from bot.core.bot import Bot
 
