@@ -1,7 +1,8 @@
 from discord import (
     Color,
     Embed,
-    Role
+    Role,
+    utils
 )
 from discord.ext.commands import (
     Cog,
@@ -30,7 +31,7 @@ class Announcements(Cog):
         if not row:
             await ctx.send("ERROR! The Announcement role hasn't been configured for this server!")
 
-        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
         if role in user.roles:
             await ctx.send("You're already subscribed!")
         else:
@@ -49,7 +50,7 @@ class Announcements(Cog):
         if not row:
             await ctx.send("ERROR! The Announcement role hasn't been configured for this server!")
 
-        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
         if role not in user.roles:
             await ctx.send("You're already unsubscribed!")
         else:
