@@ -6,17 +6,30 @@ import typing as t
 from contextlib import suppress
 
 from dateutil.relativedelta import relativedelta
-from discord import Color, Embed, Forbidden, Member
+from discord import (
+    Color,
+    Embed,
+    File,
+    Forbidden,
+    Member,
+)
 from discord.ext.commands import (
     BadArgument, BucketType, Cog, Context,
     command, cooldown, has_permissions
 )
+
+from io import BytesIO
+from bs4 import BeautifulSoup as bs
+from random import choice
+import unicodedata
 
 from bot import config
 from bot.core.bot import Bot
 from bot.core.converters import TimeDelta
 from bot.utils.time import stringify_timedelta
 from datetime import datetime
+
+IMAGE_LINKS = re.compile(r"(http[s]?:\/\/[^\"\']*\.(?:png|jpg|jpeg|gif|png))")
 
 
 class Common(Cog):
@@ -28,7 +41,7 @@ class Common(Cog):
     # TODO : Add custom command support after db integration
     @command()
     async def hello(self, ctx: Context) -> None:
-        """Greet a User."""
+        """Greet a Member."""
         await ctx.send("Hey there Buddy! How's it Going?")
 
     @command()
@@ -40,7 +53,24 @@ class Common(Cog):
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
-        embed = Embed(title="Info", description=f":ping_pong: Pong! ({duration}ms)", color=Color.blurple())
+
+        discord_start = time.monotonic()
+        async with self.bot.session.get("https://discord.com/") as resp:
+            if resp.status == 200:
+                discord_end = time.monotonic()
+                discord_ms = f"{round((discord_end - discord_start) * 1000)}ms"
+            else:
+                discord_ms = "fucking dead"
+
+        desc = textwrap.dedent(
+            f"""
+            :ping_pong: Pong! 
+            Bot ping: ({duration}ms)
+            Discord Server Ping: ({discord_ms}ms)
+            """
+        )
+
+        embed = Embed(title="Info", description=desc, color=Color.blurple())
         await message.edit(embed=embed)
 
     # TODO : after db integration, add Time Limit, and grand announcement, when the poll is over.
@@ -114,7 +144,7 @@ class Common(Cog):
 
     # TODO : beautify this timer with a realtime updating clock image.
     @command()
-    @cooldown(1, 10, BucketType.user)
+    @cooldown(1, 10, BucketType.member)
     async def countdown(self, ctx: Context, duration: TimeDelta, *, description: t.Optional[str] = Embed.Empty) -> None:
         """A countdown timer that counts down for the specific duration."""
         embed = Embed(
@@ -172,7 +202,7 @@ class Common(Cog):
 
     @command(aliases=["thank", "ty"])
     async def thanks(self, ctx: Context, member: Member, *, reason: str = None) -> None:
-        """Thank a user."""
+        """Thank a Member."""
         if ctx.author == member:
             embed = Embed(title="WARNING", description=f"{ctx.author.mention} **You Cannot Thank Yourself!**", color=Color.orange(),)
             await ctx.send(embed=embed)
@@ -217,7 +247,7 @@ class Common(Cog):
 
         return code
 
-    @cooldown(1, 10, BucketType.user)
+    @cooldown(1, 10, BucketType.member)
     async def shorten(self, ctx: Context, *, link: str) -> None:
         """Make a link shorter using the tinyurl api."""
         if not link.startswith("https://"):
@@ -240,6 +270,65 @@ class Common(Cog):
 
         with suppress(Forbidden):
             await ctx.message.delete()
+
+    @cooldown(1, 15, BucketType.guild)
+    @command()
+    async def retrosign(self, ctx, *, content: str):
+        """Make a retrosign with 3 words seperated by ';' or with one word in the middle."""
+        texts = [t.strip() for t in content.split(";")]
+        if len(texts) == 1:
+            lenstr = len(texts[0])
+            if lenstr <= 15:
+                data = dict(
+                    bcg=choice([1, 2, 3, 4, 5]),
+                    txt=choice([1, 2, 3, 4]),
+                    text1="",
+                    text2=texts[0],
+                    text3="",
+                )
+            else:
+                return await ctx.send("\N{CROSS MARK} Your line is too long (14 character limit)")
+        elif len(texts) == 3:
+            texts[0] = unicodedata.normalize('NFD', texts[0]).encode('ascii', 'ignore')
+            texts[0] = texts[0].decode('UTF-8')
+            texts[0] = re.sub(r'[^A-Za-z0-9 ]', '', texts[0])
+            if len(texts[0]) >= 15:
+                return await ctx.send(
+                    "\N{CROSS MARK} Your first line is too long (14 character limit)"
+                )
+            if len(texts[1]) >= 13:
+                return await ctx.send(
+                    "\N{CROSS MARK} Your second line is too long (12 character limit)"
+                )
+            if len(texts[2]) >= 26:
+                return await ctx.send(
+                    "\N{CROSS MARK} Your third line is too long (25 character limit)"
+                )
+            data = dict(
+                bcg=choice([1, 2, 3, 4, 5]),
+                txt=choice([1, 2, 3, 4]),
+                text1=texts[0],
+                text2=texts[1],
+                text3=texts[2],
+            )
+        else:
+            return await ctx.send(
+                "\N{CROSS MARK} please provide three words seperated by ';' or one word"
+            )
+
+        async with ctx.channel.typing():
+            async with self.session.post(
+                "https://photofunia.com/effects/retro-wave", data=data
+            ) as response:
+                if response.status == 200:
+                    soup = bs(await response.text(), "html.parser")
+                    download_url = soup.find("div", class_="downloads-container").ul.li.a["href"]
+                    async with self.session.request("GET", download_url) as image_response:
+                        if image_response.status == 200:
+                            image_data = await image_response.read()
+                            with BytesIO(image_data) as temp_image:
+                                image = File(fp=temp_image, filename="image.png")
+                                await ctx.channel.send(file=image)
 
 
 def setup(bot: Bot) -> None:

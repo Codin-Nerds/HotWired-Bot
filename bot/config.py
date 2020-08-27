@@ -885,3 +885,99 @@ talk_games = {
         "I’ll give you a person's contact information and send a romantic message to that person.",
     ],
 }
+
+from Other import scheduler
+import random
+import datetime
+import time
+import json
+
+
+class Variables:
+    game_names = ["uno", "chess"]
+
+    DEADLINE = 1200
+    TIMEOUT = 360
+
+    scheduler = scheduler.Scheduler()
+    eng_dict = None
+    randwords = list()
+
+    history = list()
+
+    games_names_short = ["uno", "chess"]
+
+    colors_uno = {"Blue": "🟦", "Green": "🟩", "Red": "🟥", "Yellow": "🟨"}
+    white = {"White": "⬜"}
+
+    SPLIT_EMOJI = "↔️"
+    INC_EMOJI1 = "⬆️"
+    INC_EMOJI2 = "⏫"
+    STOP_EMOJI = "❌"
+    BACK_EMOJI = "◀"
+    FORWARD_EMOJI = "▶️"
+    REPEAT_EMOJI = "🔁"
+    NEXT_EMOJI = "➡️"
+
+    DICT_ALFABET = {
+        'a': '🇦', 'b': '🇧', 'c': '🇨', 'd': '🇩', 'e': '🇪', 'f': '🇫', 'g': '🇬', 'h': '🇭',
+        'i': '🇮', 'j': '🇯',
+        'k': '🇰', 'l': '🇱', 'm': '🇲', 'n': '🇳', 'o': '🇴', 'p': '🇵', 'q': '🇶', 'r': '🇷',
+        's': '🇸', 't': '🇹',
+        'u': '🇺', 'v': '🇻', 'w': '🇼', 'x': '🇽', 'y': '🇾', 'z': '🇿'
+    }  # letter: emoji
+
+    NUMBERS = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
+    REACTIONS_CONNECT4 = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
+
+    GWRULES = f"""
+        Guess the word from the given definition.\n
+        Press the indicated reactions on the message to make your move.\n
+        Press {STOP_EMOJI} to close the game.\n
+    """
+
+    SCRULES = f"""
+        Try to unscramble the letters that the bot scrambled.\n
+        Press the indicated reactions on the message to make your move.\n
+        Press {STOP_EMOJI} to close the game.\n
+    """
+
+    QZRULES = f"""
+        Try to give the correct answer to the questions.\n
+        Questions are always multiple choice and have 4 possible answers.\n
+        Only one answer is the correct one.\n
+        There are different categories available.\n
+        You can get a new question after answering the previous one with {NEXT_EMOJI}.\n
+        Press the indicated reactions on the message to make your move.\n
+        Press {STOP_EMOJI} to close the game.\n
+    """
+
+    UNORULES = f"""
+        Every message you type in the bot DM will be visible to other players in the "CHAT" message.\n
+        Only the person who's turn it is can play.\n
+        Playable cards are marked with an emoji.\n
+        Match cards by color or value.\n
+        Wild cards and Wild Draw 4 cards can be played without matching color or value.\n
+        Press {STOP_EMOJI} to draw a card.\n
+        If you need to draw multiple cards, use {INC_EMOJI2} to take cards.\n
+        After drawn a card, use {NEXT_EMOJI} to end turn.\n
+        When you have on card remaining type "uno" in chat.
+        Players can type "no uno" in chat to catch someone not saying uno.\n
+        The rest of the rules are according to the official Uno rules.\n
+    """
+
+    CHESSRULES = "Start a game of chess with 2 players, one game per channel allowed."
+
+
+def on_startup():
+    json1_file = open('bot/assets/dictionary.json')
+    json1_str = json1_file.read()
+    Variables.eng_dict = json.loads(json1_str)
+    json1_file.close()
+
+
+def get_next_midnight_stamp():
+    datenow = datetime.date.today() + datetime.timedelta(days=1)
+    unix_next = datetime.datetime(datenow.year, datenow.month, datenow.day, 0)
+    unixtime = time.mktime(unix_next.timetuple())
+    return unixtime

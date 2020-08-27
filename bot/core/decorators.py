@@ -27,7 +27,7 @@ def follow_roles(argument: t.Union[str, int] = 0) -> t.Callable:
                     raise ValueError(f"Specified argument '{argument}' not found.")
 
             if isinstance(user, User):
-                member = await ctx.guild.get_member(user.id)
+                member = ctx.guild.get_member(user.id)
                 if member is None:
                     # Skip checks in case of bad member
                     logger.trace("Skipping follow_role check, provided user isn't a valid Member.")

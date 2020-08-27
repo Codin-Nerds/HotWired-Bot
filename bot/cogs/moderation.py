@@ -11,6 +11,7 @@ from discord.ext.commands import (
     Cog, Context, Greedy, NoPrivateMessage,
     command, has_permissions
 )
+from discord import HTTPException
 from loguru import logger
 
 from bot.core.bot import Bot
@@ -245,9 +246,11 @@ class Moderation(Cog):
         for member in members:
             if isinstance(member, Role):
                 for mem in member.members:
-                    await mem.send(embed=embed_data.embed)
+                    with suppress(Forbidden, HTTPException):
+                        await mem.send(embed=embed_data.embed)
             else:
-                await member.send(embed=embed_data.embed)
+                with suppress(Forbidden, HTTPException):
+                    await member.send(embed=embed_data.embed)
 
     @command()
     @has_permissions(administrator=True)
@@ -265,7 +268,7 @@ class Moderation(Cog):
         embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         for member in ctx.guild.members:
-            with suppress(Forbidden):
+            with suppress(Forbidden, HTTPException):
                 await member.send(embed=embed_data.embed)
 
     @command()

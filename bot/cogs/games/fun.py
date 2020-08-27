@@ -3,13 +3,21 @@ import random
 import textwrap
 import urllib
 from random import choice, randint
+import io
 
 import nekos
 import aiohttp
 import discord
-from discord import Color, Embed
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, is_nsfw)
+from discord import Color, Embed, Member
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    is_nsfw,
+)
 
 from bot import config
 from bot.core.bot import Bot
@@ -546,6 +554,124 @@ class Fun(Cog):
             embed = discord.Embed(color=Color.dark_green())
             embed.set_image(url=res["message"])
         await ctx.send(embed=embed)
+
+    @command()
+    async def avatar(self, ctx: Context, member: Member) -> None:
+        embed = discord.Embed(
+            color=self.bot.embed_color,
+            title="→ Avatar"
+        )
+        embed.set_image(url=member.avatar_url_as(size=1024, format=None, static_format="png"))
+
+        await ctx.send(embed=embed)
+
+    @command()
+    async def history(self, ctx: Context):
+        async with self.bot.session.get('http://numbersapi.com/random/date?json') as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Random History Date!",
+                description=f"• Fact: {res['text']}"
+                            f"\n• Year: {res['year']}"
+            )
+
+            await ctx.send(embed=embed)
+
+    @command()
+    async def howgay(self, ctx: Context, member: Member) -> None:
+        embed = discord.Embed(
+            color=self.bot.embed_color,
+            title="→ Howgay?"
+        )
+        embed.add_field(
+            name="The account is...",
+            value=f"{random.randint(1, 100)}% gay :gay_pride_flag: → {str(member.mention)}"
+        )
+
+        await ctx.send(embed=embed)
+
+    @command()
+    async def math(self, ctx: Context) -> None:
+        async with self.bot.session.get('http://numbersapi.com/random/math?json') as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Random Math Fact!",
+                description=f"• Fact: {res['text']}"
+                            f"\n• Number: {res['number']}"
+            )
+            await ctx.send(embed=embed)
+
+    @command()
+    async def advice(self, ctx: Context) -> None:
+        async with self.bot.session.get('https://api.adviceslip.com/advice') as r:
+            res = await r.json(content_type="text/html")
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Random Advice!",
+                description=f"• Advice: {res['slip']['advice']}"
+            )
+
+            await ctx.send(embed=embed)
+
+    @command()
+    async def bill(self, ctx):
+        async with self.bot.session.get('https://belikebill.ga/billgen-API.php?default=1') as r:
+            res = io.BytesIO(await r.read())
+            bill_file = discord.File(res, filename="bill.jpg")
+
+            await ctx.send(file=bill_file)
+
+    @command()
+    async def trumptweet(self, ctx: Context, *, text: str) -> None:
+        async with self.bot.session.get(f"https://nekobot.xyz/api/imagegen?type=trumptweet&text={text}") as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Trump Tweet"
+            )
+            embed.set_image(url=res["message"])
+
+            await ctx.send(embed=embed)
+
+    @command()
+    async def vs(self, ctx: Context, member1: Member, member2: Member) -> None:
+        member1 = member1.avatar_url_as(size=1024, format=None, static_format='png')
+        member2 = member2.avatar_url_as(size=1024, format=None, static_format='png')
+        async with self.bot.session.get(
+                f"https://nekobot.xyz/api/imagegen?type=whowouldwin&user1={member1}&user2={member2}") as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Who Would Win"
+            )
+            embed.set_image(url=res["message"])
+
+            await ctx.send(embed=embed)
+
+    @command()
+    async def youtube(self, ctx: Context, *, comment: str) -> None:
+        picture = ctx.author.avatar_url_as(size=1024, format=None, static_format='png')
+        async with self.bot.session.get(f"https://some-random-api.ml/canvas/youtube-comment?avatar={picture}&username={ctx.author.name}&comment={comment}") as r:
+            res = io.BytesIO(await r.read())
+            youtube_file = discord.File(res, filename="youtube.jpg")
+            embed = discord.Embed(
+                color=self.bot.embed_color,
+                title="→ Youtube comment"
+            )
+            embed.set_image(url="attachment://youtube.jpg")
+
+            await ctx.send(embed=embed, file=youtube_file)
+
+    @command(brief="Wallpaper", description="Get yourself a wallpaper")
+    @cooldown(1, 5, BucketType.user)
+    @is_nsfw()
+    async def wallpaper(self, ctx):
+        """ Get yourself a (cool?) wallpaper """
+        async with self.bot.session.get('https://nekos.life/api/v2/img/wallpaper') as r:
+            r = await r.json()
+        await ctx.send(embed=discord.Embed(color=self.bot.embed_color).set_image(url=r['url']))
 
 
 def setup(bot: Bot) -> None:
