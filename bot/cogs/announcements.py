@@ -57,7 +57,7 @@ class Announcements(Cog):
             await ctx.send("Oh No! You unsubscribed!")
 
     @command()
-    @check(manage_roles=True)
+    @has_permissions(manage_roles=True)
     async def announcement_role(self, ctx: Context, role: Role) -> None:
         """Add the announcement role."""
         if isinstance(role, Role):
