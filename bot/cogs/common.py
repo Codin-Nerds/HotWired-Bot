@@ -67,6 +67,7 @@ class Common(Cog):
             :ping_pong: Pong!
             Bot ping: ({duration}ms)
             Discord Server Ping: ({discord_ms}ms)
+            Speed Ping: ({round(self.bot.latency * 1000)}ms)
             """
         )
 
