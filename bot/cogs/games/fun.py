@@ -558,7 +558,7 @@ class Fun(Cog):
     @command()
     async def avatar(self, ctx: Context, member: Member) -> None:
         embed = discord.Embed(
-            color=self.bot.embed_color,
+            color=Color.blue(),
             title="→ Avatar"
         )
         embed.set_image(url=member.avatar_url_as(size=1024, format=None, static_format="png"))
@@ -570,7 +570,7 @@ class Fun(Cog):
         async with self.bot.session.get('http://numbersapi.com/random/date?json') as r:
             res = await r.json()
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Random History Date!",
                 description=f"• Fact: {res['text']}"
                             f"\n• Year: {res['year']}"
@@ -581,7 +581,7 @@ class Fun(Cog):
     @command()
     async def howgay(self, ctx: Context, member: Member) -> None:
         embed = discord.Embed(
-            color=self.bot.embed_color,
+            color=Color.blue(),
             title="→ Howgay?"
         )
         embed.add_field(
@@ -596,7 +596,7 @@ class Fun(Cog):
         async with self.bot.session.get('http://numbersapi.com/random/math?json') as r:
             res = await r.json()
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Random Math Fact!",
                 description=f"• Fact: {res['text']}"
                             f"\n• Number: {res['number']}"
@@ -608,7 +608,7 @@ class Fun(Cog):
         async with self.bot.session.get('https://api.adviceslip.com/advice') as r:
             res = await r.json(content_type="text/html")
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Random Advice!",
                 description=f"• Advice: {res['slip']['advice']}"
             )
@@ -628,7 +628,7 @@ class Fun(Cog):
         async with self.bot.session.get(f"https://nekobot.xyz/api/imagegen?type=trumptweet&text={text}") as r:
             res = await r.json()
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Trump Tweet"
             )
             embed.set_image(url=res["message"])
@@ -643,7 +643,7 @@ class Fun(Cog):
                 f"https://nekobot.xyz/api/imagegen?type=whowouldwin&user1={member1}&user2={member2}") as r:
             res = await r.json()
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Who Would Win"
             )
             embed.set_image(url=res["message"])
@@ -657,7 +657,7 @@ class Fun(Cog):
             res = io.BytesIO(await r.read())
             youtube_file = discord.File(res, filename="youtube.jpg")
             embed = discord.Embed(
-                color=self.bot.embed_color,
+                color=Color.blue(),
                 title="→ Youtube comment"
             )
             embed.set_image(url="attachment://youtube.jpg")
@@ -671,7 +671,7 @@ class Fun(Cog):
         """ Get yourself a (cool?) wallpaper """
         async with self.bot.session.get('https://nekos.life/api/v2/img/wallpaper') as r:
             r = await r.json()
-        await ctx.send(embed=discord.Embed(color=self.bot.embed_color).set_image(url=r['url']))
+        await ctx.send(embed=discord.Embed(color=Color.blue()).set_image(url=r['url']))
 
 
 def setup(bot: Bot) -> None:
