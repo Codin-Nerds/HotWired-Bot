@@ -322,11 +322,7 @@ class Embeds(Cog):
         await ctx.send(f"```json\n{json}```")
 
     @embed_group.command()
-<<<<<<< Updated upstream
     async def message_dump(self, ctx: Context, channel: TextChannel, message_id: int) -> None:
-=======
-    async def message_dump(self, ctx: Context, channel: Channel, message_id: int) -> None:
->>>>>>> Stashed changes
         """Dump an embed with it's ID."""
         member = channel.server and channel.server.get_member(ctx.message.author.id)
 
