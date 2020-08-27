@@ -70,7 +70,7 @@ class Announcements(Cog):
                 role
             )
 
-        await ctx.send(f"The role has been Successfully to {role_id.mention}")
+        await ctx.send(f"The role has been Successfully to {role.mention}")
 
 
 def setup(bot: Bot) -> None:
