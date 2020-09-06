@@ -152,16 +152,16 @@ class Sudo(Cog):
 
         general = textwrap.dedent(
             f"""
-            • Servers: **{len(self.bot.guilds)}**
-            • Commands: **{len(self.bot.commands)}**
-            • members: **{len(set(self.bot.get_all_members()))}**
-            • Uptime: **{uptime(datetime.datetime.now() - self.start_time)}**
+            • Servers: **`{len(self.bot.guilds)}`**
+            • Commands: **`{len(self.bot.commands)}`**
+            • members: **`{len(set(self.bot.get_all_members()))}`**
+            • Uptime: **`{uptime(datetime.datetime.now() - self.start_time)}`**
             """
         )
         system = textwrap.dedent(
             f"""
-            • Python: **{platform.python_version()} with {implementation}**
-            • discord.py: **{discord_version}**
+            • Python: **`{platform.python_version()} with {implementation}`**
+            • discord.py: **`{discord_version}`**
             """
         )
 

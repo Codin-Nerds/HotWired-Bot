@@ -473,7 +473,12 @@ class Music(commands.Cog):
         """Plays a song."""
 
         if not ctx.voice_state.voice:
-            await ctx.invoke(self._join)
+            destination = ctx.author.voice.channel
+            if ctx.voice_state.voice:
+                await ctx.voice_state.voice.move_to(destination)
+                return
+
+            ctx.voice_state.voice = await destination.connect()
 
         async with ctx.typing():
             try:

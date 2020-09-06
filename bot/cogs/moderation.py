@@ -252,6 +252,8 @@ class Moderation(Cog):
                 with suppress(Forbidden, HTTPException):
                     await member.send(embed=embed_data.embed)
 
+            ctx.message.add_reaction("✅")
+
     @command()
     @has_permissions(administrator=True)
     async def dmall(self, ctx: Context, *, text: str = None) -> None:
@@ -270,6 +272,8 @@ class Moderation(Cog):
         for member in ctx.guild.members:
             with suppress(Forbidden, HTTPException):
                 await member.send(embed=embed_data.embed)
+
+        ctx.message.add_reaction("✅")
 
     @command()
     @has_permissions(manage_channels=True)

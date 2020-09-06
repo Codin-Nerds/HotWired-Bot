@@ -1,13 +1,30 @@
 import textwrap
 import traceback
+import datetime
 
 from discord import Color, Embed, Guild, Message
 from discord.ext.commands import Cog
+
+from discord.ext import commands
+import discord
 
 from bot import config
 from bot.core.bot import Bot
 
 PREFIX = config.COMMAND_PREFIX
+
+
+class ArgumentError(commands.CommandError):
+    pass
+
+
+class ImageError(commands.CommandError):
+    pass
+
+
+class VoiceError(commands.CommandError):
+    pass
+
 
 
 class Events(Cog):
@@ -125,6 +142,148 @@ class Events(Cog):
         logchannel = self.bot.get_channel(config.log_channel)
 
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: context.Context, error) -> None:
+
+        error = getattr(error, 'original', error)
+
+        if isinstance(error, commands.CommandNotFound):
+            return
+
+        elif isinstance(error, commands.CommandOnCooldown):
+
+            cooldowns = {
+                commands.BucketType.default: f'for the whole bot.',
+                commands.BucketType.user: f'for you.',
+                commands.BucketType.guild: f'for this server.',
+                commands.BucketType.channel: f'for this channel.',
+                commands.BucketType.member: f'cooldown for you.',
+                commands.BucketType.category: f'for this channel category.',
+                commands.BucketType.role: f'for your role.'
+            }
+            await ctx.send(f'The command `{ctx.command}` is on cooldown {cooldowns[error.cooldown.type]} You can retry in '
+                           f'`{self.bot.utils.format_time(error.retry_after, friendly=True)}`')
+            return
+
+        elif isinstance(error, commands.MaxConcurrencyReached):
+            cooldowns = {
+                commands.BucketType.default: f'.',
+                commands.BucketType.user: f' per user.',
+                commands.BucketType.guild: f' per server.',
+                commands.BucketType.channel: f' per channel.',
+                commands.BucketType.member: f' per member.',
+                commands.BucketType.category: f' per channel category.',
+                commands.BucketType.role: f' per role.'
+            }
+            await ctx.send(f'The command `{ctx.command}` is already being ran at its maximum of {error.number} time(s){cooldowns[error.per]} Retry a bit later.')
+            return
+
+        elif isinstance(error, commands.BotMissingPermissions):
+            permissions = '\n'.join([f'> {permission}' for permission in error.missing_perms])
+            message = Embed(
+                title="Error!",
+                description=f'I am missing the following permissions required to run the command `{ctx.command}`.\n{permissions}',
+                color=Color.red()
+            )
+
+            try:
+                await ctx.send(embed=message)
+            except discord.Forbidden:
+                try:
+                    await ctx.author.send(embed=message)
+                except discord.Forbidden:
+                    pass
+            return
+
+        elif isinstance(error, commands.MissingPermissions):
+            permissions = '\n'.join([f'> {permission}' for permission in error.missing_perms])
+            message = Embed(
+                title="Error!",
+                description=f'You are missing the following permissions required to run the command `{ctx.command}`.\n{permissions}',
+                color=Color.red()
+            )
+            await ctx.send(embed=message)
+            return
+
+        elif isinstance(error, commands.MissingRequiredArgument):
+            message = Embed(
+                title="Error!",
+                description=f'You missed the `{error.param.name}` parameter for the command `{ctx.command}`. '
+                           f'Use `{self.bot.config.prefix}help {ctx.command}` for more information on what parameters to use.',
+                color=Color.red()
+            )
+            await ctx.send(embed=message)
+
+            return
+
+        error_messages = {
+            ArgumentError: f'{error}',
+            ImageError: f'{error}',
+            VoiceError: f'{error}',
+            commands.CheckFailure: f'{error}',
+            commands.TooManyArguments: f'You used too many parameters for the command `{ctx.command}`. Use `{self.bot.config.prefix}help {ctx.command}` for '
+                                       f'more information on what parameters to use.',
+            commands.BadArgument: f'I was unable to understand a parameter that you used for the command `{ctx.command}`. '
+                                  f'Use `{self.bot.config.prefix}help {ctx.command}` for more information on what parameters to use.',
+            commands.BadUnionArgument: f'I was unable to understand a parameter that you used for the command `{ctx.command}`. '
+                                       f'Use `{self.bot.config.prefix}help {ctx.command}` for more information on what parameters to use.',
+            commands.NoPrivateMessage: f'The command `{ctx.command}` can not be used in private messages.',
+            commands.NotOwner: f'The command `{ctx.command}` is owner only.',
+            commands.NSFWChannelRequired: f'The command `{ctx.command}` can only be ran in a NSFW channel.',
+            commands.DisabledCommand: f'The command `{ctx.command}` has been disabled.',
+            commands.ExpectedClosingQuoteError: f'You missed a closing quote in the parameters passed to the `{ctx.command}` command.',
+            commands.UnexpectedQuoteError: f'There was an unexpected quote in the parameters passed to the `{ctx.command}` command.'
+        }
+
+        error_message = error_messages.get(type(error), None)
+        if error_message is not None:
+            await ctx.send(
+                    embed=Embed(
+                    title="Error!",
+                    description=error_message,
+                    color=Color.red()
+                )
+            )
+            return
+
+        message = Embed(
+            title="Error!",
+            description=f'Something went wrong while executing that command. Please use `{ctx.prefix}support` for more help or information.',
+            color=Color.red()
+        )
+        await ctx.send(embed=message)
+
+        time = datetime.strftime(datetime.now())
+        guild = f'`Guild:` {ctx.guild} `{ctx.guild.id}`\n' if ctx.guild else ''
+        info = f'Error in command `{ctx.command}`\n\n{guild}`Channel:` {ctx.channel} `{ctx.channel.id}`\n`Author:` {ctx.author} `{ctx.author.id}`\n`Time:` {time}'
+
+        embed = discord.Embed(colour=ctx.colour, description=f'{ctx.message.content}')
+        embed.add_field(name='Info:', value=info)
+
+        errorchannel = self.bot.get_channel(config.error_channel)
+
+        await errorchannel.send(embed=embed, username=f'{ctx.author}',
+                                           avatar_url=str(ctx.author.avatar_url_as(format='gif' if ctx.author.is_avatar_animated() else 'png')))
+
+        traceback = "".join(type(error), error, error.__traceback__).strip()
+
+        if len(traceback) > 2000:
+            async with self.bot.session.post('https://mystb.in/documents', data=traceback) as response:
+                response = await response.json()
+            traceback = f'https://mystb.in/{response["key"]}.python'
+        else:
+            traceback = f'```\n{traceback}\n```'
+
+        await errorchannel.send(content=f'{traceback}', username=f'{ctx.author}',
+                                           avatar_url=str(ctx.author.avatar_url_as(format='gif' if ctx.author.is_avatar_animated() else 'png')))
+
+    @commands.Cog.listener()
+    async def on_socket_response(self, message: dict) -> None:
+
+        event = message.get('t', 'None')
+        if event is not None:
+            self.bot.socket_stats[event] += 1
 
 
 def setup(bot: Bot) -> None:

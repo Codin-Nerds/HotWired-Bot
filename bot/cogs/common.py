@@ -317,7 +317,7 @@ class Common(Cog):
             )
 
         async with ctx.channel.typing():
-            async with self.session.post(
+            async with self.bot.session.post(
                 "https://photofunia.com/effects/retro-wave", data=data
             ) as response:
                 if response.status == 200:

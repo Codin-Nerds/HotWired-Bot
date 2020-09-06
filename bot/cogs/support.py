@@ -56,6 +56,13 @@ class Support(Cog):
         )
         await contact_channel.send(embed=embed)
 
+        await ctx.send(
+            embed=Embed(
+                description="You message has been successfully delivered!",
+                color=Color.blue()
+            )
+        )
+
     @command()
     async def bug(self, ctx: Context, *, message: str = "Bug Report!") -> None:
         """Report a bug to the developers."""
@@ -71,6 +78,12 @@ class Support(Cog):
             value=f"{ctx.author.id} | {ctx.author.mention}"
         )
         await bug_report_channel.send(embed=embed)
+        await ctx.send(
+            embed=Embed(
+                description="You message has been successfully delivered!",
+                color=Color.blue()
+            )
+        )
 
     @command()
     async def support_msg(self, ctx: Context, *, message: str = "Support Required!") -> None:
@@ -116,6 +129,12 @@ class Support(Cog):
             value=f"{ctx.author.id} | {ctx.author.mention}"
         )
         await suggestions_channel.send(embed=embed)
+        await ctx.send(
+            embed=Embed(
+                description="You message has been successfully delivered!",
+                color=Color.blue()
+            )
+        )
 
     @command()
     async def complaints(self, ctx: Context, *, message: str) -> None:
