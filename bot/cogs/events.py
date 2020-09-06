@@ -278,13 +278,6 @@ class Events(Cog):
         await errorchannel.send(content=f'{traceback}', username=f'{ctx.author}',
                                            avatar_url=str(ctx.author.avatar_url_as(format='gif' if ctx.author.is_avatar_animated() else 'png')))
 
-    @commands.Cog.listener()
-    async def on_socket_response(self, message: dict) -> None:
-
-        event = message.get('t', 'None')
-        if event is not None:
-            self.bot.socket_stats[event] += 1
-
 
 def setup(bot: Bot) -> None:
     """Load the Events cog."""
