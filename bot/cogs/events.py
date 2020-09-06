@@ -3,7 +3,7 @@ import traceback
 import datetime
 
 from discord import Color, Embed, Guild, Message
-from discord.ext.commands import Cog
+from discord.ext.commands import Cog, Context
 
 from discord.ext import commands
 import discord
@@ -144,7 +144,7 @@ class Events(Cog):
         await logchannel.send(f"The bot has been removed from **{guild.name}** . It sucks! :sob: :sneezing_face: ")
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: context.Context, error) -> None:
+    async def on_command_error(self, ctx: Context, error) -> None:
 
         error = getattr(error, 'original', error)
 
