@@ -38,21 +38,20 @@ class Lock(Cog):
         if guild_id in self.lock_cache:
             return self.lock_cache[guild_id]
 
-        async with self.bot.pool.acquire() as database:
-            row = await database.fetchrow(
-                "SELECT * FROM public.lock WHERE guild_id=$1",
-                guild_id
-            )
+            async with self.bot.pool.acquire() as database:
+                row = await database.fetchrow(
+                    "SELECT * FROM public.lock WHERE guild_id=$1",
+                    guild_id
+                )
+                if row:
+                    self.lock_cache[guild_id] = row["lock_state"]
+                    return row["lock_state"]
 
-            if row:
-                self.lock_cache[guild_id] = row["lock_state"]
-                return row["lock_state"]
-
-            await database.execute(
-                "INSERT INTO public.lock VALUES ($1, 0)",
-                guild_id,
-            )
-            self.lock_cache[guild_id] = 0
+                await database.execute(
+                    "INSERT INTO public.lock VALUES ($1, 0)",
+                    guild_id,
+                )
+                self.lock_cache[guild_id] = 0
 
     async def get_link(self, guild_id: int) -> int:
         """Ensure that the given guild_id is in the database."""
@@ -112,6 +111,7 @@ class Lock(Cog):
 
     # -------COMMANDS--------
     @command(name="link-lock", aliases=["linklock", "l-lock"])
+    @has_permissions(kick_members=True)
     async def link_lock(self, ctx: Context) -> None:
         """Prevent everybody from posting other server's invites."""
         status = await self.get_link(ctx.guild.id)
@@ -153,6 +153,7 @@ class Lock(Cog):
         await ctx.send(embed=embed)
 
     @command(name="invite-lock", aliases=["invitelock", "i-lock"])
+    @has_permissions(kick_members=True)
     async def invite_lock(self, ctx: Context) -> None:
         """Lock invites on the server."""
         status = await self.get_link(ctx.guild.id)
@@ -194,6 +195,7 @@ class Lock(Cog):
         await ctx.send(embed=embed)
 
     @command(name="link-unlock", aliases=["linkunlock", "l-unlock"])
+    @has_permissions(kick_members=True)
     async def link_unlock(self, ctx: Context) -> None:
         """Remove the link lock."""
         status = await self.get_link(ctx.guild.id)
@@ -224,6 +226,7 @@ class Lock(Cog):
         await ctx.send(embed=embed)
 
     @command(name="ban-lock", aliases=["b-lock", "banlock"])
+    @has_permissions(kick_members=True)
     async def ban_lock(self, ctx: Context) -> None:
         """Ban all new members."""
         status = await self.get_lock(ctx.guild.id)
@@ -265,6 +268,7 @@ class Lock(Cog):
         await ctx.send(embed=embed)
 
     @command(name="kick-lock", aliases=["k-lock", "kicklock"])
+    @has_permissions(kick_members=True)
     async def kick_lock(self, ctx: Context) -> None:
         """Kick all new members."""
         status = await self.get_lock(ctx.guild.id)
@@ -305,13 +309,14 @@ class Lock(Cog):
         await ctx.send(embed=embed)
 
     @command(name="server-unlock", aliases=["s-unlock", "serverunlock"])
+    @has_permissions(kick_members=True)
     async def server_unlock(self, ctx: Context) -> None:
         """Unlock the server."""
         status = await self.get_lock(ctx.guild.id)
 
         if not status:
             embed = Embed(
-                description="⚙️The server is already unlocked!",
+                description="⚙️The server is already unlocked! ",
                 color=Color.red(),
             )
             await ctx.send(embed=embed)

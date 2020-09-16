@@ -31,12 +31,13 @@ bleach = "*"
 aiogoogletrans = "*"
 loguru = "~=0.5.1"
 PyYAML = "~=5.3.1"
-"discord.py" = "~=1.4.0"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git", ref = "voice-protocol"}
 html2markdown = "*"
 python-dateutil = "*"
 discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-ext-menus.git"}
 pyfiglet = "*"
 ascii = "*"
+spotify = "*"
 
 [requires]
 python_version = "3.8"
