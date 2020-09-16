@@ -252,7 +252,7 @@ class Moderation(Cog):
                 with suppress(Forbidden, HTTPException):
                     await member.send(embed=embed_data.embed)
 
-            ctx.message.add_reaction("✅")
+            await ctx.message.add_reaction("✅")
 
     @command()
     @has_permissions(administrator=True)
@@ -273,7 +273,7 @@ class Moderation(Cog):
             with suppress(Forbidden, HTTPException):
                 await member.send(embed=embed_data.embed)
 
-        ctx.message.add_reaction("✅")
+        await ctx.message.add_reaction("✅")
 
     @command()
     @has_permissions(manage_channels=True)
