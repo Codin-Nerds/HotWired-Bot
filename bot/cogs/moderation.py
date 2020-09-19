@@ -86,7 +86,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     @follow_roles()
-    async def ban(self, ctx: Context, member: User, *, reason: ActionReason = "No specific reason.") -> None:
+    async def ban(self, ctx: Context, member: Member, *, reason: ActionReason = "No specific reason.") -> None:
         """Ban a user."""
         server_embed = Embed(
             title="User Banned",
@@ -136,7 +136,7 @@ class Moderation(Cog):
         for member in members:
             with suppress(discord.HTTPException):
                 if ctx.author.top_role > member.top_role:
-                    await ctx.guild.ban(member, reason=reason)
+                    await member.ban(member, reason=reason)
                     banned_members.append(member)
 
         banned_members_str = ", ".join(banned_member.mention for banned_member in banned_members)

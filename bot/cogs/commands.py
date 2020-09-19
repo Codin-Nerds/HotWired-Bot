@@ -6,6 +6,7 @@ from collections import Counter
 
 from discord import ActivityType, Color, Embed, Guild, Member, Status, User, utils, VoiceRegion
 from discord.ext.commands import Cog, Context, command, has_permissions
+import discord
 
 from bot.core.bot import Bot
 from bot import config
@@ -23,6 +24,23 @@ class Commands(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.features = {
+            'VIP_REGIONS': 'Has VIP voice regions',
+            'VANITY_URL': 'Can have vanity invite',
+            'INVITE_SPLASH': 'Can have invite splash',
+            'VERIFIED': 'Is verified server',
+            'PARTNERED': 'Is partnered server',
+            'MORE_EMOJI': 'Can have 50+ emoji',
+            'DISCOVERABLE': 'Is discoverable',
+            'FEATURABLE': 'Is featurable',
+            'COMMERCE': 'Can have store channels',
+            'PUBLIC': 'Is public',
+            'NEWS': 'Can have news channels',
+            'BANNER': 'Can have banner',
+            'ANIMATED_ICON': 'Can have animated icon',
+            'PUBLIC_DISABLED': 'Can not be public',
+            'WELCOME_SCREEN_ENABLED': 'Can have welcome screen'
+        }
 
     @command()
     @has_permissions(manage_guild=True)
@@ -212,7 +230,7 @@ class Commands(Cog):
             f"""
             Mention: {user.mention}
             Date Created: {created_time}
-            Created: {humanize.precisedelta(datetime.utcnow() - user.created_at, suppress=["seconds", "minutes"], format="%0.0f")} ago
+            Created: {humanize.precisedelta(datetime.datetime.utcnow() - user.created_at, suppress=["seconds", "minutes"], format="%0.0f")} ago
             Bot: {str(user.bot).replace("True", "Yes").replace("False", "No")}
             """
         )
@@ -292,11 +310,11 @@ class Commands(Cog):
             region = 'South Africa'
 
         features = []
-        for feature, description in self.bot.features.items():
+        for feature, description in self.features.items():
             if feature in guild.features:
-                features.append(f'<:tick:739315349715026001> {description}')
+                features.append(f'✅ {description}')
             else:
-                features.append(f'<:cross:739315361811267594> {description}')
+                features.append(f'❌ {description}')
 
         embed = Embed(
             title="Server's stats and information.",
