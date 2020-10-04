@@ -1,7 +1,7 @@
 import os
 import random
+import re
 
-import aiohttp
 from discord import Color, Embed
 from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
                                   cooldown)
@@ -10,23 +10,26 @@ NASA_API = os.getenv("NASA_API")
 
 
 def remove_tags(text: str) -> None:
-    import re
+    """Remove tags from text."""
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
 
 class Nasa(Cog):
+    """And she's buying a stairway to heaven..."""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
         if NASA_API is None:
             self.cog_unload()
 
     @command(aliases=["apod"])
     @cooldown(16, 60, BucketType.guild)
     async def astronomy_picture(self, ctx: Context) -> None:
-        """Gives you the astronomy picture of the day."""
-        async with self.session.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API}") as resp:
+        """Give you the astronomy picture of the day."""
+        # There is a ratelimit. Better to use a background task to update
+        # Example : https://github.com/Faholan/All-Hail-Chaos/blob/60b6ce944c66ccea6890019e6a196ac06f1eb55e/cogs/nasa.py#L72
+        async with self.bot.session.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API}") as resp:
             data = await resp.json()
 
         if len(data["explanation"]) > 2048:
@@ -46,7 +49,7 @@ class Nasa(Cog):
     @command(aliases=["nsearch"])
     async def nasa_search(self, ctx: Context, *, query: str) -> None:
         """Search for a query on NASA's website."""
-        async with self.session.get(f"https://images-api.nasa.gov/search?q={query}") as resp:
+        async with self.bot.session.get(f"https://images-api.nasa.gov/search?q={query}") as resp:
             data = await resp.json()
 
         items = data["collection"]["items"]
@@ -68,7 +71,7 @@ class Nasa(Cog):
     @command(aliases=["nid"])
     async def nasa_id(self, ctx: Context, id: str) -> None:
         """Search for a picture on NASA's website with an id."""
-        async with self.session.get(f"https://images-api.nasa.gov/asset/{id}") as resp:
+        async with self.bot.session.get(f"https://images-api.nasa.gov/asset/{id}") as resp:
             data = await resp.json()
 
         try:
@@ -84,7 +87,7 @@ class Nasa(Cog):
     @command(aliases=["nasapatent"])
     async def nasa_patent(self, ctx: Context, *, patent: str) -> None:
         """Search for a NASA patent."""
-        async with self.session.get(f"https://api.nasa.gov/techtransfer/patent/?{patent}&api_key={NASA_API}") as resp:
+        async with self.bot.session.get(f"https://api.nasa.gov/techtransfer/patent/?{patent}&api_key={NASA_API}") as resp:
             data = await resp.json()
 
         items = data["results"]
@@ -111,7 +114,7 @@ class Nasa(Cog):
     @command()
     async def epic(self, ctx: Context, max: int = 1) -> None:
         """Get images from DSCOVR's Earth Polychromatic Imaging Camera. can specify a maximum number of images to retrieve."""
-        async with self.session.get("https://epic.gsfc.nasa.gov/api/images.php") as response:
+        async with self.bot.session.get("https://epic.gsfc.nasa.gov/api/images.php") as response:
             json = await response.json()
 
             for i in range(min(max, len(json))):
@@ -134,7 +137,7 @@ class Nasa(Cog):
             await ctx.send("Sorry but this rover doesn't exist")
             return
 
-        async with self.session.get(
+        async with self.bot.session.get(
             "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos", params={"earth_date": date, "api_key": NASA_API}
         ) as response:
             images = await response.json()
@@ -154,4 +157,5 @@ class Nasa(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Are you sure all that glitter is gold?"""
     bot.add_cog(Nasa(bot))

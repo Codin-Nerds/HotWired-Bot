@@ -1,23 +1,26 @@
 import os
 
-import requests
+import aiohttp
 
 APPID = os.getenv("WOLFRAM_APPID")
 
 
-def get_wolfram_data(question: str, conversation_mode: str = "false", units: str = "metric") -> str:
+async def get_wolfram_data(question: str, conversation_mode: str = "false", units: str = "metric") -> str:
     if conversation_mode.lower() == "yes" or conversation_mode.lower() == "true":
         params = {"appid": APPID, "i": question, "units": units}
         url = "http://api.wolframalpha.com/v1/conversation.jsp"
-        r = requests.get(url, params=params)
-        data = r.json()["result"]
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params) as resp:
+                data = (await resp.json())["result"]
 
         return data
 
     else:
         params = {"appid": APPID, "i": question, "units": units}
         url = "http://api.wolframalpha.com/v1/result"
-        r = requests.get(url, params=params)
-        data = r.text
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params) as resp:
+                data = await resp.text()
 
         return data

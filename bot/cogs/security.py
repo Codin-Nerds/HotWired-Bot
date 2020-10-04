@@ -1,12 +1,12 @@
 from contextlib import suppress
 from os.path import splitext
 
-import aiohttp
 from discord import Color, Embed, Message, NotFound
 from discord.ext.commands import Cog
 
 from bot import config
 from bot.core.bot import Bot
+from loguru import logger
 
 FILE_EMBED_DESCRIPTION = (
     f"""
@@ -27,10 +27,10 @@ with open("bot/assets/allowed_filetypes.txt", "r") as f:
             whitelist.append(line.replace("\n", ""))
 
 
-class MalwareProtection(Cog):
+class Security(Cog):
+    """Security commands made just for you."""
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -38,7 +38,7 @@ class MalwareProtection(Cog):
         if not message.attachments or not message.guild:
             return
 
-        elif message.author.permissions_in(message.channel).manage_messages:
+        if message.author.permissions_in(message.channel).manage_messages:
             return
 
         file_extensions = {splitext(attachment.filename.lower())[1] for attachment in message.attachments}
@@ -47,13 +47,20 @@ class MalwareProtection(Cog):
         file_pastes = []
 
         if is_blocked:
+            log_message = f"User <@{message.author.id}> posted a message on {message.guild.id} with protected attachments"
+
+            if message.author.permissions_in(message.channel).manage_messages:
+                logger.trace(f"{log_message}, but he has override roles.")
+                return
+
+            logger.debug(f"{log_message}.")
             embed = Embed(description=FILE_EMBED_DESCRIPTION, color=Color.dark_blue())
 
             with suppress(NotFound, ConnectionError):
                 for attachment in message.attachments:
                     content = await attachment.read()
 
-                    async with self.session.post("https://hasteb.in/documents", data=content) as resp:
+                    async with self.bot.session.post("https://hasteb.in/documents", data=content) as resp:
                         key = (await resp.json())['key']
                         file_paste = 'https://www.hasteb.in/' + key
 
@@ -71,4 +78,5 @@ class MalwareProtection(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(MalwareProtection(bot))
+    """Load the Security cog."""
+    bot.add_cog(Security(bot))

@@ -51,8 +51,7 @@ class Conversion(Cog):
 
     @command()
     async def byteconvert(self, ctx: Context, value: int, unit: str = "Mio") -> None:
-        """
-        Convert into Bytes.
+        """Convert into Bytes.
 
         Accepted units are: `O`, `Kio`, `Mio`, `Gio`, `Tio`, `Pio`, `Eio`, `Zio`, `Yio`
         """
@@ -131,4 +130,5 @@ class Conversion(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Conversion cog"""
     bot.add_cog(Conversion(bot))
