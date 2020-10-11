@@ -11,83 +11,10 @@
 This bot is a Heavy Coded Yet lightWeight, reliable, smooth, automatic worker
 that does everything you need. It's a One stop Shop for everything.
 
-## Features
+## Deprecation
 
--   Perfect Event management
--   Perfect Moderation for Your server
-    -   Ban
-    -   Kick
-    -   Clear messages
-    -   Clear Bot Messages
-    -   Clear Specific Messages
-    -   Hack Ban
-    -   Soft Ban
--   No Paid Options, Everything for Free!
--   Extra Options and stats for Server owners or admins.
-    -   Eval License
-    -   Captcha Verification
-    -   Verified License
--   With web dashboard, management made easy through discord, and Dahboard
--   Inbuilt Compiler for programmers, **160+ Languages**!
-    -   Python
-    -   C++
-    -   Java
-    -   Julia
-    -   Ruby
-    -   And Many More.. Just Choose you Language!
--   Inbuilt documentation and reference support, No more leaving Discord. **Yay!**
-    -   Assembly
-    -   Bash / Debian
-    -   Java
-    -   Python
-    -   Cpp preference
-    -   Javascript
-    -   SQL
-    -   More Doc support Coming Soon.
--   A Fast repl for Python inside the bot.
--   Study and Study Helper Commands
-    -   Equation solver
-    -   Wolfram Alpha
-    -   Ncatlab Integration
-    -   Latex rendering and Others Coming Soon.
--   A perfectly crafted arsenal for the programmers
-    -   Number base Converter, Supports Octal, Hex, Binary, and Base10
-    -   Number base Calulator : Performs operation between Various Base numbers
-    -   Cryptography tools
-    -   Inbuilt Hashing and De-Hashing
-    -   Ascii and De-ascii Converter
-    -   Character info using Unicode and UTF-8
--   Another Perfectly crafted Arsenal for The hackers
--   Some Fun Commands Too!
-    -   Random Cat pictures
-    -   Random Dog pictures
-    -   Random Lizard pictures
-    -   Random Fox pictures
-    -   Random Cat Facts
-    -   Random Nekos
-    -   Robohash
-    -   Excuse Generator
-    -   Dad Jokes
-    -   Chuck norris Joke
-    -   Memes and XKCD Coming soon!
--   Bored? Play Games through our bot.
-    -   Hangman
-    -   Guess the Number
-    -   Battleship
-    -   Connect4
-    -   BlackJack
-    -   Riddles
-    -   More Games coming Soon!
--   Get a coding Sandbox inside Discord.
--   Make your Custom commands!
--   Various inbuilt custom commands From the Creator.
--   More Features Coming Soon. Stay Tuned!
+This bot is now deprecated and it's no longer supported by us, we're replacing it with new [`Neutron-Bot`](https://github.com/Codin-Nerds/Neutron-Bot). This repository will remain public and open until we get out of early development stage of Neutron Bot, at which point this repository will be archived.
+
 
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FThe-Codin-Hole%2FHotWired-Bot?ref=badge_large)
-
-## Support
-
-The Bot Creator Team has **24x7** Support for the Bot,
-Just join The Server and give your valuable suggestion,
-feedback or the Complaint, We will Look Into it ASAP!
