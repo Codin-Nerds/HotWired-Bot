@@ -13,7 +13,7 @@ that does everything you need. It's a One stop Shop for everything.
 
 ## Deprecation
 
-This bot is now deprecated and it's no longer supported, we're replacing it with new [`Neutor-Bot`](https://github.com/Codin-Nerds/Neutron-Bot). This repository will remain public and open until we get out of early development stage of Neutron Bot, at which point this repository will be archived.
+This bot is now deprecated and it's no longer supported by us, we're replacing it with new [`Neutron-Bot`](https://github.com/Codin-Nerds/Neutron-Bot). This repository will remain public and open until we get out of early development stage of Neutron Bot, at which point this repository will be archived.
 
 
 
