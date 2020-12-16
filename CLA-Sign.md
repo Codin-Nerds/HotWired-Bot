@@ -3,7 +3,7 @@ Sign the CLA
 
 This page is the step-by-step guide to signing the HotWired-Bot Contributor License Agreement. It's easy and pretty painless!
 
-1. First and foremost, read [the current version of the CLA](cla.md).
+1. First and foremost, read [the current version of the CLA](CLA.md).
 
 2. Make an account on [GitHub](https://github.com/) if you don't already have one.
 
